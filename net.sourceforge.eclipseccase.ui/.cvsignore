@@ -2,3 +2,4 @@ bin
 *.jar
 build.xml
 temp.folder
+clearcase-uisrc.zip

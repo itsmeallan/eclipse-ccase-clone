@@ -1,0 +1,31 @@
+1.0.0 M1
+========
+
+The software and associated documentation are copyright (c) 2004, 2000 eclipse-ccase.sourceforge.net (Matthew Conway and others). They are unsupported and come with no warranty (see the license.html shipped with the feature(s) and the Common Public License 1.0 for more details).
+
+This is the first milestone release for our 1.0 release candidate. It should show significant progress of the current development and still contains unimplemented features. Please see CHANGELOG and TODO for more information.
+
+
+Requirenments
+-------------
+
+This release requires Eclipse integration build I20040514.
+
+
+Install
+-------
+
+1. Shutdown Eclipse (if running)
+2. Remove all existing previous versions
+3. Unzip into your Eclipse directory
+4a. Remove directory %ECLIPSE%/configuration/org.eclipse.osgi (if it exists)
+4b. Remove directory %ECLIPSE%/configuration/org.eclipse.update (if it exists)
+5. Start Eclipse
+6. Go to Window -> Preferences -> Team -> ClearCase and (re)configure your preferences.
+
+
+Known Issues
+------------
+
+Allthough there are a lot of new preferences some feature aren't implemented yet.
+
