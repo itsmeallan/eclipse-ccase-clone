@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import net.sourceforge.eclipseccase.IClearcase.Status;
-
 public class ClearcaseCLI implements IClearcase
 {
 	private String newLine = System.getProperty("line.separator");

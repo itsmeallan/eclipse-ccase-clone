@@ -3,6 +3,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.net.URL;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.team.ui.TeamImages;
 

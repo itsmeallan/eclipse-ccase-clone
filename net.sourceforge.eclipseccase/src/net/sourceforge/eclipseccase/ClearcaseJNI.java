@@ -1,6 +1,5 @@
 package net.sourceforge.eclipseccase;
 
-import net.sourceforge.eclipseccase.IClearcase.Status;
 
 public class ClearcaseJNI implements IClearcase
 {

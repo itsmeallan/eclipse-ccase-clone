@@ -3,6 +3,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
