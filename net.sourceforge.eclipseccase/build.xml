@@ -67,6 +67,7 @@
 							<include name="plugin.xml"/>
 							<include name="LICENSE"/>
 							<include name="README"/>
+							<include name="CHANGELOG"/>
 							<include name="icons/**"/>
 			</zipfileset>							
 		</zip>

@@ -1,0 +1,17 @@
+0.9.0
+-----
+
+- Added background update of clearcase state
+- Restructured preferences dialog - you'll need to reconfigure
+- Fixed decorator caching of images so it no longer exhausts the UI resources and crashes eclipse
+- Added some more graphical decorations
+- Added more control over text decorations
+- Switched from using Natures to persistent properties to associate a project with clearcase.  You'll need to reassociate your projects
+- Cleaned up JNI layer to prevent crashes and to work with VC7.NET
+- Fixed other bugs
+
+
+0.8.1
+-----
+
+- ???
