@@ -30,17 +30,19 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -140,7 +142,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			{
 				if (e == FIND_NEEDED_EXCEPTION)
 				{
-					findCheckouts(new NullProgressMonitor());
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							refreshAction.run();
+						}
+					});
 				}
 				else
 				{
@@ -282,7 +290,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		hookContextMenu();
 		contributeToActionBars();
 
-		findCheckouts(new NullProgressMonitor());
+		refreshAction.run();
 		ClearcasePlugin.getWorkspace().addResourceChangeListener(updateListener, IResourceChangeEvent.POST_CHANGE);
 
 	}
@@ -321,21 +329,22 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		{
 			public void run()
 			{
+				IStatusLineManager statusLineManager = getViewSite().getActionBars().getStatusLineManager();
+				statusLineManager.setCancelEnabled(true);
+				final IProgressMonitor progressMonitor = statusLineManager.getProgressMonitor();
+				
+				final IRunnableWithProgress op = new IRunnableWithProgress()
+				{
+					public void run(IProgressMonitor monitor)
+						throws InvocationTargetException, InterruptedException
+					{
+						findCheckouts(monitor);
+					}
+				};
+
 				try
 				{
-					IRunnableWithProgress op = new IRunnableWithProgress()
-					{
-						public void run(IProgressMonitor monitor)
-							throws InvocationTargetException, InterruptedException
-						{
-							findCheckouts(monitor);
-						}
-					};
-
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(
-						true,
-						true,
-						op);
+					ModalContext.run(op, true, progressMonitor, Display.getCurrent());
 				}
 				catch (InvocationTargetException e)
 				{
@@ -343,7 +352,6 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 				}
 				catch (InterruptedException e)
 				{
-					int i = 1;
 				}
 			}
 		};
@@ -432,6 +440,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
 		for (int i = 0; i < projects.length; i++)
 		{
+			if (monitor.isCanceled())
+			{
+				checkouts.clear();
+				CheckoutsView.this.asyncRefresh();
+				monitor.done();
+				throw new OperationCanceledException();
+			}
 			IProject project = projects[i];
 			// Only find checkouts for each project if the project is open and associated with ccase
 			if (project.isOpen() && ClearcaseProvider.getProvider((IResource) project) != null)
