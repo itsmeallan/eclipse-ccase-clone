@@ -321,6 +321,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniclea
 	{
 		// Issue a ClearTool command 
 		_bstr_t output = cleartool->CmdExec(cmdstr);
+		if (!output)
+			output = "";
 		result = createStatus(env, true, (const char*) output);
 	}
 	catch(_com_error& cerror) 
