@@ -32,6 +32,7 @@ import org.eclipse.team.ui.TeamUIPlugin;
 import org.eclipse.ui.internal.misc.OverlayComposite;
 import org.eclipse.ui.internal.misc.OverlayIcon;
 
+// Borrowed heavily from the ExampleDecorator from Team examples
 public class ClearcaseDecorator
 	extends LabelProvider
 	implements ILabelDecorator, IResourceChangeListener
