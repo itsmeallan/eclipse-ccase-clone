@@ -266,39 +266,46 @@ public class ClearcaseProvider
 	public void delete(IResource[] resources, IProgressMonitor progress)
 		throws TeamException
 	{
-		execute(new IIterativeOperation()
+		try
 		{
-			public IStatus visit(
-				IResource resource,
-				int depth,
-				IProgressMonitor progress)
+			execute(new IIterativeOperation()
 			{
-				IStatus result = checkoutParent(resource);
-				if (result.isOK())
+				public IStatus visit(
+					IResource resource,
+					int depth,
+					IProgressMonitor progress)
 				{
-					IClearcase.Status status =
-						ClearcasePlugin.getEngine().delete(
-							resource.getLocation().toOSString(),
-							"");
-					StateCacheFactory.getInstance().remove(resource);
-					changeState(
-						resource.getParent(),
-						IResource.DEPTH_ONE,
-						progress);
-					if (!status.status)
+					IStatus result = checkoutParent(resource);
+					if (result.isOK())
 					{
-						result =
-							new Status(
-								IStatus.ERROR,
-								ID,
-								TeamException.UNABLE,
-								"Delete failed: " + status.message,
-								null);
+						IClearcase.Status status =
+							ClearcasePlugin.getEngine().delete(
+								resource.getLocation().toOSString(),
+								comment);
+						StateCacheFactory.getInstance().remove(resource);
+						changeState(
+							resource.getParent(),
+							IResource.DEPTH_ONE,
+							progress);
+						if (!status.status)
+						{
+							result =
+								new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.UNABLE,
+									"Delete failed: " + status.message,
+									null);
+						}
 					}
+					return result;
 				}
-				return result;
-			}
-		}, resources, IResource.DEPTH_INFINITE, progress);
+			}, resources, IResource.DEPTH_INFINITE, progress);
+		}
+		finally
+		{
+			comment = "";
+		}
 	}
 
 	public void add(
@@ -502,23 +509,30 @@ public class ClearcaseProvider
 
 	public IStatus move(IResource source, IResource destination)
 	{
-		IStatus result = checkoutParent(source);
-
-		if (result.isOK())
-			result = checkoutParent(destination);
-
-		if (result.isOK())
+		try
 		{
-			IClearcase.Status ccStatus =
-				ClearcasePlugin.getEngine().move(
-					source.getLocation().toOSString(),
-					destination.getLocation().toOSString(),
-					"");
-			StateCacheFactory.getInstance().remove(source);
-			changeState(source.getParent(), IResource.DEPTH_ZERO, null);
-			changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
+			IStatus result = checkoutParent(source);
+	
+			if (result.isOK())
+				result = checkoutParent(destination);
+	
+			if (result.isOK())
+			{
+				IClearcase.Status ccStatus =
+					ClearcasePlugin.getEngine().move(
+						source.getLocation().toOSString(),
+						destination.getLocation().toOSString(),
+						comment);
+				StateCacheFactory.getInstance().remove(source);
+				changeState(source.getParent(), IResource.DEPTH_ZERO, null);
+				changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
+			}
+			return result;
 		}
-		return result;
+		finally
+		{
+			comment = "";
+		}
 	}
 
 	public IStatus checkoutParent(IResource resource)
@@ -542,7 +556,7 @@ public class ClearcaseProvider
 			IClearcase.Status ccStatus =
 				ClearcasePlugin.getEngine().checkout(
 					parent,
-					"",
+					comment,
 					ClearcasePlugin.isReservedCheckouts(),
 					true);
 			if (!flag)
