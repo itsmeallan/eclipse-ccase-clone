@@ -7,6 +7,9 @@ import java.util.TimerTask;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.StateCacheFactory;
+import net.sourceforge.eclipseccase.StateChangeListener;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -25,7 +28,7 @@ import org.eclipse.ui.internal.decorators.DecoratorManager;
 
 public class ClearcaseDecorator
 	extends LabelProvider
-	implements ILightweightLabelDecorator
+	implements ILightweightLabelDecorator, StateChangeListener
 {
 	private static final String ID =
 		"net.sourceforge.eclipseccase.ui.decorator";
@@ -51,6 +54,8 @@ public class ClearcaseDecorator
 				.getWorkbench()
 				.getDecoratorManager();
 		addListener(manager);
+		StateCacheFactory.getInstance().addStateChangeListerer(this);
+		
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask()
 		{
@@ -339,6 +344,11 @@ public class ClearcaseDecorator
 				IResource.class);
 		}
 		return null;
+	}
+	
+	public void stateChanged(StateCache stateCache)
+	{
+		resourceStateChanged(new IResource[] { stateCache.getResource() });
 	}
 
 }
