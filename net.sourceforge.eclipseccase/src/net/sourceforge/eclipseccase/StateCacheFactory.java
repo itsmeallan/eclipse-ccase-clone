@@ -19,14 +19,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
 
-/**
- * @author conwaym
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class StateCacheFactory implements Serializable, ISaveParticipant
 {
 	private static final String SAVE_FILE_NAME = "statecache";

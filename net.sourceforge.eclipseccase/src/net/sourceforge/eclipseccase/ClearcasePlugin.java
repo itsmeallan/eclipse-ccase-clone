@@ -73,10 +73,9 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		clearcaseImpl = null;
 	}
 	
-	/**
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeDefaultPreferences(IPreferenceStore)
-	 */
-	protected void initializeDefaultPreferences(IPreferenceStore store) {
+	protected void initializeDefaultPreferences(IPreferenceStore store)
+	{
+		// General preferences
 		store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
 		store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
 		store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
@@ -84,9 +83,11 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
 		store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
 		store.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
+		store.setDefault(IPreferenceConstants.USE_CLEARTOOL, ! isWindows);
+
+		// Decorator preferences
 		store.setDefault(IPreferenceConstants.TEXT_DECORATIONS, false);
 		store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
-		store.setDefault(IPreferenceConstants.USE_CLEARTOOL, ! isWindows);
 	}
 	
 	public static boolean isReservedCheckouts()
