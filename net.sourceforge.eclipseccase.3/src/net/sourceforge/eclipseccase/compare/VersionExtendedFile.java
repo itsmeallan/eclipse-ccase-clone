@@ -139,6 +139,9 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public int getEncoding() throws CoreException
 	{
 		return file.getEncoding();
@@ -196,6 +199,15 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 		throws CoreException
 	{
 		throw new UnsupportedOperationException();
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IFile#getCharset()
+	 */
+	public String getCharset() throws CoreException {
+		// TODO Auto-generated method stub
+		return file.getCharset();
 	}
 
 }
