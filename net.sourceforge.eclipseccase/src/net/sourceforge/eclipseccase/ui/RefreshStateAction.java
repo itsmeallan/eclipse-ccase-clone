@@ -34,7 +34,7 @@ public class RefreshStateAction extends TeamAction
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 						provider.refresh(new IResource[] {resource},
 											IResource.DEPTH_INFINITE, subMonitor);
-						//ClearcaseDecorator.refresh(resource);
+						ClearcaseDecorator.refresh(resource);
 						monitor.worked(1);
 					}
 				}
