@@ -508,11 +508,7 @@ public class ClearcaseProvider
 	
 	public String getPredecessorVersion(IResource resource)
 	{
-		String version = null;
-		IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("describe -fmt %PVn " + resource.getLocation().toOSString());
-		if (status.status)
-			version = status.message.trim().replace('\\', '/');
-		return version;
+		return StateCacheFactory.getInstance().get(resource).getPredecessorVersion();
 	}
 	
 	public String getViewName(IResource resource)

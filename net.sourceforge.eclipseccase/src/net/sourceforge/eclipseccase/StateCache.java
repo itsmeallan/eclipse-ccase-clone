@@ -178,7 +178,20 @@ public class StateCache implements Serializable
 	{
 		return version;
 	}
-
+	
+	/**
+	 * Returns the predecessor version.
+	 * @return String
+	 */
+	public String getPredecessorVersion()
+	{
+		String version = null;
+		IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("describe -fmt %PVn " + resource.getLocation().toOSString());
+		if (status.status)
+			version = status.message.trim().replace('\\', '/');
+		return version;
+	}
+	
 	/**
 	 * Returns the uninitialized.
 	 * @return boolean
