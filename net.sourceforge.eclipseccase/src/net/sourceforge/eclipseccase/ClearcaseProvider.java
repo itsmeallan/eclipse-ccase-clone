@@ -85,7 +85,7 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				String filename = resource.getLocation().toOSString();
-				IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("update -ptime " + filename);
+				IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("update -log NUL -force -ptime " + filename);
 				changeState(resource, IResource.DEPTH_INFINITE, progress);
 				if (!status.status)
 				{
