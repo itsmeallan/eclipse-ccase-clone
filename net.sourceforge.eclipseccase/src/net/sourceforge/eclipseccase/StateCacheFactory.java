@@ -212,7 +212,8 @@ public class StateCacheFactory implements ISaveParticipant,
     public boolean isUnitialized(IResource resource) {
         if (!cacheMap.containsKey(resource)) return true;
 
-        return ((StateCache) cacheMap.get(resource)).isUninitialized();
+        StateCache cache = (StateCache) cacheMap.get(resource);
+        return null != cache && cache.isUninitialized();
     }
 
     /**
