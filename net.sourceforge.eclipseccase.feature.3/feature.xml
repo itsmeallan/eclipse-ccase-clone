@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.eclipseccase.feature.3"
+      label="Eclipse 3.0 ClearCase Integration"
+      version="0.9.10"
+      provider-name="eclipse-ccase.sourceforge.net">
+
+   <install-handler/>
+
+   <requires>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.team.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.compare"/>
+   </requires>
+
+   <plugin
+         id="net.sourceforge.clearcase"
+         download-size="0"
+         install-size="0"
+         version="0.9.10"/>
+
+   <plugin
+         id="net.sourceforge.eclipseccase"
+         download-size="0"
+         install-size="0"
+         version="0.9.10"/>
+
+   <plugin
+         id="net.sourceforge.eclipseccase.3"
+         download-size="0"
+         install-size="0"
+         version="0.9.10"/>
+
+   <plugin
+         id="net.sourceforge.eclipseccase.ui"
+         download-size="0"
+         install-size="0"
+         version="0.9.10"/>
+
+</feature>
