@@ -206,27 +206,37 @@ public class ClearcaseDecorator extends LabelProvider implements
             return;
         }
 
-        final HashSet changedElements = new HashSet(changedResources.length * 20);
+        final HashSet changedElements = new HashSet(
+                changedResources.length * 20);
         for (int i = 0; i < changedResources.length; i++)
         {
             IResource resource = changedResources[i];
 
-            try
+            // process children
+            if (resource.exists())
             {
-                // refresh children
-                resource.accept(new IResourceVisitor()
+
+                try
                 {
-                    public boolean visit(IResource child) throws CoreException
+                    // refresh children
+                    resource.accept(new IResourceVisitor()
                     {
-                        return changedElements.add(child);
-                    }
-                });
+                        public boolean visit(IResource child)
+                                throws CoreException
+                        {
+                            return changedElements.add(child);
+                        }
+                    });
+                }
+                catch (CoreException ex)
+                {
+                    ClearcasePlugin.log(IStatus.ERROR,
+                            "Could not access resource: "
+                                    + resource.getFullPath().toString(), ex);
+                }
+
             }
-            catch (CoreException ex)
-            {
-                ex.printStackTrace();
-            }
-            
+
             // refresh also parents
             while (null != resource && changedElements.add(resource))
                 resource = resource.getParent();
