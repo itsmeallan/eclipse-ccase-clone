@@ -63,11 +63,11 @@ public class VersionTreeAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("lsvtree -graphical " + path);
+							ClearcasePlugin.getEngine().cleartool("lsvtree -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec("clearvtree " + resource.getLocation().toOSString());
+							Runtime.getRuntime().exec(new String[] {"clearvtree", resource.getLocation().toOSString()});
 						}
 					}
 				}

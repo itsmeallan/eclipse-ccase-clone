@@ -66,11 +66,11 @@ public class ExternalUpdateAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("update -graphical " + path);
+							ClearcasePlugin.getEngine().cleartool("update -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Process process = Runtime.getRuntime().exec("clearviewupdate -pname " + resource.getLocation().toOSString());
+							Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
 							process.waitFor();
 							try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
 						}

@@ -63,11 +63,11 @@ public class HistoryAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("lshistory -graphical " + path);
+							ClearcasePlugin.getEngine().cleartool("lshistory -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec("clearhistory " + resource.getLocation().toOSString());
+							Runtime.getRuntime().exec(new String[] {"clearhistory", resource.getLocation().toOSString()});
 						}
 					}
 				}

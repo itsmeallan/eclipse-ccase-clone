@@ -158,15 +158,20 @@ public class ClearcaseCLI implements IClearcase
 		return result.toString();
 	}
 
+	private String quote(String file)
+	{
+		return "\"" + file + "\"";
+	}
+	
 	/**
 	 * @see net.sourceforge.eclipseccase.IClearcase#add(String, String, boolean)
 	 */
 	public Status add(String file, String comment, boolean isdirectory)
 	{
 		if (isdirectory)
-			return execute("mkdir -c \"" + comment + "\" " + file);
+			return execute("mkdir -c " + quote(comment) + " " + quote(file));
 		else
-			return execute("mkelem -c \"" + comment + "\" " + file);
+			return execute("mkelem -c " + quote(comment) + " " + quote(file));
 	}
 
 	/**
@@ -175,7 +180,7 @@ public class ClearcaseCLI implements IClearcase
 	public Status checkin(String file, String comment, boolean ptime)
 	{
 		String ptimeFlag = ptime ? "-ptime " : "";
-		return execute("checkin -c \"" + comment + "\" " + ptimeFlag + file);
+		return execute("checkin -c " + quote(comment) + " " + ptimeFlag + quote(file));
 	}
 
 	/**
@@ -189,7 +194,7 @@ public class ClearcaseCLI implements IClearcase
 	{
 		String ptimeFlag = ptime ? "-ptime " : "";
 		String resFlag = reserved ? "-reserved " : "-unreserved ";
-		return execute("checkout -c \"" + comment + "\" " + ptimeFlag + resFlag + file);
+		return execute("checkout -c " + quote(comment) + " " + ptimeFlag + resFlag + quote(file));
 	}
 
 	/**
@@ -205,7 +210,7 @@ public class ClearcaseCLI implements IClearcase
 	 */
 	public Status delete(String file, String comment)
 	{
-		return execute("rmname -c \"" + comment + "\" " + file);
+		return execute("rmname -c " + quote(comment) + " " + quote(file));
 	}
 
 	/**
@@ -218,7 +223,7 @@ public class ClearcaseCLI implements IClearcase
 			dir = dir.getParentFile();
 		synchronized(this)
 		{
-			Status result = execute("cd " + dir.getPath());
+			Status result = execute("cd " + quote(dir.getPath()));
 			if (result.status)
 				result = execute ("pwv -s");
 			return result;
@@ -230,7 +235,7 @@ public class ClearcaseCLI implements IClearcase
 	 */
 	public boolean isCheckedOut(String file)
 	{
-		Status ret = execute("describe -fmt \"%f\" " + file);
+		Status ret = execute("describe -fmt " + quote("%f") + " " + quote(file));
 		if (ret.status && ret.message.trim().length() > 0)
 			return true;
 		else
@@ -246,7 +251,7 @@ public class ClearcaseCLI implements IClearcase
 
 		if (isCheckedOut(file))
 		{
-			Status diffResult = execute("diff -pred " + file);
+			Status diffResult = execute("diff -pred " + quote(file));
 			if (! diffResult.message.startsWith("File are identical"))
 				result = true;
 		}
@@ -258,7 +263,7 @@ public class ClearcaseCLI implements IClearcase
 	 */
 	public boolean isElement(String file)
 	{
-		Status ret = execute("describe -fmt \"%Vn\" " + file);
+		Status ret = execute("describe -fmt " + quote("%Vn") + " " + quote(file));
 		if (ret.status && ret.message.trim().length() > 0)
 			return true;
 		else
@@ -271,7 +276,7 @@ public class ClearcaseCLI implements IClearcase
 	public boolean isHijacked(String file)
 	{
 		boolean result = false;
-		Status lsResult = execute("ls " + file);
+		Status lsResult = execute("ls " + quote(file));
 		if (lsResult.status && lsResult.message.indexOf("[hijacked]") != -1)
 			result = true;
 		return result;
@@ -302,7 +307,7 @@ public class ClearcaseCLI implements IClearcase
 	 */
 	public Status move(String file, String newfile, String comment)
 	{
-		return execute("move -c \"" + comment + "\" " + file + " " + newfile);
+		return execute("move -c " + quote(comment) + " " + quote(file) + " " + quote(newfile));
 	}
 
 	/**
@@ -311,7 +316,7 @@ public class ClearcaseCLI implements IClearcase
 	public Status uncheckout(String file, boolean keep)
 	{
 		String flag = keep ? "-keep " : "-rm ";
-		return execute("uncheckout " + flag + file);
+		return execute("uncheckout " + flag + quote(file));
 	}
 	
 	/** For testing puposes only */

@@ -21,7 +21,7 @@ public class StateCache implements Serializable
 		hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
 		isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
 		isDirty = (!hasRemote) || isCheckedOut;
-		version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" " + osPath).message.trim().replace('\\', '/');
+		version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
 	}
 
 	/**

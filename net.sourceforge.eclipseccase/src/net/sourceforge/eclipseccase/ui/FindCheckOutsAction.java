@@ -66,12 +66,11 @@ public class FindCheckOutsAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("lscheckout -graphical " + path);
+							ClearcasePlugin.getEngine().cleartool("lscheckout -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec(
-								"clearfindco " + resource.getLocation().toOSString());
+							Runtime.getRuntime().exec(new String[] {"clearfindco", resource.getLocation().toOSString()});
 						}
 					}
 				}

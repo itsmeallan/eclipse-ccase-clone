@@ -63,12 +63,11 @@ public class CompareWithPredecessorAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("diff -graphical -pred " + path);
+							ClearcasePlugin.getEngine().cleartool("diff -graphical -pred \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec(
-								"cleardlg /diffpred " + path);
+							Runtime.getRuntime().exec(new String[] {"cleardlg", "/diffpred", path});
 						}
 					}
 				}
