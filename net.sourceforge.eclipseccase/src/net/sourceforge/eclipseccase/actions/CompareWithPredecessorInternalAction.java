@@ -43,7 +43,7 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 		
 		// Only allow comparing of folders for dynamic views for now
 		// (even on dynamic views it is somewhat broken)
-		if (resource.getType() == IResource.FOLDER && provider.isSnapShot())
+		if (resource.getType() == IResource.FOLDER && provider.isSnapShot(resource))
 			return false;
 
 		// refresh so cached version number is accurate

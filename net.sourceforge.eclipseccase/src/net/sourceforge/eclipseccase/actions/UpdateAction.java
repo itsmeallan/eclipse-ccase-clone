@@ -65,7 +65,7 @@ public class UpdateAction extends ClearcaseAction
 				return false;
 			if (! provider.hasRemote(resource))
 				return false;
-			if (! provider.isSnapShot())
+			if (! provider.isSnapShot(resource))
 				return false;
 		}
 		return true;

@@ -471,9 +471,9 @@ public class ClearcaseProvider
 		return StateCacheFactory.getInstance().get(resource).isCheckedOut();
 	}
 
-	public boolean isSnapShot()
+	public boolean isSnapShot(IResource resource)
 	{
-		return StateCacheFactory.getInstance().get(getProject()).isSnapShot();
+		return StateCacheFactory.getInstance().get(resource).isSnapShot();
 	}
 
 	public boolean isHijacked(IResource resource)
