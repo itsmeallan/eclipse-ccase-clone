@@ -6,6 +6,7 @@ import java.io.Serializable;
 import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -158,11 +159,25 @@ public class StateCache implements Serializable {
             }
 
             if (resource.isAccessible()) {
-
+                if (resource.getParent()!=null &&  !(resource instanceof IProject || resource.getParent() instanceof IProject) &&
+                        !StateCacheFactory.getInstance().get(resource.getParent(),false).hasRemote())
+                {
+                    //RDM:  resource parent is NOT in clearcase -> do not process children.
+                    flags = 0;
+                    setFlag(HAS_REMOTE, false);
+                    version = null;
+                    symbolicLinkTarget = null;
+                    changed = true;
+                    if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                    ClearcasePlugin.trace(TRACE_ID,
+                            "resource parent has no remote: " //$NON-NLS-1$
+                                    + resource);
+                    }                    
+                }
                 // check the global ignores from Team (includes derived
                 // resources)
-                if (!Team.isIgnoredHint(resource)) {
-
+                
+                else if (!Team.isIgnoredHint(resource)) {
                     boolean newHasRemote = ClearcasePlugin.getEngine()
                             .isElement(osPath);
                     changed |= newHasRemote != this.hasRemote();

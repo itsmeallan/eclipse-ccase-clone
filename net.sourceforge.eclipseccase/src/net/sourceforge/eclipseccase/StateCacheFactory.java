@@ -215,10 +215,11 @@ public class StateCacheFactory implements ISaveParticipant,
     /**
      * Returns the state cache fo the specified resource.
      * 
-     * @param resource
+     * @param resource the resource from which we need the 'cached' state
+     * @param async when false, the given resource's cache is update immediately [not added to queuing]
      * @return the state cache fo the specified resource
      */
-    public StateCache get(IResource resource) {
+    public StateCache get(IResource resource, boolean async) {
         StateCache cache = (StateCache) cacheMap.get(resource);
         if (cache == null) {
 
@@ -232,9 +233,22 @@ public class StateCacheFactory implements ISaveParticipant,
 
             // schedule update if necessary
             if (isInitialized() && cache.isUninitialized())
-                cache.updateAsync(false);
+            {
+                if (async)cache.updateAsync(false); 
+                else cache.doUpdate();
+            }
         }
+        if(cache.isUninitialized() && !async) cache.doUpdate();
         return cache;
+    }    
+    /**
+     * Returns the state cache fo the specified resource.
+     * 
+     * @param resource
+     * @return the state cache fo the specified resource
+     */
+    public StateCache get(IResource resource) {
+        return get(resource,true);
     }
 
     /**
