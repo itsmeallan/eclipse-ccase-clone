@@ -43,7 +43,7 @@ public class UpdateAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Updating", this.PROGRESS_DIALOG);
+		}, "Updating", TeamAction.PROGRESS_DIALOG);
 	}
 
 	/**

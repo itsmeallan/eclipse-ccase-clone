@@ -34,7 +34,7 @@ public class AddToClearcaseAction extends TeamAction
 					"Enter a comment",
 					lastComment,
 					null);
-			if (dlg.open() == dlg.CANCEL)
+			if (dlg.open() == CommentDialog.CANCEL)
 				return;
 			maybeComment = dlg.getValue();
 			maybeDepth =
@@ -74,7 +74,7 @@ public class AddToClearcaseAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Adding to clearcase", this.PROGRESS_DIALOG);
+		}, "Adding to clearcase", TeamAction.PROGRESS_DIALOG);
 	}
 	/**
 	 * @see TeamAction#isEnabled()

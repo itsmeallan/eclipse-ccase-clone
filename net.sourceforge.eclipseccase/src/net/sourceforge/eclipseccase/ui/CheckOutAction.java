@@ -30,7 +30,7 @@ public class CheckOutAction extends TeamAction
 					"Enter a checkout comment",
 					lastComment,
 					null);
-			if (dlg.open() == dlg.CANCEL)
+			if (dlg.open() == CommentDialog.CANCEL)
 				return;
 			maybeComment = dlg.getValue();
 			maybeDepth =
@@ -69,7 +69,7 @@ public class CheckOutAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Checking out", this.PROGRESS_DIALOG);
+		}, "Checking out", TeamAction.PROGRESS_DIALOG);
 	}
 
 	protected boolean isEnabled() throws TeamException

@@ -79,7 +79,7 @@ public class FindCheckOutsAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Find checkouts", this.PROGRESS_BUSYCURSOR);
+		}, "Find checkouts", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 
 }

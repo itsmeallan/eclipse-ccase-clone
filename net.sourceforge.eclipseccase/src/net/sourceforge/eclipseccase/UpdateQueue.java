@@ -2,7 +2,6 @@ package net.sourceforge.eclipseccase;
 
 import java.util.LinkedList;
 
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 import org.eclipse.core.runtime.IStatus;
 
 public class UpdateQueue

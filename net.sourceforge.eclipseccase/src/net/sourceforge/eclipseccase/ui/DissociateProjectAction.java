@@ -58,7 +58,7 @@ public class DissociateProjectAction extends TeamAction
 				}
 				message.append(" from clearcase");
 			}
-		}, "Dissociating from clearcase", this.PROGRESS_DIALOG);
+		}, "Dissociating from clearcase", TeamAction.PROGRESS_DIALOG);
 
 		MessageDialog.openInformation(
 			shell,

@@ -48,7 +48,7 @@ public class RefreshStateAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Refreshing state", this.PROGRESS_DIALOG);
+		}, "Refreshing state", TeamAction.PROGRESS_DIALOG);
 		IResource[] resources = getSelectedResources();
 		for (int i = 0; i < resources.length; i++)
 		{

@@ -49,7 +49,7 @@ public class UndoCheckOutAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Undoing checkout", this.PROGRESS_DIALOG);
+		}, "Undoing checkout", TeamAction.PROGRESS_DIALOG);
 	}
 
 	protected boolean isEnabled() throws TeamException

@@ -46,7 +46,7 @@ public class DeleteAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Deleting", this.PROGRESS_DIALOG);
+		}, "Deleting", TeamAction.PROGRESS_DIALOG);
 	}
 
 	/**

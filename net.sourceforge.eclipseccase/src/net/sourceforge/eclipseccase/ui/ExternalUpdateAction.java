@@ -81,7 +81,7 @@ public class ExternalUpdateAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Update ", this.PROGRESS_BUSYCURSOR);
+		}, "Update ", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 	
 }

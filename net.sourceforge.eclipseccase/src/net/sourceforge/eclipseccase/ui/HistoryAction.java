@@ -76,7 +76,7 @@ public class HistoryAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "History", this.PROGRESS_BUSYCURSOR);
+		}, "History", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 	
 }

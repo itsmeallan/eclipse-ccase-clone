@@ -76,7 +76,7 @@ public class VersionTreeAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Version tree", this.PROGRESS_BUSYCURSOR);
+		}, "Version tree", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 	
 }

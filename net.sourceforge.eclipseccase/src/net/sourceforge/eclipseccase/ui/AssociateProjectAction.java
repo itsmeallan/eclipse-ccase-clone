@@ -7,11 +7,9 @@ import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
@@ -67,7 +65,7 @@ public class AssociateProjectAction extends TeamAction
 				}
 				message.append(" with clearcase");
 			}
-		}, "Associating with clearcase", this.PROGRESS_DIALOG);
+		}, "Associating with clearcase", TeamAction.PROGRESS_DIALOG);
 		
 		MessageDialog.openInformation(
 			shell,

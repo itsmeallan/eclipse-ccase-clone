@@ -33,7 +33,7 @@ public class CheckInAction extends TeamAction
 					"Enter a checkin comment",
 					lastComment,
 					null);
-			if (dlg.open() == dlg.CANCEL)
+			if (dlg.open() == CommentDialog.CANCEL)
 				return;
 			maybeComment = dlg.getValue();
 			maybeDepth =
@@ -72,7 +72,7 @@ public class CheckInAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Checkin", this.PROGRESS_DIALOG);
+		}, "Checkin", TeamAction.PROGRESS_DIALOG);
 	}
 
 	protected boolean isEnabled()

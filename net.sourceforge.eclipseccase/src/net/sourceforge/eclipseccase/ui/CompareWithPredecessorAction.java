@@ -76,7 +76,7 @@ public class CompareWithPredecessorAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Compare with predecessor", this.PROGRESS_BUSYCURSOR);
+		}, "Compare with predecessor", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 
 }
