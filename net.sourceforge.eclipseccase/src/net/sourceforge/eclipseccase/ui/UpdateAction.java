@@ -4,7 +4,7 @@ import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.internal.simpleAccess.SimpleAccessOperations;
+import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
 public class UpdateAction extends org.eclipse.team.ui.actions.GetAction
 {

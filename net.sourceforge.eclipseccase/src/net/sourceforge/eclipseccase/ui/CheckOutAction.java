@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.internal.simpleAccess.SimpleAccessOperations;
+import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 

@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.TeamPlugin;
-import org.eclipse.team.core.internal.simpleAccess.SimpleAccessOperations;
+import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
 public class ClearcaseProvider
 	extends RepositoryProvider
@@ -39,7 +39,7 @@ public class ClearcaseProvider
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
-		
+
 	/**
 	 * @see RepositoryProvider#configureProject()
 	 */
@@ -72,12 +72,12 @@ public class ClearcaseProvider
 		{
 			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
 			{
-				IStatus result = new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+				IStatus result =
+					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				String filename = resource.getLocation().toOSString();
 				if (Clearcase.isSnapShot(filename))
 				{
-					Clearcase.Status status =
-						Clearcase.cleartool("update -ptime " + filename);
+					Clearcase.Status status = Clearcase.cleartool("update -ptime " + filename);
 					changeState(resource, IResource.DEPTH_INFINITE, progress);
 					if (!status.status)
 					{
@@ -92,7 +92,8 @@ public class ClearcaseProvider
 				}
 				return result;
 			}
-		}, resources, IResource.DEPTH_INFINITE, progress);	}
+		}, resources, IResource.DEPTH_INFINITE, progress);
+	}
 
 	/**
 	 * @see SimpleAccessOperations#checkout(IResource[], int, IProgressMonitor)
@@ -371,7 +372,8 @@ public class ClearcaseProvider
 	public boolean isDirty(IResource resource)
 	{
 		String file = resource.getLocation().toOSString();
-		boolean result = (! hasRemote(resource)) || Clearcase.isCheckedOut(file); // && Clearcase.isDifferent(file));
+		boolean result = (!hasRemote(resource)) || Clearcase.isCheckedOut(file);
+		// && Clearcase.isDifferent(file));
 		return result;
 	}
 
@@ -428,16 +430,23 @@ public class ClearcaseProvider
 		}
 		return result;
 	}
-	
+
 	// Notifies decorator that state has changed for an element
-	private void changeState(IResource resource, int depth, IProgressMonitor monitor)
+	private void changeState(
+		IResource resource,
+		int depth,
+		IProgressMonitor monitor)
 	{
 		try
 		{
 			// This is a hack until I get around to creating my own state change mechanism for decorators
 			// create a marker and set attribute so decorator gets notified without the resource actually
 			// changing (so refactoring doesn't fail).  Should we delete the marker?
-			IMarker[] markers = resource.findMarkers(ClearcaseProvider.STATE_CHANGE_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			IMarker[] markers =
+				resource.findMarkers(
+					ClearcaseProvider.STATE_CHANGE_MARKER_TYPE,
+					false,
+					IResource.DEPTH_ZERO);
 			IMarker marker = null;
 			if (markers.length == 0)
 			{
@@ -450,7 +459,9 @@ public class ClearcaseProvider
 			marker.setAttribute("statechanged", true);
 			resource.refreshLocal(depth, monitor);
 		}
-		catch (CoreException ex) {}
+		catch (CoreException ex)
+		{
+		}
 	}
 
 	/**
