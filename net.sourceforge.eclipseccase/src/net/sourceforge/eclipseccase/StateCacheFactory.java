@@ -137,9 +137,12 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 			{
 				String saveFileName = context.lookup(new Path(SAVE_FILE_NAME)).toString();
 				File stateFile = ClearcasePlugin.getDefault().getStateLocation().append(saveFileName).toFile();
-				ObjectInputStream is = new ObjectInputStream(new FileInputStream(stateFile));
-				cacheMap = (HashMap) is.readObject();
-				is.close();
+				if (stateFile.exists())
+				{
+					ObjectInputStream is = new ObjectInputStream(new FileInputStream(stateFile));
+					cacheMap = (HashMap) is.readObject();
+					is.close();
+				}
 			}
 		}
 		catch (Exception ex)
