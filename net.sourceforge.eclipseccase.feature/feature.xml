@@ -10,7 +10,7 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.platform" version="2.1.0" match="compatible"/>
+      <import feature="org.eclipse.platform" version="2.1.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
