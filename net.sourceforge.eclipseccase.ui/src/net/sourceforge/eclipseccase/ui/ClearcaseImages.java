@@ -7,6 +7,8 @@ import java.util.Map;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
+import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ClearcaseImages
@@ -27,19 +29,22 @@ public class ClearcaseImages
     {
         if (imageDescriptors == null)
         {
-            URL baseURL =
-                ClearcaseUI.getInstance().getDescriptor().getInstallURL();
-            imageDescriptors = new HashMap();
-			
-            // View decoration overlays
-            createImageDescriptor(IMG_REFRESH, baseURL);
-            createImageDescriptor(IMG_CHECKEDIN_OVR, baseURL);
-            createImageDescriptor(IMG_CHECKEDOUT_OVR, baseURL);
-            createImageDescriptor(IMG_DIRTY_OVR, baseURL);
-            createImageDescriptor(IMG_DIRTY_UNKNOWN_OVR, baseURL);
-            createImageDescriptor(IMG_UNKNOWN_OVR, baseURL);
-            createImageDescriptor(IMG_NEW_OVR, baseURL);
-            createImageDescriptor(IMG_HIJACKED_OVR, baseURL);
+            IPluginDescriptor descriptor = Platform.getPluginRegistry().getPluginDescriptor(ClearcaseUI.PLUGIN_ID);
+            URL baseURL = null != descriptor ? descriptor.getInstallURL() : null;
+            if(null != baseURL)
+            {
+                imageDescriptors = new HashMap();
+    			
+                // View decoration overlays
+                createImageDescriptor(IMG_REFRESH, baseURL);
+                createImageDescriptor(IMG_CHECKEDIN_OVR, baseURL);
+                createImageDescriptor(IMG_CHECKEDOUT_OVR, baseURL);
+                createImageDescriptor(IMG_DIRTY_OVR, baseURL);
+                createImageDescriptor(IMG_DIRTY_UNKNOWN_OVR, baseURL);
+                createImageDescriptor(IMG_UNKNOWN_OVR, baseURL);
+                createImageDescriptor(IMG_NEW_OVR, baseURL);
+                createImageDescriptor(IMG_HIJACKED_OVR, baseURL);
+            }
         }
     }
 	
@@ -60,6 +65,12 @@ public class ClearcaseImages
 
     public static ImageDescriptor getImageDescriptor(String id)
     {
+        if(null == imageDescriptors)
+        {
+            initializeImages();
+            if(null == imageDescriptors) return ImageDescriptor.getMissingImageDescriptor();
+        }
+        
         if (! imageDescriptors.containsKey(id))
         {
             URL baseURL =

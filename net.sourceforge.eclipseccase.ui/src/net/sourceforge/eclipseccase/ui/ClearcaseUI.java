@@ -7,6 +7,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.jface.resource.ImageRegistry;
+
 import java.util.*;
 
 /**
@@ -22,16 +24,17 @@ public class ClearcaseUI extends AbstractUIPlugin
 
     //Resource bundle.
     private ResourceBundle resourceBundle;
+    
+    public static final String PLUGIN_ID = "net.sourceforge.eclipseccase.ui";
 
     /**
      * The constructor.
      * 
      * @param descriptor
      */
-    public ClearcaseUI(IPluginDescriptor descriptor) {
-        super(descriptor);
+    public ClearcaseUI() {
+        super();
         plugin = this;
-        ClearcaseImages.initializeImages();
         try
         {
             resourceBundle = ResourceBundle
@@ -41,7 +44,16 @@ public class ClearcaseUI extends AbstractUIPlugin
             resourceBundle = null;
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#startup()
+     */
+    public void startup() throws CoreException
+    {
+        super.startup();
+        ClearcaseImages.initializeImages();
+    }
+    
     /**
      * Returns the shared instance.
      * 

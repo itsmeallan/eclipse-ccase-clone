@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipseccase.ui"
    name="Clearcase Plugin UI"
-   version="0.9.10"
+   version="0.9.11"
    provider-name="eclipse-ccase.sourceforge.net"
    class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
 
