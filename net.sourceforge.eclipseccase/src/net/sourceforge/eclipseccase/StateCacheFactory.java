@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ISaveContext;
@@ -38,8 +41,7 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 	
 	public synchronized boolean isUnitialized(IResource resource)
 	{
-		String osPath = resource.getLocation().toOSString();
-		StateCache cache = (StateCache) cacheMap.get(osPath);
+		StateCache cache = (StateCache) cacheMap.get(resource);
 		if (cache == null)
 			return true;
 		else
@@ -48,13 +50,12 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 	
 	public synchronized StateCache get(IResource resource)
 	{
-		String osPath = resource.getLocation().toOSString();
-		StateCache cache = (StateCache) cacheMap.get(osPath);
+		StateCache cache = (StateCache) cacheMap.get(resource);
 		if (cache == null)
 		{
 			cache = new StateCache(resource);
 			cache.updateAsync();
-			cacheMap.put(osPath, cache);
+			cacheMap.put(resource, cache);
 		}
 		return cache;
 	}
@@ -62,8 +63,7 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 	
 	public synchronized void set(IResource resource, StateCache cache)
 	{
-		String osPath = resource.getLocation().toOSString();
-		cacheMap.put(osPath, cache);
+		cacheMap.put(resource, cache);
 	}
 	
 	public boolean isUpdatesPending()
@@ -119,7 +119,8 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 					if (ClearcasePlugin.isPersistState())
 					{
 						ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(statePath.toFile()));
-						os.writeObject(cacheMap);
+						Collection serList = new LinkedList(cacheMap.values());
+						os.writeObject(serList);
 						os.flush();
 						os.close();
 						context.map(new Path(SAVE_FILE_NAME), new Path(saveFileName));
@@ -149,7 +150,22 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 				if (stateFile.exists())
 				{
 					ObjectInputStream is = new ObjectInputStream(new FileInputStream(stateFile));
-					cacheMap = (HashMap) is.readObject();
+					Collection values = (Collection) is.readObject();
+					for (Iterator iter = values.iterator();
+						iter.hasNext();
+						)
+					{
+						StateCache element = (StateCache) iter.next();
+						IResource resource = element.getResource();
+						if (resource != null)
+						{
+							cacheMap.put(resource, element);
+						}
+						else
+						{
+							ClearcasePlugin.log(Status.WARNING, "Loaded an invalid cache entry from persistent state cache, ignoring...", null);
+						}
+					}
 					is.close();
 				}
 			}

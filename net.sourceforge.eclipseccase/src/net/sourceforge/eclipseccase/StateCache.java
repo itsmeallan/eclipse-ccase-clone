@@ -12,9 +12,10 @@ import org.eclipse.core.runtime.Path;
 
 public class StateCache implements Serializable
 {
+	static final long serialVersionUID = -7439899000320633901L;
+
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
-
 	private String osPath;
 	private transient IResource resource;
 	private boolean uninitialized = true;
