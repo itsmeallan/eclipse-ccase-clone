@@ -6,6 +6,10 @@
   - fixes bug 956573: high priority for manual refresh
   - fixes bug 956505: multiple refreshes schedulded for same resource
   - added ui support to cancel pending refreshes
+- native ClearCase UI (via cleardlg) is now used in add, checkin, 
+  checkout and unchecked operations if preference is enabled
+- fixed decorator and Checkouts view not responding to resource changes
+- started externalization of strings
   
 
 1.0.0.M1
