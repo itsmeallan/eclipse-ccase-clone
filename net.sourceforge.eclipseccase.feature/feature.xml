@@ -20,25 +20,25 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.platform" version="3.0.0" match="compatible"/>
+      <import feature="org.eclipse.platform" version="3.0.1" match="compatible"/>
    </requires>
 
    <plugin
          id="net.sourceforge.clearcase"
-         download-size="0"
-         install-size="0"
+         download-size="1000"
+         install-size="1800"
          version="1.0.1"/>
 
    <plugin
          id="net.sourceforge.eclipseccase"
-         download-size="0"
-         install-size="0"
+         download-size="400"
+         install-size="800"
          version="1.0.1"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.ui"
-         download-size="0"
-         install-size="0"
+         download-size="400"
+         install-size="800"
          version="1.0.1"/>
 
 </feature>

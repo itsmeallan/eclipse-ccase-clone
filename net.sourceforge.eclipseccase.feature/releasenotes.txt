@@ -1,4 +1,4 @@
-1.0.0
+1.0.1
 =====
 
 The software and associated documentation are copyright (c) 2004, 2000 eclipse-ccase.sourceforge.net (Matthew Conway and others). They are unsupported and come with no warranty (see the license.html shipped with the feature(s) and the Common Public License 1.0 for more details).
@@ -9,7 +9,7 @@ This is our 1.0 release for. It contains fixes for issues detected in the previo
 Requirenments
 -------------
 
-This release requires Eclipse 3.0 and should also work with Eclipse 3.0.x stream stable builds.
+This release requires Eclipse 3.0 and should also work Eclipse 3.1 stream stable builds.
 
 
 Install
