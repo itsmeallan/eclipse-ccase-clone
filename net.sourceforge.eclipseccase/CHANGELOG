@@ -3,6 +3,7 @@
 
 - Added support for linked resources
 - Removed constraint that project needs to be a clearcase element
+- Changed build system to use PDE build and package structure
 
 0.9.2
 -----
