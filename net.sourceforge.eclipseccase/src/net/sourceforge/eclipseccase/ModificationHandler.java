@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.TeamPlugin;
 
 public class ModificationHandler implements IFileModificationValidator
 {
@@ -31,7 +30,7 @@ public class ModificationHandler implements IFileModificationValidator
 	 */
 	public IStatus validateEdit(IFile[] files, Object context)
 	{
-		IStatus result = new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+		IStatus result = new Status(IStatus.OK, ClearcaseProvider.ID, TeamException.OK, "OK", null);
 		List needCheckout = new ArrayList();
 		for (int i = 0; i < files.length; ++i)
 		{

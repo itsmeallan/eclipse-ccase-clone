@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.TeamPlugin;
 
 public class MoveHandler implements IMoveDeleteHook
 {
@@ -51,7 +50,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
@@ -106,7 +105,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
@@ -162,7 +161,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
@@ -234,7 +233,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
@@ -282,7 +281,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
@@ -330,7 +329,7 @@ public class MoveHandler implements IMoveDeleteHook
 		{
 			failed = true;
 			status = new Status(IStatus.ERROR,
-								TeamPlugin.ID,
+								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);

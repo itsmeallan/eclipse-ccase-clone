@@ -6,12 +6,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.ui.actions.TeamAction;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.team.internal.ui.actions.TeamAction;
 
 public class DissociateProjectAction extends TeamAction
 {

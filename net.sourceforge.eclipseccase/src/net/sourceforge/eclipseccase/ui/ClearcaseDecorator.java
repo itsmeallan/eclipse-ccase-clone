@@ -1,11 +1,10 @@
 package net.sourceforge.eclipseccase.ui;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -18,21 +17,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.team.core.TeamPlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.jni.Clearcase;
+import org.eclipse.team.internal.ui.TeamUIPlugin;
 import org.eclipse.team.ui.ISharedImages;
-import org.eclipse.team.ui.TeamUIPlugin;
+import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.internal.misc.OverlayComposite;
-import org.eclipse.ui.internal.misc.OverlayIcon;
 
 // Borrowed heavily from the ExampleDecorator from Team examples
 public class ClearcaseDecorator
@@ -110,16 +103,14 @@ public class ClearcaseDecorator
 		if (p.isCheckedOut(resource))
 		{
 			result.addForegroundImage(
-				TeamUIPlugin
-					.getPlugin()
+				TeamImages
 					.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR)
 					.getImageData());
 		}
 		else
 		{
 			result.addForegroundImage(
-				TeamUIPlugin
-					.getPlugin()
+				TeamImages
 					.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR)
 					.getImageData());
 		}

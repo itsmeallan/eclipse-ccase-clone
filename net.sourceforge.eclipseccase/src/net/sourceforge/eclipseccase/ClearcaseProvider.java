@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.TeamPlugin;
 import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
 public class ClearcaseProvider
@@ -82,7 +81,7 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
 			{
 				IStatus result =
-					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				String filename = resource.getLocation().toOSString();
 				if (Clearcase.isSnapShot(filename))
 				{
@@ -93,7 +92,7 @@ public class ClearcaseProvider
 						result =
 							new Status(
 								IStatus.ERROR,
-								TeamPlugin.ID,
+								ID,
 								TeamException.UNABLE,
 								"Update failed: " + status.message,
 								null);
@@ -118,7 +117,7 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				IStatus result =
-					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkout(resource.getLocation().toOSString(), "", false, true);
 				changeState(resource, IResource.DEPTH_ZERO, progress);
@@ -127,7 +126,7 @@ public class ClearcaseProvider
 					result =
 						new Status(
 							IStatus.ERROR,
-							TeamPlugin.ID,
+							ID,
 							TeamException.UNABLE,
 							"Checkout failed: " + status.message,
 							null);
@@ -151,7 +150,7 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				IStatus result =
-					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				changeState(resource, IResource.DEPTH_ZERO, progress);
 				return result;
 			}
@@ -172,7 +171,7 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				IStatus result =
-					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
 				changeState(resource, IResource.DEPTH_ZERO, progress);
@@ -181,7 +180,7 @@ public class ClearcaseProvider
 					result =
 						new Status(
 							IStatus.ERROR,
-							TeamPlugin.ID,
+							ID,
 							TeamException.UNABLE,
 							"Checkin failed: " + status.message,
 							null);
@@ -205,7 +204,7 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				IStatus result =
-					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
 				changeState(resource, IResource.DEPTH_ZERO, progress);
@@ -214,7 +213,7 @@ public class ClearcaseProvider
 					result =
 						new Status(
 							IStatus.ERROR,
-							TeamPlugin.ID,
+							ID,
 							TeamException.UNABLE,
 							"Uncheckout failed: " + status.message,
 							null);
@@ -244,7 +243,7 @@ public class ClearcaseProvider
 						result =
 							new Status(
 								IStatus.ERROR,
-								TeamPlugin.ID,
+								ID,
 								TeamException.UNABLE,
 								"Delete failed: " + status.message,
 								null);
@@ -269,7 +268,7 @@ public class ClearcaseProvider
 				{
 					return new Status(
 						IStatus.ERROR,
-						TeamPlugin.ID,
+						ID,
 						TeamException.UNABLE,
 						"Cannot add an element already under version control: " + resource.toString(),
 						null);
@@ -321,7 +320,7 @@ public class ClearcaseProvider
 								result =
 									new Status(
 										IStatus.ERROR,
-										TeamPlugin.ID,
+										ID,
 										TeamException.UNABLE,
 										"Add failed: " + status.message,
 										null);
@@ -343,7 +342,7 @@ public class ClearcaseProvider
 							result =
 								new Status(
 									IStatus.ERROR,
-									TeamPlugin.ID,
+									ID,
 									TeamException.UNABLE,
 									"Add failed: " + status.message,
 									null);
@@ -420,7 +419,7 @@ public class ClearcaseProvider
 	public IStatus checkoutParent(IResource resource)
 	{
 		IStatus result =
-			new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+			new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 		String parent = null;
 		// IProject's parent is the workspace directory, we want the filesystem
 		// parent if the workspace is not itself in clearcase
@@ -442,7 +441,7 @@ public class ClearcaseProvider
 				result =
 					new Status(
 						IStatus.ERROR,
-						TeamPlugin.ID,
+						ID,
 						TeamException.UNABLE,
 						"Could not check out parent: " + ccStatus.message,
 						null);
