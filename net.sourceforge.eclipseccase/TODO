@@ -3,3 +3,6 @@
 		a)	Internal UI for find checkouts, checkin all
 		b)	more of the UI needed to do everything clearcase inside of
 			eclipse (create view, etc)
+
+- add ignore support (like ".cvsignore")
+- make decoration of not added resources switchable
