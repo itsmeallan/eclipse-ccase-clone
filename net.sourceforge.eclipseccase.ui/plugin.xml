@@ -2,9 +2,9 @@
 <?eclipse version="3.0"?>
 <plugin
    id="net.sourceforge.eclipseccase.ui"
-   name="Clearcase Plugin UI"
-   version="0.9.11"
-   provider-name="eclipse-ccase.sourceforge.net"
+   name="%pluginName"
+   version="1.0.0"
+   provider-name="%providerName"
    class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
 
    <runtime>
@@ -24,8 +24,8 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true"
             id="net.sourceforge.eclipseccase.popups.Associate">
          <action
                label="Dissociate from clearcase"
@@ -84,8 +84,8 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
             id="net.sourceforge.eclipseccase.popups.BuiltIn">
          <visibility>
             <pluginState
@@ -433,8 +433,8 @@
       </category>
       <command
             name="Associate"
-            category="net.sourceforge.eclipseccase.category"
             description="Associates the selected project with the clearcase plugin"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.associate">
       </command>
       <keyBinding
@@ -445,8 +445,8 @@
       </keyBinding>
       <command
             name="Dissociate"
-            category="net.sourceforge.eclipseccase.category"
             description="Dissociates the selected project from the clearcase plugin"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
       </command>
       <keyBinding
@@ -457,8 +457,8 @@
       </keyBinding>
       <command
             name="Uncheckout"
-            category="net.sourceforge.eclipseccase.category"
             description="Cancels the checkout for the selected resources"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
       </command>
       <keyBinding
@@ -469,8 +469,8 @@
       </keyBinding>
       <command
             name="Checkin"
-            category="net.sourceforge.eclipseccase.category"
             description="Checks in th selected resources"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkin">
       </command>
       <keyBinding
@@ -481,8 +481,8 @@
       </keyBinding>
       <command
             name="Refresh"
-            category="net.sourceforge.eclipseccase.category"
             description="Refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refresh">
       </command>
       <keyBinding
@@ -493,8 +493,8 @@
       </keyBinding>
       <command
             name="Refresh Quick"
-            category="net.sourceforge.eclipseccase.category"
             description="Quickly refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refreshquick">
       </command>
       <keyBinding
@@ -505,8 +505,8 @@
       </keyBinding>
       <command
             name="Checkout"
-            category="net.sourceforge.eclipseccase.category"
             description="Checks out the selected resources"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkout">
       </command>
       <keyBinding
@@ -517,8 +517,8 @@
       </keyBinding>
       <command
             name="Update"
-            category="net.sourceforge.eclipseccase.category"
             description="Updates the seletced resources (Static view only)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
       <keyBinding
@@ -529,8 +529,8 @@
       </keyBinding>
       <command
             name="Add"
-            category="net.sourceforge.eclipseccase.category"
             description="Adds the selected resources to clearcase"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.add">
       </command>
       <keyBinding
@@ -541,8 +541,8 @@
       </keyBinding>
       <command
             name="Delete"
-            category="net.sourceforge.eclipseccase.category"
             description="Removes the selected resources from clearcase"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.delete">
       </command>
       <keyBinding
@@ -553,8 +553,8 @@
       </keyBinding>
       <command
             name="Version Tree"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase version tree browser on the slected resources (external tool)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
       <keyBinding
@@ -565,8 +565,8 @@
       </keyBinding>
       <command
             name="Update (External)"
-            category="net.sourceforge.eclipseccase.category"
             description="Updates the selected resources (external tool)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
       </command>
       <keyBinding
@@ -577,8 +577,8 @@
       </keyBinding>
       <command
             name="History"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase hostory browser on the selected resources (external tool)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
       <keyBinding
@@ -589,8 +589,8 @@
       </keyBinding>
       <command
             name="Compare with predecessor"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
       </command>
       <keyBinding
@@ -613,8 +613,8 @@
       </keyBinding-->
       <command
             name="Find Checkouts"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase find checkouts tool on the selected resource (external tool)"
+            category="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
       </command>
       <keyBinding
@@ -645,8 +645,8 @@
             lightweight="true"
             adaptable="true"
             label="ClearCase"
-            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
             state="false"
+            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
             id="net.sourceforge.eclipseccase.ui.decorator">
          <enablement>
             <objectClass
@@ -668,8 +668,8 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
             name="Clearcase Element Properties"
             class="net.sourceforge.eclipseccase.ElementPropertyPage"
             id="net.sourceforge.eclipseccase.elementPropertyPage">
