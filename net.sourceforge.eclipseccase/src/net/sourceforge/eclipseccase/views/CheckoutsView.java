@@ -1,7 +1,8 @@
 package net.sourceforge.eclipseccase.views;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.StateCache;
@@ -29,6 +30,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.team.internal.ui.UIConstants;
+import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -38,7 +41,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 {
 	private TableViewer viewer;
 	private Action refreshAction;
-	private Collection checkouts = new HashSet();
+	private Collection checkouts = new TreeSet(new Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			return o1.toString().compareTo(o2.toString());
+		}
+	});
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -50,10 +59,11 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		}
 		public Object[] getElements(Object parent)
 		{
-			return (IResource[]) checkouts.toArray(new IResource[checkouts.size()]);
+			return (IResource[]) checkouts.toArray(
+				new IResource[checkouts.size()]);
 		}
 	}
-	
+
 	class ViewLabelProvider
 		extends LabelProvider
 		implements ITableLabelProvider
@@ -87,7 +97,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	public void dispose()
 	{
 		StateCacheFactory.getInstance().removeStateChangeListerer(this);
-		super.dispose();		
+		super.dispose();
 	}
 
 	/**
@@ -123,27 +133,31 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		viewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
-	
-	private void contributeToActionBars() {
+
+	private void contributeToActionBars()
+	{
 		IActionBars bars = getViewSite().getActionBars();
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager) {
+	private void fillLocalToolBar(IToolBarManager manager)
+	{
 		manager.add(refreshAction);
 	}
 
-	private void makeActions() {
-		refreshAction = new Action() {
-			public void run() {
+	private void makeActions()
+	{
+		refreshAction = new Action()
+		{
+			public void run()
+			{
 				findCheckouts();
 			}
 		};
 		refreshAction.setText("Refresh");
 		refreshAction.setToolTipText("Refreshes the list of checked out files");
-		refreshAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
+		refreshAction.setImageDescriptor(
+			TeamImages.getImageDescriptor(UIConstants.IMG_REFRESH));
 	}
 
 	private void showMessage(String message)
@@ -153,7 +167,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			"Checkouts View",
 			message);
 	}
-	
+
 	private void showError(String message)
 	{
 		MessageDialog.openError(
@@ -169,17 +183,20 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	{
 		viewer.getControl().setFocus();
 	}
-	
+
 	private void findCheckouts()
 	{
 		try
 		{
-			ClearcasePlugin.getWorkspace().getRoot().accept(new IResourceVisitor()
+			ClearcasePlugin
+				.getWorkspace()
+				.getRoot()
+				.accept(new IResourceVisitor()
 			{
-				public boolean visit(IResource resource)
-					throws CoreException
+				public boolean visit(IResource resource) throws CoreException
 				{
-					StateCache cache = StateCacheFactory.getInstance().get(resource);
+					StateCache cache =
+						StateCacheFactory.getInstance().get(resource);
 					if (cache.hasRemote())
 					{
 						if (cache.isCheckedOut())

@@ -135,15 +135,12 @@
 	
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="Clearcase"
-            id="clearcase">
-      </category>
-      <view
+     <view
             name="Clearcase Checkouts"
-            category="clearcase"
+            category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
-            id="net.sourceforge.eclipseccase.views.CheckoutsView">
+            id="net.sourceforge.eclipseccase.views.CheckoutsView"
+            icon="../org.eclipse.team.ui/icons/full/clcl16/contents.gif">
       </view>
    </extension>
    	

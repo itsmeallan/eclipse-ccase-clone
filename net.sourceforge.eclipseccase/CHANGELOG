@@ -6,7 +6,7 @@
 - Fixed a bug with refactoring
 - Fixed a bug with refreshing state on uncheckout
 - When doing a multi item action, sort resources with directories last so that modification of a directory does not abort modification of files within it.
-- Added a view for keeping track of all checked out files
+- Added a view for keeping track of all checked out files (Window->Show View->Other...->Team->Clearcase Checkouts)
 - Added quickfix resolution on markers to checkin/uncheckout checkedout files (doesn't allow multi select, should probably do a custom view instead)
 
 0.9.1
