@@ -2,3 +2,5 @@ features
 
 plugins
 full
+.externalToolBuilders
+logs
