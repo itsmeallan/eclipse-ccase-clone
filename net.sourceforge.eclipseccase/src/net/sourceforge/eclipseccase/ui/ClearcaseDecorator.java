@@ -85,7 +85,6 @@ public class ClearcaseDecorator
 						int parentSize = parentLabelQueue.size();
 						if (size == 0 && parentSize > 0)
 						{
-							System.out.println("Processing parent queue: " + parentSize);
 							IResource[] resources = new IResource[parentSize];
 							for (int i = 0; i < parentSize; i++)
 							{
