@@ -1,0 +1,13 @@
+
+1)	Refactoring ops should perform ccase ops when files need to be modified.
+2)	implement moveProject, delete* in ModifricationHandler - neccessary?
+3)	Add UI
+		a)	prompt for comment on checkin/checkout/etc, along with prefs to
+			turn on/off prompt
+		b)	UI for find checkouts, checkin all
+		c)	more of the UI needed to do everything clearcase inside of
+			eclipse (create view, etc)
+4)	Refactor code to cache state - like how example proiders do it.
+5)	Add static view support
+6)	Add cleartool usage for cross platform usage - Best way to do this might
+	be to run a single instance of cleartool and send commands/parse results

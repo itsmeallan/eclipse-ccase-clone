@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.eclipseccase"
+   name="Clearcase Plugin"
+   version="0.0.1"
+   provider-name="Matt Conway"
+   class="net.sourceforge.eclipseccase.ClearcasePlugin">
+
+   <runtime>
+      <library name="clearcase.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.team.ui"/>
+   </requires>
+
+
+   <extension
+         id="ClearcaseProvider"
+         name="Clearcase Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="net.sourceforge.eclipseccase.ClearcaseProvider">
+         </run>
+      </runtime>
+      <one-of-nature
+            id="org.eclipse.team.repository-provider">
+      </one-of-nature>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IProject"
+            id="net.sourceforge.eclipseccase.popups.Associate">
+         <action
+               label="Associate with clearcase"
+               class="net.sourceforge.eclipseccase.AssociateProjectAction"
+               menubarPath="team.main/group1"
+               enablesFor="1"
+               id="net.sourceforge.eclipseccase.AssociateProjectAction">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
+            id="net.sourceforge.eclipseccase.popups.BuiltIn">
+         <filter
+               name="projectNature"
+               value="net.sourceforge.eclipseccase.ClearcaseProvider">
+         </filter>
+         <action
+               label="Uncheckout"
+               tooltip="Uncheckout"
+               class="org.eclipse.team.ui.actions.UndoCheckOutAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.uncheckout">
+         </action>
+         <action
+               label="Checkin"
+               tooltip="Checkin"
+               class="org.eclipse.team.ui.actions.CheckInAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.checkin">
+         </action>
+         <action
+               label="Checkout"
+               tooltip="Checkout"
+               class="org.eclipse.team.ui.actions.CheckOutAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.checkout">
+         </action>
+         <action
+               label="Delete"
+               tooltip="Delete"
+               class="org.eclipse.team.ui.actions.DeleteAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.delete">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

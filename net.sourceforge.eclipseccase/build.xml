@@ -1,0 +1,70 @@
+<project name="clearcase" default="all">
+
+	<property 	name="debug" value="true"/>
+	<property	name="jdk.home" value="${java.home}/.."/>
+	
+	<target name="all" depends="init,dist">
+		<echo message="Build complete"/>		
+	</target>
+
+	<target name="init">
+		<mkdir dir="bin"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="bin" quiet="true"/>
+		<echo message="Clean complete"/>		
+	</target>
+			
+	<target name="dist" depends="init,jar,jni_dll">
+		<echo message="Generating distribution"/>
+		<zip zipfile="bin/eclipse-clearcase.zip" basedir="bin">
+			<include name="clearcase.jar"/>
+			<include name="plugin.xml"/>
+			<include name="ccjni_dll"/>
+		</zip>
+	</target>
+
+	<target name="jar" depends="init,java_compile">
+		<echo message="Generating plugin jar"/>
+		<jar jarfile="bin/clearcase.jar" basedir="bin" includes="**/*.class"/>
+	</target>
+
+	<target name="java_compile" depends="init">
+		<echo message="Compiling java src"/>
+		<available	classname="org.eclipse.core.launcher.Main"
+					property="build.compiler"
+					value="org.eclipse.pde.internal.core.JDTCompilerAdapter"/>
+		<javac srcdir="src" destdir="bin" debug="${debug}"/>
+	</target>
+	
+	<target name="jni_headers" depends="init,java_compile">
+		<echo message="Generating jni headers"/>
+		<!--
+		<javah destdir="bin" classpath="bin" class="net.sourceforge.eclipseccase.jni.Clearcase"/>
+		-->
+		<java 	classname="com.sun.tools.javah.Main"
+				classpath="${jdk.home}/lib/tools.jar"
+				fork="true"
+				dir="bin">
+			<arg value="net.sourceforge.eclipseccase.jni.Clearcase"/>
+		</java>
+	</target>
+	
+	<target name="jni_dll" depends="init,jni_headers">
+		<echo message="Compiling jni dll"/>
+		<cc debug="${debug}" link="shared" outfile="bin/ccjni.dll">
+			<compiler name="msvc">
+				<compilerarg value="-GX"/>
+			</compiler>
+			<linker name="msvc"/>
+			<includepath location="${jdk.home}/include"/>
+			<includepath location="${jdk.home}/include/win32"/>
+			<includepath location="bin"/>
+			<fileset dir="src" includes="*.cpp"/>
+		</cc>
+	</target>
+	
+	<taskdef name="cc" classname="net.sf.antcontrib.cpptasks.CCTask" classpath="lib/cpptasks.jar"/>
+
+</project>
