@@ -104,7 +104,8 @@ public class ClearDlgHelper {
         ClearDlg clearDlg = new ClearDlg((String[]) command
                 .toArray(new String[command.size()]));
         try {
-            if (0 != clearDlg.execute())
+            int success = clearDlg.execute();
+            if (0 != success || success != resources.length)
                     throw new TeamException("Execution of cleardlg "
                             + operation + " failed (process returned: "
                             + clearDlg.getExitValue() + ")!");

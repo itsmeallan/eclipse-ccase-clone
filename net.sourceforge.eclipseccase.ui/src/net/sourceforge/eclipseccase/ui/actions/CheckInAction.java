@@ -58,7 +58,7 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                             if (ClearcasePlugin.isUseClearDlg()) {
                                 monitor
                                         .subTask("Executing ClearCase user interface...");
-                                ClearDlgHelper.add(resources);
+                                ClearDlgHelper.checkin(resources);
                             } else {
                                 // Sort resources with directories last so that
                                 // the
