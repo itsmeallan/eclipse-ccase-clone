@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin id="net.sourceforge.eclipseccase" name="Clearcase Plugin"
-	version="0.9.1" provider-name="Matt Conway"
+	version="0.9.2" provider-name="Matt Conway"
 	class="net.sourceforge.eclipseccase.ClearcasePlugin">
 	
 	<runtime>
@@ -22,7 +22,7 @@
 			class="net.sourceforge.eclipseccase.ClearcaseProvider">
 		</repository>
 	</extension>
-	
+
 	<extension point="org.eclipse.ui.preferencePages">
 		<page name="Clearcase" category="org.eclipse.team.ui.TeamPreferences"
 			class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
@@ -34,13 +34,18 @@
 		</page>
 	</extension>
 	
-	<extension point="org.eclipse.ui.decorators">
-		<decorator objectClass="org.eclipse.core.resources.IResource"
-			adaptable="true" label="Clearcase Decorator" state="true"
-			class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
-			id="net.sourceforge.eclipseccase.ui.decorator">
-		</decorator>
-	</extension>
+	<extension point="org.eclipse.ui.decorators"> 
+	        <decorator
+	                 id="net.sourceforge.eclipseccase.ui.decorator" 
+	                 label="Clearcase Decorator"
+	                 state="false" 
+	                 class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator" 
+	                 lightweight="true">
+	                <enablement>
+	                         <objectClass name="org.eclipse.core.resources.IResource"/> 
+	          		</enablement> 
+	         </decorator >
+	</extension> 
 	
 	<extension point="org.eclipse.ui.popupMenus">
 		<objectContribution objectClass="org.eclipse.core.resources.IProject"
@@ -52,7 +57,7 @@
 			</action>
 		</objectContribution>
 	</extension>
-	
+
 	<extension point="org.eclipse.ui.popupMenus">
 		<objectContribution objectClass="org.eclipse.core.resources.IResource"
 			adaptable="true" id="net.sourceforge.eclipseccase.popups.BuiltIn">
@@ -127,5 +132,20 @@
 			</action>
 		</objectContribution>
 	</extension>
+	
+	<extension
+      id="checkedout"
+      point="org.eclipse.core.resources.markers"
+      name="Checkedout marker">
+      <super type="org.eclipse.core.resources.taskmarker"/>
+      <persistent value="true" />
+   </extension>
+   
+	<extension point="org.eclipse.ui.markerResolution"> 
+	   <markerResolutionGenerator 
+	      class="net.sourceforge.eclipseccase.ui.CheckedoutMarkerResolutionGenerator"
+	      markerType="net.sourceforge.eclipseccase.checkedout"> 
+	   </markerResolutionGenerator> 
+	</extension> 
 	
 </plugin>

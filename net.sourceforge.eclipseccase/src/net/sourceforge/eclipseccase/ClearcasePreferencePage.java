@@ -64,6 +64,13 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePage
 
 		addField(
 			new BooleanFieldEditor(
+				IPreferenceConstants.CHECKEDOUT_MARKER,
+				"Show a task item for checked out files",
+				getFieldEditorParent())
+		);
+
+		addField(
+			new BooleanFieldEditor(
 				IPreferenceConstants.REFACTOR_ADDS_DIR,
 				"Automatically add dest dir to clearcase when refactoring",
 				getFieldEditorParent())

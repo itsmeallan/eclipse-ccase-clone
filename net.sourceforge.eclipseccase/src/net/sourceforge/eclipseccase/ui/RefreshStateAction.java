@@ -49,11 +49,6 @@ public class RefreshStateAction extends TeamAction
 				}
 			}
 		}, "Refreshing state", TeamAction.PROGRESS_DIALOG);
-		IResource[] resources = getSelectedResources();
-		for (int i = 0; i < resources.length; i++)
-		{
-			ClearcaseDecorator.refresh(resources[i]);
-		}
 	}
 
 	protected boolean isEnabled()

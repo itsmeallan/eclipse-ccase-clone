@@ -30,6 +30,7 @@ public class ClearcaseProvider
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
+
 	private static final Status OK_STATUS =
 		new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 
@@ -514,6 +515,7 @@ public class ClearcaseProvider
 				StateCacheFactory.getInstance().remove(source);
 				changeState(source.getParent(), IResource.DEPTH_ZERO, null);
 				changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
+				changeClearcaseState(destination, IResource.DEPTH_ZERO, null);
 			}
 			return result;
 		}
@@ -571,8 +573,8 @@ public class ClearcaseProvider
 	{
 		try
 		{
-			changeClearcaseState(resource, depth, monitor);
 			resource.refreshLocal(depth, monitor);
+			changeClearcaseState(resource, depth, monitor);
 		}
 		catch (CoreException ex)
 		{

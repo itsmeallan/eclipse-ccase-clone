@@ -1,11 +1,12 @@
 package net.sourceforge.eclipseccase;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
+import net.sourceforge.eclipseccase.ui.MarkerManager;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -26,7 +27,7 @@ public class StateCache implements Serializable
 	private boolean isHijacked = false;
 	private String version = "";
 
-	public StateCache(IResource resource)
+	StateCache(IResource resource)
 	{
 		this.resource = resource;
 		this.osPath = resource.getLocation().toOSString();
@@ -34,12 +35,10 @@ public class StateCache implements Serializable
 
 	private void createResource()
 	{
-		File file = new File(osPath);
 		IPath path = new Path(osPath);
-		if (file.isDirectory())
+		resource = ClearcasePlugin.getWorkspace().getRoot().getFileForLocation(path);
+		if (resource == null || ! resource.exists())
 			resource = ClearcasePlugin.getWorkspace().getRoot().getContainerForLocation(path);
-		else
-			resource = ClearcasePlugin.getWorkspace().getRoot().getFileForLocation(path);
 	}
 	
 	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException
@@ -81,6 +80,7 @@ public class StateCache implements Serializable
 			version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
 		uninitialized = false;
 		ClearcaseDecorator.labelResource(resource);
+		MarkerManager.getInstance().stateChanged(this);
 	}
 	
 	/**

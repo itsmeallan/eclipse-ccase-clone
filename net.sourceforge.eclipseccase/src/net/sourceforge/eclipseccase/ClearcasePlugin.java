@@ -131,6 +131,11 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
 	}
 
+	public static boolean isCheckedoutMarker()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKEDOUT_MARKER);
+	}
+
 	public static boolean isRefactorAddsDir()
 	{
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
@@ -173,7 +178,8 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public void shutdown() throws CoreException
 	{
 		super.shutdown();
-		clearcaseImpl.destroy();
+		if (clearcaseImpl != null)
+			clearcaseImpl.destroy();
 	}
 
 }

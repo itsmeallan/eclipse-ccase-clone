@@ -1,8 +1,12 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -30,6 +34,12 @@ public class UndoCheckOutAction extends TeamAction
 				{
 					IResource[] resources = getSelectedResources();
 					monitor.beginTask("Undoing checkout...", resources.length);
+					
+					// Sort resources with directories last so that the modification of a
+					// directory doesn't abort the modification of files within it.
+					List resList = Arrays.asList(resources);
+					Collections.sort(resList, new DirectoryLastComparator());
+					
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];

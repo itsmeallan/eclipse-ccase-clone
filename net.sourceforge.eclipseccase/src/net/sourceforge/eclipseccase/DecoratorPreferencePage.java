@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase;
 
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 import net.sourceforge.eclipseccase.ui.SpacerFieldEditor;
+
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
