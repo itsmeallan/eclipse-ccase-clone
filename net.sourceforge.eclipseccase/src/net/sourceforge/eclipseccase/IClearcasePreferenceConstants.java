@@ -43,7 +43,7 @@ public interface IClearcasePreferenceConstants
 
     /** ClearCase preference */
     String COMMENT_ADD_NEVER_ON_AUTO = ClearcasePlugin.PLUGIN_ID
-            + ".comment.add"; //$NON-NLS-1$
+            + ".comment.add.neverOnAuto"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_CHECKIN = ClearcasePlugin.PLUGIN_ID
