@@ -133,19 +133,18 @@
 		</objectContribution>
 	</extension>
 	
-	<extension
-      id="checkedout"
-      point="org.eclipse.core.resources.markers"
-      name="Checkedout marker">
-      <super type="org.eclipse.core.resources.taskmarker"/>
-      <persistent value="true" />
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Clearcase"
+            id="clearcase">
+      </category>
+      <view
+            name="Clearcase Checkouts"
+            category="clearcase"
+            class="net.sourceforge.eclipseccase.views.CheckoutsView"
+            id="net.sourceforge.eclipseccase.views.CheckoutsView">
+      </view>
    </extension>
-   
-	<extension point="org.eclipse.ui.markerResolution"> 
-	   <markerResolutionGenerator 
-	      class="net.sourceforge.eclipseccase.ui.CheckedoutMarkerResolutionGenerator"
-	      markerType="net.sourceforge.eclipseccase.checkedout"> 
-	   </markerResolutionGenerator> 
-	</extension> 
-	
+   	
 </plugin>

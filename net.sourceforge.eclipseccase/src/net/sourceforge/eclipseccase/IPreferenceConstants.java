@@ -7,7 +7,6 @@ public interface IPreferenceConstants
 	public static final String CHECKIN_COMMENT = "checkinComment";
 	public static final String CHECKOUT_COMMENT = "checkoutComment";
 	public static final String CHECKOUT_ON_EDIT = "checkoutOnEdit";
-	public static final String CHECKEDOUT_MARKER = "checkedoutMarker";
 	public static final String PERSIST_STATE = "persistState";
 	public static final String REFACTOR_ADDS_DIR = "refactorAddsDir";
 	public static final String RESERVED_CHECKOUT = "reservedCheckouts";

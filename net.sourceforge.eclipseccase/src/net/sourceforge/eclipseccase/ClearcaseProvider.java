@@ -26,7 +26,9 @@ public class ClearcaseProvider
 	private IMoveDeleteHook moveHandler = new MoveHandler(this);
 	private IFileModificationValidator modificationValidator =
 		new ModificationHandler(this);
+
 	private String comment = "";
+	private String lastComment = "";
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
@@ -150,7 +152,7 @@ public class ClearcaseProvider
 		}
 		finally
 		{
-			comment = "";
+			setComment("");
 		}
 	}
 
@@ -213,7 +215,7 @@ public class ClearcaseProvider
 		}
 		finally
 		{
-			comment = "";
+			setComment("");
 		}
 	}
 
@@ -295,7 +297,7 @@ public class ClearcaseProvider
 		}
 		finally
 		{
-			comment = "";
+			setComment("");
 		}
 	}
 
@@ -426,7 +428,7 @@ public class ClearcaseProvider
 		}
 		finally
 		{
-			comment = "";
+			setComment("");
 		}
 	}
 
@@ -521,7 +523,7 @@ public class ClearcaseProvider
 		}
 		finally
 		{
-			comment = "";
+			setComment("");
 		}
 	}
 
@@ -637,11 +639,23 @@ public class ClearcaseProvider
 	}
 
 	/**
+	 * Gets the last comment used.
+	 * @return Returns a String
+	 */
+	public String getLastComment()
+	{
+		return lastComment;
+	}
+
+	/**
 	 * Sets the comment.
 	 * @param comment The comment to set
 	 */
 	public void setComment(String comment)
 	{
+		// Only set the last comment if we aren't nulling out
+		if (comment.trim().length() > 0 && this.comment.trim().length() > 0)
+			this.lastComment = this.comment;
 		this.comment = comment;
 	}
 
