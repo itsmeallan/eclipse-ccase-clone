@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 
 public class AddToClearcaseAction extends ClearcaseWorkspaceAction
 {
@@ -64,8 +63,8 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction
 
     private static final String DEBUG_ID = "AddToClearCaseAction";
 
-    /**
-     * @see TeamAction#isEnabled()
+    /* (non-Javadoc)
+     * @see org.eclipse.team.internal.ui.actions.TeamAction#isEnabled()
      */
     protected boolean isEnabled() throws TeamException
     {

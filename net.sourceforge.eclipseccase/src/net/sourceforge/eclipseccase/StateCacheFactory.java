@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,7 +40,7 @@ public class StateCacheFactory implements ISaveParticipant,
 
     HashMap cacheMap = new HashMap();
 
-    private List listeners = Collections.synchronizedList(new LinkedList());
+    private List listeners = new ArrayList();
 
     private StateCacheFactory()
     {}
@@ -53,20 +52,43 @@ public class StateCacheFactory implements ISaveParticipant,
 
     public void addStateChangeListerer(StateChangeListener listener)
     {
-        listeners.add(listener);
+        if (null != listener)
+        {
+            synchronized (listeners)
+            {
+                if (!listeners.contains(listener)) listeners.add(listener);
+            }
+        }
     }
 
     public boolean removeStateChangeListerer(StateChangeListener listener)
     {
-        return listeners.remove(listener);
+        if (null != listener)
+        {
+            synchronized (listeners)
+            {
+                return listeners.remove(listener);
+            }
+        }
+        return false;
     }
 
     public void fireStateChanged(StateCache stateCache)
     {
-        for (Iterator iter = listeners.iterator(); iter.hasNext();)
+        if (null == stateCache || listeners.isEmpty()) return;
+
+        Object[] currentListeners = null;
+        synchronized (listeners)
         {
-            StateChangeListener listener = (StateChangeListener) iter.next();
-            listener.stateChanged(stateCache);
+            currentListeners = listeners.toArray();
+        }
+        if (null != currentListeners)
+        {
+            for (int i = 0; i < currentListeners.length; i++)
+            {
+                ((StateChangeListener) currentListeners[i])
+                        .stateChanged(stateCache);
+            }
         }
     }
 
@@ -98,7 +120,7 @@ public class StateCacheFactory implements ISaveParticipant,
                 throw e;
             }
 
-            cache.updateAsync();
+            cache.updateAsync(true);
             cacheMap.put(resource, cache);
         }
         else if (cache.isUninitialized())
@@ -204,7 +226,7 @@ public class StateCacheFactory implements ISaveParticipant,
                 catch (IOException ex)
                 {
                     throw new CoreException(new Status(Status.WARNING,
-                            ClearcasePlugin.ID, TeamException.IO_FAILED,
+                            ClearcasePlugin.PLUGIN_ID, TeamException.IO_FAILED,
                             "Could not persist state cache", ex));
                 }
                 break;
@@ -215,7 +237,7 @@ public class StateCacheFactory implements ISaveParticipant,
         }
     }
 
-    public void load(ISavedState context)
+    void load(ISavedState context)
     {
         try
         {

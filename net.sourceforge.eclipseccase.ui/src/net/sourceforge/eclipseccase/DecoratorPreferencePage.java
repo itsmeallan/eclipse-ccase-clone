@@ -2,6 +2,8 @@
 package net.sourceforge.eclipseccase;
 
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
+import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ui.IClearcaseUIPreferenceConstants;
 import net.sourceforge.eclipseccase.ui.SpacerFieldEditor;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -26,7 +28,7 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePage
         super(FieldEditorPreferencePage.GRID);
 
         // Set the preference store for the preference page.
-        setPreferenceStore(new ClearcasePreferencePage.ClearcasePreferenceStore());
+        setPreferenceStore(ClearcaseUI.getInstance().getPreferenceStore());
     }
 
     /**
@@ -35,25 +37,25 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePage
     protected void createFieldEditors()
     {
         BooleanFieldEditor textViewDecoration = new BooleanFieldEditor(
-                IPreferenceConstants.TEXT_VIEW_DECORATION,
+                IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
                 "Enable text decoration of the viewname for projects",
                 getFieldEditorParent());
         addField(textViewDecoration);
 
         BooleanFieldEditor textVersionDecoration = new BooleanFieldEditor(
-                IPreferenceConstants.TEXT_VERSION_DECORATION,
+                IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION,
                 "Enable text decoration of the clearcase version for resources",
                 getFieldEditorParent());
         addField(textVersionDecoration);
 
         BooleanFieldEditor textDirtyDecoration = new BooleanFieldEditor(
-                IPreferenceConstants.TEXT_DIRTY_DECORATION,
+                IClearcaseUIPreferenceConstants.TEXT_DIRTY_DECORATION,
                 "Enable text decoration of the dirty state for resources",
                 getFieldEditorParent());
         addField(textDirtyDecoration);
 
         BooleanFieldEditor textNewDecoration = new BooleanFieldEditor(
-                IPreferenceConstants.TEXT_NEW_DECORATION,
+                IClearcaseUIPreferenceConstants.TEXT_NEW_DECORATION,
                 "Enable text decoration for new resources not in ClearCase.",
                 getFieldEditorParent());
         addField(textNewDecoration);
@@ -63,7 +65,7 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePage
         addField(spacer1);
 
         BooleanFieldEditor deepDecorations = new BooleanFieldEditor(
-                IPreferenceConstants.DEEP_DECORATIONS,
+                IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
                 "Compute deep state for dirty elements", getFieldEditorParent());
         addField(deepDecorations);
 

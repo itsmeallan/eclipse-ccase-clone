@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 
 public class UpdateAction extends ClearcaseWorkspaceAction
 {
@@ -44,8 +43,8 @@ public class UpdateAction extends ClearcaseWorkspaceAction
         executeInBackground(runnable, "Updating");
     }
 
-    /**
-     * @see TeamAction#isEnabled()
+    /* (non-Javadoc)
+     * @see org.eclipse.team.internal.ui.actions.TeamAction#isEnabled()
      */
     protected boolean isEnabled() throws TeamException
     {

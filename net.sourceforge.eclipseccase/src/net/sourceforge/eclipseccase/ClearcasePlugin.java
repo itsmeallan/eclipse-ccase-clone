@@ -1,3 +1,4 @@
+
 package net.sourceforge.eclipseccase;
 
 import java.io.BufferedInputStream;
@@ -36,6 +37,7 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
 
+import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -56,7 +58,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     private static ClearcasePlugin plugin;
 
-    public static final String ID = "net.sourceforge.eclipseccase.ClearcasePlugin";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipseccase";
 
     static final boolean isWindows = System.getProperty("os.name")
             .toLowerCase().indexOf("windows") != -1;
@@ -66,7 +68,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     /**
      * The constructor.
      */
-    public ClearcasePlugin() {
+    public ClearcasePlugin()
+    {
         super();
         plugin = this;
 
@@ -101,7 +104,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     {
         ILog log = ClearcasePlugin.getDefault().getLog();
         log
-                .log(new Status(severity, ClearcasePlugin.ID, severity,
+                .log(new Status(severity, ClearcasePlugin.PLUGIN_ID, severity,
                         message, ex));
     }
 
@@ -189,7 +192,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         catch (ClearcaseException e)
         {
             throw new CoreException(new Status(IStatus.ERROR,
-                    ClearcasePlugin.ID, TeamException.UNABLE,
+                    ClearcasePlugin.PLUGIN_ID, TeamException.UNABLE,
                     "Could not retrieve a valid clearcase engine", e));
         }
     }
@@ -228,13 +231,6 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         pref.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
         pref.setDefault(IPreferenceConstants.ESCAPE_COMMENTS, false);
         pref.setDefault(IPreferenceConstants.MULTILINE_COMMENTS, true);
-
-        // Decorator preferences
-        pref.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
-        pref.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
-        pref.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
-        pref.setDefault(IPreferenceConstants.TEXT_NEW_DECORATION, false);
-        pref.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
     }
 
     public static boolean isReservedCheckouts()
@@ -291,36 +287,6 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                 IPreferenceConstants.REFACTOR_ADDS_DIR);
     }
 
-    public static boolean isTextViewDecoration()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.TEXT_VIEW_DECORATION);
-    }
-
-    public static boolean isTextVersionDecoration()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.TEXT_VERSION_DECORATION);
-    }
-
-    public static boolean isTextDirtyDecoration()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.TEXT_DIRTY_DECORATION);
-    }
-
-    public static boolean isTextNewDecoration()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.TEXT_NEW_DECORATION);
-    }
-
-    public static boolean isDeepDecoration()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.DEEP_DECORATIONS);
-    }
-
     public static boolean isUseCleartool()
     {
         return getDefault().getPluginPreferences().getBoolean(
@@ -339,9 +305,14 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                 IPreferenceConstants.MULTILINE_COMMENTS);
     }
 
-    public void startup() throws CoreException
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
+     */
+    public void start(BundleContext context) throws Exception
     {
-        super.startup();
+        super.start(context);
 
         // Disables plugin if clearcase is not available (throws CoreEx)
         getClearcase();
@@ -360,8 +331,15 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         loadCommentHistory();
     }
 
-    public void shutdown() throws CoreException
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+     */
+    public void stop(BundleContext context) throws Exception
     {
+        super.stop(context);
+
         getWorkspace().removeResourceChangeListener(
                 StateCacheFactory.getInstance());
 
@@ -467,7 +445,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
             if (!renamed)
             {
                 throw new CoreException(
-                        new Status(Status.ERROR, ID, TeamException.UNABLE,
+                        new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
                                 MessageFormat
                                         .format("Could not rename file '{0}'!",
                                                 new Object[]{tempFile
@@ -477,7 +455,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         }
         catch (IOException e)
         {
-            throw new CoreException(new Status(Status.ERROR, ID,
+            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
                     TeamException.UNABLE, MessageFormat.format(
                             "Could not save file '{0}'!", new Object[]{histFile
                                     .getAbsolutePath()}), e));
@@ -523,7 +501,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         catch (IOException e)
         {
             getLog().log(
-                    new Status(Status.ERROR, ID, TeamException.UNABLE,
+                    new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
                             "Error while reading config file: "
                                     + e.getLocalizedMessage(), e));
         }
@@ -584,7 +562,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         }
         catch (Exception e)
         {
-            throw new CoreException(new Status(Status.ERROR, ID,
+            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
                     TeamException.UNABLE, "Error reading config file!", e));
         }
     }

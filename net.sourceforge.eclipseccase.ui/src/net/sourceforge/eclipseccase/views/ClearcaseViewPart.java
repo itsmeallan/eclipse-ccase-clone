@@ -28,10 +28,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.progress.IElementCollector;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
+import org.eclipse.ui.views.navigator.ResourceSorter;
 
 /**
  * TODO Provide description for ClearcaseView.
@@ -66,7 +68,31 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
         viewer.setContentProvider(getContentProvider());
         StateCacheFactory.getInstance().addStateChangeListerer(this);
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.views.navigator.ResourceNavigator#initLabelProvider(org.eclipse.jface.viewers.TreeViewer)
+     */
+    protected void initLabelProvider(TreeViewer viewer)
+    {
+		viewer.setLabelProvider(
+				new DecoratingLabelProvider(
+					new ClearcaseViewLabelProvider(),
+					getPlugin().getWorkbench().getDecoratorManager().getLabelDecorator()));
+    }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.views.navigator.ResourceNavigator#setSorter(org.eclipse.ui.views.navigator.ResourceSorter)
+     */
+    public void setSorter(ResourceSorter sorter)
+    {
+        super.setSorter(new ResourceSorter(sorter.getCriteria())
+        {
+            protected int compareNames(IResource resource1, IResource resource2)
+            {
+                return collator.compare(resource1.getFullPath().toString(), resource2.getFullPath().toString());
+            }
+        });
+    }
     /*
      * (non-Javadoc)
      * 
@@ -174,7 +200,6 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             monitor.done();
         }
     }
-
 
     /*
      * (non-Javadoc)
@@ -320,11 +345,15 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             {
                 public void run()
                 {
-                    // we remove in every case
-                    getViewer().remove(resource);
+                    if (null != getViewer() && null != getViewer().getControl()
+                            && !getViewer().getControl().isDisposed())
+                    {
+                        // we remove in every case
+                        getViewer().remove(resource);
 
-                    // only add if desired
-                    if (shouldAdd) getViewer().add(getRoot(), resource);
+                        // only add if desired
+                        if (shouldAdd) getViewer().add(getRoot(), resource);
+                    }
                 }
             });
         }
@@ -338,22 +367,26 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * @return <code>true</code> if the state change should add the resource
      */
     protected abstract boolean shouldAdd(StateCache stateCache);
-    
-    protected static final CoreException IS_AFFECTED_EX = new CoreException(Status.CANCEL_STATUS);
-    
-    /* (non-Javadoc)
+
+    protected static final CoreException IS_AFFECTED_EX = new CoreException(
+            Status.CANCEL_STATUS);
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
      */
     public void resourceChanged(IResourceChangeEvent event)
     {
         IResourceDelta rootDelta = event.getDelta();
-        if(null != rootDelta)
+        if (null != rootDelta)
         {
             try
             {
                 rootDelta.accept(new IResourceDeltaVisitor()
                 {
-                    public boolean visit(IResourceDelta delta) throws CoreException
+                    public boolean visit(IResourceDelta delta)
+                            throws CoreException
                     {
                         switch (delta.getKind())
                         {
@@ -363,14 +396,16 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
 
                             default:
                                 IResource resource = delta.getResource();
-                            	if(null != resource)
-                            	{
-                            	    // filter non clear case projects
-                            	    if(resource.getType() == IResource.PROJECT)
-                            	        return null != ClearcaseProvider.getClearcaseProvider(delta.getResource());
-                            	    
-                            	    return true;
-                            	}
+                                if (null != resource)
+                                {
+                                    // filter out non clear case projects
+                                    if (resource.getType() == IResource.PROJECT)
+                                            return null != ClearcaseProvider
+                                                    .getClearcaseProvider(delta
+                                                            .getResource());
+
+                                    return true;
+                                }
                                 return false;
                         }
                     }
@@ -379,8 +414,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             catch (CoreException ex)
             {
                 // refresh on exception
-                if(IS_AFFECTED_EX == ex)
-                    refresh();
+                if (IS_AFFECTED_EX == ex) refresh();
             }
         }
     }

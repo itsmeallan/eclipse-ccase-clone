@@ -8,7 +8,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
@@ -43,7 +42,7 @@ public class ModificationHandler implements IFileModificationValidator
             {
                 StateCache cache = StateCacheFactory.getInstance().get(files[i]);
                 if (cache.isUninitialized())
-                    cache.update(false);
+                    cache.doUpdate();
                 if (cache.hasRemote() && ! cache.isCheckedOut() && files[i].isReadOnly())
                     needCheckout.add(files[i]);
             }
@@ -72,21 +71,21 @@ public class ModificationHandler implements IFileModificationValidator
             {
                 provider.checkout((IResource[]) needCheckout.toArray(new IResource[needCheckout.size()]),
                                  IResource.DEPTH_INFINITE, null);
-                // Refresh resource state so that editor context menus/completion/etc know that file is now writable
-                for (Iterator iter = needCheckout.iterator(); iter.hasNext();)
-                {
-                    IResource element = (IResource) iter.next();
-                    element.refreshLocal(IResource.DEPTH_ZERO, null);
-                }
+				//// Refresh resource state so that editor context menus/completion/etc know that file is now writable
+				//for (Iterator iter = needCheckout.iterator(); iter.hasNext();)
+				//{
+				//    IResource element = (IResource) iter.next();
+				//    element.refreshLocal(IResource.DEPTH_ZERO, null);
+				//}
             }
             catch(TeamException ex)
             {
                 result = ex.getStatus();
             }
-            catch (CoreException ex)
-            {
-                result = new Status(IStatus.WARNING, ClearcaseProvider.ID, TeamException.IO_FAILED, "Failed to refresh resource state: " + ex.getLocalizedMessage(), ex);
-            }
+//            catch (CoreException ex)
+//            {
+//                result = new Status(IStatus.WARNING, ClearcaseProvider.PLUGIN_ID, TeamException.IO_FAILED, "Failed to refresh resource state: " + ex.getLocalizedMessage(), ex);
+//            }
         }
 
         return result;          

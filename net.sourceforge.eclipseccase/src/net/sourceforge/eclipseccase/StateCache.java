@@ -25,8 +25,6 @@ public class StateCache implements Serializable
 
     private String workspaceResourcePath;
 
-    public static final String STATE_CHANGE_MARKER_TYPE = "net.sourceforge.eclipseccase.statechangedmarker";
-
     private transient IResource resource;
 
     private boolean uninitialized = true;
@@ -61,28 +59,23 @@ public class StateCache implements Serializable
         }
     }
 
-    public synchronized void updateAsync()
-    {
-        updateAsync(false);
-    }
-
     private static final String DEBUG_ID = "StateCache";
 
     /**
-     * @param quick
+     * @param hidden
      */
-    public synchronized void updateAsync(boolean quick)
+    public synchronized void updateAsync(boolean hidden)
     {
-        if (!quick)
+        if (!hidden)
         {
             uninitialized = true;
             ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this);
         }
-        RefreshStateJob job = new RefreshStateJob(this, quick);
+        RefreshStateJob job = new RefreshStateJob(this, hidden);
         job.schedule();
     }
 
-    private synchronized void doUpdate()
+    synchronized void doUpdate()
     {
         boolean changed = uninitialized;
 
@@ -152,27 +145,6 @@ public class StateCache implements Serializable
     }
 
     /**
-     * Updates the cache. If quick is false, an update is always performed. If
-     * quick is true, and update is only performed if the file's readonly status
-     * differs from what it should be according to the state.
-     */
-    public void update(boolean quick)
-    {
-        if (quick && !uninitialized)
-        {
-            if (resource.getType() != IResource.FILE
-                    || (resource.isReadOnly() == (isCheckedOut || !hasRemote || isHijacked)))
-            {
-                doUpdate();
-            }
-        }
-        else
-        {
-            doUpdate();
-        }
-    }
-
-    /**
      * Gets the hasRemote.
      * 
      * @return Returns a boolean
@@ -201,7 +173,17 @@ public class StateCache implements Serializable
     {
         if (osPath == null) return false;
 
-        return ClearcasePlugin.getEngine().isDifferent(osPath);
+        try
+        {
+            return ClearcasePlugin.getEngine().isDifferent(osPath);
+        }
+        catch (RuntimeException ex)
+        {
+            ClearcasePlugin.log(IStatus.ERROR,
+                    "Could not determine element dirty state of " + osPath
+                            + ": " + ex.getCause().getMessage(), ex);
+            return false;
+        }
     }
 
     /**
@@ -370,22 +352,21 @@ public class StateCache implements Serializable
     {
         private StateCache cache;
 
-        private boolean quick;
-
         /**
          * Creates a new instance.
          * 
          * @param name
          */
-        public RefreshStateJob(StateCache cache, boolean quick)
+        public RefreshStateJob(StateCache cache, boolean hidden)
         {
-            super("Refreshing ClearCase element state of " + cache.getResource());
+            super("Refreshing element state of "
+                    + cache.getResource().getFullPath());
             this.cache = cache;
-            this.quick = quick;
-            setSystem(true);
-            
+            setSystem(hidden);
+
             // lock as marker change (don't need to lock complete resource)
-            setRule(ResourcesPlugin.getWorkspace().getRuleFactory().markerRule(cache.getResource()));
+            setRule(ResourcesPlugin.getWorkspace().getRuleFactory().markerRule(
+                    cache.getResource()));
 
             setPriority(DECORATE);
         }
@@ -398,7 +379,7 @@ public class StateCache implements Serializable
         public IStatus runInWorkspace(IProgressMonitor monitor)
                 throws CoreException
         {
-            cache.update(quick);
+            cache.doUpdate();
             return Status.OK_STATUS;
         }
     }

@@ -119,7 +119,7 @@ public class ClearcaseDecorator extends LabelProvider implements
             decoration.addOverlay(ClearcaseImages
                     .getImageDescriptor(ClearcaseImages.IMG_NEW_OVR));
 
-            if (ClearcasePlugin.isTextNewDecoration())
+            if (ClearcaseUI.isTextNewDecoration())
                     decoration.addPrefix("*");
         }
         else
@@ -157,7 +157,7 @@ public class ClearcaseDecorator extends LabelProvider implements
             StringBuffer prefix = new StringBuffer();
             StringBuffer suffix = new StringBuffer();
 
-            if (ClearcasePlugin.isTextViewDecoration()
+            if (ClearcaseUI.isTextViewDecoration()
                     && resource.getType() == IResource.PROJECT)
             {
                 suffix.append(" [view: ");
@@ -165,7 +165,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                 suffix.append("]");
             }
 
-            if (ClearcasePlugin.isTextDirtyDecoration())
+            if (ClearcaseUI.isTextDirtyDecoration())
             {
                 if (dirty == DIRTY_STATE)
                 {
@@ -177,7 +177,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                 }
             }
 
-            if (ClearcasePlugin.isTextVersionDecoration())
+            if (ClearcaseUI.isTextVersionDecoration())
             {
                 suffix.append(" : ");
                 suffix.append(p.getVersion(resource));
@@ -198,7 +198,7 @@ public class ClearcaseDecorator extends LabelProvider implements
     {
         if (changedResources.length == 0) return;
 
-        boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
+        boolean deepDecoration = ClearcaseUI.isDeepDecoration();
 
         if (!deepDecoration)
         {
@@ -238,6 +238,8 @@ public class ClearcaseDecorator extends LabelProvider implements
             }
 
             // refresh also parents
+            changedElements.add(resource);
+            resource = resource.getParent();
             while (null != resource && changedElements.add(resource))
                 resource = resource.getParent();
         }
@@ -282,7 +284,7 @@ public class ClearcaseDecorator extends LabelProvider implements
         if (resource.getType() == IResource.FILE || !resource.exists()
                 || resource.getLocation() == null) return CLEAN_STATE;
 
-        if (!ClearcasePlugin.isDeepDecoration()) return CLEAN_STATE;
+        if (!ClearcaseUI.isDeepDecoration()) return CLEAN_STATE;
 
         try
         {

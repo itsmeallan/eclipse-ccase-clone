@@ -63,7 +63,6 @@ public class ElementPropertyPage extends PropertyPage
 		Composite composite = createDefaultComposite(parent);
 		IResource resource = (IResource) getElement();
 		StateCache cache = StateCacheFactory.getInstance().get(resource);		
-		cache.update(false);
 
 		if (cache.hasRemote())
 		{
@@ -141,7 +140,6 @@ public class ElementPropertyPage extends PropertyPage
 	protected void performRefresh()
 	{
 		StateCache cache = StateCacheFactory.getInstance().get((IResource) getElement());
-		cache.update(false);
 		if (versionLabelValue != null)
 			versionLabelValue.setText(cache.getVersion());
 		if (predecessorVersionValue != null)

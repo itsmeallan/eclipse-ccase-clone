@@ -15,12 +15,4 @@ public interface IPreferenceConstants
 	public static final String USE_CLEARTOOL = "useCleartool";
     public static final String ESCAPE_COMMENTS = "escapeComments";
     public static final String MULTILINE_COMMENTS = "multiLineComments";
-
-	/* For Decorator preference page */
-	public static final String TEXT_VERSION_DECORATION = "textVersionDecoration";
-	public static final String TEXT_VIEW_DECORATION = "textViewDecoration";
-	public static final String TEXT_DIRTY_DECORATION = "textDirtyDecoration";
-    public static final String TEXT_NEW_DECORATION = "textNewDecoration";
-	public static final String DEEP_DECORATIONS = "deepDecorations";
-
 }
