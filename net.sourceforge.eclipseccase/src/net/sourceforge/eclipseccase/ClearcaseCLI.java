@@ -92,8 +92,6 @@ public class ClearcaseCLI implements IClearcase
 	private Status readOutput()
 	{
 		int count = 0;
-		int iter = 0;
-		int retry = 10;
 		StringBuffer out = new StringBuffer();
 		StringBuffer err = new StringBuffer();
 		StringBuffer msg = new StringBuffer();
@@ -121,13 +119,6 @@ public class ClearcaseCLI implements IClearcase
 					status = true;
 					break;
 				}
-
-				if (iter > retry)
-				{
-					throw new RuntimeException("Timeout while waiting for command to complete");
-				}
-
-				iter++;
 			}
 		}
 		catch (IOException ex)
