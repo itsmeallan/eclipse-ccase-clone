@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 
@@ -50,6 +51,7 @@ import sun.misc.BASE64Encoder;
 public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 {
     //The shared instance.
+    public static final String UTF_8 = "UTF-8";
     private static ClearcasePlugin plugin;
     public static final String ID = "net.sourceforge.eclipseccase.ClearcasePlugin";
     static final boolean isWindows =
@@ -215,7 +217,10 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         pref.setDefault(IPreferenceConstants.PERSIST_STATE, true);
         pref.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
         pref.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
-        pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
+        
+        pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, false);
+        //pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
+        
         pref.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
         pref.setDefault(IPreferenceConstants.ADD_COMMENT, true);
         pref.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
@@ -383,6 +388,16 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     {
         synchronized (previousComments)
         {
+            // ensure the comment is UTF-8 encoded
+            try
+            {
+                comment = new String(comment.getBytes(UTF_8));
+            }
+            catch (UnsupportedEncodingException ex)
+            {
+                return;
+            }
+            
             // remove existing comment (avoid duplicates)
             if (previousComments.contains(comment))
                 previousComments.remove(comment);
@@ -404,7 +419,15 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      */
     public String[] getPreviousComments()
     {
-        return (String[]) previousComments.toArray(new String[previousComments.size()]);
+        String[] comments = (String[]) previousComments.toArray(new String[previousComments.size()]);
+        
+        // encode all strings to the platform default encoding
+        for (int i = 0; i < comments.length; i++)
+        {
+            comments[i] = new String(comments[i].getBytes());
+        }
+        
+        return comments;
     }
 
     private void saveCommentHistory() throws CoreException
@@ -467,7 +490,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
             for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++)
                 writer.printSimpleTag(
                     ELEMENT_COMMENT,
-                    BASE64_ENCODER.encode(((String) previousComments.get(i)).getBytes()));
+                    BASE64_ENCODER.encode(((String) previousComments.get(i)).getBytes(UTF_8)));
             writer.endTag(ELEMENT_COMMENT_HISTORY);
         }
     }
@@ -534,9 +557,9 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                                 {
                                     // the first child is expected to be a text node with our comment
                                     String comment = commentNode.getFirstChild().getNodeValue();
-                                    if (null != comment)
+                                    if (null != comment && ! previousComments.contains(comment))
                                         previousComments.addLast(
-                                            new String(BASE64_DECODER.decodeBuffer(comment)));
+                                            new String(BASE64_DECODER.decodeBuffer(comment), UTF_8));
                                 }
                             }
                         }
