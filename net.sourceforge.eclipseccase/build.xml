@@ -85,12 +85,10 @@
 
 	<target name="jni_headers" depends="init">
 		<echo message="Generating jni headers"/>
-		<exec 	executable="javah"
-				failonerror="true"
-				dir="${jni.build}">
-			<arg line="-classpath ${java.build}"/>
-			<arg value="net.sourceforge.eclipseccase.jni.Clearcase"/>
-		</exec>
+		<javah	destdir="${jni.build}"
+				class="net.sourceforge.eclipseccase.jni.Clearcase"
+				classpath="${java.build}"
+				verbose="true"/>
 	</target>
 	
 	<target name="jni_dll" depends="init,jni_headers">
