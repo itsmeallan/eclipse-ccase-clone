@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,13 +34,14 @@ public class ClearcaseProvider
 	private IFileModificationValidator modificationValidator =
 		new ModificationHandler(this);
 	private String comment = "";
-	private Boolean isSnapShot = null;
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
 
+	Boolean isSnapShot = null;
+	
 	public ClearcaseProvider()
 	{
 		super();
@@ -115,28 +117,36 @@ public class ClearcaseProvider
 		IProgressMonitor progress)
 		throws TeamException
 	{
-		execute(new IRecursiveOperation()
+		try
 		{
-			public IStatus visit(IResource resource, IProgressMonitor progress)
+			execute(new IRecursiveOperation()
 			{
-				IStatus result =
-					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-				Clearcase.Status status =
-					Clearcase.checkout(resource.getLocation().toOSString(), "", false, true);
-				changeState(resource, IResource.DEPTH_ZERO, progress);
-				if (!status.status)
+				public IStatus visit(IResource resource, IProgressMonitor progress)
 				{
-					result =
-						new Status(
-							IStatus.ERROR,
-							ID,
-							TeamException.UNABLE,
-							"Checkout failed: " + status.message,
-							null);
+					IStatus result =
+						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+					boolean reserved = ClearcasePlugin.isReservedCheckouts();
+					Clearcase.Status status =
+						Clearcase.checkout(resource.getLocation().toOSString(), "", reserved, true);
+					changeState(resource, IResource.DEPTH_ZERO, progress);
+					if (!status.status)
+					{
+						result =
+							new Status(
+								IStatus.ERROR,
+								ID,
+								TeamException.UNABLE,
+								"Checkout failed: " + status.message,
+								null);
+					}
+					return result;
 				}
-				return result;
-			}
-		}, resources, depth, progress);
+			}, resources, depth, progress);
+		}
+		finally
+		{
+			comment = "";
+		}
 	}
 
 	public void refresh(
@@ -151,7 +161,7 @@ public class ClearcaseProvider
 			{
 				IStatus result =
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-				changeState(resource, IResource.DEPTH_ZERO, progress);
+				changeClearcaseState(resource, IResource.DEPTH_ZERO, progress);
 				return result;
 			}
 		}, resources, depth, progress);
@@ -166,28 +176,35 @@ public class ClearcaseProvider
 		IProgressMonitor progress)
 		throws TeamException
 	{
-		execute(new IRecursiveOperation()
+		try
 		{
-			public IStatus visit(IResource resource, IProgressMonitor progress)
+			execute(new IRecursiveOperation()
 			{
-				IStatus result =
-					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-				Clearcase.Status status =
-					Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
-				changeState(resource, IResource.DEPTH_ZERO, progress);
-				if (!status.status)
+				public IStatus visit(IResource resource, IProgressMonitor progress)
 				{
-					result =
-						new Status(
-							IStatus.ERROR,
-							ID,
-							TeamException.UNABLE,
-							"Checkin failed: " + status.message,
-							null);
+					IStatus result =
+						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+					Clearcase.Status status =
+						Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
+					changeState(resource, IResource.DEPTH_ZERO, progress);
+					if (!status.status)
+					{
+						result =
+							new Status(
+								IStatus.ERROR,
+								ID,
+								TeamException.UNABLE,
+								"Checkin failed: " + status.message,
+								null);
+					}
+					return result;
 				}
-				return result;
-			}
-		}, resources, depth, progress);
+			}, resources, depth, progress);
+		}
+		finally
+		{
+			comment = "";
+		}
 	}
 
 	/**
@@ -207,7 +224,7 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
-				changeState(resource, IResource.DEPTH_ZERO, progress);
+				changeState(resource, IResource.DEPTH_ONE, progress);
 				if (!status.status)
 				{
 					result =
@@ -238,8 +255,7 @@ public class ClearcaseProvider
 				{
 					Clearcase.Status status =
 						Clearcase.delete(resource.getLocation().toOSString(), "");
-					
-					try { resource.getParent().refreshLocal(IResource.DEPTH_ZERO, progress); } catch (CoreException e) {}
+					changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
 					if (!status.status)
 					{
 						result =
@@ -259,65 +275,89 @@ public class ClearcaseProvider
 	public void add(IResource[] resources, int depth, IProgressMonitor progress)
 		throws TeamException
 	{
-		execute(new IRecursiveOperation()
+		try
 		{
-			public IStatus visit(IResource resource, IProgressMonitor progress)
+			execute(new IRecursiveOperation()
 			{
-				IStatus result;
-
-				// Sanity check - can't add something that already is under VC
-				if (hasRemote(resource))
+				public IStatus visit(IResource resource, IProgressMonitor progress)
 				{
-					return new Status(
-						IStatus.ERROR,
-						ID,
-						TeamException.UNABLE,
-						"Cannot add an element already under version control: " + resource.toString(),
-						null);
-				}
-
-				// Walk up parent heirarchy, find first ccase
-				// element that is a parent, and walk back down, adding each to ccase
-				IResource parent = resource.getParent();
-
-				// When resource is a project, try checkout its parent, and if that fails,
-				// then neither project nor workspace is in clearcase.
-				if (resource instanceof IProject || hasRemote(parent))
-				{
-					result = checkoutParent(resource);
-				}
-				else
-				{
-					result = visit(parent, progress);
-				}
-
-				if (result.isOK())
-				{
-					if (resource instanceof IFolder)
+					IStatus result;
+			
+					// Sanity check - can't add something that already is under VC
+					if (hasRemote(resource))
 					{
-						try
+						return new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.UNABLE,
+							"Cannot add an element already under version control: " + resource.toString(),
+							null);
+					}
+			
+					// Walk up parent heirarchy, find first ccase
+					// element that is a parent, and walk back down, adding each to ccase
+					IResource parent = resource.getParent();
+			
+					// When resource is a project, try checkout its parent, and if that fails,
+					// then neither project nor workspace is in clearcase.
+					if (resource instanceof IProject || hasRemote(parent))
+					{
+						result = checkoutParent(resource);
+					}
+					else
+					{
+						result = visit(parent, progress);
+					}
+			
+					if (result.isOK())
+					{
+						if (resource instanceof IFolder)
 						{
-							IFolder folder = (IFolder) resource;
-							IPath mkelemPath = folder.getFullPath().addFileExtension("mkelem");
-							folder.move(mkelemPath, true, false, null);
-							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-							IFolder mkelemFolder = root.getFolder(mkelemPath);
-							Clearcase.Status status =
-								Clearcase.add(folder.getLocation().toOSString(), "", true);
-							if (status.status)
+							try
 							{
-								changeState(folder.getParent(), IResource.DEPTH_ONE, progress);
-								IResource[] members =
-									mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
-								for (int i = 0; i < members.length; i++)
+								IFolder folder = (IFolder) resource;
+								IPath mkelemPath = folder.getFullPath().addFileExtension("mkelem");
+								folder.move(mkelemPath, true, false, null);
+								IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+								IFolder mkelemFolder = root.getFolder(mkelemPath);
+								Clearcase.Status status =
+									Clearcase.add(folder.getLocation().toOSString(), "", true);
+								if (status.status)
 								{
-									IResource member = members[i];
-									IPath newPath = folder.getFullPath().append(member.getName());
-									member.move(newPath, true, progress);
+									changeState(folder.getParent(), IResource.DEPTH_ONE, progress);
+									IResource[] members =
+										mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
+									for (int i = 0; i < members.length; i++)
+									{
+										IResource member = members[i];
+										IPath newPath = folder.getFullPath().append(member.getName());
+										member.move(newPath, true, progress);
+									}
+									mkelemFolder.delete(true, false, progress);
 								}
-								mkelemFolder.delete(true, false, progress);
+								else
+								{
+									result =
+										new Status(
+											IStatus.ERROR,
+											ID,
+											TeamException.UNABLE,
+											"Add failed: " + status.message,
+											null);
+								}
+			
 							}
-							else
+							catch (CoreException ex)
+							{
+								result = ex.getStatus();
+							}
+						}
+						else
+						{
+							Clearcase.Status status =
+								Clearcase.add(resource.getLocation().toOSString(), "", false);
+							changeState(resource, IResource.DEPTH_ZERO, progress);
+							if (!status.status)
 							{
 								result =
 									new Status(
@@ -327,35 +367,18 @@ public class ClearcaseProvider
 										"Add failed: " + status.message,
 										null);
 							}
-
 						}
-						catch (CoreException ex)
-						{
-							result = ex.getStatus();
-						}
+			
 					}
-					else
-					{
-						Clearcase.Status status =
-							Clearcase.add(resource.getLocation().toOSString(), "", false);
-						changeState(resource, IResource.DEPTH_ZERO, progress);
-						if (!status.status)
-						{
-							result =
-								new Status(
-									IStatus.ERROR,
-									ID,
-									TeamException.UNABLE,
-									"Add failed: " + status.message,
-									null);
-						}
-					}
-
+			
+					return result;
 				}
-
-				return result;
-			}
-		}, resources, depth, progress);
+			}, resources, depth, progress);
+		}
+		finally
+		{
+			comment = "";
+		}
 	}
 
 	/**
@@ -431,7 +454,8 @@ public class ClearcaseProvider
 		String parent = null;
 		// IProject's parent is the workspace directory, we want the filesystem
 		// parent if the workspace is not itself in clearcase
-		if (resource instanceof IProject && !hasRemote(resource.getParent()))
+		boolean flag = resource instanceof IProject && !hasRemote(resource.getParent());
+		if (flag)
 		{
 			parent = resource.getLocation().toFile().getParent().toString();
 		}
@@ -442,8 +466,8 @@ public class ClearcaseProvider
 		if (!Clearcase.isCheckedOut(parent))
 		{
 			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false, true);
-			// touch so decorator gets notified
-			changeState(resource, IResource.DEPTH_ZERO, null);
+			if (! flag)
+				changeState(resource.getParent(), IResource.DEPTH_ZERO, null);
 			if (!ccStatus.status)
 			{
 				result =
@@ -466,6 +490,27 @@ public class ClearcaseProvider
 	{
 		try
 		{
+			changeClearcaseState(resource, depth, monitor);
+			resource.refreshLocal(depth, monitor);
+		}
+		catch (CoreException ex)
+		{
+		}
+	}
+
+	// Notifies decorator that state has changed for an element
+	private void changeClearcaseState(
+		IResource resource,
+		int depth,
+		IProgressMonitor monitor)
+	{
+		try
+		{
+			// probably overkill/expensive to do it here - should do it on a
+			// case by case basis for eac method that actually changes state
+			StateCache cache = StateCache.getState(resource);
+			cache.update(resource);
+
 			// This is a hack until I get around to creating my own state change mechanism for decorators
 			// create a marker and set attribute so decorator gets notified without the resource actually
 			// changing (so refactoring doesn't fail).  Should we delete the marker?
@@ -484,11 +529,6 @@ public class ClearcaseProvider
 				marker = markers[0];
 			}
 			marker.setAttribute("statechanged", true);
-			resource.refreshLocal(depth, monitor);
-			// probably overkill/expensive to do it here - should do it on a
-			// case by case basis for eac method that actually changes state
-			StateCache cache = StateCache.getState(resource);
-			cache.update(resource);
 		}
 		catch (CoreException ex)
 		{

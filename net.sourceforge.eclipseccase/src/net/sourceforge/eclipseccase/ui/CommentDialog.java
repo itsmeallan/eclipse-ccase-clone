@@ -9,20 +9,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-public class CheckinDialog extends InputDialog
+public class CommentDialog extends InputDialog
 {
 	Button recursiveButton;
 	boolean recursive = false;
 	
 	/**
-	 * Constructor for CheckinDialog.
+	 * Constructor for CommentDialog.
 	 * @param parentShell
 	 * @param dialogTitle
 	 * @param dialogMessage
 	 * @param initialValue
 	 * @param validator
 	 */
-	public CheckinDialog(
+	public CommentDialog(
 		Shell parentShell,
 		String dialogTitle,
 		String dialogMessage,

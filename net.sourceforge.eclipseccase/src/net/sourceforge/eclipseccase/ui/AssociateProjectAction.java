@@ -1,6 +1,7 @@
 package net.sourceforge.eclipseccase.ui;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
@@ -18,13 +19,15 @@ public class AssociateProjectAction extends TeamAction
 	 */
 	public void run(IAction action)
 	{
-
 		IProject[] projects = getSelectedProjects();
 		for (int i = 0; i < projects.length; i++)
 		{
 			try
 			{
 				IProject project = projects[i];
+				String projectPath = project.getLocation().toOSString();
+				if (! Clearcase.getViewName(projectPath).status)
+					throw new TeamException("The Project directory must exist within a clearcase view");
 				Team.addNatureToProject(project, ClearcaseProvider.ID, null);
 				ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
 				provider.refresh(new IResource[] {project}, IResource.DEPTH_ZERO, null);

@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,18 +21,27 @@ public class CheckInAction extends TeamAction
 	 */
 	public void run(IAction action)
 	{
-		CheckinDialog dlg =
-			new CheckinDialog(
-				shell,
-				"Checkin comment",
-				"Enter a checkin comment",
-				lastComment,
-				null);
-		if (dlg.open() == dlg.CANCEL)
-			return;
-		final String comment = dlg.getValue();
-		final int depth =
-			dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		String maybeComment = "";
+		int maybeDepth = IResource.DEPTH_ZERO;
+		
+		if (ClearcasePlugin.isCheckinComment())
+		{
+			CommentDialog dlg =
+				new CommentDialog(
+					shell,
+					"Checkin comment",
+					"Enter a checkin comment",
+					lastComment,
+					null);
+			if (dlg.open() == dlg.CANCEL)
+				return;
+			maybeComment = dlg.getValue();
+			maybeDepth =
+				dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		}
+
+		final String comment = maybeComment;
+		final int depth = maybeDepth;
 		lastComment = comment;
 		run(new WorkspaceModifyOperation()
 		{

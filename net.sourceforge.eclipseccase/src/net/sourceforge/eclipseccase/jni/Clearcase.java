@@ -55,6 +55,9 @@ public class Clearcase
 	/** Moves file to newfile.  The parent directories of both file and newfile must be checked out.  Comment can be empty string. */
 	public static native Status move(String file, String newfile, String comment);
 
+	/** Gets the view tag name for the view associated with file. */
+	public static native Status getViewName(String file);
+
 	/**
 	 Executes the command "cmd" just like a command line "cleartool cmd".
 	 */

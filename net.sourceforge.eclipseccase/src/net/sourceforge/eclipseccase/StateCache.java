@@ -1,30 +1,53 @@
 package net.sourceforge.eclipseccase;
 
+import java.util.StringTokenizer;
+
 import net.sourceforge.eclipseccase.jni.Clearcase;
+
+import org.eclipse.core.internal.runtime.Log;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
+import org.xml.sax.InputSource;
 
-/**
- * @author conwaym
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- */
 public class StateCache
 {
 	public static final QualifiedName ID =
 		new QualifiedName("net.sourceforge.eclipseccase", "StateCache");
 
-	private boolean isCheckedOut = false;
 	private boolean hasRemote = false;
+	private boolean isCheckedOut = false;
 	private boolean isDirty = false;
-	private boolean isSnapShot = false;
 
 	private StateCache()
 	{
 	}
 
+	private StateCache(IResource resource, String serialized)
+	{
+		if (serialized != null && serialized.length() == 3)
+		{
+			hasRemote = serialized.charAt(0) == '1';
+			isCheckedOut = serialized.charAt(1) == '1';
+			isDirty = serialized.charAt(2) == '1';
+		}
+		else
+		{
+			update(resource);
+		}
+	}
+	
+	private String serialize()
+	{
+		StringBuffer sb = new StringBuffer(3);
+		sb.append(hasRemote ? "1" : "0");	
+		sb.append(isCheckedOut ? "1" : "0");	
+		sb.append(isDirty ? "1" : "0");
+		return sb.toString();
+	}
+	
 	static public StateCache getState(IResource resource)
 	{
 		StateCache cache = null;
@@ -33,13 +56,18 @@ public class StateCache
 			cache = (StateCache) resource.getSessionProperty(ID);
 			if (cache == null)
 			{
-				cache = new StateCache();
-				cache.update(resource);
+				String persistentCache = null;
+				if (ClearcasePlugin.isPersistState())
+					persistentCache = resource.getPersistentProperty(ID);
+				cache = new StateCache(resource, persistentCache);
+				resource.setSessionProperty(ID, cache);
+				if (ClearcasePlugin.isPersistState())
+					resource.setPersistentProperty(ID, cache.serialize());
 			}
-			resource.setSessionProperty(ID, cache);
 		}
-		catch (CoreException e)
+		catch (CoreException ex)
 		{
+			ClearcasePlugin.log(IStatus.WARNING, "Unexpected failure retrieving clearcase state cache", ex);
 		}
 		return cache;
 	}
@@ -51,13 +79,41 @@ public class StateCache
 		{
 			String path = resource.getLocation().toOSString();
 			hasRemote = Clearcase.isElement(path);
-			if (hasRemote)
-			{
-				isCheckedOut = Clearcase.isCheckedOut(path);
-			}
+			isCheckedOut = hasRemote && Clearcase.isCheckedOut(path);
 			isDirty = (!hasRemote) || isCheckedOut;
-			isSnapShot = provider.isSnapShot();
+			if (ClearcasePlugin.isPersistState())
+			{
+				try
+				{
+					resource.setPersistentProperty(ID, this.serialize());
+				}
+				catch(CoreException ex)
+				{
+					ClearcasePlugin.log(IStatus.WARNING, "Could not persist clearcase state", ex);
+				}
+			}
 		}
+	}
+
+	public void clear(IResource resource)
+	{
+		try
+		{
+			resource.setSessionProperty(ID, null);
+			resource.setPersistentProperty(ID, null);		
+		} catch (CoreException ex)
+		{
+			ClearcasePlugin.log(IStatus.WARNING, "Could not clear clearcase state", ex);
+		}
+	}
+	
+	/**
+	 * Gets the hasRemote.
+	 * @return Returns a boolean
+	 */
+	public boolean hasRemote()
+	{
+		return hasRemote;
 	}
 
 	/**
@@ -70,66 +126,12 @@ public class StateCache
 	}
 
 	/**
-	 * Sets the isCheckedOut.
-	 * @param isCheckedOut The isCheckedOut to set
-	 */
-	public void setIsCheckedOut(boolean isCheckedOut)
-	{
-		this.isCheckedOut = isCheckedOut;
-	}
-
-	/**
 	 * Gets the isDirty.
 	 * @return Returns a boolean
 	 */
 	public boolean isDirty()
 	{
 		return isDirty;
-	}
-
-	/**
-	 * Sets the isDirty.
-	 * @param isDirty The isDirty to set
-	 */
-	public void setIsDirty(boolean isDirty)
-	{
-		this.isDirty = isDirty;
-	}
-
-	/**
-	 * Gets the hasRemote.
-	 * @return Returns a boolean
-	 */
-	public boolean hasRemote()
-	{
-		return hasRemote;
-	}
-
-	/**
-	 * Sets the hasRemote.
-	 * @param hasRemote The hasRemote to set
-	 */
-	public void setHasRemote(boolean hasRemote)
-	{
-		this.hasRemote = hasRemote;
-	}
-
-	/**
-	 * Gets the isSnapShot.
-	 * @return Returns a boolean
-	 */
-	public boolean isSnapShot()
-	{
-		return isSnapShot;
-	}
-
-	/**
-	 * Sets the isSnapShot.
-	 * @param isSnapShot The isSnapShot to set
-	 */
-	public void setIsSnapShot(boolean isSnapShot)
-	{
-		this.isSnapShot = isSnapShot;
 	}
 
 }

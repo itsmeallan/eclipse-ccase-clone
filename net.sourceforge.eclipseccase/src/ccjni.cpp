@@ -279,6 +279,35 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_move
 
 /*
  * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Method:    getViewName
+ * Signature: (Ljava/lang/String;)Lorg/eclipse/team/clearcase/jni/Clearcase$Status;
+ */
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_getViewName
+  (JNIEnv * env, jclass obj, jstring file)
+{
+	jobject result = NULL;
+	const char *filestr = env->GetStringUTFChars(file, 0);
+
+	try 
+	{ 
+		ICCViewPtr view = ccase->GetView(filestr);
+		result = createStatus(env, true, view->GetTagName());
+	}
+	catch(_com_error& cerror) 
+	{ 
+		result = createStatus(env, false, cerror.Description());
+	}
+	catch(...)
+	{
+		raiseJNIException(env, "Unhandled Exception in Clearcase JNI layer");
+	}
+
+	env->ReleaseStringUTFChars(file, filestr);
+	return result;
+}
+
+/*
+ * Class:     net_sourceforge_eclipseccase_jni_Clearcase
  * Method:    cleartool
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
@@ -412,8 +441,7 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isSna
 
 	try 
 	{ 
-		ICCVersionPtr ver = ccase->GetVersion(filestr);
-		ICCViewPtr view = ver->GetView();
+		ICCViewPtr view = ccase->GetView(filestr);
 		result = view->GetIsSnapShot();
 	}
 	catch(_com_error& cerror) 

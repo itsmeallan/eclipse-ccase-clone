@@ -60,18 +60,10 @@ public class ClearcaseDecorator
 		{
 			StringBuffer buffer = new StringBuffer(text);
 			buffer.append(" [view: ");
-			if (p.hasRemote(resource))
+			Clearcase.Status status = Clearcase.getViewName(resource.getLocation().toOSString());
+			if (status.status)
 			{
-				// Don't want multiple calls at once otherwise have a race condition
-				// between "cd" and "pwv".  Of course, this doesn't help if other code
-				// calls cd, but fixing that will require maintaining a separate cleartool
-				// instance for each resource
-				synchronized(this)
-				{
-					Clearcase.Status status = Clearcase.cleartool("cd " + resource.getLocation().toOSString());
-					status = Clearcase.cleartool("pwv -s");
-					buffer.append(status.message.trim());
-				}
+				buffer.append(status.message.trim());
 			}
 			else
 			{
@@ -194,8 +186,8 @@ public class ClearcaseDecorator
 						return false;
 					}
 
-					// ignore subtrees that don't have remotes
-					if (!p.hasRemote(resource))
+					// ignore subtrees that don't have remotes - exception is project which may not be a clearcase element
+					if (type != IResource.PROJECT && !p.hasRemote(resource))
 					{
 						return false;
 					}
@@ -207,8 +199,6 @@ public class ClearcaseDecorator
 						boolean changed = markers[0].getAttribute("statechanged", false);
 						if (changed)
 						{
-							// chances are the team outgoing bit needs to be updated
-							// if any child has changed.
 							events.addFirst(
 								new LabelProviderChangedEvent(ClearcaseDecorator.this, resource));
 							//markers[0].setAttribute("statechanged", false);

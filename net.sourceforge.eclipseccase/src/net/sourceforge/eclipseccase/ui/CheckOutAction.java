@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,9 +14,32 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public class CheckOutAction extends TeamAction
 {
+	private String lastComment = "";
 
 	public void run(IAction action)
 	{
+		String maybeComment = "";
+		int maybeDepth = IResource.DEPTH_ZERO;
+		
+		if (ClearcasePlugin.isCheckoutComment())
+		{
+			CommentDialog dlg =
+				new CommentDialog(
+					shell,
+					"Checkout comment",
+					"Enter a checkout comment",
+					lastComment,
+					null);
+			if (dlg.open() == dlg.CANCEL)
+				return;
+			maybeComment = dlg.getValue();
+			maybeDepth =
+				dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		}
+
+		final String comment = maybeComment;
+		final int depth = maybeDepth;
+		lastComment = comment;
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
@@ -30,8 +54,9 @@ public class CheckOutAction extends TeamAction
 						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						provider.setComment(comment);
 						provider.checkout(new IResource[] {resource},
-											IResource.DEPTH_ZERO, subMonitor);
+											depth, subMonitor);
 						monitor.worked(1);
 					}
 				}

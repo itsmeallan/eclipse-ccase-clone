@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,19 +22,29 @@ public class AddToClearcaseAction extends TeamAction
 	 */
 	public void run(IAction action)
 	{
-		CheckinDialog dlg =
-			new CheckinDialog(
-				shell,
-				"Add to clearcase comment",
-				"Enter a comment",
-				lastComment,
-				null);
-		if (dlg.open() == dlg.CANCEL)
-			return;
-		final String comment = dlg.getValue();
-		final int depth =
-			dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		String maybeComment = "";
+		int maybeDepth = IResource.DEPTH_ZERO;
+		
+		if (ClearcasePlugin.isAddComment())
+		{
+			CommentDialog dlg =
+				new CommentDialog(
+					shell,
+					"Add to clearcase comment",
+					"Enter a comment",
+					lastComment,
+					null);
+			if (dlg.open() == dlg.CANCEL)
+				return;
+			maybeComment = dlg.getValue();
+			maybeDepth =
+				dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		}
+
+		final String comment = maybeComment;
+		final int depth = maybeDepth;
 		lastComment = comment;
+
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
@@ -78,6 +89,13 @@ public class AddToClearcaseAction extends TeamAction
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 			if (provider == null)
+				return false;
+			// Projects may be the view directory containing the VOBS, if so,
+			// don't want to be able to add em, or any resource diretcly under them
+			if (resource.getType() == IResource.PROJECT && ! provider.hasRemote(resource))
+				return false;
+			if (resource.getParent().getType() == IResource.PROJECT &&
+				! provider.hasRemote(resource.getParent()))
 				return false;
 			if (provider.hasRemote(resource))
 				return false;

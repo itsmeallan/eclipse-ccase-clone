@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.6.4"
+   version="0.7.0"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -32,6 +32,15 @@
       <one-of-nature
             id="org.eclipse.team.repository-provider">
       </one-of-nature>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="Clearcase"
+            category="org.eclipse.team.ui.TeamPreferences"
+            class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
+            id="net.sourceforge.eclipseccase.ClearcasePreferencePage">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.decorators">
