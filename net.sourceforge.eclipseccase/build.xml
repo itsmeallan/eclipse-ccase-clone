@@ -1,6 +1,6 @@
 <project name="ccjni" default="all">
 
-	<property	name="version" value="0.0.2"/>
+	<property	name="version" value="0.1.0"/>
 	<property 	name="debug" value="true"/>
 	<property	name="jdk.home" value="${java.home}/.."/>
 	
