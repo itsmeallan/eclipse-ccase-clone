@@ -3,4 +3,5 @@ bin
 build.xml
 temp.folder
 clearcase-uisrc.zip
+net.sourceforge.eclipseccase.ui*.zip
 dev.properties
