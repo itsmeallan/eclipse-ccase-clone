@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 
 public class DeleteAction extends ClearcaseWorkspaceAction
 {

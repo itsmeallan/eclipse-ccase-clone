@@ -18,6 +18,7 @@ import net.sourceforge.eclipseccase.ClearcaseModificationHandler;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
+import net.sourceforge.eclipseccase.ui.actions.ClearDlgHelper;
 import net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferenceStore;
 
 import org.eclipse.core.resources.IFile;
@@ -35,6 +36,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
@@ -176,6 +178,9 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
                                     .getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
             return CANCEL;
         }
+        
+        final boolean useClearDlg = ClearcasePlugin.isUseClearDlg();
+        final boolean askForComment = ClearcasePlugin.isCommentCheckout() && ! ClearcasePlugin.isCommentCheckoutNeverOnAuto();
 
         try {
             // use workbench window as preferred runnable context
@@ -196,20 +201,42 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
                                 throws InvocationTargetException,
                                 InterruptedException {
                             try {
+                                String comment = null;
+
+                                if (!useClearDlg
+                                        && askForComment) {
+                                    CommentDialog dlg = new CommentDialog(shell,
+                                            "Checkout comment");
+                                    dlg.setRecursive(false);
+                                    dlg.setRecursiveEnabled(false);
+                                    if (dlg.open() == Window.CANCEL) throw new InterruptedException("Operation canceled by user.");
+                                    else
+                                        comment = dlg.getComment();
+                                }
+
                                 synchronized (provider) {
                                     boolean refreshing = setResourceRefreshing(
                                             provider, false);
                                     try {
                                         monitor.beginTask(Messages.getString("ClearcaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
-                                        for (int i = 0; i < files.length; i++) {
-                                            IFile file = files[i];
-                                            monitor.subTask(file.getName());
-                                            provider.checkout(
-                                                    new IFile[] { file },
-                                                    IResource.DEPTH_ZERO, null);
-                                            file.refreshLocal(
-                                                    IResource.DEPTH_ZERO, null);
-                                            monitor.worked(i);
+                                        if (ClearcasePlugin.isUseClearDlg()) {
+                                            monitor
+                                                    .subTask("Executing ClearCase user interface...");
+                                            ClearDlgHelper.checkout(files);
+                                        } else {
+                                            if(null != comment)
+                                                provider.setComment(comment);
+
+                                            for (int i = 0; i < files.length; i++) {
+                                                IFile file = files[i];
+                                                monitor.subTask(file.getName());
+                                                provider.checkout(
+                                                        new IFile[] { file },
+                                                        IResource.DEPTH_ZERO, null);
+                                                file.refreshLocal(
+                                                        IResource.DEPTH_ZERO, null);
+                                                monitor.worked(i);
+                                            }
                                         }
                                     } finally {
                                         setResourceRefreshing(provider,

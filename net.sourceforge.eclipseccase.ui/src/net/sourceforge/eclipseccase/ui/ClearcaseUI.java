@@ -12,6 +12,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,10 +20,16 @@ import java.util.Set;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -381,4 +388,81 @@ public class ClearcaseUI extends AbstractUIPlugin {
         return PlatformUI.getWorkbench().getDisplay();
     }
 
+    /**
+     * Shows the given errors to the user.
+     * @param Exception
+     *            the exception containing the error
+     * @param title
+     *            the title of the error dialog
+     * @param message
+     *            the message for the error dialog
+     * @param shell
+     *            the shell to open the error dialog in
+     */
+    public static void handleError(Shell shell, Exception exception, String title, String message) {
+        IStatus status = null;
+        boolean log = false;
+        boolean dialog = false;
+        Throwable t = exception;
+        if (exception instanceof TeamException) {
+            status = ((TeamException) exception).getStatus();
+            log = false;
+            dialog = true;
+        } else if (exception instanceof InvocationTargetException) {
+            t = ((InvocationTargetException) exception).getTargetException();
+            if (t instanceof TeamException) {
+                status = ((TeamException) t).getStatus();
+                log = false;
+                dialog = true;
+            } else if (t instanceof CoreException) {
+                status = ((CoreException) t).getStatus();
+                log = true;
+                dialog = true;
+            } else if (t instanceof InterruptedException) {
+                return;
+            } else {
+                status = new Status(IStatus.ERROR, PLUGIN_ID, 1, Messages.getString("TeamAction.internal"), t); //$NON-NLS-1$
+                log = true;
+                dialog = true;
+            }
+        }
+        if (status == null)
+            return;
+        if (!status.isOK()) {
+            IStatus toShow = status;
+            if (status.isMultiStatus()) {
+                IStatus[] children = status.getChildren();
+                if (children.length == 1) {
+                    toShow = children[0];
+                }
+            }
+            if (title == null) {
+                title = status.getMessage();
+            }
+            if (message == null) {
+                message = status.getMessage();
+            }
+            if (dialog && shell != null) {
+                ErrorDialog.openError(shell, title, message, toShow);
+            }
+            if (log || shell == null) {
+                ClearcasePlugin.log(toShow.getSeverity(), message, t);
+            }
+        }
+    }
+
+    /**
+     * Convenience method to get the currently active workbench page. Note that
+     * the active page may not be the one that the usr perceives as active in
+     * some situations so this method of obtaining the activae page should only
+     * be used if no other method is available.
+     * 
+     * @return the active workbench page
+     */
+    public static IWorkbenchPage getActivePage() {
+        IWorkbenchWindow window = getInstance().getWorkbench().getActiveWorkbenchWindow();
+        if (window == null) return null;
+        return window.getActivePage();
+    }
+    
 }

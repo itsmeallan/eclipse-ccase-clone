@@ -1,5 +1,7 @@
-HEAD
-----
+1.0.2
+-----
+- fixed 1176906 - should now work in 3.1M6
+- fixed 757524 - auto-checkout does not prompt for comment
 
 
 1.0.1

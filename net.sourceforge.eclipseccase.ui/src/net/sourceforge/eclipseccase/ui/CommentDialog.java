@@ -37,6 +37,9 @@ public class CommentDialog extends Dialog
     Button recursiveButton;
 
     boolean recursive = false;
+    
+    /** is the recusrive button enabled (default is true) */
+    boolean recursiveEnabled = true;
 
     /**
      * Gets the recursive.
@@ -82,6 +85,7 @@ public class CommentDialog extends Dialog
 
         recursiveButton = new Button(composite, SWT.CHECK);
         recursiveButton.setText("Recurse");
+        recursiveButton.setEnabled(recursiveEnabled);
         recursiveButton.addSelectionListener(new SelectionListener()
         {
             public void widgetSelected(SelectionEvent e)
@@ -92,7 +96,6 @@ public class CommentDialog extends Dialog
             public void widgetDefaultSelected(SelectionEvent e)
             {}
         });
-
         // set F1 help
         //WorkbenchHelp.setHelp(composite,
         // IHelpContextIds.RELEASE_COMMENT_DIALOG);
@@ -119,4 +122,25 @@ public class CommentDialog extends Dialog
     {
         return commentDialogArea.getComment();
     }
+
+    
+    /**
+     * Returns the recursiveEnabled.
+     * @return returns the recursiveEnabled
+     */
+    public boolean isRecursiveEnabled() {
+        return recursiveEnabled;
+    }
+    
+    
+
+    
+    /**
+     * Sets the value of recursiveEnabled.
+     * @param recursiveEnabled the recursiveEnabled to set
+     */
+    public void setRecursiveEnabled(boolean recursiveEnabled) {
+        this.recursiveEnabled = recursiveEnabled;
+    }
+    
 }

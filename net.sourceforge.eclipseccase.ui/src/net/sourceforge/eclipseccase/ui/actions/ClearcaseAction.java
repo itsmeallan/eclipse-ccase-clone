@@ -27,7 +27,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -86,7 +85,7 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
         return result;
     }
 
-    protected IWorkbenchWindow getWindow()
+    public IWorkbenchWindow getWindow()
     {
         return window;
     }

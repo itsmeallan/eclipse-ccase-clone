@@ -40,13 +40,11 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
 /**
  * The ClearCase repository provider.
  */
-public class ClearcaseProvider extends RepositoryProvider implements
-        SimpleAccessOperations {
+public class ClearcaseProvider extends RepositoryProvider {
 
     /** trace id */
     private static final String TRACE_ID_IS_IGNORED = "ClearcaseProvider#isIgnored"; //$NON-NLS-1$
@@ -485,13 +483,6 @@ public class ClearcaseProvider extends RepositoryProvider implements
         IStatus result = execute(REFRESH_STATE, resource, depth,
                 progressMonitor);
         return result;
-    }
-
-    /**
-     * @see RepositoryProvider#getSimpleAccess()
-     */
-    public SimpleAccessOperations getSimpleAccess() {
-        return this;
     }
 
     /**
