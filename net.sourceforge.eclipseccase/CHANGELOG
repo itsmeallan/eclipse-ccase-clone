@@ -7,6 +7,7 @@
 - added debug support via command line option "-debugClearCase"
   debug output will be written to "<workspaceroot>/clearcase.debug.log"
 - resource change improvements
+- decorator improvements
 
 0.9.9
 -----
