@@ -86,6 +86,11 @@ public class ClearcaseDecorator
 
 		if (ClearcasePlugin.isTextVersionDecoration())
 		{
+	 		if (isDirty(resource))
+			{
+				buffer.insert(0, ">");
+			}
+
 			buffer.append(" : ");
 			buffer.append(p.getVersion(resource));
 		}
@@ -131,13 +136,12 @@ public class ClearcaseDecorator
 					.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR)
 					.getImageData());
 		}
+		
 /*
- * too slow till we add cached state
-		if (isDirty(resource))
+ 		if (isDirty(resource))
 		{
 			result.addForegroundImage(
-				TeamUIPlugin
-					.getPlugin()
+				TeamImages
 					.getImageDescriptor(ISharedImages.IMG_DIRTY_OVR)
 					.getImageData());
 		}
@@ -217,18 +221,8 @@ public class ClearcaseDecorator
 						return false;
 					}
 
-					// Only add an event if our state change marker is present
-					IMarker[] markers = resource.findMarkers(ClearcaseProvider.STATE_CHANGE_MARKER_TYPE, false, IResource.DEPTH_ZERO);
-					if (markers.length > 0)
-					{
-						boolean changed = markers[0].getAttribute("statechanged", false);
-						if (changed)
-						{
-							events.addFirst(
+					events.addFirst(
 								new LabelProviderChangedEvent(ClearcaseDecorator.this, resource));
-							//markers[0].setAttribute("statechanged", false);
-						}
-					}
 					return true;
 				}
 			});
