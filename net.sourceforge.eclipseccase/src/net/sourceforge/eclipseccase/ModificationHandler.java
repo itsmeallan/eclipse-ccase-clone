@@ -40,6 +40,8 @@ public class ModificationHandler implements IFileModificationValidator
 		for (int i = 0; i < files.length; ++i)
 		{
 			StateCache cache = StateCacheFactory.getInstance().get(files[i]);
+			if (cache.isUninitialized())
+				cache.update(false);
 			if (cache.hasRemote() && ! cache.isCheckedOut())
 				needCheckout.add(files[i]);
 		}
