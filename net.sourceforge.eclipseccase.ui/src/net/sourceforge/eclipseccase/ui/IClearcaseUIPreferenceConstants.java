@@ -26,6 +26,9 @@ public interface IClearcaseUIPreferenceConstants
     String TEXT_VIEW_DECORATION = ClearcaseUI.PLUGIN_ID + ".textViewDecoration";
 
     /** decorator preference */
+    String TEXT_PREFIX_DECORATION = ClearcaseUI.PLUGIN_ID + ".textPrefixDecoration";
+
+    /** decorator preference */
     String DEEP_DECORATIONS = ClearcaseUI.PLUGIN_ID + ".deepDecorations";
 
     /** decorator preference */

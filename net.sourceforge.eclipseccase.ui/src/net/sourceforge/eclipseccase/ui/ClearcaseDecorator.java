@@ -150,11 +150,11 @@ public class ClearcaseDecorator extends LabelProvider implements
 
         // determine some settings
         final boolean decorateNew = ClearcaseUI.isIconNewDecoration()
-                || ClearcaseUI.getTextPrefixNew().length() > 0;
+                || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixNew().length() > 0);
         final boolean decorateUnknown = ClearcaseUI.isIconUnknownDecoration()
-                || ClearcaseUI.getTextPrefixUnknown().length() > 0;
+                || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixUnknown().length() > 0);
         final boolean decorateHijacked = ClearcaseUI.isIconHijackedDecoration()
-                || ClearcaseUI.getTextPrefixHijacked().length() > 0;
+                || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixHijacked().length() > 0);
 
         try {
             // visit all children to determine the state
@@ -228,7 +228,8 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     private static void decorateCheckedOut(IDecoration decoration) {
         decoration.addOverlay(IMG_DESC_CHECKED_OUT);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
     }
 
     /**
@@ -238,7 +239,8 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     private static void decorateDirty(IDecoration decoration) {
         decoration.addOverlay(IMG_DESC_DIRTY);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
     }
 
     /**
@@ -249,7 +251,8 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static void decorateEdited(IDecoration decoration) {
         if (ClearcaseUI.isIconEditedDecoration())
                 decoration.addOverlay(IMG_DESC_EDITED);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixEdited());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixEdited());
     }
 
     /**
@@ -260,7 +263,8 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static void decorateHijacked(IDecoration decoration) {
         if (ClearcaseUI.isIconHijackedDecoration())
                 decoration.addOverlay(IMG_DESC_HIJACKED);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixHijacked());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixHijacked());
     }
 
     /**
@@ -286,7 +290,8 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static void decorateNew(IDecoration decoration) {
         if (ClearcaseUI.isIconNewDecoration())
                 decoration.addOverlay(IMG_DESC_NEW_RESOURCE);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixNew());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixNew());
     }
 
     /**
@@ -297,7 +302,8 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static void decorateUnknown(IDecoration decoration) {
         if (ClearcaseUI.isIconUnknownDecoration())
                 decoration.addOverlay(IMG_DESC_UNKOWN_STATE);
-        decoration.addPrefix(ClearcaseUI.getTextPrefixUnknown());
+        if (ClearcaseUI.isTextPrefixDecoration())
+        	decoration.addPrefix(ClearcaseUI.getTextPrefixUnknown());
     }
 
     /**

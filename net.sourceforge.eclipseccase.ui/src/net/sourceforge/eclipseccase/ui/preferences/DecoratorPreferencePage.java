@@ -89,6 +89,11 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
                 "Append version information to resource names",
                 getFieldEditorParent(TEXT)));
 
+        addField(new BooleanFieldEditor(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION,
+                "Prepend resource names with state information",
+                getFieldEditorParent(TEXT)));
+
         addField(new StringFieldEditor(TEXT_PREFIX_DIRTY,
                 "Prefix for dirty resources:", 4, getFieldEditorParent(TEXT)));
 

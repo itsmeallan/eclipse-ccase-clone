@@ -198,6 +198,16 @@ public class ClearcaseUI extends AbstractUIPlugin
     }
 
     /**
+     * Returns the preference value for <code>TEXT_VIEW_DECORATION</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isTextPrefixDecoration()
+    {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION);
+    }
+    /**
      * Returns the preference value for <code>ICON_DECORATE_NEW</code>.
      * 
      * @return the preference value
@@ -316,7 +326,8 @@ public class ClearcaseUI extends AbstractUIPlugin
                 true);
         store.setDefault(
                 IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION, false);
-
+        store.setDefault(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION, false);
         // default prefixes
         store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_DIRTY,
                 NO_PREFIX);
