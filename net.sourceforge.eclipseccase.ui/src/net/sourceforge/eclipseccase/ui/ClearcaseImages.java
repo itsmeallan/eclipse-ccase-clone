@@ -15,6 +15,8 @@ public class ClearcaseImages
     public static final String IMG_LINK_WARNING_OVR = "linkwarn_ovr.gif"; //$NON-NLS-1$
 	public static final String IMG_UNKNOWN_OVR = "unknown_ovr.gif"; //$NON-NLS-1$
 	public static final String IMG_QUESTIONABLE_OVR = "question_ovr.gif"; //$NON-NLS-1$
+	public static final String IMG_DYNAMIC_OVR = "proj_dynamic_ovr.gif"; //$NON-NLS-1$
+	public static final String IMG_SNAPSHOT_OVR = "proj_snapshot_ovr.gif"; //$NON-NLS-1$
     public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
     public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
     
