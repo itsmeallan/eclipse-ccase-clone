@@ -54,6 +54,7 @@ public class ClearcaseDecorator
 	private static final int LABEL_QUEUE_RETRY = 5;
 
 	private List labelQueue = Collections.synchronizedList(new LinkedList());
+	private List parentLabelQueue = Collections.synchronizedList(new LinkedList());
 	private Map availableDecorations = Collections.synchronizedMap(new HashMap());
 	private Thread labelQueueThread;
 
@@ -74,13 +75,26 @@ public class ClearcaseDecorator
 						{
 							try
 							{
-								labelQueue.wait();
+								labelQueue.wait(1000);
 							}
 							catch (InterruptedException e)
 							{
 							}
 						}
 						size = labelQueue.size();
+						int parentSize = parentLabelQueue.size();
+						if (size == 0 && parentSize > 0)
+						{
+							System.out.println("Processing parent queue: " + parentSize);
+							IResource[] resources = new IResource[parentSize];
+							for (int i = 0; i < parentSize; i++)
+							{
+								IResource element = (IResource) parentLabelQueue.remove(0);
+								invalidateKeys(element);
+								resources[i] = element;
+							}
+							postLabelEvent(new LabelProviderChangedEvent(ClearcaseDecorator.this, resources));
+						}
 					}							
 					List resources = new LinkedList();
 					for (int i = 0; i < size; i++)
@@ -557,14 +571,14 @@ public class ClearcaseDecorator
 	{
 		List resources = new LinkedList();
 		invalidateKeys(resource);
-		resources.add(resource);
+		postLabelEvent(new LabelProviderChangedEvent(this, resource));
+
 		for (IResource parent = resource.getParent();
 			parent != null;
 			parent = parent.getParent())
 		{
-			invalidateKeys(parent);
-			resources.add(parent);
+			if (! parentLabelQueue.contains(parent))
+				parentLabelQueue.add(parent);
 		}
-		postLabelEvent(new LabelProviderChangedEvent(this, resources.toArray(new IResource[resources.size()])));
 	}
 }
