@@ -268,7 +268,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
         return StateCacheFactory.getInstance().get(resource).hasRemote();
     }
 
-    /**
+    /*
      * @see SimpleAccessOperations#isDirty(IResource)
      */
     public boolean isDirty(IResource resource) {

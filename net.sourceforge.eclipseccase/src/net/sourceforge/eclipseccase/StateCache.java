@@ -11,7 +11,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 
@@ -25,27 +24,15 @@ public class StateCache implements Serializable {
 
     private transient IResource resource;
 
-    private boolean uninitialized = true;
+    private transient long updateTimeStamp = IResource.NULL_STAMP;
 
-    private boolean hasRemote = false;
+    private int flags = 0;
 
-    private boolean isCheckedOut = false;
-
-    private boolean isSnapShot = false;
-
-    private boolean isSymbolicLink = false;
-
-    private boolean isSymbolicLinkTargetValid = false;
-
-    private boolean isHijacked = false;
-
-    private boolean isEdited = false;
-
-    private String version = "";
+    private String version;
 
     StateCache(IResource resource) {
         if (null == resource)
-                throw new IllegalArgumentException("Resource must not be null!");
+                throw new IllegalArgumentException("Resource must not be null!"); //$NON-NLS-1$
 
         this.resource = resource;
 
@@ -60,9 +47,25 @@ public class StateCache implements Serializable {
         }
     }
 
-    private static final String DEBUG_ID = "StateCache";
+    private static final String DEBUG_ID = "StateCache"; //$NON-NLS-1$
 
-    private String symbolicLinkTarget = "";
+    private String symbolicLinkTarget;
+
+    // flags
+
+    private static final int HAS_REMOTE = 0x1;
+
+    private static final int CHECKED_OUT = 0x2;
+
+    private static final int SNAPSHOT = 0x4;
+
+    private static final int HIJACKED = 0x8;
+
+    private static final int CHECKED_OUT_OTHER_VIEW = 0x10;
+
+    private static final int SYM_LINK = 0x20;
+
+    private static final int SYM_LINK_TARGET_VALID = 0x40;
 
     /**
      * Schedules a state update.
@@ -72,7 +75,7 @@ public class StateCache implements Serializable {
     public void updateAsync(boolean invalidate) {
         updateAsync(invalidate, false);
     }
-    
+
     /**
      * Schedules a state update with a high priority.
      * 
@@ -81,7 +84,7 @@ public class StateCache implements Serializable {
     public void updateAsyncHighPriority(boolean invalidate) {
         updateAsync(invalidate, true);
     }
-    
+
     /**
      * Schedules a state update.
      * 
@@ -90,18 +93,19 @@ public class StateCache implements Serializable {
      */
     private void updateAsync(boolean invalidate, boolean useHighPriority) {
         if (invalidate) {
-            if (!uninitialized) {
+            if (!isUninitialized()) {
                 // synchronize access
                 synchronized (this) {
-                    uninitialized = true;
+                    updateTimeStamp = IResource.NULL_STAMP;
                 }
-                ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this);
+                ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this); //$NON-NLS-1$
                 // fireing state change (the update was forced)
                 StateCacheFactory.getInstance().fireStateChanged(this.resource);
             }
         }
         StateCacheJob job = new StateCacheJob(this);
-        job.schedule(useHighPriority ? StateCacheJob.PRIORITY_HIGH : StateCacheJob.PRIORITY_DEFAULT);
+        job.schedule(useHighPriority ? StateCacheJob.PRIORITY_HIGH
+                : StateCacheJob.PRIORITY_DEFAULT);
     }
 
     /**
@@ -114,12 +118,12 @@ public class StateCache implements Serializable {
     void doUpdate(IProgressMonitor monitor) throws CoreException,
             OperationCanceledException {
         try {
-            monitor.beginTask("Updating " + getResource(), 10);
+            monitor
+                    .beginTask(
+                            Messages.getString("StateCache.updating") + getResource(), 10); //$NON-NLS-1$
             doUpdate();
             monitor.worked(10);
-        }
-        finally
-        {
+        } finally {
             monitor.done();
         }
     }
@@ -128,13 +132,13 @@ public class StateCache implements Serializable {
      * Updates the state.
      */
     void doUpdate() {
-        boolean changed = uninitialized;
+        boolean changed = isUninitialized();
 
         IPath location = resource.getLocation();
         if (location == null) {
             // resource has been invalidated in the workspace since request was
             // queued, so ignore update request.
-            ClearcasePlugin.debug(DEBUG_ID, "not updating - invalid resource: "
+            ClearcasePlugin.debug(DEBUG_ID, "not updating - invalid resource: " //$NON-NLS-1$
                     + resource);
             return;
         }
@@ -146,43 +150,44 @@ public class StateCache implements Serializable {
             if (resource.isAccessible()) {
                 boolean newHasRemote = ClearcasePlugin.getEngine().isElement(
                         osPath);
-                changed = changed || newHasRemote != this.hasRemote;
-                this.hasRemote = newHasRemote;
+                changed = changed || newHasRemote != this.hasRemote();
+                setFlag(HAS_REMOTE, newHasRemote);
 
                 boolean newIsSymbolicLink = newHasRemote
                         && ClearcasePlugin.getEngine().isSymbolicLink(osPath);
-                changed = changed || newIsSymbolicLink != this.isSymbolicLink;
-                this.isSymbolicLink = newIsSymbolicLink;
+                changed = changed || newIsSymbolicLink != this.isSymbolicLink();
+                setFlag(SYM_LINK, newIsSymbolicLink);
 
                 boolean newIsCheckedOut = newHasRemote
                         && ClearcasePlugin.getEngine().isCheckedOut(osPath);
-                changed = changed || newIsCheckedOut != this.isCheckedOut;
-                this.isCheckedOut = newIsCheckedOut;
+                changed = changed || newIsCheckedOut != this.isCheckedOut();
+                setFlag(CHECKED_OUT, newIsCheckedOut);
 
                 boolean newIsSnapShot = newHasRemote
                         && ClearcasePlugin.getEngine().isSnapShot(osPath);
-                changed = changed || newIsSnapShot != this.isSnapShot;
-                this.isSnapShot = newIsSnapShot;
+                changed = changed || newIsSnapShot != this.isSnapShot();
+                setFlag(SNAPSHOT, newIsSnapShot);
 
                 boolean newIsHijacked = newIsSnapShot
                         && ClearcasePlugin.getEngine().isHijacked(osPath);
-                changed = changed || newIsHijacked != this.isHijacked;
-                this.isHijacked = newIsHijacked;
+                changed = changed || newIsHijacked != this.isHijacked();
+                setFlag(HIJACKED, newIsHijacked);
 
                 boolean newIsEdited = newHasRemote
                         && !newIsCheckedOut
                         && ClearcasePlugin.getEngine()
                                 .isCheckedOutInAnotherView(osPath);
-                changed = changed || newIsEdited != this.isEdited;
-                this.isEdited = newIsEdited;
+                changed = changed || newIsEdited != this.isEdited();
+                setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 
                 String newVersion = newHasRemote ? ClearcasePlugin.getEngine()
                         .cleartool(
-                                "describe -fmt " + ClearcaseUtil.quote("%Vn")
-                                        + " " + ClearcaseUtil.quote(osPath)).message
+                                "describe -fmt " + ClearcaseUtil.quote("%Vn") //$NON-NLS-1$ //$NON-NLS-2$
+                                        + " " + ClearcaseUtil.quote(osPath)).message //$NON-NLS-1$
                         .trim().replace('\\', '/')
-                        : "";
-                changed = changed || !newVersion.equals(this.version);
+                        : null;
+                changed = changed || newVersion == null ? null != this.version
+                        : !newVersion.equals(this.version);
                 this.version = newVersion;
 
                 if (newIsSymbolicLink) {
@@ -190,42 +195,42 @@ public class StateCache implements Serializable {
                             .getSymbolicLinkTarget(osPath);
                     if (status.status) {
                         String newTarget = status.message;
-                        changed = changed
-                                || !newTarget.equals(this.symbolicLinkTarget);
+                        if (null != newTarget && newTarget.trim().length() == 0)
+                                newTarget = null;
+                        changed = changed || null == newTarget ? null != this.symbolicLinkTarget
+                                : !newTarget.equals(this.symbolicLinkTarget);
                         this.symbolicLinkTarget = newTarget;
                     }
 
                     boolean newIsTargetValid = ClearcasePlugin.getEngine()
                             .isSymbolicLinkTargetValid(osPath);
                     changed = changed
-                            || newIsTargetValid != this.isSymbolicLinkTargetValid;
-                    this.isSymbolicLinkTargetValid = newIsTargetValid;
+                            || newIsTargetValid != this
+                                    .isSymbolicLinkTargetValid();
+                    setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
 
-                } else if (!"".equals(this.symbolicLinkTarget)) {
-                    this.symbolicLinkTarget = "";
-                    this.isSymbolicLinkTargetValid = false;
+                } else if (null != this.symbolicLinkTarget) {
+                    this.symbolicLinkTarget = null;
+                    setFlag(SYM_LINK_TARGET_VALID, false);
                     changed = true;
                 }
+
             } else {
                 // resource does not exists
-                hasRemote = false;
-                isCheckedOut = false;
-                isSnapShot = false;
-                isHijacked = false;
-                isSymbolicLink = false;
-                version = "";
-                symbolicLinkTarget = "";
+                flags = 0;
+                version = null;
+                symbolicLinkTarget = null;
                 changed = true;
-                ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: "
+                ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: " //$NON-NLS-1$
                         + resource);
             }
 
-            uninitialized = false;
+            updateTimeStamp = resource.getModificationStamp();
         }
 
         // fire state change (lock must be released prior)
         if (changed) {
-            ClearcasePlugin.debug(DEBUG_ID, "updated " + this);
+            ClearcasePlugin.debug(DEBUG_ID, "updated " + this); //$NON-NLS-1$
             StateCacheFactory.getInstance().fireStateChanged(this.resource);
         }
     }
@@ -236,16 +241,16 @@ public class StateCache implements Serializable {
      * @return Returns a boolean
      */
     public boolean hasRemote() {
-        return hasRemote;
+        return getFlag(HAS_REMOTE);
     }
 
     /**
-     * Gets the isCheckedOut.
+     * Gets the isCheckedOut().
      * 
      * @return Returns a boolean
      */
     public boolean isCheckedOut() {
-        return isCheckedOut;
+        return getFlag(CHECKED_OUT);
     }
 
     /**
@@ -254,22 +259,25 @@ public class StateCache implements Serializable {
      * @return Returns a boolean
      */
     public boolean isDirty() {
-        if (osPath == null) return false;
+        if (null == resource) return false;
 
         // performance improve: if not checked out it is not dirty
-        if (!isCheckedOut) return false;
+        if (!isCheckedOut()) return false;
 
-        try {
-            return ClearcasePlugin.getEngine().isDifferent(osPath);
-        } catch (RuntimeException ex) {
-            ClearcasePlugin.log(IStatus.ERROR,
-                    "Could not determine element dirty state of "
-                            + osPath
-                            + ": "
-                            + (null != ex.getCause() ? ex.getCause()
-                                    .getMessage() : ex.getMessage()), ex);
-            return false;
-        }
+        // this is too expensive
+        //try {
+        //    return ClearcasePlugin.getEngine().isDifferent(osPath);
+        //} catch (RuntimeException ex) {
+        //    ClearcasePlugin.log(IStatus.ERROR,
+        //            "Could not determine element dirty state of "
+        //                    + osPath
+        //                    + ": "
+        //                    + (null != ex.getCause() ? ex.getCause()
+        //                            .getMessage() : ex.getMessage()), ex);
+        //    return false;
+        //}
+
+        return resource.getModificationStamp() != updateTimeStamp;
     }
 
     /**
@@ -278,7 +286,7 @@ public class StateCache implements Serializable {
      * @return Returns a boolean
      */
     public boolean isEdited() {
-        return isEdited;
+        return getFlag(CHECKED_OUT_OTHER_VIEW);
     }
 
     /**
@@ -296,7 +304,7 @@ public class StateCache implements Serializable {
      * @return String
      */
     public String getVersion() {
-        return version;
+        return null == version ? "" : version; //$NON-NLS-1$
     }
 
     /**
@@ -307,20 +315,20 @@ public class StateCache implements Serializable {
     public String getPredecessorVersion() {
         String predecessorVersion = null;
 
-        IClearcase.Status status = (isHijacked ? ClearcasePlugin.getEngine()
+        IClearcase.Status status = (isHijacked() ? ClearcasePlugin.getEngine()
                 .cleartool(
-                        "ls "
+                        "ls " //$NON-NLS-1$
                                 + ClearcaseUtil.quote(resource.getLocation()
                                         .toOSString())) : ClearcasePlugin
                 .getEngine().cleartool(
-                        "describe -fmt %PVn "
+                        "describe -fmt %PVn " //$NON-NLS-1$
                                 + ClearcaseUtil.quote(resource.getLocation()
                                         .toOSString())));
         if (status.status) {
             predecessorVersion = status.message.trim().replace('\\', '/');
-            if (isHijacked) {
-                int offset = predecessorVersion.indexOf("@@") + 2;
-                int cutoff = predecessorVersion.indexOf("[hijacked]") - 1;
+            if (isHijacked()) {
+                int offset = predecessorVersion.indexOf("@@") + 2; //$NON-NLS-1$
+                int cutoff = predecessorVersion.indexOf("[hijacked]") - 1; //$NON-NLS-1$
                 try {
                     predecessorVersion = predecessorVersion.substring(offset,
                             cutoff);
@@ -334,30 +342,30 @@ public class StateCache implements Serializable {
     }
 
     /**
-     * Returns the uninitialized.
+     * Returns the isUninitialized().
      * 
      * @return boolean
      */
     public boolean isUninitialized() {
-        return uninitialized;
+        return IResource.NULL_STAMP == updateTimeStamp;
     }
 
     /**
-     * Returns the isHijacked.
+     * Returns the isHijacked().
      * 
      * @return boolean
      */
     public boolean isHijacked() {
-        return isHijacked;
+        return getFlag(HIJACKED);
     }
 
     /**
-     * Returns the isSnapShot.
+     * Returns the isSnapShot().
      * 
      * @return boolean
      */
     public boolean isSnapShot() {
-        return isSnapShot;
+        return getFlag(SNAPSHOT);
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
@@ -422,32 +430,29 @@ public class StateCache implements Serializable {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        StringBuffer toString = new StringBuffer("StateCache ");
+        StringBuffer toString = new StringBuffer("StateCache "); //$NON-NLS-1$
         toString.append(resource);
-        toString.append(": ");
-        if (uninitialized) {
-            toString.append("not initialized");
-        } else if (!hasRemote) {
-            toString.append("no clearcase element");
-        } else if (hasRemote) {
+        toString.append(": "); //$NON-NLS-1$
+        if (isUninitialized()) {
+            toString.append("not initialized"); //$NON-NLS-1$
+        } else if (!hasRemote()) {
+            toString.append("no clearcase element"); //$NON-NLS-1$
+        } else if (hasRemote()) {
             toString.append(version);
 
-            if (isSymbolicLink) {
-                toString.append(" [SYMBOLIC LINK (");
+            if (isSymbolicLink()) {
+                toString.append(" [SYMBOLIC LINK ("); //$NON-NLS-1$
                 toString.append(symbolicLinkTarget);
-                toString.append(")]");
+                toString.append(")]"); //$NON-NLS-1$
             }
 
-            if (isCheckedOut) toString.append(" [CHECKED OUT]");
+            if (isCheckedOut()) toString.append(" [CHECKED OUT]"); //$NON-NLS-1$
 
-            // maybe to expensive
-            //if (isDirty()) toString.append(" [DIRTY]");
+            if (isHijacked()) toString.append(" [HIJACKED]"); //$NON-NLS-1$
 
-            if (isHijacked) toString.append(" [HIJACKED]");
-
-            if (isSnapShot) toString.append(" [SNAPSHOT]");
+            if (isSnapShot()) toString.append(" [SNAPSHOT]"); //$NON-NLS-1$
         } else {
-            toString.append("invalid");
+            toString.append("invalid"); //$NON-NLS-1$
         }
 
         return toString.toString();
@@ -483,7 +488,7 @@ public class StateCache implements Serializable {
      * @return
      */
     public boolean isSymbolicLink() {
-        return isSymbolicLink;
+        return getFlag(SYM_LINK);
     }
 
     /**
@@ -492,13 +497,36 @@ public class StateCache implements Serializable {
      * @return returns the symbolicLinkTarget
      */
     public String getSymbolicLinkTarget() {
-        return symbolicLinkTarget;
+        return null == symbolicLinkTarget ? "" : symbolicLinkTarget; //$NON-NLS-1$
     }
 
     /**
      * @return
      */
     public boolean isSymbolicLinkTargetValid() {
-        return isSymbolicLinkTargetValid;
+        return getFlag(SYM_LINK_TARGET_VALID);
+    }
+
+    /**
+     * Returns <code>true</code> if the specified flag is set.
+     * 
+     * @param flag
+     * @return <code>true</code> if the specified flag is set
+     */
+    boolean getFlag(int flag) {
+        return 0 != (flags & flag);
+    }
+
+    /**
+     * Sets the flag to the specified value.
+     * 
+     * @param flag
+     * @param value
+     */
+    void setFlag(int flag, boolean value) {
+        if (value)
+            flags |= flag;
+        else
+            flags &= ~flag;
     }
 }
