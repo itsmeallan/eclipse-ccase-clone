@@ -36,6 +36,16 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 	}
 	
 	
+	public synchronized boolean isUnitialized(IResource resource)
+	{
+		String osPath = resource.getLocation().toOSString();
+		StateCache cache = (StateCache) cacheMap.get(osPath);
+		if (cache == null)
+			return true;
+		else
+			return cache.isUninitialized();
+	}
+	
 	public synchronized StateCache get(IResource resource)
 	{
 		String osPath = resource.getLocation().toOSString();

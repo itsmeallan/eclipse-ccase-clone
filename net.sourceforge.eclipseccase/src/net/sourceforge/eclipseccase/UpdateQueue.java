@@ -69,6 +69,14 @@ public class UpdateQueue
 		}
 	}
 
+	public void remove(Runnable cmd)
+	{
+		synchronized (queue)
+		{
+			queue.remove(cmd);
+		}
+	}
+
 	private void updateLoop()
 	{
 		while (active)

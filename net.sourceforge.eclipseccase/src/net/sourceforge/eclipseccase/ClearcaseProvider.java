@@ -167,8 +167,7 @@ public class ClearcaseProvider
 				Status result = OK_STATUS;
 				StateCache cache =
 					StateCacheFactory.getInstance().get(resource);
-				if (! cache.isUninitialized())
-					cache.updateAsync(true);
+				cache.updateAsync(true);
 				return result;
 			}
 		}, resources, depth, progress);
@@ -462,7 +461,7 @@ public class ClearcaseProvider
 	
 	public boolean isUnknownState(IResource resource)
 	{
-		return StateCacheFactory.getInstance().get(resource).isUninitialized();
+		return StateCacheFactory.getInstance().isUnitialized(resource);
 	}
 	
 	/**

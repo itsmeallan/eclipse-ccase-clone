@@ -15,7 +15,6 @@ public class StateCache implements Serializable
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
 
-
 	private String osPath;
 	private transient IResource resource;
 	private boolean uninitialized = true;
@@ -56,14 +55,17 @@ public class StateCache implements Serializable
 	public synchronized void updateAsync(boolean asap)
 	{
 		uninitialized = true;
-		Runnable cmd = new Runnable()
-		{
-			public void run() { update(); }
-		};
+		Runnable cmd = new UpdateCacheCommand(this);
+		UpdateQueue queue = UpdateQueue.getInstance();
 		if (asap)
-			UpdateQueue.getInstance().addFirst(cmd);
+		{
+			queue.remove(cmd);
+			queue.addFirst(cmd);
+		}
 		else
+		{
 			UpdateQueue.getInstance().add(cmd);
+		}
 	}
 
 	public synchronized void update()
@@ -159,5 +161,31 @@ public class StateCache implements Serializable
 	{
 		return resource;
 	}
+
+	private static class UpdateCacheCommand implements Runnable
+	{
+		StateCache cache;
+		UpdateCacheCommand(StateCache cache)
+		{
+			this.cache = cache;
+		}
+		
+		public void run()
+		{
+			cache.update();
+		}
+		
+		public boolean equals(Object obj)
+		{
+			if (! (obj instanceof UpdateCacheCommand))
+				return false;
+			return cache.equals(((UpdateCacheCommand) obj).cache);
+		}
+		public int hashCode()
+		{
+			return cache.hashCode();
+		}
+	}
+	
 
 }
