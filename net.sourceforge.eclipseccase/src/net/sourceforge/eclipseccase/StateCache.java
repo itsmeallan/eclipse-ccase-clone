@@ -123,12 +123,14 @@ public class StateCache implements Serializable
 	 */
 	public void update(boolean quick)
 	{
-		if (quick)
+		if (quick && !uninitialized)
 		{
 			if (resource.getType() != IResource.FILE
 				|| (resource.isReadOnly()
 					== (isCheckedOut || !hasRemote || isHijacked)))
+			{
 				doUpdate();
+			}
 		}
 		else
 		{
