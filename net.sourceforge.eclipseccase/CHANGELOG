@@ -5,7 +5,7 @@
 - changed persitent state cache to human readable XML file
 - fixed a lot bugs
 - added debug support via Eclipse ".options" file
-- preference to set lifetime of cached JNI calls in seconds. [0=disable caching, 2=huge speed improvement]
+- preference to set lifetime of cached JNI calls (in seconds). [0=disable caching, 5=huge speed improvement]
 
 1.0.0.M2
 --------
