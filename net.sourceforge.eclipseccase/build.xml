@@ -21,21 +21,25 @@
 		<mkdir dir="${jni.build}"/>
 	</target>
 
-	<target name="properties">
-		<property name="build.compiler" value="org.eclipse.pde.internal.core.JDTCompilerAdapter"/>
-		<property name="plugin.path" value="file:/${basedir}/../../plugins/"/>
-		<pluginLocation plugin="org.eclipse.swt" property="location.org.eclipse.swt"/>
-		<pluginLocation plugin="org.eclipse.ui" property="location.org.eclipse.ui"/>
-		<pluginLocation plugin="org.eclipse.compare" property="location.org.eclipse.compare"/>
-		<pluginLocation plugin="org.eclipse.help" property="location.org.eclipse.help"/>
-		<pluginLocation plugin="org.eclipse.core.boot" property="location.org.eclipse.core.boot"/>
-		<pluginLocation plugin="org.apache.lucene" property="location.org.apache.lucene"/>
-		<pluginLocation plugin="org.eclipse.team.ui" property="location.org.eclipse.team.ui"/>
-		<pluginLocation plugin="org.eclipse.core.runtime" property="location.org.eclipse.core.runtime"/>
-		<pluginLocation plugin="org.eclipse.team.core" property="location.org.eclipse.team.core"/>
-		<pluginLocation plugin="org.apache.xerces" property="location.org.apache.xerces"/>
-		<pluginLocation plugin="org.eclipse.core.resources" property="location.org.eclipse.core.resources"/>
-		<property name="compilePath" value="${location.org.eclipse.core.runtime}/bin;${location.org.eclipse.core.runtime}/runtime.jar;${location.org.eclipse.core.boot}/bin;${location.org.eclipse.core.boot}/boot.jar;${location.net.sourceforge.eclipseccase}/bin;${location.net.sourceforge.eclipseccase}/clearcase.jar;${location.org.apache.xerces}/bin;${location.org.apache.xerces}/xerces.jar;${location.org.eclipse.core.resources}/bin;${location.org.eclipse.core.resources}/resources.jar;${location.org.eclipse.ui}/bin;${location.org.eclipse.ui}/workbench.jar;${location.org.eclipse.help}/bin;${location.org.eclipse.help}/help.jar;${location.org.apache.lucene}/bin;${location.org.apache.lucene}/lucene-1.2-rc2.jar;${location.org.apache.lucene}/lucenedemo.zip;${location.org.eclipse.swt}/bin;${location.org.eclipse.swt}/ws/win32/swt-pi.jar;${location.org.eclipse.swt}/ws/win32/swt.jar;${location.org.eclipse.team.core}/bin;${location.org.eclipse.team.core}/team.jar;${location.org.eclipse.team.ui}/bin;${location.org.eclipse.team.ui}/teamui.jar;${location.org.eclipse.compare}/bin;${location.org.eclipse.compare}/compare.jar"/>
+	<target name="eclipse_specific" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+	</target>
+		
+	<target name="properties" depends="eclipse_specific">
+		<property name="plugin.dir" value="${basedir}/../../plugins"/>
+		<path id="dependent.plugins">
+			<fileset dir="${plugin.dir}" includes="org.eclipse.swt*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.ui*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.compare*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.help*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.core.boot*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.apache.lucene*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.team.ui*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.core.runtime*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.team.core*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.apache.xerces*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.core.resources*/**/*.jar"/>
+		</path>
 	</target>
 	
 	<target name="clean">
@@ -76,7 +80,7 @@
 
 	<target name="java_compile" depends="init">
 		<echo message="Compiling java src"/>
-		<javac classpath="${compilePath}" srcdir="src" destdir="bin" debug="${debug}"/>
+		<javac classpathref="dependent.plugins" srcdir="src" destdir="bin" debug="${debug}"/>
 	</target>
 
 	<target name="jni_headers" depends="init">
