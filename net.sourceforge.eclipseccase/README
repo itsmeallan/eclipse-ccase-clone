@@ -1,0 +1,22 @@
+The plugin is pretty simple right now, but works for me
+under Windows NT sp6a with clearcase version 4.2 and eclipse M5.
+If you get the plugin working with a different configuration, feel
+free to post your setup to the sourceforge forums for this project
+
+I only use dynamic views, so I have only really tested it
+with them.  I have added some basic snapshot view functionality
+(such as update), but no guarantees as to how well it works.
+The way I use it is to create my project directory in a
+clearcase view, and _then_ create a new eclipse project,
+pointing it to that directory in the view.  Once I have an
+eclipse project that uses a clearcase directory as its project
+directory, I can then associate that project with my plugin by
+selecting the project in the resource tree view, right click,
+then Team->Associate with clearcase. After this, clearcase
+operations are then active for all resources in the project.
+
+There is currently no way to add an existing eclipse project to
+clearcase version control - though once you have a
+Project dir under clearcase, you can add a subtree of
+files to clearcase, so only requirement is the initial
+project directory under clearcase.
