@@ -491,7 +491,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
         addField(new RadioGroupFieldEditor(
                 IClearcasePreferenceConstants.CHECKOUT_RESERVED,
                 PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, new String[][] { //$NON-NLS-1$
-                        { PreferenceMessages.getString("Always"), VALUE_FORCE}, //$NON-NLS-1$
+                        { PreferenceMessages.getString("Force"), VALUE_FORCE}, //$NON-NLS-1$
                         { PreferenceMessages.getString("IfPossible"), VALUE_IF_POSSIBLE}, //$NON-NLS-1$
                         { PreferenceMessages.getString("Never"), VALUE_NEVER}}, //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT), true));
@@ -514,8 +514,8 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
                 PreferenceMessages.getString("Preferences.Comments.CommentAddNeverOnAuto"), getFieldEditorParent(COMMENTS))); //$NON-NLS-1$
 
         addField(new BooleanFieldEditor(
-                IClearcasePreferenceConstants.COMMENT_ESCAPE,
-                PreferenceMessages.getString("Preferences.Comments.CommentEscape"), //$NON-NLS-1$
+                COMMENT_ESCAPE,
+                PreferenceMessages.getString("Preferences.Comments.CommentEscapeXml"), //$NON-NLS-1$
                 getFieldEditorParent(COMMENTS)));
     }
 
