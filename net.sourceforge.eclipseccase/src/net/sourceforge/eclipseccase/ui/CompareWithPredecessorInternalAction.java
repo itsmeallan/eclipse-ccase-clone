@@ -46,6 +46,11 @@ public class CompareWithPredecessorInternalAction extends TeamAction
 			return false;
 		if (! provider.hasRemote(resource))
 			return false;
+		
+		// Only allow comparing of folders for dynamic views for now
+		// (even on dynamic views it is somewhat broken)
+		if (resource.getType() == IResource.FOLDER && provider.isSnapShot())
+			return false;
 
 		IResource predecessor = null;
 		String version = provider.getPredecessorVersion(resource);
