@@ -6,13 +6,13 @@ using namespace std;
 #import <ccauto.dll> named_guids 
 using namespace ClearCase;
 
-static IClearCasePtr ccase = NULL;
-static IClearToolPtr cleartool = NULL;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+_bstr_t formatError(_com_error& cerror)
+{
+	ostringstream os;
+	os << "Error: " << cerror.ErrorMessage() << endl;
+	os << "Details: " << (const char*) cerror.Description() << endl;
+	return _bstr_t(os.str().c_str());
+}
 
 void raiseJNIException(JNIEnv * env, const char * msg)
 {
@@ -35,6 +35,9 @@ jobject createStatus(JNIEnv * env, boolean status, const char * message)
 	return statusObj;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*
  * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    initialize
@@ -43,6 +46,9 @@ jobject createStatus(JNIEnv * env, boolean status, const char * message)
 JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_initialize
   (JNIEnv * env, jclass obj)
 {
+	IClearCasePtr ccase = NULL;
+	IClearToolPtr cleartool = NULL;
+
 	try 
 	{ 
 		CoInitialize(NULL);
@@ -60,8 +66,10 @@ JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_initialize
 	{
 		raiseJNIException(env, "Unhandled Exception in Clearcase JNI layer");
 	}
-	if(ccase == NULL)
-		raiseJNIException(env, "Could not initialize Clearcase in JNI layer");
+	if (ccase == NULL)
+		raiseJNIException(env, "Could not get a IClearCasePtr instance in Clearcase JNI layer");
+	if (cleartool == NULL)
+		raiseJNIException(env, "Could not get a IClearToolPtr instance in Clearcase JNI layer");
 }
 
 /*
@@ -77,6 +85,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnichec
 	const char *commentstr = env->GetStringUTFChars(comment, 0);
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		boolean useHijacked = false;
 		boolean mustBeLatest = false;
@@ -90,7 +100,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnichec
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -116,6 +126,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnichec
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		ICCCheckedOutFilePtr cofile = ccase->GetCheckedOutFile(filestr);
 		cofile->CheckIn(commentstr, ptime, "", ccRemove);
@@ -123,7 +135,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnichec
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -148,6 +160,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniunch
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		ICCCheckedOutFilePtr cofile = ccase->GetCheckedOutFile(filestr);
 		cofile->UnCheckOut(keep ? ccKeep : ccRemove);
@@ -155,7 +169,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniunch
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -180,6 +194,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnidele
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		ICCElementPtr elt = ver->GetElement();
 		elt->RemoveName(commentstr, true);
@@ -187,7 +203,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnidele
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -213,6 +229,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniadd
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCCheckedOutFilePtr cofile;
 		if (isdirectory)
 			cofile = ccase->CreateElement(filestr, commentstr, false, "directory");
@@ -222,7 +240,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniadd
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -249,6 +267,8 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnimove
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCElementPtr elt = ccase->GetElement(filestr);
 		HRESULT ret = elt->Rename(newfilestr, commentstr);
 		if (ret)
@@ -264,7 +284,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnimove
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -290,12 +310,14 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnigetV
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCViewPtr view = ccase->GetView(filestr);
 		result = createStatus(env, true, view->GetTagName());
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -320,6 +342,9 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniclea
 	try 
 	{
 		// Issue a ClearTool command 
+		// Cleartool requires a COInitialize everytime for some reason.
+		CoInitialize(NULL);
+		IClearToolPtr cleartool = IClearToolPtr(CLSID_ClearTool);
 		_bstr_t output = cleartool->CmdExec(cmdstr);
 		if (!output)
 			output = "";
@@ -327,7 +352,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniclea
 	}
 	catch(_com_error& cerror) 
 	{ 
-		result = createStatus(env, false, cerror.Description());
+		result = createStatus(env, false, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -336,6 +361,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniclea
 
 	env->ReleaseStringUTFChars(cmd, cmdstr);
 	return result;
+
 }
 
 /*
@@ -351,15 +377,14 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisC
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		result = ver->GetIsCheckedOut();
 	}
 	catch(_com_error& cerror) 
 	{ 
-		ostringstream os;
-		os << (const char *) cerror.Description(); 
-		os << "Error code: " << cerror.Error(); 
-		raiseJNIException(env, os.str().c_str());
+		raiseJNIException(env, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -383,10 +408,12 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisE
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		result = true;
 	}
-	catch(_com_error& cerror) 
+	catch(_com_error&) 
 	{ 
 	}
 	catch(...)
@@ -411,15 +438,14 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisD
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		result = ver->GetIsDifferent();
 	}
 	catch(_com_error& cerror) 
 	{ 
-		ostringstream os;
-		os << (const char *) cerror.Description(); 
-		os << "Error code: " << cerror.Error(); 
-		raiseJNIException(env, os.str().c_str());
+		raiseJNIException(env, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -443,15 +469,14 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisS
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCViewPtr view = ccase->GetView(filestr);
 		result = view->GetIsSnapShot();
 	}
 	catch(_com_error& cerror) 
 	{ 
-		ostringstream os;
-		os << (const char *) cerror.Description(); 
-		os << "Error code: " << cerror.Error(); 
-		raiseJNIException(env, os.str().c_str());
+		raiseJNIException(env, formatError(cerror));
 	}
 	catch(...)
 	{
@@ -475,15 +500,14 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisH
 
 	try 
 	{ 
+		CoInitialize(NULL);
+		IClearCasePtr ccase = IClearCasePtr(CLSID_Application);
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		result = ver->GetIsHijacked();
 	}
 	catch(_com_error& cerror) 
 	{ 
-		ostringstream os;
-		os << (const char *) cerror.Description(); 
-		os << "Error code: " << cerror.Error(); 
-		raiseJNIException(env, os.str().c_str());
+		raiseJNIException(env, formatError(cerror));
 	}
 	catch(...)
 	{
