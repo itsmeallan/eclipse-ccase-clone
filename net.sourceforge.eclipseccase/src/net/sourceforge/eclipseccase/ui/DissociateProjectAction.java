@@ -6,7 +6,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.team.core.Team;
+import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 
@@ -24,9 +24,7 @@ public class DissociateProjectAction extends TeamAction
 		{
 			try
 			{
-				Team.removeNatureFromProject(projects[i], ClearcaseProvider.ID, null);
-				//SimpleProvider p = (SimpleProvider) RepositoryProvider.getProvider(project);
-				//p.configureProvider(config);
+				RepositoryProvider.unmap(projects[i]);
 				MessageDialog.openInformation(
 					shell,
 					"Clearcase Plugin",
