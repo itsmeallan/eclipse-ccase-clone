@@ -54,7 +54,7 @@
 		<mkdir dir="${staging.dir}"/>
 		<mkdir dir="${staging.dir}/features"/>
 		<mkdir dir="${staging.dir}/plugins"/>
-		<copy file="${basedir}/site.xml" todir="${staging.dir}">
+		<copy file="${basedir}/site-template.xml" todir="${staging.dir}">
 			<filterset begintoken="$${" endtoken="}">
 				<filter token="feature.id" value="${feature.id}"/>
 				<filter token="feature.version" value="${feature.version}"/>

@@ -7,5 +7,5 @@
    <feature url="features/${feature.id}_${feature.version}.jar" id="${feature.id}" version="${feature.version}">
       <category name="team-provider"/>
    </feature>
-   <category-def name="team-provider" label="Team Provider"/>
+   <category-def name="team-provider" label="Clearcase Team Provider"/>
 </site>
