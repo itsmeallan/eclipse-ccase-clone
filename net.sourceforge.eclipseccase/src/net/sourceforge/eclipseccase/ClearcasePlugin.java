@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase;
 
+import net.sourceforge.clearcase.simple.ClearcaseException;
 import net.sourceforge.clearcase.simple.ClearcaseFactory;
 import net.sourceforge.clearcase.simple.IClearcase;
 
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -86,19 +88,35 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 
 	public static IClearcase getEngine()
 	{
-		return ClearcasePlugin.getDefault().getClearcase();
+		IClearcase impl = null;
+		try
+		{
+			impl = ClearcasePlugin.getDefault().getClearcase();
+		}
+		catch (CoreException e)
+		{
+			log(IStatus.ERROR, "Could not get a clearcase engine", e);
+		}
+		return impl;
 	}
 	
-	public IClearcase getClearcase()
+	public IClearcase getClearcase() throws CoreException
 	{
-		if (clearcaseImpl == null)
+		try
 		{
-			if (isUseCleartool())
-				clearcaseImpl = ClearcaseFactory.getInstance().createInstance(ClearcaseFactory.CLI);
-			else
-				clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
+			if (clearcaseImpl == null)
+			{
+				if (isUseCleartool())
+					clearcaseImpl = ClearcaseFactory.getInstance().createInstance(ClearcaseFactory.CLI);
+				else
+					clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
+			}
+			return clearcaseImpl;
 		}
-		return clearcaseImpl;
+		catch (ClearcaseException e)
+		{
+			throw new CoreException(new Status(IStatus.ERROR, ClearcasePlugin.ID, TeamException.UNABLE, "Could not retrieve a valid clearcase engine", e));
+		}
 	}
 	
 	public void resetClearcase()
@@ -198,6 +216,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public void startup() throws CoreException
 	{
 		super.startup();
+		
+		// Disables plugin if clearcase is not available (throws CoreEx)
+		getClearcase();
+	
 		StateCacheFactory cacheFactory = StateCacheFactory.getInstance();
         ISavedState lastState =
             ResourcesPlugin.getWorkspace().addSaveParticipant(this, cacheFactory);
