@@ -5,5 +5,4 @@
       autobuild="false"
       scrub-output="false"
       use-console="true">
-   <feature id="net.sourceforge.eclipseccase.feature" version="0.9.10"/>
 </site-build>

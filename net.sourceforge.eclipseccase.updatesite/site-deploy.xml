@@ -16,7 +16,6 @@
 		<property name="plugins.dir" value="${staging.dir}/plugins"/>
 		
 		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip"/>
-		<property name="feature.eclipseccase.3.package" value="${staging.dir}/full/net.sourceforge.eclipseccase.3_${version}.zip"/>
 
 		<property name="site.deploy.host" value="shell.sourceforge.net"/>	
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update"/>
@@ -88,9 +87,6 @@
 					password="${password}"
 					releasedate="${release.date}">
         <filespec file="${feature.eclipseccase.package}" 
-                  filetype="gzip_file" 
-                  processortype="platform_independent"/>
-        <filespec file="${feature.eclipseccase.3.package}" 
                   filetype="gzip_file" 
                   processortype="platform_independent"/>
       </sfpublish-->
