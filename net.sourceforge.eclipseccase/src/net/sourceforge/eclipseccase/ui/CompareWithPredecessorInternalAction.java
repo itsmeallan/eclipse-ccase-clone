@@ -10,12 +10,14 @@ import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.compare.ResourceCompareInput;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFile;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFolder;
+import net.sourceforge.eclipseccase.compare.VersionExtendedProject;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -57,6 +59,9 @@ public class CompareWithPredecessorInternalAction extends TeamAction
 				break;
 			case IResource.FOLDER:
 				predecessor = new VersionExtendedFolder((IFolder) resource, version);
+				break;
+			case IResource.PROJECT:
+				predecessor = new VersionExtendedProject((IProject) resource, version);
 				break;
 			default:
 				return false;
