@@ -3,11 +3,13 @@ package net.sourceforge.eclipseccase;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
@@ -42,10 +44,21 @@ public class ModificationHandler implements IFileModificationValidator
 		{
 			provider.checkout((IResource[]) needCheckout.toArray(new IResource[needCheckout.size()]),
 							 IResource.DEPTH_INFINITE, null);
+			// Refresh resource state so that editor context menus/completion/etc know that file is now writable
+			for (Iterator iter = needCheckout.iterator(); iter.hasNext();)
+			{
+				IResource element = (IResource) iter.next();
+				element.refreshLocal(IResource.DEPTH_ZERO, null);
+				
+			}
 		}
 		catch(TeamException ex)
 		{
 			result = ex.getStatus();
+		}
+		catch (CoreException ex)
+		{
+			result = new Status(IStatus.WARNING, ClearcaseProvider.ID, TeamException.IO_FAILED, "Failed to refresh resource state: " + ex, null);
 		}
 		return result;			
 	}
