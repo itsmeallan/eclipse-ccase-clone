@@ -303,7 +303,8 @@ public class ClearcaseUI extends AbstractUIPlugin
      */
     protected void initializeDefaultPreferences(IPreferenceStore store)
     {
-        super.initializeDefaultPreferences(store);
+    	// @deprecated    // spec'ed to do nothing 
+//        super.initializeDefaultPreferences(store);
 
         // Decorator preferences
         store
