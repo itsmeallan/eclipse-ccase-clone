@@ -78,7 +78,7 @@ public class ClearcaseDecorator
 					parentQueue.clear();
 				}
 			}
-		}, 0, 250);
+		}, 0, 500);
 	}
 
 	public void dispose()
