@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.eclipseccase.3"
+   name="Clearcase Plugin Eclipse 3 Extensions"
+   version="0.9.10"
+   provider-name="eclipse-ccase.sourceforge.net"
+   class="">
+
+   <runtime>
+      <library name="clearcase-3.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="net.sourceforge.eclipseccase.ui"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.editors"/>
+   </requires>
+
+
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.quickDiffReferenceProvider">
+      <referenceprovider
+            label="Clearcase Predecessor"
+            class="net.sourceforge.eclipseccase.PredecessorQuickDiff"
+            id="net.sourceforge.eclipseccase.predecessorQuickDiff">
+      </referenceprovider>
+   </extension>
+
+</plugin>
