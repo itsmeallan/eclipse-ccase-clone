@@ -1,14 +1,15 @@
-0.9.10.eclipse2
----------------
+0.9.10
+------
 
-- merged compatible changes from HEAD
+- splitted plugins to better support different Eclipse architectures
+- merged fixes from eclipse_2 branch
 - a lot bug fixes
 - added debug support via command line option "-debugClearCase"
   debug output will be written to "<workspaceroot>/clearcase.debug.log"
 - resource change improvements
 
-0.9.9.eclipse2
---------------
+0.9.9
+-----
 
 - Added a project set serializer to enable export and import of project sets
 - Added support for multi-line comments and comments with double quotes
@@ -21,11 +22,15 @@
   in the global Team preferences)
 - Fixed operations to continue on warnings but stop immediately on errors
 
-0.9.8.eclipse2
+0.9.8
 -----
 
-- created version branch for eclipse 2.x and merged in compatible changes
-  and fixes from HEAD
+- Updated for 3.0 - no longer works with 2.1.x, use 0.9.8 if you are stuck on 2.1.x
+- Use local images instead of trying to reuse Team images through API (needed for 3.0)
+- Added QuickDiff provider for eclipse 3.0 - to use it right click in left ruler of editor, Set QuickDiff Reference->Clearcase Predecessor
+- Fixed some minor bugs
+- Created feature and update site accesible at http://eclipse-ccase.sourceforge.net/update
+- Repackaged plugins with feature, so if you don't use the update site, you need to extract into the eclipse directory rather than the plugins directory.
 
 0.9.7
 -----

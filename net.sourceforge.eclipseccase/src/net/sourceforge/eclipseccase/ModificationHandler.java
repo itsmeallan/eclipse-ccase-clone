@@ -11,10 +11,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.core.TeamException;
 
+/**
+ * The file modification handler for auto-checkout.
+ */
 public class ModificationHandler implements IFileModificationValidator
 {
 	
@@ -22,6 +23,7 @@ public class ModificationHandler implements IFileModificationValidator
 
 	/**
 	 * Constructor for ModificationHandler.
+     * @param provider
 	 */
 	public ModificationHandler(ClearcaseProvider provider)
 	{
@@ -59,10 +61,10 @@ public class ModificationHandler implements IFileModificationValidator
                 }
                 result = new Status(IStatus.ERROR, ClearcaseProvider.ID, TeamException.NOT_CHECKED_OUT,
                 message.toString(), null); 
-                if(null != context && context instanceof Shell)
-                {
-                    MessageDialog.openInformation((Shell)context, "Check Out", "The ClearCase auto checkout feature is disabled. Resources need to be checked out manually.");
-                }
+//                if(null != context && context instanceof Shell)
+//                {
+//                    MessageDialog.openInformation((Shell)context, "Check Out", "The ClearCase auto checkout feature is disabled. Resources need to be checked out manually.");
+//                }
                 return result;
             }
             

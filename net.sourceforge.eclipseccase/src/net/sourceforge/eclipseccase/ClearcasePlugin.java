@@ -20,7 +20,6 @@ import net.sourceforge.clearcase.simple.ClearcaseFactory;
 import net.sourceforge.clearcase.simple.IClearcase;
 import net.sourceforge.clearcase.simple.IClearcaseDebugger;
 import net.sourceforge.eclipseccase.tools.XMLWriter;
-import net.sourceforge.eclipseccase.ui.ClearcaseImages;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ISavedState;
@@ -32,10 +31,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -48,7 +47,7 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ClearcasePlugin extends AbstractUIPlugin implements IClearcaseDebugger
+public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 {
     //The shared instance.
     private static ClearcasePlugin plugin;
@@ -65,7 +64,6 @@ public class ClearcasePlugin extends AbstractUIPlugin implements IClearcaseDebug
     {
         super(descriptor);
         plugin = this;
-        ClearcaseImages.initializeImages();
 
         String[] args = Platform.getCommandLineArgs();
         for (int i = 0; i < args.length; i++)
@@ -204,118 +202,124 @@ public class ClearcasePlugin extends AbstractUIPlugin implements IClearcaseDebug
             clearcaseImpl = null;
         }
     }
-
-    protected void initializeDefaultPreferences(IPreferenceStore store)
+    
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
+     */
+    protected void initializeDefaultPluginPreferences()
     {
+        Preferences pref = getPluginPreferences();
+
         // General preferences
-        store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
-        store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
-        store.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
-        store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
-        store.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
-        store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
-        store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
-        store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
-        store.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
-        store.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
-        store.setDefault(IPreferenceConstants.ESCAPE_COMMENTS, false);
-        store.setDefault(IPreferenceConstants.MULTILINE_COMMENTS, true);
+        pref.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
+        pref.setDefault(IPreferenceConstants.PERSIST_STATE, true);
+        pref.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
+        pref.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
+        pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
+        pref.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
+        pref.setDefault(IPreferenceConstants.ADD_COMMENT, true);
+        pref.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
+        pref.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
+        pref.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
+        pref.setDefault(IPreferenceConstants.ESCAPE_COMMENTS, false);
+        pref.setDefault(IPreferenceConstants.MULTILINE_COMMENTS, true);
 
         // Decorator preferences
-        store.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
-        store.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
-        store.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
-        store.setDefault(IPreferenceConstants.TEXT_NEW_DECORATION, false);
-        store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
+        pref.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
+        pref.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
+        pref.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
+        pref.setDefault(IPreferenceConstants.TEXT_NEW_DECORATION, false);
+        pref.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
     }
 
     public static boolean isReservedCheckouts()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.RESERVED_CHECKOUT);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.RESERVED_CHECKOUT);
     }
 
     public static boolean isPersistState()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.PERSIST_STATE);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.PERSIST_STATE);
     }
 
     public static boolean isRefreshOnChange()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFRESH_ON_CHANGE);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.REFRESH_ON_CHANGE);
     }
 
     public static boolean isCheckinComment()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKIN_COMMENT);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.CHECKIN_COMMENT);
     }
 
     public static boolean isCheckinPreserveTime()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.CHECKIN_PRESERVE_TIME);
     }
 
     public static boolean isCheckoutComment()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
     }
 
     public static boolean isAddComment()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.ADD_COMMENT);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.ADD_COMMENT);
     }
 
     public static boolean isCheckoutOnEdit()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
     }
 
     public static boolean isRefactorAddsDir()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
     }
 
     public static boolean isTextViewDecoration()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.TEXT_VIEW_DECORATION);
     }
 
     public static boolean isTextVersionDecoration()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.TEXT_VERSION_DECORATION);
     }
 
     public static boolean isTextDirtyDecoration()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.TEXT_DIRTY_DECORATION);
     }
 
     public static boolean isTextNewDecoration()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.TEXT_NEW_DECORATION);
     }
     public static boolean isDeepDecoration()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.DEEP_DECORATIONS);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.DEEP_DECORATIONS);
     }
 
     public static boolean isUseCleartool()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.USE_CLEARTOOL);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.USE_CLEARTOOL);
     }
 
     public static boolean isEscapeComments()
     {
-        return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.ESCAPE_COMMENTS);
+        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.ESCAPE_COMMENTS);
     }
 
     public static boolean isMultiLineComments()
     {
-        return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPluginPreferences().getBoolean(
             IPreferenceConstants.MULTILINE_COMMENTS);
     }
 
