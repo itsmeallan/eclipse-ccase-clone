@@ -1,6 +1,7 @@
 package net.sourceforge.eclipseccase.views;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -41,13 +42,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 {
 	private TableViewer viewer;
 	private Action refreshAction;
-	private Collection checkouts = new TreeSet(new Comparator()
+	private Collection checkouts = Collections.synchronizedSortedSet(new TreeSet(new Comparator()
 	{
 		public int compare(Object o1, Object o2)
 		{
-			return o1.toString().compareTo(o2.toString());
+			return ((IResource) o1).getFullPath().toString().compareTo(((IResource) o2).getFullPath().toString());
 		}
-	});
+	}));
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -195,14 +196,14 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			{
 				public boolean visit(IResource resource) throws CoreException
 				{
+					if (StateCacheFactory.getInstance().isUnitialized(resource))
+						return false;
+					
 					StateCache cache =
 						StateCacheFactory.getInstance().get(resource);
 					if (cache.hasRemote())
 					{
-						if (cache.isCheckedOut())
-							checkouts.add(resource);
-						else
-							checkouts.remove(resource);
+						updateCheckout(cache);
 						return true;
 					}
 					else
@@ -227,20 +228,33 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	 */
 	public void stateChanged(StateCache stateCache)
 	{
-		if (stateCache.isCheckedOut())
+		if (updateCheckout(stateCache))
 		{
-			checkouts.add(stateCache.getResource());
-		}
-		else
-		{
-			checkouts.remove(stateCache.getResource());
-		}
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
+			Display.getDefault().asyncExec(new Runnable()
 			{
-				viewer.refresh();
-			}
-		});
+				public void run()
+				{
+					viewer.refresh();
+				}
+			});
+		}
+	}
+	
+	private boolean updateCheckout(StateCache stateCache)
+	{
+		boolean actionPerformed = false;
+		IResource resource = stateCache.getResource();
+		boolean contains = checkouts.contains(resource);
+		if (stateCache.isCheckedOut() && ! contains)
+		{
+			checkouts.add(resource);
+			actionPerformed = true;
+		}
+		else if (contains)
+		{
+			checkouts.remove(resource);
+			actionPerformed = true;
+		}
+		return actionPerformed;
 	}
 }
