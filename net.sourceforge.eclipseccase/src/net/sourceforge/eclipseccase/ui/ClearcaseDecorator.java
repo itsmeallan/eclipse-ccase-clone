@@ -59,7 +59,7 @@ public class ClearcaseDecorator
 		IResource resource = getResource(element);
 		if (resource == null || resource.getType() == IResource.ROOT)
 			return text;
-		ClearcaseProvider p = getClearcaseProvider(resource);
+		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		if (p == null)
 			return text;
 		
@@ -99,7 +99,7 @@ public class ClearcaseDecorator
 		IResource resource = getResource(element);
 		if (resource == null || resource.getType() == IResource.ROOT)
 			return image;
-		ClearcaseProvider p = getClearcaseProvider(resource);
+		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		if (p == null)
 			return image;
 		if (!p.hasRemote(resource))
@@ -148,8 +148,7 @@ public class ClearcaseDecorator
 			{
 				public boolean visit(IResource resource) throws CoreException
 				{
-					ClearcaseProvider p =
-						(ClearcaseProvider) RepositoryProvider.getProvider(resource.getProject());
+					ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 					if (p == null)
 						return false;
 
@@ -194,7 +193,7 @@ public class ClearcaseDecorator
 
 					// if this is a change event for a resource not associated with a simple
 					// project, then stop processing the deltas and return an empty event list.
-					ClearcaseProvider p = getClearcaseProvider(resource);
+					ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 					if (p == null)
 						return false;
 
@@ -237,19 +236,6 @@ public class ClearcaseDecorator
 		postLabelEvents(
 			(LabelProviderChangedEvent[]) events.toArray(
 				new LabelProviderChangedEvent[events.size()]));
-	}
-
-	private ClearcaseProvider getClearcaseProvider(IResource resource)
-	{
-		try
-		{
-			return (ClearcaseProvider) RepositoryProvider.getProvider(
-				resource.getProject());
-		}
-		catch (ClassCastException e)
-		{
-			return null;
-		}
 	}
 
 	private IResource getResource(Object object)

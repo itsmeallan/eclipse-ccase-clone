@@ -349,12 +349,7 @@ public class ClearcaseProvider
 	 */
 	public boolean isCheckedOut(IResource resource)
 	{
-		boolean result = false;
-		String path = resource.getLocation().toOSString();
-		// Team seems to call isCheckedOut for non elements (bug?), so do a check
-		if (Clearcase.isElement(path))
-			result = Clearcase.isCheckedOut(path);
-		return result;
+		return StateCache.getState(resource).isCheckedOut();
 	}
 
 	/**
@@ -370,8 +365,7 @@ public class ClearcaseProvider
 	 */
 	public boolean hasRemote(IResource resource)
 	{
-		boolean result = Clearcase.isElement(resource.getLocation().toOSString());
-		return result;
+		return StateCache.getState(resource).hasRemote();
 	}
 
 	/**
@@ -379,10 +373,7 @@ public class ClearcaseProvider
 	 */
 	public boolean isDirty(IResource resource)
 	{
-		String file = resource.getLocation().toOSString();
-		boolean result = (!hasRemote(resource)) || Clearcase.isCheckedOut(file);
-		// && Clearcase.isDifferent(file));
-		return result;
+		return StateCache.getState(resource).isDirty();
 	}
 
 	public IStatus move(IResource source, IResource destination)

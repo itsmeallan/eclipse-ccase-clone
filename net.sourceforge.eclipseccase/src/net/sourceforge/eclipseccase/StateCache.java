@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase;
 
+import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
@@ -48,12 +49,17 @@ public class StateCache
 		ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 		if (provider != null)
 		{
-			hasRemote = provider.hasRemote(resource);
-			isCheckedOut = provider.isCheckedOut(resource);
-			isDirty = provider.isDirty(resource);
+			String path = resource.getLocation().toOSString();
+			hasRemote = Clearcase.isElement(path);
+			if (hasRemote)
+			{
+				isCheckedOut = Clearcase.isCheckedOut(path);
+			}
+			isDirty = (!hasRemote) || isCheckedOut;
 			isSnapShot = provider.isSnapShot();
 		}
 	}
+
 	/**
 	 * Gets the isCheckedOut.
 	 * @return Returns a boolean
