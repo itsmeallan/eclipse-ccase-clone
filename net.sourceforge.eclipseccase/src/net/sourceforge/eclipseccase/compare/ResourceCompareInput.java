@@ -298,10 +298,17 @@ public class ResourceCompareInput extends CompareEditorInput {
 	}
 	
 	private String buildLabel(IResource r) {
+		if (r instanceof VersionExtendedResource)
+		{
+			return  ((VersionExtendedResource)r).getVersionExtendedPath();
+		}
+		else
+		{
 		String n= r.getFullPath().toString();
 		if (n.charAt(0) == IPath.SEPARATOR)
 			return n.substring(1);
 		return n;
+		}
 	}
 	
 	public void saveChanges(IProgressMonitor pm) throws CoreException {
