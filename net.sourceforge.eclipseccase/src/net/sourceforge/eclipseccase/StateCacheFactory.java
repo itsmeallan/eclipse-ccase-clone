@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
 
-public class StateCacheFactory implements Serializable, ISaveParticipant
+public class StateCacheFactory implements ISaveParticipant
 {
 	private static final String SAVE_FILE_NAME = "statecache";
 
