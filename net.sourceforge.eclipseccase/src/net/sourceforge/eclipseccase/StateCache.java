@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase;
 
 import org.eclipse.core.resources.IResource;
@@ -101,7 +102,7 @@ public class StateCache implements Serializable {
 			String version =
 				ClearcasePlugin
 					.getEngine()
-					.cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"")
+					.cleartool("describe -fmt " + ClearcaseUtil.quote("%Vn") + " " + ClearcaseUtil.quote(osPath))
 					.message
 					.trim()
 					.replace('\\', '/');
@@ -181,10 +182,10 @@ public class StateCache implements Serializable {
 		IClearcase.Status status =
 			(isHijacked
 				? ClearcasePlugin.getEngine().cleartool(
-					"ls " + resource.getLocation().toOSString())
+					"ls " + ClearcaseUtil.quote(resource.getLocation().toOSString()))
 				: ClearcasePlugin.getEngine().cleartool(
 					"describe -fmt %PVn "
-						+ resource.getLocation().toOSString()));
+						+ ClearcaseUtil.quote(resource.getLocation().toOSString())));
 		if (status.status) {
 			version = status.message.trim().replace('\\', '/');
 			if (isHijacked) {

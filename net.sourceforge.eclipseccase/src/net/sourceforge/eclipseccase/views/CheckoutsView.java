@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -560,7 +561,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
 			IClearcase.Status result =
 				ClearcasePlugin.getEngine().cleartool(
-					"lsco -me -cview -short -all " + prefix);
+					"lsco -me -cview -short -all " + ClearcaseUtil.quote(prefix));
 			if (!result.status)
 				throw new Exception(result.message);
 

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase.Status;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.StateCache;
@@ -51,7 +52,7 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 					final File tempFile = File.createTempFile("eclipseccase", null);
 					tempFile.delete();
 					tempFile.deleteOnExit();
-					Status status = ClearcasePlugin.getEngine().cleartool("get -to " + tempFile.getPath() + " " + getVersionExtendedPath());
+					Status status = ClearcasePlugin.getEngine().cleartool("get -to " + ClearcaseUtil.quote(tempFile.getPath()) + " " + ClearcaseUtil.quote(getVersionExtendedPath()));
 					contents = new FileInputStream(tempFile.getPath())
 					{
 						public void close() throws IOException

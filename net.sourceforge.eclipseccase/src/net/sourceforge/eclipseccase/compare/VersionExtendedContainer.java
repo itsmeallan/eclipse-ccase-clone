@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
 import org.eclipse.core.resources.IContainer;
@@ -96,7 +97,7 @@ abstract public class VersionExtendedContainer
 				boolean isDirectory =
 					ClearcasePlugin
 						.getEngine()
-						.cleartool("describe \"" + file.getPath() + "\"")
+						.cleartool("describe " + ClearcaseUtil.quote(file.getPath()))
 						.message.indexOf("type: directory") != -1;
 				IResource child = null;
 				if (isDirectory)

@@ -3,6 +3,7 @@ package net.sourceforge.eclipseccase.actions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
@@ -61,7 +62,7 @@ public class FindCheckOutsAction extends ClearcaseAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("lscheckout -graphical \"" + path + "\"");
+							ClearcasePlugin.getEngine().cleartool("lscheckout -graphical " + ClearcaseUtil.quote(path));
 						}
 						else
 						{

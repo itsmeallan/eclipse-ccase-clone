@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 
+import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase;
 
 import org.eclipse.core.resources.IContainer;
@@ -95,7 +96,7 @@ public class ClearcaseProvider
 				String filename = resource.getLocation().toOSString();
 				IClearcase.Status status =
 					ClearcasePlugin.getEngine().cleartool(
-						"update -log NUL -force -ptime \"" + filename + "\"");
+						"update -log NUL -force -ptime " + ClearcaseUtil.quote(filename));
 				changeState(resource, IResource.DEPTH_INFINITE, progress);
 				if (!status.status)
 				{
