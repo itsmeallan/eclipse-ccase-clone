@@ -77,7 +77,7 @@ public class ClearcaseDecorator
 					parentQueue.clear();
 				}
 			}
-		}, 0, 500);
+		}, 0, 250);
 	}
 
 	/**
@@ -235,23 +235,15 @@ public class ClearcaseDecorator
 
 	public void resourceStateChanged(IResource[] changedResources)
 	{
-		// add depth first so that update thread processes parents first.
-		//System.out.println(">> State Change Event");
-		List resourcesToUpdate = new LinkedList();
-
 		boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
-
 		for (int i = 0; i < changedResources.length; i++)
 		{
-			IResource resource = changedResources[i];
-
 			if (deepDecoration)
-				queueParents(resource);
-			resourcesToUpdate.add(resource);
+				queueParents(changedResources[i]);
 		}
 
 		postLabelEvent(
-			new LabelProviderChangedEvent(this, resourcesToUpdate.toArray()));
+			new LabelProviderChangedEvent(this, changedResources));
 	}
 
 	private void queueParents(IResource resource)

@@ -169,11 +169,30 @@ public class ClearcaseProvider
 				Status result = OK_STATUS;
 				StateCache cache =
 					StateCacheFactory.getInstance().get(resource);
-				cache.updateAsync(true);
+				cache.updateAsync(false, true);
 				return result;
 			}
 		}, resources, depth, progress);
 	}
+
+   public void refreshQuick(
+      IResource[] resources,
+      int depth,
+      IProgressMonitor progress)
+      throws TeamException
+   {
+      execute(new IRecursiveOperation()
+      {
+         public IStatus visit(IResource resource, IProgressMonitor progress)
+         {
+            Status result = OK_STATUS;
+            StateCache cache =
+               StateCacheFactory.getInstance().get(resource);
+            cache.updateAsync(true, true);
+            return result;
+         }
+      }, resources, depth, progress);
+   }
 
 	/**
 	 * @see SimpleAccessOperations#checkin(IResource[], int, IProgressMonitor)
@@ -598,7 +617,7 @@ public class ClearcaseProvider
 				// case by case basis for eac method that actually changes state
 				StateCache cache =
 					StateCacheFactory.getInstance().get(resource);
-				cache.update();
+				cache.update(false);
 				return result;
 			}
 		}, resource, depth, monitor);

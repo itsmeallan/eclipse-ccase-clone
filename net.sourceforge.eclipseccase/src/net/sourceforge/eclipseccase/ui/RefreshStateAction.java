@@ -13,8 +13,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public class RefreshStateAction extends TeamAction
 {
-	private String lastComment = "";
-
 	/*
 	 * Method declared on IActionDelegate.
 	 */
@@ -36,6 +34,7 @@ public class RefreshStateAction extends TeamAction
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 						provider.refresh(new IResource[] {resource},
 											IResource.DEPTH_INFINITE, subMonitor);
+						//ClearcaseDecorator.refresh(resource);
 						monitor.worked(1);
 					}
 				}

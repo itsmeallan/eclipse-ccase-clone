@@ -187,6 +187,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
 	private void findCheckouts()
 	{
+		checkouts.clear();
 		try
 		{
 			ClearcasePlugin

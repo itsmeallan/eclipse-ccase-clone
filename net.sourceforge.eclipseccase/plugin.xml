@@ -85,6 +85,11 @@
 				menubarPath="team.main/group1"
 				id="net.sourceforge.eclipseccase.popups.refresh">
 			</action>
+			<action label="Refresh State (Quick)"
+				class="net.sourceforge.eclipseccase.ui.RefreshStateQuickAction"
+				menubarPath="team.main/group1"
+				id="net.sourceforge.eclipseccase.popups.refreshquick">
+			</action>
 			<action label="Checkout"
 				class="net.sourceforge.eclipseccase.ui.CheckOutAction"
 				menubarPath="team.main/group1"
