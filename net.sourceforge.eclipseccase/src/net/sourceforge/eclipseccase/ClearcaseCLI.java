@@ -4,23 +4,23 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import net.sourceforge.eclipseccase.IClearcase.Status;
 
-public class ClearcaseCommand implements IClearcase
+public class ClearcaseCLI implements IClearcase
 {
-	private String prompt = "cleartool> ";
+	private String newLine = System.getProperty("line.separator");
+	private String prompt = "Usage: pwd" + newLine;
 	private Process cleartool;
 	private BufferedReader stdout;
 	private BufferedReader stderr;
 	private Writer stdin;
+	private char[] buf = new char[4096];
 
-	ClearcaseCommand()
+	public ClearcaseCLI()
 	{
 	}
 
@@ -45,29 +45,42 @@ public class ClearcaseCommand implements IClearcase
 	{
 		if (! isRunning())
 		{
+			// Only want to add shutdown hook once per process, and
+			// cleartool is only ever null first time through
+			if (cleartool == null)
+			{
+				Runtime.getRuntime().addShutdownHook(new Thread()
+				{
+					public void run()
+					{
+						try
+						{
+							if (cleartool != null)
+								cleartool.destroy();
+						}
+						catch (Exception ex) {}
+					}
+				});
+			}
 			cleartool = Runtime.getRuntime().exec("cleartool");
 			stdout = new BufferedReader(new InputStreamReader(new BufferedInputStream(cleartool.getInputStream())));
 			stderr = new BufferedReader(new InputStreamReader(new BufferedInputStream(cleartool.getErrorStream())));
 			stdin = new OutputStreamWriter(cleartool.getOutputStream());
-			Runtime.getRuntime().addShutdownHook(new Thread()
-			{
-				public void run()
-				{
-					cleartool.destroy();
-				}
-			});
 		}
 	}
 
-	private Status execute(String cmd)
+	private synchronized Status execute(final String cmd)
 	{
 		Status result = null;
 		try
 		{
 			validateProcess();
 			stdin.write(cmd);
-			stdin.write("\n");
+			stdin.write(newLine);
+			stdin.write("pwd -h");
+			stdin.write(newLine);
 			stdin.flush();
+			
 			return readOutput();
 		}
 		catch (Exception ex)
@@ -78,43 +91,51 @@ public class ClearcaseCommand implements IClearcase
 
 	private Status readOutput()
 	{
-		int timeout = 10;
 		int count = 0;
-		char[] buf = new char[4096];
+		int iter = 0;
+		int retry = 10;
 		StringBuffer out = new StringBuffer();
 		StringBuffer err = new StringBuffer();
 		StringBuffer msg = new StringBuffer();
-		boolean status = false;
+		boolean status = true;
 		
 		try
 		{
-			for(int iter = 0; iter < timeout; iter++)
+			while(true)
 			{
-				if (stdout.ready())
-				{
-					count = stdout.read(buf);
-					out.append(buf, 0, count);
-				}
+				// block on read of stdout as we always expect at least the prompt
+				count = stdout.read(buf);
+				out.append(buf, 0, count);
+
 				if (stderr.ready())
 				{
 					count = stderr.read(buf);
 					err.append(buf, 0, count);
 				}
+
+				// Exit when we get the prompt as its always the last thing done,
+				// so we know cmd has finished
 				if (out.toString().endsWith(prompt))
 				{
 					out.delete(out.length() - prompt.length(), out.length());
 					status = true;
 					break;
 				}
+
+				if (iter > retry)
+				{
+					throw new RuntimeException("Timeout while waiting for command to complete");
+				}
+
+				iter++;
 			}
 		}
 		catch (IOException ex)
 		{
-			err.append("IOException while trying to parse cleartool output: ");
-			err.append(ex);
-			status = false;
+			throw new RuntimeException("IOException while trying to parse cleartool output: " + ex);
 		}
-		
+
+
 		if (out.length() > 0)
 		{
 			msg.append(out);
@@ -201,7 +222,16 @@ public class ClearcaseCommand implements IClearcase
 	 */
 	public Status getViewName(String file)
 	{
-		return new Status(true, "unimplemented");
+		File dir = new File(file);
+		if (! dir.isDirectory())
+			dir = dir.getParentFile();
+		synchronized(this)
+		{
+			Status result = execute("cd " + dir.getPath());
+			if (result.status)
+				result = execute ("pwv -s");
+			return result;
+		}
 	}
 
 	/**
@@ -221,7 +251,15 @@ public class ClearcaseCommand implements IClearcase
 	 */
 	public boolean isDifferent(String file)
 	{
-		return false;
+		boolean result = false;
+
+		if (isCheckedOut(file))
+		{
+			Status diffResult = execute("diff -pred " + file);
+			if (! diffResult.message.startsWith("File are identical"))
+				result = true;
+		}
+		return result;
 	}
 
 	/**
@@ -241,7 +279,11 @@ public class ClearcaseCommand implements IClearcase
 	 */
 	public boolean isHijacked(String file)
 	{
-		return false;
+		boolean result = false;
+		Status lsResult = execute("ls " + file);
+		if (lsResult.status && lsResult.message.indexOf("[hijacked]") != -1)
+			result = true;
+		return result;
 	}
 
 	/**
@@ -249,7 +291,19 @@ public class ClearcaseCommand implements IClearcase
 	 */
 	public boolean isSnapShot(String file)
 	{
-		return false;
+		File dir = new File(file);
+		if (! dir.isDirectory())
+			dir = dir.getParentFile();
+		synchronized(this)
+		{
+			Status result = execute("cd " + dir.getPath());
+			if (result.status)
+				result = execute ("lsview -cview -properties -full");
+			if (result.status && result.message.indexOf("Properties: snapshot") != -1)
+				return true;
+			else
+				return false;
+		}
 	}
 
 	/**
@@ -267,6 +321,38 @@ public class ClearcaseCommand implements IClearcase
 	{
 		String flag = keep ? "-keep " : "-rm ";
 		return execute("uncheckout " + flag + file);
+	}
+	
+	/** For testing puposes only */
+	public static void main(String[] args)
+	{
+		if (args.length == 0)
+		{
+			System.out.println("Usage: Clearcase existing_ccase_elt nonexisting_ccase_elt");
+			System.exit(1);
+		}
+		String file = args[0];
+		IClearcase ccase = new ClearcaseCLI();
+		
+		System.out.println("getViewName: " + ccase.getViewName(file).message);
+		System.out.println("isSnapShot: " + ccase.isSnapShot(file));
+		System.out.println("isElement: " + ccase.isElement(file));
+		System.out.println("isCheckedOut: " + ccase.isCheckedOut(file));
+		System.out.println("checkout: " + ccase.checkout(file, "", false, true).message);
+		System.out.println("isCheckedOut: " + ccase.isCheckedOut(file));
+		System.out.println("uncheckout: " + ccase.uncheckout(file, false).message);
+		System.out.println("isCheckedOut: " + ccase.isCheckedOut(file));
+
+		if (args.length > 1)
+		{
+			String newfile = args[1];
+			System.out.println("isElement: " + ccase.isElement(newfile));
+			System.out.println("add: " + ccase.add(newfile, "", false).message);
+			System.out.println("isElement: " + ccase.isElement(newfile));
+			System.out.println("checkin: " + ccase.checkin(newfile, "", true).message);
+			System.out.println("delete: " + ccase.delete(newfile, "").message);
+			System.out.println("isElement: " + ccase.isElement(newfile));
+		}
 	}
 
 }

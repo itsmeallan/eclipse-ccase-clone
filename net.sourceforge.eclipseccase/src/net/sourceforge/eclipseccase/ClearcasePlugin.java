@@ -78,7 +78,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		if (clearcaseImpl == null)
 		{
 			if (isUseCleartool())
-				clearcaseImpl = new ClearcaseCommand();
+				clearcaseImpl = new ClearcaseCLI();
 			else
 				clearcaseImpl = new ClearcaseJNI(); 
 		}
