@@ -497,11 +497,15 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		// The collection of resources each of which we find checkouts for the subtree
 		Collection findResources = new LinkedList();
 
-		// Want to find checkouts for project if it is an element.
-		if (StateCacheFactory.getInstance().get(project).hasRemote())
-		{
-			findResources.add(project);
-		}
+		//RDM: For snapshot views, the basedir of the snapshot view itself is not in CC, but it's children are.
+//		
+//		// Want to find checkouts for project if it is an element.
+//		if (StateCacheFactory.getInstance().get(project).hasRemote())
+//		{
+//			findResources.add(project);
+//		}
+
+
 
 		// Even if project is/isn't an element, we still need to scan the links
 		// and find checkouts for any links which are elements
@@ -511,8 +515,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			for (int j = 0; j < members.length; j++)
 			{
 				IResource child = members[j];
-				if (child.isLinked()
-					&& StateCacheFactory.getInstance().get(child).hasRemote())
+				//RDM: No matter what, we scan all the children of the project to find CC-children
+				if (/*child.isLinked()&& */StateCacheFactory.getInstance().get(child).hasRemote())
 				{
 					findResources.add(child);
 				}
