@@ -2,9 +2,9 @@
 <feature
       id="net.sourceforge.eclipseccase"
       label="%featureName"
-      version="1.0.0.RC1"
-      image="eclipse-ccase.jpg"
-      provider-name="%providerName">
+      version="1.0.0"
+      provider-name="%providerName"
+      image="eclipse-ccase.jpg">
 
    <description>
       %description

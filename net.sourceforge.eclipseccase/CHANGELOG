@@ -1,10 +1,13 @@
-1.0.0.RC1
----------
+1.0.0
+-----
 
 - applied patch 1024155 (fix for preference setting)
 - checkins are now also performed in the background
 - fixed the About dialog content
-
+- fixed problem with resource deletion (1055293)
+- added a workaround for preserving file modification times (refactoring)
+- stopped refreshing for derived and ignored resources (1031167, 1055293)
+- small other issues
 
 1.0.0.M3
 --------

@@ -182,11 +182,6 @@ class StateCacheJobQueue extends Job {
             wakeUp(DEFAULT_DELAY);
             break;
         case NONE:
-            // lock job to avoid illegal state exceptions
-            synchronized (this) {
-                if (getState() == Job.NONE)
-                        setSystem(ClearcasePlugin.isHideRefreshActivity());
-            }
             schedule(DEFAULT_DELAY);
             break;
         case RUNNING:
