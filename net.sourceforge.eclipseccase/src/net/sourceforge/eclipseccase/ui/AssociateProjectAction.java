@@ -4,6 +4,7 @@ import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -26,14 +27,28 @@ public class AssociateProjectAction extends TeamAction
 		{
 			try
 			{
-				IProject project = projects[i];
+				final IProject project = projects[i];
 				String projectPath = project.getLocation().toOSString();
 				if (! ClearcasePlugin.getEngine().getViewName(projectPath).status)
 					throw new TeamException("The Project directory must exist within a clearcase view");
 				RepositoryProvider.map(project, ClearcaseProvider.ID);
 				Team.removeNatureFromProject(project, ClearcaseProvider.ID, new NullProgressMonitor());
-				ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
-				provider.refresh(new IResource[] {project}, IResource.DEPTH_ZERO, null);
+				final ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
+				Thread t = new Thread()
+				{
+					public void run()
+					{
+						try
+						{
+							provider.refresh(new IResource[] {project}, IResource.DEPTH_INFINITE, null);
+						}
+						catch (TeamException e)
+						{
+							ClearcasePlugin.log(IStatus.ERROR, "Problems refreshing clearcase state for project", e);
+						}
+					}
+				};
+				t.start();
 				MessageDialog.openInformation(
 					shell,
 					"Clearcase Plugin",

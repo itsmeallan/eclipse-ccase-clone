@@ -1,13 +1,14 @@
 package net.sourceforge.eclipseccase.ui;
 
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -19,12 +20,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.internal.ui.TeamUIPlugin;
+import org.eclipse.team.internal.ui.UIConstants;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IDecoratorManager;
@@ -40,7 +43,7 @@ public class ClearcaseDecorator
 	private static final CoreException CORE_EXCEPTION =
 		new CoreException(new Status(IStatus.OK, "id", 1, "", null));
 	private static final String ID = "net.sourceforge.eclipseccase.ui.decorator";
-	
+
 	private Map iconCache = new HashMap();
 
 	public ClearcaseDecorator()
@@ -98,7 +101,7 @@ public class ClearcaseDecorator
 		return buffer.toString();
 	}
 
-	private Image getImage(OverlayComposite icon)
+	private synchronized Image getImage(OverlayComposite icon)
 	{
 		Image image = (Image) iconCache.get(icon);
 		if (image == null)
@@ -122,30 +125,39 @@ public class ClearcaseDecorator
 
 		OverlayComposite result = new OverlayComposite(image.getImageData());
 
-		if (p.isCheckedOut(resource))
+		if (p.isUnknownState(resource))
 		{
 			result.addForegroundImage(
-				TeamImages
-					.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR)
+				ClearcaseImages
+					.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR)
 					.getImageData());
 		}
 		else
 		{
-			result.addForegroundImage(
-				TeamImages
-					.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR)
-					.getImageData());
+			if (p.isCheckedOut(resource))
+			{
+				result.addForegroundImage(
+					ClearcaseImages
+						.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR)
+						.getImageData());
+			}
+			else
+			{
+				result.addForegroundImage(
+					ClearcaseImages
+						.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR)
+						.getImageData());
+			}
+			
+	 		if (isDirty(resource))
+			{
+				result.addForegroundImage(
+					ClearcaseImages
+						.getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR)
+						.getImageData());
+			}
 		}
-		
-/*
- 		if (isDirty(resource))
-		{
-			result.addForegroundImage(
-				TeamImages
-					.getImageDescriptor(ISharedImages.IMG_DIRTY_OVR)
-					.getImageData());
-		}
-*/
+
 		return getImage(result);
 	}
 
@@ -267,5 +279,23 @@ public class ClearcaseDecorator
 			});
 		}
 	}
+	
+	public static void labelResource(final IResource resource)
+	{
+		IDecoratorManager manager = ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+		if (manager.getEnabled(ID))
+		{
+			final ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					activeDecorator.fireLabelProviderChanged(new LabelProviderChangedEvent(activeDecorator, resource));
+				}
+			});
+		}
+	}
+
+
 
 }

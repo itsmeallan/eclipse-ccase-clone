@@ -43,7 +43,7 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 		return instance;
 	}
 	
-
+	
 	public synchronized StateCache get(IResource resource)
 	{
 		String osPath = resource.getLocation().toOSString();
@@ -51,10 +51,12 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 		if (cache == null)
 		{
 			cache = new StateCache(osPath);
+			cache.updateAsync();
 			cacheMap.put(osPath, cache);
 		}
 		return cache;
 	}
+	
 	
 	public synchronized void set(IResource resource, StateCache cache)
 	{

@@ -9,6 +9,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
+import org.eclipse.ui.internal.DecoratorDefinition;
+import org.eclipse.ui.internal.DecoratorManager;
+import org.eclipse.ui.internal.WorkbenchPlugin;
 
 public class DissociateProjectAction extends TeamAction
 {
@@ -25,6 +28,8 @@ public class DissociateProjectAction extends TeamAction
 			try
 			{
 				RepositoryProvider.unmap(projects[i]);
+				ClearcaseDecorator.refresh();
+
 				MessageDialog.openInformation(
 					shell,
 					"Clearcase Plugin",

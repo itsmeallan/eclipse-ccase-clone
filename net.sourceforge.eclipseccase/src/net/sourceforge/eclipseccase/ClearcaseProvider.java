@@ -33,9 +33,6 @@ public class ClearcaseProvider
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
-	public static final String STATE_CHANGE_MARKER_TYPE =
-		"net.sourceforge.eclipseccase.statechangedmarker";
-
 	private static final Status OK_STATUS =
 		new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 
@@ -171,12 +168,11 @@ public class ClearcaseProvider
 		{
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
-				IStatus result = OK_STATUS;
-				result =
-					changeClearcaseState(
-						resource,
-						IResource.DEPTH_ZERO,
-						progress);
+				Status result = OK_STATUS;
+				StateCache cache =
+					StateCacheFactory.getInstance().get(resource);
+				if (! cache.isUninitialized())
+					cache.updateAsync();
 				return result;
 			}
 		}, resources, depth, progress);
@@ -475,6 +471,11 @@ public class ClearcaseProvider
 		return isSnapShot.booleanValue();
 	}
 
+	public boolean isUnknownState(IResource resource)
+	{
+		return StateCacheFactory.getInstance().get(resource).isUninitialized();
+	}
+	
 	/**
 	 * @see SimpleAccessOperations#hasRemote(IResource)
 	 */
@@ -603,45 +604,11 @@ public class ClearcaseProvider
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				Status result = OK_STATUS;
-				try
-				{
-					// probably overkill/expensive to do it here - should do it on a
-					// case by case basis for eac method that actually changes state
-					StateCache cache =
-						StateCacheFactory.getInstance().get(resource);
-					cache.update();
-
-					// This is a hack until I get around to creating my own state change mechanism for decorators
-					// create a marker and set attribute so decorator gets notified without the resource actually
-					// changing (so refactoring doesn't fail).  Should we delete the marker?
-					IMarker[] markers =
-						resource.findMarkers(
-							ClearcaseProvider.STATE_CHANGE_MARKER_TYPE,
-							false,
-							IResource.DEPTH_ZERO);
-					IMarker marker = null;
-					if (markers.length == 0)
-					{
-						marker =
-							resource.createMarker(STATE_CHANGE_MARKER_TYPE);
-					}
-					else
-					{
-						marker = markers[0];
-					}
-					marker.setAttribute("statechanged", true);
-				}
-				catch (CoreException e)
-				{
-					result =
-						new Status(
-							IStatus.ERROR,
-							ID,
-							TeamException.UNABLE,
-							"Unable to refresh the clearcase state for the resource: "
-								+ resource.toString(),
-							e);
-				}
+				// probably overkill/expensive to do it here - should do it on a
+				// case by case basis for eac method that actually changes state
+				StateCache cache =
+					StateCacheFactory.getInstance().get(resource);
+				cache.update();
 				return result;
 			}
 		}, resource, depth, monitor);
