@@ -59,8 +59,11 @@
 				<include name="${dll.name}"/>
 			</zipfileset>
 			<zipfileset dir="."
-						prefix="plugins/net.sourceforge.eclipseccase"
-						includes="plugin.xml"/>
+						prefix="plugins/net.sourceforge.eclipseccase">
+							<include name="plugin.xml"/>
+							<include name="LICENSE"/>
+							<include name="README"/>
+			</zipfileset>							
 		</zip>
 		<copy file="${output.dll}" todir="."/>
 	</target>
