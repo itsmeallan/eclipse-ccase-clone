@@ -22,7 +22,7 @@
 	</target>
 
 	<target name="eclipse_specific" if="eclipse.running">
-		<property name="xbuild.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
 	</target>
 		
 	<target name="properties" depends="eclipse_specific">
