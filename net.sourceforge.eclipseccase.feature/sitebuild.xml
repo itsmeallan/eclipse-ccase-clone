@@ -47,7 +47,7 @@
 		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
 	</target>
 	
-	<target name="all" depends="init,,build-feature,deploy-site,deploy-sf-release">
+	<target name="all" depends="init,build-feature,deploy-site,deploy-sf-release">
 	</target>
 
 	<target name="build-feature" depends="init">
