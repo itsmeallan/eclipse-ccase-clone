@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 
 public class CheckInAction extends ClearcaseWorkspaceAction {
 

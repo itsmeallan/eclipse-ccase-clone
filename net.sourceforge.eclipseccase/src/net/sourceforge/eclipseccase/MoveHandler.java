@@ -1,6 +1,5 @@
 package net.sourceforge.eclipseccase;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.eclipse.core.resources.IContainer;
