@@ -4,3 +4,4 @@ plugins
 full
 .externalToolBuilders
 logs
+login.properties
