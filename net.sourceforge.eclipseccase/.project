@@ -11,12 +11,12 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.pde.ManifestBuilder</name>
+			<name>org.eclipse.pde.ui.ManifestBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.pde.SchemaBuilder</name>
+			<name>org.eclipse.pde.ui.SchemaBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -24,6 +24,6 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.team.cvs.core.cvsnature</nature>
-		<nature>org.eclipse.pde.PluginNature</nature>
+		<nature>org.eclipse.pde.ui.PluginNature</nature>
 	</natures>
 </projectDescription>
