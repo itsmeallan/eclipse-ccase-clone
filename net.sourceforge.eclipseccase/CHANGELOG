@@ -1,7 +1,8 @@
 0.9.8
 -----
 
-- Updated for 3.0M2 - should still work with 2.1.x, uses local images instead of trying to reuse Team images through API
+- Updated for 3.0 - should still work with 2.1.x, uses local images instead of trying to reuse Team images through API
+- Fixed some minor bugs
 
 0.9.7
 -----
