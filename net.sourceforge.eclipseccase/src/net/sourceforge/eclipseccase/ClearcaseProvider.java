@@ -2,6 +2,8 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 
+import net.sourceforge.clearcase.simple.IClearcase;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;

@@ -2,12 +2,12 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.9.4"
+   version="0.9.5"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
    <runtime>
-      <library name="clearcase.jar">
+      <library name="eclipseccase.jar">
          <packages prefixes="net.sourceforge.eclipseccase"/>
       </library>
    </runtime>
@@ -20,6 +20,7 @@
       <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.team.ui"/>
       <import plugin="org.eclipse.compare"/>
+      <import plugin="net.sourceforge.clearcase"/>
    </requires>
 
 

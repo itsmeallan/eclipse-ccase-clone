@@ -1,5 +1,8 @@
 package net.sourceforge.eclipseccase;
 
+import net.sourceforge.clearcase.simple.ClearcaseFactory;
+import net.sourceforge.clearcase.simple.IClearcase;
+
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -90,19 +93,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	{
 		if (clearcaseImpl == null)
 		{
-			boolean isDummy = Boolean.valueOf(System.getProperty("eclipseccase.dummy")).booleanValue();
-			if (isDummy)
-			{
-				ClearcaseDummy dummy = new ClearcaseDummy();
-				clearcaseImpl = dummy;
-			}
+			if (isUseCleartool())
+				clearcaseImpl = ClearcaseFactory.getInstance().createInstance(ClearcaseFactory.CLI);
 			else
-			{
-				if (isUseCleartool())
-					clearcaseImpl = new ClearcaseCLI();
-				else
-					clearcaseImpl = new ClearcaseJNI(); 
-			}
+				clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
 		}
 		return clearcaseImpl;
 	}

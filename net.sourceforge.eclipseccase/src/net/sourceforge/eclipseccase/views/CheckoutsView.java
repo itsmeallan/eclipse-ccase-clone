@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import net.sourceforge.clearcase.simple.IClearcase;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.IClearcase;
 import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.StateChangeListener;

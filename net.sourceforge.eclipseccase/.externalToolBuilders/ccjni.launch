@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launchConfiguration type="org.eclipse.ant.AntBuilderLaunchConfigurationType">
-    <stringAttribute
-        key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dbuild.type=${build_type}"/>
-    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/net.sourceforge.eclipseccase/build/buildJNI.xml}"/>
-    <stringAttribute key="org.eclipse.debug.ui.target_run_perspective" value="perspective_none"/>
-</launchConfiguration>

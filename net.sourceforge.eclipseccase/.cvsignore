@@ -1,6 +1,5 @@
-ccjni.dll
 bin
 build.xml
-clearcase.jar
-clearcasesrc.zip
+eclipseccase.jar
+eclipseccasesrc.zip
 net.sourceforge.eclipseccase_*.zip

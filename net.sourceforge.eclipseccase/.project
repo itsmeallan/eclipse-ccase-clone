@@ -3,6 +3,7 @@
 	<name>net.sourceforge.eclipseccase</name>
 	<comment></comment>
 	<projects>
+		<project>net.sourceforge.clearcase</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
