@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.internal.ui.TeamUIPlugin;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamImages;
+import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.internal.misc.OverlayComposite;
 
 // Borrowed heavily from the ExampleDecorator from Team examples
@@ -39,6 +40,8 @@ public class ClearcaseDecorator
 	// Used to exit the isDirty resource visitor
 	private static final CoreException CORE_EXCEPTION =
 		new CoreException(new Status(IStatus.OK, "id", 1, "", null));
+	private static final String ID = "net.sourceforge.eclipseccase.ui.decorator";
+	
 	private Map iconCache = new HashMap();
 
 	public ClearcaseDecorator()
@@ -46,6 +49,16 @@ public class ClearcaseDecorator
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
 			this,
 			IResourceChangeEvent.POST_CHANGE);
+	}
+	
+	public static void refresh()
+	{
+		IDecoratorManager manager = ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+		if (manager.getEnabled(ID))
+		{
+			ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
+			activeDecorator.fireLabelProviderChanged(new LabelProviderChangedEvent(activeDecorator));
+		}
 	}
 
 	/*
@@ -74,9 +87,8 @@ public class ClearcaseDecorator
 
 		if (ClearcasePlugin.isTextVersionDecoration())
 		{
-			buffer.append(" [ver: ");
+			buffer.append(" : ");
 			buffer.append(p.getVersion(resource));
-			buffer.append("]");
 		}
 		
 		return buffer.toString();

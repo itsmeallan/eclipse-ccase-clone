@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase;
 
+import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -116,6 +117,7 @@ public class ClearcasePreferencePage extends PreferencePage
 	 */
 	public boolean performOk()
 	{
+		boolean lastTextVersionValue = ClearcasePlugin.isTextVersionDecoration();
 		IPreferenceStore store = getPreferenceStore();
 		store.setValue(ClearcasePlugin.PREF_RESERVED_CHECKOUT,
 					   reservedCheckoutButton.getSelection());
@@ -133,6 +135,8 @@ public class ClearcasePreferencePage extends PreferencePage
 					   refactorAddsDirButton.getSelection());
 		store.setValue(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION,
 					   textVersionDecorationButton.getSelection());
+		if (textVersionDecorationButton.getSelection() != lastTextVersionValue)
+			ClearcaseDecorator.refresh();
 		savePreferenceStore();
 		return true;
 	}
