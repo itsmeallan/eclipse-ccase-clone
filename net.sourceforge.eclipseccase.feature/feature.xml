@@ -10,14 +10,11 @@
    </url>
 
    <requires>
-      <import plugin="org.junit"/>
-      <import plugin="org.eclipse.core.boot"/>
-      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.team.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.compare"/>
    </requires>
 
@@ -31,6 +28,12 @@
          id="net.sourceforge.eclipseccase"
          download-size="1000"
          install-size="1000"
+         version="0.9.10"/>
+
+   <plugin
+         id="net.sourceforge.eclipseccase.ui"
+         download-size="0"
+         install-size="0"
          version="0.9.10"/>
 
 </feature>
