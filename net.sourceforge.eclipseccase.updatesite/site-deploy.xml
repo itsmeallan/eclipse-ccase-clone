@@ -23,6 +23,8 @@
 		<property name="site.url" value="http://eclipse-ccase.sourceforge.net/update"/>
 		
 		<fileset id="site.deploy.files" dir="${staging.dir}">
+			<include name="index.html"/>
+			<include name="web/*"/>
 			<include name="site.xml"/>
 			<include name="features/*"/>
 			<include name="plugins/*"/>
@@ -66,6 +68,13 @@
 				<fileset refid="site.deploy.files"/>
 			</sftp>
 		</ssh>
+	</target>
+
+	<target name="deploy-local-site" depends="init" if="site.local">
+		<delete dir="${site.local}" failonerror="false"/>
+		<copy todir="${site.local}">				
+			<fileset refid="site.deploy.files"/>
+		</copy>
 	</target>
 	
 	<target name="deploy-sf-release" depends="init">
