@@ -36,7 +36,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static final String PREF_TEXT_VERSION_DECORATION = "net.sourceforge.eclipseccase.text_decoration";
 	public static final String PREF_TEXT_VERSION_DECORATION_DEFAULT = "false";
 	public static final String PREF_USE_CLEARTOOL = "net.sourceforge.eclipseccase.use_cleartool";
-	public static final String PREF_USE_CLEARTOOL_DEFAULT = Boolean.toString(! isWindows);
+	public static final String PREF_USE_CLEARTOOL_DEFAULT = new Boolean(! isWindows).toString();
 	
 	private IClearcase clearcaseImpl;
 	
