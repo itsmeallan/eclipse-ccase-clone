@@ -1,10 +1,12 @@
 0.9.8
 -----
 
-- Updated for 3.0 - should still work with 2.1.x, uses local images instead of trying to reuse Team images through API
+- Updated for 3.0 - no longer works with 2.1.x, use 0.9.8 if you are stuck on 2.1.x
+- Use local images instead of trying to reuse Team images through API (needed for 3.0)
 - Added QuickDiff provider for eclipse 3.0 - to use it right click in left ruler of editor, Set QuickDiff Reference->Clearcase Predecessor
 - Fixed some minor bugs
 - Created feature and update site accesible at http://eclipse-ccase.sourceforge.net/update
+- Repackaged plugins with feature, so if you don't use the update site, you need to extract into the eclipse directory rather than the plugins directory.
 
 0.9.7
 -----
