@@ -1,8 +1,33 @@
+ToDos
+=====
 
-1)	Add UI
-		a)	Internal UI for find checkouts, checkin all
-		b)	more of the UI needed to do everything clearcase inside of
-			eclipse (create view, etc)
 
-- add ignore support (like ".cvsignore")
-- make decoration of not added resources switchable
+1.0.0 
+-----
+(must be ready with Eclipse 3.0)
+
+  - general
+    - investigate new Eclipse API
+    
+  - repository provider
+    - background jobs
+    - scheduling rules (IMoveDeleteHook, auto-checkout ...)
+  
+  - ui
+    - finanlize "checkouts view"
+
+  - clearcase
+    - API for detecting if a resource is checked out by someone else
+
+1.1.0
+-----
+
+  - "compare with" support
+  - investigate new workflow (research)
+  
+  
+long term goals
+---------------
+  
+  - performance improvements using JNI
+  - evolve ClearCase Java API (possibly UCM and managing views)
