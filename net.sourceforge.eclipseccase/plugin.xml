@@ -420,7 +420,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.associate">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+S"
+		      string="Alt+C Alt+S"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.associate"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -432,7 +432,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.dissociate">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+E"
+		      string="Alt+C Alt+E"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.dissociate"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -444,7 +444,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.uncheckout">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+U"
+		      string="Alt+C Alt+U"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.uncheckout"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -456,7 +456,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.checkin">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+I"
+		      string="Alt+C Alt+I"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.checkin"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -468,7 +468,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.refresh">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+R"
+		      string="Alt+C Alt+R"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.refresh"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -480,7 +480,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.refreshquick">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+Q"
+		      string="Alt+C Alt+Q"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.refreshquick"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -492,7 +492,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.checkout">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+O"
+		      string="Alt+C Alt+O"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.checkout"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -504,7 +504,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.update">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+T"
+		      string="Alt+C Alt+T"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.update"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -516,7 +516,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.add">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+A"
+		      string="Alt+C Alt+A"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.add"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -528,7 +528,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.delete">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+D"
+		      string="Alt+C Alt+D"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.delete"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -540,7 +540,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.versiontree">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+V"
+		      string="Alt+C Alt+V"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.versiontree"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -552,7 +552,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.externalupdate">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+X"
+		      string="Alt+C Alt+X"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.externalupdate"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -564,7 +564,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.history">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+H"
+		      string="Alt+C Alt+H"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.history"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -576,7 +576,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.comparepredecessor">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+C"
+		      string="Alt+C Alt+C"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.comparepredecessor"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -588,7 +588,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+P"
+		      string="Alt+C Alt+P"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -600,7 +600,7 @@
 		    id="net.sourceforge.eclipseccase.actionset.findcheckouts">
 		</command>
 		<keyBinding
-		      string="Ctrl+C Ctrl+F"
+		      string="Alt+C Alt+F"
 		      scope="org.eclipse.ui.globalScope"
 		      command="net.sourceforge.eclipseccase.actionset.findcheckouts"
 		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
