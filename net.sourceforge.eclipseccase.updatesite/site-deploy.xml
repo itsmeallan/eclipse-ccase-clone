@@ -8,15 +8,15 @@
 		<!-- must contain properties "user" and "password"-->
 		<property file="login.properties"/>
 
-		<!-- import version from site.xml -->				
-		<xmlproperty file="${basedir}/site.xml" collapseAttributes="true"/>
-
+		<!-- current version (also used for release label) -->				
+		<property name="version" value="0.9.10"/>
+		
 		<property name="staging.dir" value="${basedir}"/>
 		<property name="features.dir" value="${staging.dir}/features"/>
 		<property name="plugins.dir" value="${staging.dir}/plugins"/>
 		
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${site.feature.version}.zip"/>
-		<property name="feature.eclipseccase.3.package" value="${staging.dir}/full/net.sourceforge.eclipseccase.3_${site.feature.version}.zip"/>
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip"/>
+		<property name="feature.eclipseccase.3.package" value="${staging.dir}/full/net.sourceforge.eclipseccase.3_${version}.zip"/>
 
 		<property name="site.deploy.host" value="shell.sourceforge.net"/>	
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update"/>
@@ -71,14 +71,14 @@
 	</target>
 
 	<target name="deploy-local-site" depends="init" if="site.local">
-		<delete dir="${site.local}" failonerror="false"/>
-		<copy todir="${site.local}">				
+		<delete dir="${site.local}/${version}" failonerror="false"/>
+		<copy todir="${site.local}/${version}">				
 			<fileset refid="site.deploy.files"/>
 		</copy>
 	</target>
 	
 	<target name="deploy-sf-release" depends="init" unless="site.local">
-		<sfpublish	releasename="${site.feature.version}"
+		<sfpublish	releasename="${version}"
 					packagename="eclipse-ccase"
 					packagehidden="no"
 					hidden="no"
