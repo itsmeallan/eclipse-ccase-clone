@@ -46,8 +46,8 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 			return false;
 
 		IResource current = null;
+		//TODO	 check if this works for dynamic views, and do the same for folders and projects
 		//Provide version informations in Tab of Compare Window
-		//Todo check if this works for dynamic views, and do the same for folders and projects
 		IResource predecessor = null;
 		String version = provider.getPredecessorVersion(resource);
 		String currentversion = provider.getVersion(resource);

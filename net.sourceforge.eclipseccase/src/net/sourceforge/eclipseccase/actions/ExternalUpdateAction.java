@@ -37,7 +37,7 @@ public class ExternalUpdateAction extends ClearcaseAction
 				return false;
 			if (! provider.hasRemote(resource))
 				return false;
-			//todo figure why provider.isSnapShot() returns FALSE
+			//TODO figure why provider.isSnapShot() returns FALSE
 			//if (! provider.isSnapShot())
 			if (! StateCacheFactory.getInstance().get(resource).isSnapShot())
 				return false;
