@@ -83,6 +83,13 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePage
 				getFieldEditorParent())
 		);
 
+		addField(
+			new BooleanFieldEditor(
+				IPreferenceConstants.REFRESH_ON_CHANGE,
+				"Quick update clearcase state on resource changed event",
+				getFieldEditorParent())
+		);
+
 	}
 	
 	public boolean performOk()

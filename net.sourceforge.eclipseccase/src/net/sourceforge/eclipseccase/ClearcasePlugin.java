@@ -29,7 +29,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	{
 		public void resourceChanged(IResourceChangeEvent event)
 		{
-			if (event.getType() == IResourceChangeEvent.POST_CHANGE)
+			if (isRefreshOnChange() && event.getType() == IResourceChangeEvent.POST_CHANGE)
 			{
 				try
 				{
@@ -121,6 +121,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		// General preferences
 		store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
 		store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
+		store.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
 		store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
 		store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
 		store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
@@ -143,6 +144,11 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static boolean isPersistState()
 	{
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.PERSIST_STATE);
+	}
+	
+	public static boolean isRefreshOnChange()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFRESH_ON_CHANGE);
 	}
 	
 	public static boolean isCheckinComment()
@@ -211,6 +217,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	{
 		super.shutdown();
 		resetClearcase();
+
 		getWorkspace().removeResourceChangeListener(updateListener);
 	}
 
