@@ -2,11 +2,13 @@
 -----
 
 - Added double click for open in Checkouts view
+- Checkouts view now uses the results of a clearcase find checkouts to refresh itself
 - Added "Compare With->Predecessor" in standard resource popups - this opens builtin eclipse
   compare tool
 - Now performs a quick update on resource change so that changes discovered by the auto
   refresh plugin show up in workspace (i.e if you chcout a file manually using native
   clearcase tools)
+- Added a property page (right click->properties on a resource)
 
 0.9.3
 -----
