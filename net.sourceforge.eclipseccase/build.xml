@@ -37,7 +37,6 @@
 		<pluginLocation plugin="org.apache.xerces" property="location.org.apache.xerces"/>
 		<pluginLocation plugin="org.eclipse.core.resources" property="location.org.eclipse.core.resources"/>
 		<property name="compilePath" value="${location.org.eclipse.core.runtime}/bin;${location.org.eclipse.core.runtime}/runtime.jar;${location.org.eclipse.core.boot}/bin;${location.org.eclipse.core.boot}/boot.jar;${location.net.sourceforge.eclipseccase}/bin;${location.net.sourceforge.eclipseccase}/clearcase.jar;${location.org.apache.xerces}/bin;${location.org.apache.xerces}/xerces.jar;${location.org.eclipse.core.resources}/bin;${location.org.eclipse.core.resources}/resources.jar;${location.org.eclipse.ui}/bin;${location.org.eclipse.ui}/workbench.jar;${location.org.eclipse.help}/bin;${location.org.eclipse.help}/help.jar;${location.org.apache.lucene}/bin;${location.org.apache.lucene}/lucene-1.2-rc2.jar;${location.org.apache.lucene}/lucenedemo.zip;${location.org.eclipse.swt}/bin;${location.org.eclipse.swt}/ws/win32/swt-pi.jar;${location.org.eclipse.swt}/ws/win32/swt.jar;${location.org.eclipse.team.core}/bin;${location.org.eclipse.team.core}/team.jar;${location.org.eclipse.team.ui}/bin;${location.org.eclipse.team.ui}/teamui.jar;${location.org.eclipse.compare}/bin;${location.org.eclipse.compare}/compare.jar"/>
-		<echo message="cp: '${compilePath}'"/>
 	</target>
 	
 	<target name="clean">
