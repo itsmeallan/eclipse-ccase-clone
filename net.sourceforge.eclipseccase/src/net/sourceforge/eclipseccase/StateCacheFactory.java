@@ -62,6 +62,12 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 		cacheMap.put(osPath, cache);
 	}
 	
+	public synchronized void remove(IResource resource)
+	{
+		String osPath = resource.getLocation().toOSString();
+		cacheMap.remove(osPath);
+	}
+	
 	/**
 	 * @see org.eclipse.core.resources.ISaveParticipant#doneSaving(ISaveContext)
 	 */
