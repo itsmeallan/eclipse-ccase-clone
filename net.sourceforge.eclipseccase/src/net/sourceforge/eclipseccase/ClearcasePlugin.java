@@ -6,6 +6,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -58,10 +59,19 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	{
 		if (clearcaseImpl == null)
 		{
-			if (isUseCleartool())
-				clearcaseImpl = new ClearcaseCLI();
+			boolean isDummy = Boolean.valueOf(System.getProperty("eclipseccase.dummy")).booleanValue();
+			if (isDummy)
+			{
+				ClearcaseDummy dummy = new ClearcaseDummy();
+				clearcaseImpl = dummy;
+			}
 			else
-				clearcaseImpl = new ClearcaseJNI(); 
+			{
+				if (isUseCleartool())
+					clearcaseImpl = new ClearcaseCLI();
+				else
+					clearcaseImpl = new ClearcaseJNI(); 
+			}
 		}
 		return clearcaseImpl;
 	}
@@ -152,9 +162,6 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.USE_CLEARTOOL);
 	}
 
-	/**
-	 * @see org.eclipse.core.runtime.Plugin#startup()
-	 */
 	public void startup() throws CoreException
 	{
 		super.startup();
@@ -164,5 +171,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
         cacheFactory.load(lastState);
 	}
 
+	public void shutdown() throws CoreException
+	{
+		super.shutdown();
+		clearcaseImpl.destroy();
+	}
 
 }

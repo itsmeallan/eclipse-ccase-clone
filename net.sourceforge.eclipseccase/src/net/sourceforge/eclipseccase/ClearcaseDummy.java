@@ -265,6 +265,7 @@ public class ClearcaseDummy implements IClearcase
 
 	public void destroy()
 	{
+		save();
 	}
 
 	public void save()
