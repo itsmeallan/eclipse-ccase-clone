@@ -28,7 +28,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		super(descriptor);
 		plugin = this;
 	}
-
+	
 	/**
 	 * Returns the shared instance.
 	 */
@@ -78,8 +78,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public void resetClearcase()
 	{
 		if (clearcaseImpl != null)
+		{
 			clearcaseImpl.destroy();
-		clearcaseImpl = null;
+			clearcaseImpl = null;
+		}
 	}
 	
 	protected void initializeDefaultPreferences(IPreferenceStore store)
@@ -173,8 +175,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public void shutdown() throws CoreException
 	{
 		super.shutdown();
-		if (clearcaseImpl != null)
-			clearcaseImpl.destroy();
+		resetClearcase();
 	}
 
 }

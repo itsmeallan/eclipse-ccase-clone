@@ -1,152 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.eclipseccase"
+   name="Clearcase Plugin"
+   version="0.9.3"
+   provider-name="Matt Conway"
+   class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
-<plugin id="net.sourceforge.eclipseccase" name="Clearcase Plugin"
-	version="0.9.2" provider-name="Matt Conway"
-	class="net.sourceforge.eclipseccase.ClearcasePlugin">
-	
-	<runtime>
-		<library name="clearcase.jar"/>
-	</runtime>
-	<requires>
-		<import plugin="org.eclipse.core.boot"/>
-		<import plugin="org.eclipse.core.runtime"/>
-		<import plugin="org.eclipse.core.resources"/>
-		<import plugin="org.eclipse.ui"/>
-		<import plugin="org.eclipse.swt"/>
-		<import plugin="org.eclipse.team.core"/>
-		<import plugin="org.eclipse.team.ui"/>
-	</requires>
-	
-	<extension point="org.eclipse.team.core.repository">
-		<repository id="net.sourceforge.eclipseccase.ClearcaseProvider"
-			class="net.sourceforge.eclipseccase.ClearcaseProvider">
-		</repository>
-	</extension>
+   <runtime>
+      <library name="clearcase.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.boot"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.team.ui"/>
+   </requires>
 
-	<extension point="org.eclipse.ui.preferencePages">
-		<page name="Clearcase" category="org.eclipse.team.ui.TeamPreferences"
-			class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
-			id="net.sourceforge.eclipseccase.ClearcasePreferencePage">
-		</page>
-		<page name="Label Decorations" category="net.sourceforge.eclipseccase.ClearcasePreferencePage"
-			class="net.sourceforge.eclipseccase.DecoratorPreferencePage"
-			id="net.sourceforge.eclipseccase.DecoratorPreferencePage">
-		</page>
-	</extension>
-	
-	<extension point="org.eclipse.ui.decorators"> 
-	        <decorator
-	                 id="net.sourceforge.eclipseccase.ui.decorator" 
-	                 label="Clearcase Decorator"
-	                 state="false" 
-	                 class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator" 
-	                 lightweight="true">
-	                <enablement>
-	                         <objectClass name="org.eclipse.core.resources.IResource"/> 
-	          		</enablement> 
-	         </decorator >
-	</extension> 
-	
-	<extension point="org.eclipse.ui.popupMenus">
-		<objectContribution objectClass="org.eclipse.core.resources.IProject"
-			adaptable="true" id="net.sourceforge.eclipseccase.popups.Associate">
-			<action label="Associate with clearcase"
-				class="net.sourceforge.eclipseccase.ui.AssociateProjectAction"
-				menubarPath="team.main/projectGroup"
-				id="net.sourceforge.eclipseccase.popups.associate">
-			</action>
-		</objectContribution>
-	</extension>
 
-	<extension point="org.eclipse.ui.popupMenus">
-		<objectContribution objectClass="org.eclipse.core.resources.IResource"
-			adaptable="true" id="net.sourceforge.eclipseccase.popups.BuiltIn">
-			<filter name="projectPersistentProperty"
-				value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"
-				>
-			</filter>
-			<action label="Dissociate from clearcase"
-				class="net.sourceforge.eclipseccase.ui.DissociateProjectAction"
-				menubarPath="team.main/projectGroup"
-				id="net.sourceforge.eclipseccase.popups.dissociate">
-			</action>
-			<action label="Uncheckout"
-				class="net.sourceforge.eclipseccase.ui.UndoCheckOutAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.uncheckout">
-			</action>
-			<action label="Checkin"
-				class="net.sourceforge.eclipseccase.ui.CheckInAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.checkin">
-			</action>
-			<action label="Refresh State"
-				class="net.sourceforge.eclipseccase.ui.RefreshStateAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.refresh">
-			</action>
-			<action label="Refresh State (Quick)"
-				class="net.sourceforge.eclipseccase.ui.RefreshStateQuickAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.refreshquick">
-			</action>
-			<action label="Checkout"
-				class="net.sourceforge.eclipseccase.ui.CheckOutAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.checkout">
-			</action>
-			<action label="Update"
-				class="net.sourceforge.eclipseccase.ui.UpdateAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.update">
-			</action>
-			<action label="Add"
-				class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.add">
-			</action>
-			<action label="Delete"
-				class="net.sourceforge.eclipseccase.ui.DeleteAction"
-				menubarPath="team.main/group1"
-				id="net.sourceforge.eclipseccase.popups.delete">
-			</action>
-			<action label="Version Tree"
-				class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
-				menubarPath="team.main/group2"
-				id="net.sourceforge.eclipseccase.popups.versiontree">
-			</action>
-			<action label="Update (External)"
-				class="net.sourceforge.eclipseccase.ui.ExternalUpdateAction"
-				menubarPath="team.main/group2"
-				id="net.sourceforge.eclipseccase.popups.externalupdate">
-			</action>
-			<action label="History"
-				class="net.sourceforge.eclipseccase.ui.HistoryAction"
-				menubarPath="team.main/group2"
-				id="net.sourceforge.eclipseccase.popups.history">
-			</action>
-			<action label="Compare with predecessor"
-				class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorAction"
-				menubarPath="team.main/group2"
-				id="net.sourceforge.eclipseccase.popups.comparepredecessor">
-			</action>
-			<action label="Find checkouts"
-				class="net.sourceforge.eclipseccase.ui.FindCheckOutsAction"
-				menubarPath="team.main/group2"
-				id="net.sourceforge.eclipseccase.popups.findcheckouts">
-			</action>
-		</objectContribution>
-	</extension>
-	
+   <extension
+         point="org.eclipse.team.core.repository">
+      <repository
+            class="net.sourceforge.eclipseccase.ClearcaseProvider"
+            id="net.sourceforge.eclipseccase.ClearcaseProvider">
+      </repository>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="Clearcase"
+            category="org.eclipse.team.ui.TeamPreferences"
+            class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
+            id="net.sourceforge.eclipseccase.ClearcasePreferencePage">
+      </page>
+      <page
+            name="Label Decorations"
+            category="net.sourceforge.eclipseccase.ClearcasePreferencePage"
+            class="net.sourceforge.eclipseccase.DecoratorPreferencePage"
+            id="net.sourceforge.eclipseccase.DecoratorPreferencePage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            lightweight="true"
+            label="Clearcase Decorator"
+            state="false"
+            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
+            id="net.sourceforge.eclipseccase.ui.decorator">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.core.resources.IResource">
+            </objectClass>
+         </enablement>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true"
+            id="net.sourceforge.eclipseccase.popups.Associate">
+         <action
+               label="Associate with clearcase"
+               class="net.sourceforge.eclipseccase.ui.AssociateProjectAction"
+               menubarPath="team.main/projectGroup"
+               id="net.sourceforge.eclipseccase.popups.associate">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
+            id="net.sourceforge.eclipseccase.popups.BuiltIn">
+         <filter
+               name="projectPersistentProperty"
+               value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+         </filter>
+         <action
+               label="Dissociate from clearcase"
+               class="net.sourceforge.eclipseccase.ui.DissociateProjectAction"
+               menubarPath="team.main/projectGroup"
+               id="net.sourceforge.eclipseccase.popups.dissociate">
+         </action>
+         <action
+               label="Uncheckout"
+               class="net.sourceforge.eclipseccase.ui.UndoCheckOutAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.uncheckout">
+         </action>
+         <action
+               label="Checkin"
+               class="net.sourceforge.eclipseccase.ui.CheckInAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.checkin">
+         </action>
+         <action
+               label="Refresh State"
+               class="net.sourceforge.eclipseccase.ui.RefreshStateAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.refresh">
+         </action>
+         <action
+               label="Refresh State (Quick)"
+               class="net.sourceforge.eclipseccase.ui.RefreshStateQuickAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.refreshquick">
+         </action>
+         <action
+               label="Checkout"
+               class="net.sourceforge.eclipseccase.ui.CheckOutAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.checkout">
+         </action>
+         <action
+               label="Update"
+               class="net.sourceforge.eclipseccase.ui.UpdateAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.update">
+         </action>
+         <action
+               label="Add"
+               class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.add">
+         </action>
+         <action
+               label="Delete"
+               class="net.sourceforge.eclipseccase.ui.DeleteAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.delete">
+         </action>
+         <action
+               label="Version Tree"
+               class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.versiontree">
+         </action>
+         <action
+               label="Update (External)"
+               class="net.sourceforge.eclipseccase.ui.ExternalUpdateAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.externalupdate">
+         </action>
+         <action
+               label="History"
+               class="net.sourceforge.eclipseccase.ui.HistoryAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.history">
+         </action>
+         <action
+               label="Compare with predecessor"
+               class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor">
+         </action>
+         <action
+               label="Find checkouts"
+               class="net.sourceforge.eclipseccase.ui.FindCheckOutsAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.findcheckouts">
+         </action>
+      </objectContribution>
+   </extension>
    <extension
          point="org.eclipse.ui.views">
-     <view
+      <view
             name="Clearcase Checkouts"
+            icon="../org.eclipse.team.ui/icons/full/clcl16/contents.gif"
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
-            id="net.sourceforge.eclipseccase.views.CheckoutsView"
-            icon="../org.eclipse.team.ui/icons/full/clcl16/contents.gif">
+            id="net.sourceforge.eclipseccase.views.CheckoutsView">
       </view>
    </extension>
-   	
+
 </plugin>

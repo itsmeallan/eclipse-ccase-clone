@@ -823,4 +823,13 @@ public class ClearcaseProvider
 			return new IResource[0];
 	}
 
+	/**
+	 * @see org.eclipse.team.core.RepositoryProvider#canHandleLinkedResources()
+	 */
+	public boolean canHandleLinkedResources()
+	{
+		return true;
+	}
+
+
 }
