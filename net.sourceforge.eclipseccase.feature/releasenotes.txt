@@ -1,15 +1,15 @@
-1.0.0 M2
+1.0.0 M3
 ========
 
 The software and associated documentation are copyright (c) 2004, 2000 eclipse-ccase.sourceforge.net (Matthew Conway and others). They are unsupported and come with no warranty (see the license.html shipped with the feature(s) and the Common Public License 1.0 for more details).
 
-This is the second milestone release for our 1.0 release candidate. It contains new features and fixes for issues detected in the M1 release. Please see CHANGELOG and TODO for more information.
+This is the 3rd milestone release for our 1.0 release candidate. It contains new features and fixes for issues detected in the M1 release. Please see CHANGELOG and TODO for more information.
 
 
 Requirenments
 -------------
 
-This release requires Eclipse RC2.
+This release requires Eclipse 3.0 and should also work with Eclipse 3.0.x stream stable builds.
 
 
 Install
