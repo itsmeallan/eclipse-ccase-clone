@@ -23,41 +23,18 @@
       <update label="%updateSiteName" url="http://eclipse-ccase.sourceforge.net/update/"/>
    </url>
 
+   <includes
+         id="net.sourceforge.eclipseccase.feature"
+         version="0.9.10"/>
+
    <requires>
-      <import plugin="org.eclipse.team.core"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.compare"/>
-      <import plugin="org.eclipse.team.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
+      <import feature="org.eclipse.platform" version="3.0.0" match="greaterOrEqual"/>
    </requires>
-
-   <plugin
-         id="net.sourceforge.clearcase"
-         download-size="189"
-         install-size="288"
-         version="0.9.10"/>
-
-   <plugin
-         id="net.sourceforge.eclipseccase"
-         download-size="52"
-         install-size="100"
-         version="0.9.10"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.3"
          download-size="8"
          install-size="20"
-         version="0.9.10"/>
-
-   <plugin
-         id="net.sourceforge.eclipseccase.ui"
-         download-size="112"
-         install-size="250"
          version="0.9.10"/>
 
 </feature>
