@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -62,7 +64,6 @@ public class ClearcaseUI extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
-        ClearcaseImages.initializeImages();
     }
 
     /**
@@ -191,4 +192,50 @@ public class ClearcaseUI extends AbstractUIPlugin
                 .setDefault(IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
                         true);
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
+     */
+    protected void initializeImageRegistry(ImageRegistry reg)
+    {
+        super.initializeImageRegistry(reg);
+
+        // objects
+        createImageDescriptor(reg, ClearcaseImages.IMG_QUESTIONABLE);
+        createImageDescriptor(reg, ClearcaseImages.IMG_EDITED);
+        createImageDescriptor(reg, ClearcaseImages.IMG_NO_REMOTEDIR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_LINK);
+        createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING);
+        createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED);
+    }
+
+    private static void createImageDescriptor(ImageRegistry reg, String id)
+    {
+        ImageDescriptor desc = imageDescriptorFromPlugin(ClearcaseUI.PLUGIN_ID,
+                ClearcaseImages.ICON_PATH + id);
+        reg.put(id, null != desc ? desc : ImageDescriptor
+                .getMissingImageDescriptor());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
+     */
+    protected ImageRegistry createImageRegistry()
+    {
+        // to overcome SWT issues we create this inside the UI thread
+        final ImageRegistry[] imageRegistries = new ImageRegistry[1];
+        getWorkbench().getDisplay().syncExec(new Runnable()
+        {
+            public void run()
+            {
+                imageRegistries[0] = new ImageRegistry(getWorkbench().getDisplay());
+            }
+        });
+        return imageRegistries[0];
+    }
+
 }

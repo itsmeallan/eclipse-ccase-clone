@@ -35,6 +35,8 @@ public class StateCache implements Serializable
 
     private boolean isSnapShot = false;
 
+    private boolean isSymbolicLink = false;
+
     private boolean isHijacked = false;
 
     private String version = "";
@@ -60,6 +62,8 @@ public class StateCache implements Serializable
     }
 
     private static final String DEBUG_ID = "StateCache";
+
+    private String symbolicLinkTarget = "";
 
     /**
      * @param hidden
@@ -97,6 +101,11 @@ public class StateCache implements Serializable
             changed = changed || newHasRemote != this.hasRemote;
             this.hasRemote = newHasRemote;
 
+            boolean newIsSymbolicLink = newHasRemote
+                    && ClearcasePlugin.getEngine().isSymbolicLink(osPath);
+            changed = changed || newIsSymbolicLink != this.isSymbolicLink;
+            this.isSymbolicLink = newIsSymbolicLink;
+
             boolean newIsCheckedOut = newHasRemote
                     && ClearcasePlugin.getEngine().isCheckedOut(osPath);
             changed = changed || newIsCheckedOut != this.isCheckedOut;
@@ -121,6 +130,19 @@ public class StateCache implements Serializable
                 changed = changed || !newVersion.equals(this.version);
                 this.version = newVersion;
             }
+
+            if (newIsSymbolicLink)
+            {
+                IClearcase.Status status = ClearcasePlugin.getEngine()
+                        .getSymbolicLinkTarget(osPath);
+                if (status.status)
+                {
+                    String newTarget = status.message;
+                    changed = changed
+                            || !newTarget.equals(this.symbolicLinkTarget);
+                    this.symbolicLinkTarget = newTarget;
+                }
+            }
         }
         else
         {
@@ -129,7 +151,9 @@ public class StateCache implements Serializable
             isCheckedOut = false;
             isSnapShot = false;
             isHijacked = false;
+            isSymbolicLink = false;
             version = "";
+            symbolicLinkTarget = "";
             changed = true;
             ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: "
                     + resource);
@@ -180,8 +204,11 @@ public class StateCache implements Serializable
         catch (RuntimeException ex)
         {
             ClearcasePlugin.log(IStatus.ERROR,
-                    "Could not determine element dirty state of " + osPath
-                            + ": " + ex.getCause().getMessage(), ex);
+                    "Could not determine element dirty state of "
+                            + osPath
+                            + ": "
+                            + (null != ex.getCause() ? ex.getCause()
+                                    .getMessage() : ex.getMessage()), ex);
             return false;
         }
     }
@@ -406,6 +433,13 @@ public class StateCache implements Serializable
         {
             toString.append(version);
 
+            if (isSymbolicLink)
+            {
+                toString.append(" [SYMBOLIC LINK (");
+                toString.append(symbolicLinkTarget);
+                toString.append(")]");
+            }
+
             if (isCheckedOut) toString.append(" [CHECKED OUT]");
 
             if (isDirty()) toString.append(" [DIRTY]");
@@ -450,4 +484,45 @@ public class StateCache implements Serializable
         return resource.equals(((StateCache) obj).resource);
     }
 
+    /**
+     * @return
+     */
+    public boolean isSymbolicLink()
+    {
+        return isSymbolicLink;
+    }
+
+    /**
+     * Returns the symbolicLinkTarget.
+     * 
+     * @return returns the symbolicLinkTarget
+     */
+    public String getSymbolicLinkTarget()
+    {
+        return symbolicLinkTarget;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isSymbolicLinkTargetValid()
+    {
+        if (osPath == null) return false;
+
+        try
+        {
+            return ClearcasePlugin.getEngine()
+                    .isSymbolicLinkTargetValid(osPath);
+        }
+        catch (RuntimeException ex)
+        {
+            ClearcasePlugin.log(IStatus.ERROR,
+                    "Could not determine link target of "
+                            + osPath
+                            + ": "
+                            + (null != ex.getCause() ? ex.getCause()
+                                    .getMessage() : ex.getMessage()), ex);
+            return false;
+        }
+    }
 }

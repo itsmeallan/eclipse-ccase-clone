@@ -15,11 +15,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.team.internal.ui.TeamUIPlugin;
+import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.decorators.DecoratorManager;
 
@@ -109,82 +113,90 @@ public class ClearcaseDecorator extends LabelProvider implements
 
         if (p.isUnknownState(resource))
         {
-            decoration.addOverlay(ClearcaseImages
-                    .getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
+            decoration.addOverlay(IMG_DESC_UNKOWN_STATE);
+            
+            // no further decoration
+            return;
         }
         else if (resource.getType() != IResource.PROJECT
                 && !p.hasRemote(resource))
         {
             // decorate new elements not added to ClearCase
-            decoration.addOverlay(ClearcaseImages
-                    .getImageDescriptor(ClearcaseImages.IMG_NEW_OVR));
+            decoration.addOverlay(IMG_DESC_NEW_RESOURCE);
 
-            if (ClearcaseUI.isTextNewDecoration())
-                    decoration.addPrefix("*");
+            if (ClearcaseUI.isTextNewDecoration()) decoration.addPrefix("*");
+            
+            // no further decoration
+            return;
+        }
+        else if (p.isCheckedOut(resource))
+        {
+            // check out
+            decoration.addOverlay(IMG_DESC_CHECKED_OUT);
+
+            // no further decoration
+            return;
+        }
+        else if (p.isHijacked(resource))
+        {
+            // hijacked
+            decoration.addOverlay(IMG_DESC_HIJACKED);
+            
+            // no further decoration
+            return;
+        }
+        else if (p.isSymbolicLink(resource))
+        {
+            // symbolic link
+            if(p.isSymbolicLinkTargetValid(resource))
+                decoration.addOverlay(IMG_DESC_LINK);
+            else
+                decoration.addOverlay(IMG_DESC_LINK_WARNING);
+            
+            decoration.addSuffix(" --> " + p.getSymbolicLinkTarget(resource));
+            
+            // no further decoration
+            return;
         }
         else
         {
             int dirty = isDirty(resource);
 
-            if (p.isCheckedOut(resource))
+            if (dirty == DIRTY_STATE)
             {
-                decoration
-                        .addOverlay(ClearcaseImages
-                                .getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
-            }
-            else if (dirty == DIRTY_STATE)
-            {
-                decoration.addOverlay(ClearcaseImages
-                        .getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR));
+                decoration.addOverlay(IMG_DESC_DIRTY);
             }
             else if (dirty == UNKNOWN_STATE)
             {
-                decoration
-                        .addOverlay(ClearcaseImages
-                                .getImageDescriptor(ClearcaseImages.IMG_DIRTY_UNKNOWN_OVR));
-            }
-            else if (p.isHijacked(resource))
-            {
-                decoration.addOverlay(ClearcaseImages
-                        .getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
+                decoration.addOverlay(IMG_DESC_UNKOWN_STATE);
             }
             else if (p.hasRemote(resource))
             {
-                decoration.addOverlay(ClearcaseImages
-                        .getImageDescriptor(ClearcaseImages.IMG_CHECKEDIN_OVR));
-            }
-
-            StringBuffer prefix = new StringBuffer();
-            StringBuffer suffix = new StringBuffer();
-
-            if (ClearcaseUI.isTextViewDecoration()
-                    && resource.getType() == IResource.PROJECT)
-            {
-                suffix.append(" [view: ");
-                suffix.append(p.getViewName(resource));
-                suffix.append("]");
+                decoration.addOverlay(IMG_DESC_CHECKED_IN);
             }
 
             if (ClearcaseUI.isTextDirtyDecoration())
             {
                 if (dirty == DIRTY_STATE)
                 {
-                    prefix.append(">");
+                    decoration.addPrefix(">");
                 }
                 else if (dirty == UNKNOWN_STATE)
                 {
-                    prefix.append("?>");
+                    decoration.addPrefix("?");
                 }
             }
+        }
 
-            if (ClearcaseUI.isTextVersionDecoration())
-            {
-                suffix.append(" : ");
-                suffix.append(p.getVersion(resource));
-            }
+        if (ClearcaseUI.isTextViewDecoration()
+                && resource.getType() == IResource.PROJECT)
+        {
+            decoration.addSuffix(" [view: " + p.getViewName(resource) + "]");
+        }
 
-            decoration.addPrefix(prefix.toString());
-            decoration.addSuffix(suffix.toString());
+        if (ClearcaseUI.isTextVersionDecoration())
+        {
+            decoration.addSuffix("  " + p.getVersion(resource));
         }
 
     }
@@ -368,4 +380,70 @@ public class ClearcaseDecorator extends LabelProvider implements
         fireChange(new LabelProviderChangedEvent(this));
     }
 
+    // Images cached for better performance
+    private static ImageDescriptor IMG_DESC_DIRTY;
+
+    private static ImageDescriptor IMG_DESC_CHECKED_IN;
+
+    private static ImageDescriptor IMG_DESC_CHECKED_OUT;
+
+    private static ImageDescriptor IMG_DESC_HIJACKED;
+
+    private static ImageDescriptor IMG_DESC_NEW_RESOURCE;
+
+    private static ImageDescriptor IMG_DESC_LINK;
+
+    private static ImageDescriptor IMG_DESC_LINK_WARNING;
+
+    private static ImageDescriptor IMG_DESC_EDITED;
+
+    private static ImageDescriptor IMG_DESC_UNKOWN_STATE;
+
+    static
+    {
+        IMG_DESC_DIRTY = new CachedImageDescriptor(TeamUIPlugin
+                .getImageDescriptor(ISharedImages.IMG_DIRTY_OVR));
+        IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamUIPlugin
+                .getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR));
+        IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamUIPlugin
+                .getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR));
+        IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE));
+        IMG_DESC_EDITED = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_EDITED));
+        IMG_DESC_UNKOWN_STATE = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_NO_REMOTEDIR));
+        IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_LINK));
+        IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING));
+        IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_HIJACKED));
+    }
+
+    /*
+     * Define a cached image descriptor which only creates the image data once
+     */
+    public static class CachedImageDescriptor extends ImageDescriptor
+    {
+        ImageDescriptor descriptor;
+
+        ImageData data;
+
+        public CachedImageDescriptor(ImageDescriptor descriptor)
+        {
+            assert null != descriptor;
+            this.descriptor = descriptor;
+        }
+
+        public ImageData getImageData()
+        {
+            if (data == null)
+            {
+                data = descriptor.getImageData();
+            }
+            return data;
+        }
+    }
 }
+

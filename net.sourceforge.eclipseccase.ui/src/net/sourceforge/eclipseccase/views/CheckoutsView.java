@@ -1,11 +1,11 @@
 
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.jface.dialogs.IDialogSettings;
-
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.IDialogSettings;
 
 /**
  * The Checkouts view
@@ -24,22 +24,25 @@ public class CheckoutsView extends ClearcaseViewPart
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#shouldAdd(net.sourceforge.eclipseccase.StateCache)
+     * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#shouldAdd(org.eclipse.core.resources.IResource)
      */
-    protected boolean shouldAdd(StateCache stateCache)
+    protected boolean shouldAdd(IResource resource)
     {
-        if (null == stateCache
-                || null == ClearcaseProvider.getClearcaseProvider(stateCache
-                        .getResource())) return false;
+        ClearcaseProvider provider = ClearcaseProvider
+                .getClearcaseProvider(resource);
 
-        if (stateCache.isUninitialized()) return false;
+        if (null == provider) return false;
 
-        if (stateCache.isCheckedOut()) return !hideCheckouts();
+        // don't show resources with unknown state
+        if (provider.isUnknownState(resource)) return false;
 
-        if ((!stateCache.hasRemote() && !ClearcaseProvider
-                .getClearcaseProvider(stateCache.getResource()).isIgnored(
-                        stateCache.getResource()))) return !hideNewElements();
+        // show checkouts if enabled
+        if (provider.isCheckedOut(resource)) return !hideCheckouts();
 
+        // show new elements if enabled
+        if (!provider.hasRemote(resource)) return !hideNewElements();
+
+        // hide all other
         return false;
     }
 

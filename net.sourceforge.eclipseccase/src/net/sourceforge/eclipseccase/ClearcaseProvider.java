@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -311,9 +312,9 @@ public class ClearcaseProvider extends RepositoryProvider implements
     {
         String viewRoot = getViewRoot(resource);
         IPath viewLocation = new Path(viewRoot).setDevice(null); // ignore
-                                                                 // device
+        // device
         IPath resourceLocation = resource.getLocation().setDevice(null); // ignore
-                                                                         // devices
+        // devices
 
         if (viewLocation.isPrefixOf(resourceLocation))
         {
@@ -445,6 +446,53 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 StateCache cache = StateCacheFactory.getInstance().get(
                         resourceToVisit);
                 cache.updateAsync(true);
+
+                // check if a symbolic link target is also in our workspace
+                if (cache.isSymbolicLink()
+                        && null != cache.getSymbolicLinkTarget())
+                {
+                    File target = new File(cache.getSymbolicLinkTarget());
+                    if (!target.isAbsolute())
+                    {
+                        target = null != cache.getPath() ? new File(cache
+                                .getPath()).getParentFile() : null;
+                        if (null != target)
+                                target = new File(target, cache
+                                        .getSymbolicLinkTarget());
+                    }
+                    if (null != target && target.exists())
+                    {
+                        IPath targetLocation = new Path(target
+                                .getAbsolutePath());
+
+                        IResource[] resources = null;
+                        if (target.isDirectory())
+                        {
+                            resources = ResourcesPlugin.getWorkspace()
+                                    .getRoot().findContainersForLocation(
+                                            targetLocation);
+                        }
+                        else
+                        {
+                            resources = ResourcesPlugin.getWorkspace()
+                                    .getRoot().findFilesForLocation(
+                                            targetLocation);
+                        }
+                        if (null != resources)
+                                for (int i = 0; i < resources.length; i++)
+                                {
+                                    IResource foundResource = resources[i];
+                                    ClearcaseProvider provider = ClearcaseProvider
+                                            .getClearcaseProvider(foundResource);
+                                    if (null != provider)
+                                            StateCacheFactory.getInstance()
+                                                    .get(foundResource)
+                                                    .updateAsync(true);
+                                }
+                    }
+
+                }
+
                 return OK_STATUS;
             }
 
@@ -1074,17 +1122,8 @@ public class ClearcaseProvider extends RepositoryProvider implements
      */
     public boolean isIgnored(IResource resource)
     {
-        // see bug 904248: linked resources should NOT be ignored
-        // always ignore eclipse linked resource
-        //String linkedParentName =
-        // resource.getProjectRelativePath().segment(0);
-        //if (null != linkedParentName)
-        //{
-        //    IFolder linkedParent =
-        // resource.getProject().getFolder(linkedParentName);
-        //    if (linkedParent.isLinked())
-        //        return true;
-        //}
+        // ignore eclipse linked resource
+        if (resource.isLinked()) return true;
 
         // never ignore handled resources
         if (hasRemote(resource)) return false;
@@ -1095,9 +1134,41 @@ public class ClearcaseProvider extends RepositoryProvider implements
         // check the global ignores from Team (includes derived resources)
         if (Team.isIgnoredHint(resource)) return true;
 
+        // bug 904248: do not ignore if parent is a linked resource
+        if (resource.getParent().isLinked()) return false;
+
         // check the parent, if the parent is ignored
         // then this resource is ignored also
         return isIgnored(resource.getParent());
+    }
+
+    /**
+     * @param resource
+     * @return
+     */
+    public boolean isSymbolicLink(IResource resource)
+    {
+        return StateCacheFactory.getInstance().get(resource).isSymbolicLink();
+    }
+
+    /**
+     * @param resource
+     * @return
+     */
+    public boolean isSymbolicLinkTargetValid(IResource resource)
+    {
+        return StateCacheFactory.getInstance().get(resource)
+                .isSymbolicLinkTargetValid();
+    }
+
+    /**
+     * @param resource
+     * @return
+     */
+    public String getSymbolicLinkTarget(IResource resource)
+    {
+        return StateCacheFactory.getInstance().get(resource)
+                .getSymbolicLinkTarget();
     }
 
 }
