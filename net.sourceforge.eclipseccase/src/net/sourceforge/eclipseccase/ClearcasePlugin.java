@@ -10,7 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -202,8 +202,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
             clearcaseImpl = null;
         }
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
      */
@@ -235,7 +234,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     public static boolean isReservedCheckouts()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.RESERVED_CHECKOUT);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.RESERVED_CHECKOUT);
     }
 
     public static boolean isPersistState()
@@ -245,7 +245,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     public static boolean isRefreshOnChange()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.REFRESH_ON_CHANGE);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.REFRESH_ON_CHANGE);
     }
 
     public static boolean isCheckinComment()
@@ -261,7 +262,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     public static boolean isCheckoutComment()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.CHECKOUT_COMMENT);
     }
 
     public static boolean isAddComment()
@@ -271,12 +273,14 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     public static boolean isCheckoutOnEdit()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.CHECKOUT_ON_EDIT);
     }
 
     public static boolean isRefactorAddsDir()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.REFACTOR_ADDS_DIR);
     }
 
     public static boolean isTextViewDecoration()
@@ -304,7 +308,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     }
     public static boolean isDeepDecoration()
     {
-        return getDefault().getPluginPreferences().getBoolean(IPreferenceConstants.DEEP_DECORATIONS);
+        return getDefault().getPluginPreferences().getBoolean(
+            IPreferenceConstants.DEEP_DECORATIONS);
     }
 
     public static boolean isUseCleartool()
@@ -358,7 +363,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     }
 
     /** The previously remembered comment */
-    static String[] previousComments = new String[0];
+    static LinkedList previousComments = new LinkedList();
 
     /** maximum comments to remember */
     static final int MAX_COMMENTS = 10;
@@ -376,17 +381,21 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      */
     public void addComment(String comment)
     {
-        // Only add the comment if the first entry isn't the same already
-        if (previousComments.length > 0 && previousComments[0].equals(comment))
-            return;
-        // Insert the comment as the first element
-        String[] newComments = new String[Math.min(previousComments.length + 1, MAX_COMMENTS)];
-        newComments[0] = comment;
-        for (int i = 1; i < newComments.length; i++)
+        synchronized (previousComments)
         {
-            newComments[i] = previousComments[i - 1];
+            // remove existing comment (avoid duplicates)
+            if (previousComments.contains(comment))
+                previousComments.remove(comment);
+
+            // insert the comment as the first element
+            previousComments.addFirst(comment);
+
+            // check length
+            while (previousComments.size() > MAX_COMMENTS)
+            {
+                previousComments.removeLast();
+            }
         }
-        previousComments = newComments;
     }
 
     /**
@@ -395,18 +404,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      */
     public String[] getPreviousComments()
     {
-        return previousComments;
-    }
-
-    /**
-     * Method getCurrentComment.
-     * @return String
-     */
-    private String getCurrentComment()
-    {
-        if (previousComments.length == 0)
-            return ""; //$NON-NLS-1$
-        return (String) previousComments[0];
+        return (String[]) previousComments.toArray(new String[previousComments.size()]);
     }
 
     private void saveCommentHistory() throws CoreException
@@ -463,12 +461,15 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     private void writeCommentHistory(XMLWriter writer) throws IOException
     {
-        writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
-        for (int i = 0; i < previousComments.length && i < MAX_COMMENTS; i++)
-            writer.printSimpleTag(
-                ELEMENT_COMMENT,
-                BASE64_ENCODER.encode(previousComments[i].getBytes()));
-        writer.endTag(ELEMENT_COMMENT_HISTORY);
+        synchronized (previousComments)
+        {
+            writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
+            for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++)
+                writer.printSimpleTag(
+                    ELEMENT_COMMENT,
+                    BASE64_ENCODER.encode(((String) previousComments.get(i)).getBytes()));
+            writer.endTag(ELEMENT_COMMENT_HISTORY);
+        }
     }
 
     private void loadCommentHistory() throws CoreException
@@ -521,21 +522,24 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                 {
                     if (ELEMENT_COMMENT_HISTORY.equals(((Element) node).getTagName()))
                     {
-                        NodeList commentNodes =
-                            ((Element) node).getElementsByTagName(ELEMENT_COMMENT);
-                        ArrayList comments = new ArrayList(MAX_COMMENTS);
-                        for (int j = 0; j < commentNodes.getLength() && j < MAX_COMMENTS; j++)
+                        synchronized (previousComments)
                         {
-                            Node commentNode = commentNodes.item(j);
-                            if (commentNode instanceof Element && commentNode.hasChildNodes())
+                            previousComments.clear();
+                            NodeList commentNodes =
+                                ((Element) node).getElementsByTagName(ELEMENT_COMMENT);
+                            for (int j = 0; j < commentNodes.getLength() && j < MAX_COMMENTS; j++)
                             {
-                                // the first child is expected to be a text node with our comment
-                                String comment = commentNode.getFirstChild().getNodeValue();
-                                if (null != comment)
-                                    comments.add(new String(BASE64_DECODER.decodeBuffer(comment)));
+                                Node commentNode = commentNodes.item(j);
+                                if (commentNode instanceof Element && commentNode.hasChildNodes())
+                                {
+                                    // the first child is expected to be a text node with our comment
+                                    String comment = commentNode.getFirstChild().getNodeValue();
+                                    if (null != comment)
+                                        previousComments.addLast(
+                                            new String(BASE64_DECODER.decodeBuffer(comment)));
+                                }
                             }
                         }
-                        previousComments = (String[]) comments.toArray(new String[comments.size()]);
                     }
                 }
             }
