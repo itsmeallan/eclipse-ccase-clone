@@ -183,6 +183,36 @@ public class ClearcaseProvider
 		}, resources, IResource.DEPTH_INFINITE, progress);
 	}
 
+	public void add(IResource[] resources, IProgressMonitor progress)
+		throws TeamException
+	{
+		execute(new IIterativeOperation()
+		{
+			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+			{
+				// Should really walk up parent heirarchy, find first ccase
+				// element that is a parent, and walk back down, adding each to ccase
+				IStatus result = checkoutParent(resource);
+				if (result.isOK())
+				{
+					Clearcase.Status status =
+						Clearcase.add(resource.getLocation().toOSString(), "");
+					if (!status.status)
+					{
+						result =
+							new Status(
+								IStatus.ERROR,
+								TeamPlugin.ID,
+								TeamException.UNABLE,
+								"Add failed: " + status.message,
+								null);
+					}
+				}
+				return result;
+			}
+		}, resources, IResource.DEPTH_INFINITE, progress);
+	}
+
 	/**
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
 	 */

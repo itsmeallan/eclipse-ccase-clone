@@ -64,11 +64,6 @@ public class AssociateProjectAction implements IObjectActionDelegate
 		if (selection instanceof IStructuredSelection)
 		{
 			this.selection = (IStructuredSelection) selection;
-			//			if (action != null)
-			//			{
-			//				boolean enable = RepositoryProvider.getProvider(getSelectedProject()) == null;
-			//				action.setEnabled(enable);
-			//			}
 		}
 	}
 

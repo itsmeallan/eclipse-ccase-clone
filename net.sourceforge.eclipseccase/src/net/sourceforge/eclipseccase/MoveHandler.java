@@ -42,6 +42,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(file))
+		{
+			tree.standardDeleteFile(file, updateFlags, monitor);
+			return true;
+		}
+			
 		boolean failed = false;
 		IStatus status = null;
 
@@ -91,6 +97,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(folder))
+		{
+			tree.standardDeleteFolder(folder, updateFlags, monitor);
+			return true;
+		}
+		
 		boolean failed = false;
 		IStatus status = null;
 
@@ -141,6 +153,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(project))
+		{
+			tree.standardDeleteProject(project, updateFlags, monitor);
+			return true;
+		}
+		
 		boolean failed = false;
 		IStatus status = null;
 
@@ -192,6 +210,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(source))
+		{
+			tree.standardMoveFile(source, destination, updateFlags, monitor);
+			return true;
+		}
+
 		boolean failed = false;
 		IStatus status = null;
 
@@ -234,6 +258,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(source))
+		{
+			tree.standardMoveFolder(source, destination, updateFlags, monitor);
+			return true;
+		}
+
 		boolean failed = false;
 		IStatus status = null;
 
@@ -276,6 +306,12 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		if (! provider.hasRemote(source))
+		{
+			tree.standardMoveProject(source, description, updateFlags, monitor);
+			return true;
+		}
+
 		boolean failed = false;
 		IStatus status = null;
 

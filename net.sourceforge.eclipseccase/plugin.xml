@@ -74,9 +74,16 @@
          <action
                label="Checkout"
                tooltip="Checkout"
-               class="org.eclipse.team.ui.actions.CheckOutAction"
+               class="net.sourceforge.eclipseccase.ui.CheckOutAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkout">
+         </action>
+         <action
+               label="Add"
+               tooltip="Add"
+               class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.add">
          </action>
          <action
                label="Delete"
