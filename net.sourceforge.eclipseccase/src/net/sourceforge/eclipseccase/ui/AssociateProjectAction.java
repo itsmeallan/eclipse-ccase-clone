@@ -24,9 +24,10 @@ public class AssociateProjectAction extends TeamAction
 		{
 			try
 			{
-				Team.addNatureToProject(projects[i], ClearcaseProvider.ID, null);
-				//SimpleProvider p = (SimpleProvider) RepositoryProvider.getProvider(project);
-				//p.configureProvider(config);
+				IProject project = projects[i];
+				Team.addNatureToProject(project, ClearcaseProvider.ID, null);
+				ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
+				provider.refresh(new IResource[] {project}, IResource.DEPTH_ZERO, null);
 				MessageDialog.openInformation(
 					shell,
 					"Clearcase Plugin",
