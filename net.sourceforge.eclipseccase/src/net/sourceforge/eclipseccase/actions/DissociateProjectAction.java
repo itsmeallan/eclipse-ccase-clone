@@ -66,6 +66,8 @@ public class DissociateProjectAction extends ClearcaseAction
 			shell,
 			"Clearcase Plugin",
 			message.toString());
+
+		updateActionEnablement();
 	}
 
 	protected boolean isEnabled() throws TeamException

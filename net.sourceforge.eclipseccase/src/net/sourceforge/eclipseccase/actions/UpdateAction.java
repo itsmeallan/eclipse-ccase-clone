@@ -45,6 +45,8 @@ public class UpdateAction extends ClearcaseAction
 				}
 			}
 		}, "Updating", TeamAction.PROGRESS_DIALOG);
+
+		updateActionEnablement();
 	}
 
 	/**

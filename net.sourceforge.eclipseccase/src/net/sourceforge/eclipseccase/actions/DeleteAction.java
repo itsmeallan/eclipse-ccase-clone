@@ -48,6 +48,8 @@ public class DeleteAction extends ClearcaseAction
 				}
 			}
 		}, "Deleting", TeamAction.PROGRESS_DIALOG);
+		
+		updateActionEnablement();
 	}
 
 	/**

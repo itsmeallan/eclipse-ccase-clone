@@ -77,6 +77,8 @@ public class ExternalUpdateAction extends ClearcaseAction
 				}
 			}
 		}, "Update ", TeamAction.PROGRESS_BUSYCURSOR);
+
+		updateActionEnablement();
 	}
 
 }

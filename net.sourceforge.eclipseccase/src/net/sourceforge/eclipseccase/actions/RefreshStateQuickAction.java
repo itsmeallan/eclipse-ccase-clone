@@ -53,6 +53,8 @@ public class RefreshStateQuickAction
 				}
 			}
 		}, "Refreshing state", TeamAction.PROGRESS_DIALOG);
+
+		updateActionEnablement();
 	}
 
 	protected boolean isEnabled()

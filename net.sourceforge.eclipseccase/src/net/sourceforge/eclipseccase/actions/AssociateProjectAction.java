@@ -62,11 +62,13 @@ public class AssociateProjectAction extends ClearcaseAction
 				message.append(" with clearcase");
 			}
 		}, "Associating with clearcase", TeamAction.PROGRESS_DIALOG);
-		
+				
 		MessageDialog.openInformation(
 			shell,
 			"Clearcase Plugin",
 			message.toString());
+
+		updateActionEnablement();
 	}
 	
 	protected boolean isEnabled() throws TeamException

@@ -61,6 +61,8 @@ public class UndoCheckOutAction extends ClearcaseAction
 				}
 			}
 		}, "Undoing checkout", TeamAction.PROGRESS_DIALOG);
+
+		updateActionEnablement();
 	}
 
 	protected boolean isEnabled() throws TeamException

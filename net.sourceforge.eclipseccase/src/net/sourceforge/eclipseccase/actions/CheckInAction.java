@@ -85,6 +85,8 @@ public class CheckInAction extends ClearcaseAction
 				}
 			}
 		}, "Checkin", TeamAction.PROGRESS_DIALOG);
+
+		updateActionEnablement();
 	}
 
 	protected boolean isEnabled()

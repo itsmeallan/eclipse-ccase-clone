@@ -82,6 +82,8 @@ public class CheckOutAction extends ClearcaseAction
 				}
 			}
 		}, "Checking out", TeamAction.PROGRESS_DIALOG);
+
+		updateActionEnablement();
 	}
 
 	protected boolean isEnabled() throws TeamException

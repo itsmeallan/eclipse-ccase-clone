@@ -77,6 +77,8 @@ public class AddToClearcaseAction extends ClearcaseAction
 				}
 			}
 		}, "Adding to clearcase", TeamAction.PROGRESS_DIALOG);
+		
+		updateActionEnablement();
 	}
 	/**
 	 * @see TeamAction#isEnabled()
