@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,7 +29,7 @@ public class StateCacheFactory implements ISaveParticipant
 
 	private static StateCacheFactory instance = new StateCacheFactory();
 	private HashMap cacheMap = new HashMap();
-	private List listeners = new LinkedList();
+	private List listeners = Collections.synchronizedList(new LinkedList());
 	
 	private StateCacheFactory()
 	{
@@ -39,17 +40,17 @@ public class StateCacheFactory implements ISaveParticipant
 		return instance;
 	}
 	
-	public synchronized void addStateChangeListerer(StateChangeListener listener)
+	public void addStateChangeListerer(StateChangeListener listener)
 	{
 		listeners.add(listener);
 	}
 	
-	public synchronized boolean removeStateChangeListerer(StateChangeListener listener)
+	public boolean removeStateChangeListerer(StateChangeListener listener)
 	{
 		return listeners.remove(listener);
 	}
 	
-	public synchronized void fireStateChanged(StateCache stateCache)
+	public void fireStateChanged(StateCache stateCache)
 	{
 		for (Iterator iter = listeners.iterator(); iter.hasNext();)
 		{
