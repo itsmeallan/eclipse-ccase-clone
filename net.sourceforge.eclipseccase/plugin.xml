@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.4.0"
+   version="0.5.0"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -45,14 +45,19 @@
       </decorator>
    </extension>
    <extension
-      id="net.sourceforge.eclipseccase.statechangedmarker" 
-      point="org.eclipse.core.resources.markers" 
-      name="Clearcase state changed">
-      <super type="org.eclipse.core.resources.marker"/>
-      <persistent value="false"/>
-	  <attribute name="statechanged"/>
+         id="net.sourceforge.eclipseccase.statechangedmarker"
+         name="Clearcase state changed"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.marker">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
+      <attribute
+            name="statechanged">
+      </attribute>
    </extension>
-   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
