@@ -1,3 +1,9 @@
+0.9.3
+-----
+
+- Added support for linked resources
+- Removed constraint that project needs to be a clearcase element
+
 0.9.2
 -----
 
