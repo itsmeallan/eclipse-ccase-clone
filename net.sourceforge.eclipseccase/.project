@@ -4,6 +4,20 @@
 	<comment></comment>
 	<projects>
 		<project>net.sourceforge.clearcase</project>
+		<project>org.eclipse.compare</project>
+		<project>org.eclipse.core.resources</project>
+		<project>org.eclipse.core.runtime</project>
+		<project>org.eclipse.jface.text</project>
+		<project>org.eclipse.osgi</project>
+		<project>org.eclipse.swt</project>
+		<project>org.eclipse.team.core</project>
+		<project>org.eclipse.team.ui</project>
+		<project>org.eclipse.ui</project>
+		<project>org.eclipse.ui.editors</project>
+		<project>org.eclipse.ui.ide</project>
+		<project>org.eclipse.ui.views</project>
+		<project>org.eclipse.ui.workbench</project>
+		<project>org.eclipse.ui.workbench.texteditor</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
