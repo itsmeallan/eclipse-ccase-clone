@@ -40,14 +40,12 @@ import org.osgi.framework.BundleContext;
 public class ClearcaseUI extends AbstractUIPlugin {
 
 	//The shared instance.
-	private static final String NO_PREFIX = "";
-
 	private static ClearcaseUI plugin;
 
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 
-	public static final String PLUGIN_ID = "net.sourceforge.eclipseccase.ui";
+	public static final String PLUGIN_ID = "net.sourceforge.eclipseccase.ui"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -58,7 +56,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 		super();
 		plugin = this;
 		try {
-			resourceBundle = ResourceBundle.getBundle(PLUGIN_ID + ".messages");
+			resourceBundle = ResourceBundle.getBundle(PLUGIN_ID + ".messages"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
@@ -314,15 +312,15 @@ public class ClearcaseUI extends AbstractUIPlugin {
 				IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION, false);
 		// default prefixes
 		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_DIRTY,
-				NO_PREFIX);
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_NEW,
-				NO_PREFIX);
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_UNKNOWN,
-				NO_PREFIX);
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED,
-				NO_PREFIX);
+				Messages.getString("ClearcaseUI.Default.Prefix.Dirty")); //$NON-NLS-1$
 		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_HIJACKED,
-				NO_PREFIX);
+				Messages.getString("ClearcaseUI.Default.Prefix.Hijacked")); //$NON-NLS-1$
+		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_NEW,
+				Messages.getString("ClearcaseUI.Default.Prefix.New")); //$NON-NLS-1$
+		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED,
+				Messages.getString("ClearcaseUI.Default.Prefix.Edited")); //$NON-NLS-1$
+		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_UNKNOWN,
+				Messages.getString("ClearcaseUI.Default.Prefix.Unknown")); //$NON-NLS-1$
 
 		// default icon decorations
 		store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_NEW,
