@@ -299,10 +299,11 @@ public class ClearcaseDecorator extends LabelProvider implements
         if (isValidLinkTarget)
         {
             decoration.addOverlay(IMG_DESC_LINK);
-            decoration.addSuffix(" --> " + linkTarget);
         }
         else
             decoration.addOverlay(IMG_DESC_LINK_WARNING);
+
+        decoration.addSuffix(" --> " + linkTarget);
     }
 
     /**
