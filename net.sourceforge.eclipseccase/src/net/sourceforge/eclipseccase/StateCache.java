@@ -1,3 +1,4 @@
+
 package net.sourceforge.eclipseccase;
 
 import java.io.IOException;
@@ -8,30 +9,42 @@ import net.sourceforge.clearcase.simple.IClearcase;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 
 public class StateCache implements Serializable
 {
     static final long serialVersionUID = -7439899000320633901L;
 
     private String osPath;
+
     private String workspaceResourcePath;
 
-    public static final String STATE_CHANGE_MARKER_TYPE =
-        "net.sourceforge.eclipseccase.statechangedmarker";
+    public static final String STATE_CHANGE_MARKER_TYPE = "net.sourceforge.eclipseccase.statechangedmarker";
+
     private transient IResource resource;
+
     private boolean uninitialized = true;
+
     private boolean hasRemote = false;
+
     private boolean isCheckedOut = false;
+
     private boolean isSnapShot = false;
+
     private boolean isHijacked = false;
+
     private String version = "";
 
     StateCache(IResource resource)
     {
         if (null == resource)
-            throw new IllegalArgumentException("Resource must not be null!");
+                throw new IllegalArgumentException("Resource must not be null!");
 
         this.resource = resource;
 
@@ -50,24 +63,23 @@ public class StateCache implements Serializable
 
     public synchronized void updateAsync()
     {
-        updateAsync(false, false);
+        updateAsync(false);
     }
 
     private static final String DEBUG_ID = "StateCache";
 
-    public synchronized void updateAsync(boolean quick, boolean asap)
+    /**
+     * @param quick
+     */
+    public synchronized void updateAsync(boolean quick)
     {
         if (!quick)
         {
             uninitialized = true;
             ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this);
         }
-        Runnable cmd = new UpdateCacheCommand(this, quick);
-        UpdateQueue queue = UpdateQueue.getInstance();
-        if (asap)
-            queue.addFirst(cmd);
-        else
-            queue.add(cmd);
+        RefreshStateJob job = new RefreshStateJob(this, quick);
+        job.schedule();
     }
 
     private synchronized void doUpdate()
@@ -79,44 +91,42 @@ public class StateCache implements Serializable
         {
             // resource has been invalidated in the workspace since request was
             // queued, so ignore update request.
-            ClearcasePlugin.debug(DEBUG_ID, "not updating - invalid resource: " + resource);
+            ClearcasePlugin.debug(DEBUG_ID, "not updating - invalid resource: "
+                    + resource);
             return;
         }
         osPath = location.toOSString();
 
         if (resource.isAccessible())
         {
-            boolean hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
-            changed = changed || hasRemote != this.hasRemote;
-            this.hasRemote = hasRemote;
+            boolean newHasRemote = ClearcasePlugin.getEngine()
+                    .isElement(osPath);
+            changed = changed || newHasRemote != this.hasRemote;
+            this.hasRemote = newHasRemote;
 
-            boolean isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
-            changed = changed || isCheckedOut != this.isCheckedOut;
-            this.isCheckedOut = isCheckedOut;
+            boolean newIsCheckedOut = newHasRemote
+                    && ClearcasePlugin.getEngine().isCheckedOut(osPath);
+            changed = changed || newIsCheckedOut != this.isCheckedOut;
+            this.isCheckedOut = newIsCheckedOut;
 
-            boolean isSnapShot = hasRemote && ClearcasePlugin.getEngine().isSnapShot(osPath);
-            changed = changed || isSnapShot != this.isSnapShot;
-            this.isSnapShot = isSnapShot;
+            boolean newIsSnapShot = newHasRemote
+                    && ClearcasePlugin.getEngine().isSnapShot(osPath);
+            changed = changed || newIsSnapShot != this.isSnapShot;
+            this.isSnapShot = newIsSnapShot;
 
-            boolean isHijacked = isSnapShot && ClearcasePlugin.getEngine().isHijacked(osPath);
-            changed = changed || isHijacked != this.isHijacked;
-            this.isHijacked = isHijacked;
+            boolean newIsHijacked = newIsSnapShot
+                    && ClearcasePlugin.getEngine().isHijacked(osPath);
+            changed = changed || newIsHijacked != this.isHijacked;
+            this.isHijacked = newIsHijacked;
 
-            if (hasRemote)
+            if (newHasRemote)
             {
-                String version =
-                    ClearcasePlugin
-                        .getEngine()
-                        .cleartool(
-                            "describe -fmt "
-                                + ClearcaseUtil.quote("%Vn")
-                                + " "
-                                + ClearcaseUtil.quote(osPath))
-                        .message
-                        .trim()
+                String newVersion = ClearcasePlugin.getEngine().cleartool(
+                        "describe -fmt " + ClearcaseUtil.quote("%Vn") + " "
+                                + ClearcaseUtil.quote(osPath)).message.trim()
                         .replace('\\', '/');
-                changed = changed || !version.equals(this.version);
-                this.version = version;
+                changed = changed || !newVersion.equals(this.version);
+                this.version = newVersion;
             }
         }
         else
@@ -128,7 +138,8 @@ public class StateCache implements Serializable
             isHijacked = false;
             version = "";
             changed = true;
-            ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: " + resource);
+            ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: "
+                    + resource);
         }
 
         uninitialized = false;
@@ -141,7 +152,7 @@ public class StateCache implements Serializable
     }
 
     /**
-     * Updates the cache.  If quick is false, an update is always performed.  If
+     * Updates the cache. If quick is false, an update is always performed. If
      * quick is true, and update is only performed if the file's readonly status
      * differs from what it should be according to the state.
      */
@@ -150,7 +161,7 @@ public class StateCache implements Serializable
         if (quick && !uninitialized)
         {
             if (resource.getType() != IResource.FILE
-                || (resource.isReadOnly() == (isCheckedOut || !hasRemote || isHijacked)))
+                    || (resource.isReadOnly() == (isCheckedOut || !hasRemote || isHijacked)))
             {
                 doUpdate();
             }
@@ -163,6 +174,7 @@ public class StateCache implements Serializable
 
     /**
      * Gets the hasRemote.
+     * 
      * @return Returns a boolean
      */
     public boolean hasRemote()
@@ -172,6 +184,7 @@ public class StateCache implements Serializable
 
     /**
      * Gets the isCheckedOut.
+     * 
      * @return Returns a boolean
      */
     public boolean isCheckedOut()
@@ -181,18 +194,19 @@ public class StateCache implements Serializable
 
     /**
      * Gets the isDirty.
+     * 
      * @return Returns a boolean
      */
     public boolean isDirty()
     {
-        if (osPath == null)
-            return false;
+        if (osPath == null) return false;
 
         return ClearcasePlugin.getEngine().isDifferent(osPath);
     }
 
     /**
      * Returns the osPath.
+     * 
      * @return String
      */
     public String getPath()
@@ -202,6 +216,7 @@ public class StateCache implements Serializable
 
     /**
      * Returns the version.
+     * 
      * @return String
      */
     public String getVersion()
@@ -211,42 +226,47 @@ public class StateCache implements Serializable
 
     /**
      * Returns the predecessor version.
+     * 
      * @return String
      */
     public String getPredecessorVersion()
     {
-        String version = null;
+        String predecessorVersion = null;
 
-        IClearcase.Status status =
-            (isHijacked
-                ? ClearcasePlugin.getEngine().cleartool(
-                    "ls " + ClearcaseUtil.quote(resource.getLocation().toOSString()))
-                : ClearcasePlugin.getEngine().cleartool(
-                    "describe -fmt %PVn "
-                        + ClearcaseUtil.quote(resource.getLocation().toOSString())));
+        IClearcase.Status status = (isHijacked ? ClearcasePlugin.getEngine()
+                .cleartool(
+                        "ls "
+                                + ClearcaseUtil.quote(resource.getLocation()
+                                        .toOSString())) : ClearcasePlugin
+                .getEngine().cleartool(
+                        "describe -fmt %PVn "
+                                + ClearcaseUtil.quote(resource.getLocation()
+                                        .toOSString())));
         if (status.status)
         {
-            version = status.message.trim().replace('\\', '/');
+            predecessorVersion = status.message.trim().replace('\\', '/');
             if (isHijacked)
             {
-                int offset = version.indexOf("@@") + 2;
-                int cutoff = version.indexOf("[hijacked]") - 1;
+                int offset = predecessorVersion.indexOf("@@") + 2;
+                int cutoff = predecessorVersion.indexOf("[hijacked]") - 1;
                 try
                 {
-                    version = version.substring(offset, cutoff);
+                    predecessorVersion = predecessorVersion.substring(offset,
+                            cutoff);
                 }
                 catch (Exception e)
                 {
-                    version = null;
+                    predecessorVersion = null;
                 }
             }
         }
 
-        return version;
+        return predecessorVersion;
     }
 
     /**
      * Returns the uninitialized.
+     * 
      * @return boolean
      */
     public boolean isUninitialized()
@@ -256,6 +276,7 @@ public class StateCache implements Serializable
 
     /**
      * Returns the isHijacked.
+     * 
      * @return boolean
      */
     public boolean isHijacked()
@@ -265,6 +286,7 @@ public class StateCache implements Serializable
 
     /**
      * Returns the isSnapShot.
+     * 
      * @return boolean
      */
     public boolean isSnapShot()
@@ -290,8 +312,8 @@ public class StateCache implements Serializable
         out.defaultWriteObject();
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-        throws IOException, ClassNotFoundException
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException
     {
         in.defaultReadObject();
 
@@ -300,7 +322,8 @@ public class StateCache implements Serializable
         {
             // determine resource
             IPath path = new Path(workspaceResourcePath);
-            resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+            resource = ResourcesPlugin.getWorkspace().getRoot()
+                    .findMember(path);
             if (resource != null && resource.isAccessible())
             {
                 IPath location = resource.getLocation();
@@ -310,7 +333,8 @@ public class StateCache implements Serializable
                 }
                 else
                 {
-                    // resource has been invalidated in the workspace since request was
+                    // resource has been invalidated in the workspace since
+                    // request was
                     // queued, so ignore update request.
                     osPath = null;
                 }
@@ -334,6 +358,7 @@ public class StateCache implements Serializable
 
     /**
      * Returns the resource.
+     * 
      * @return IResource
      */
     public IResource getResource()
@@ -341,39 +366,46 @@ public class StateCache implements Serializable
         return resource;
     }
 
-    private static class UpdateCacheCommand implements Runnable
+    private static class RefreshStateJob extends WorkspaceJob
     {
-        StateCache cache;
-        boolean quick = false;
+        private StateCache cache;
 
-        UpdateCacheCommand(StateCache cache, boolean quick)
+        private boolean quick;
+
+        /**
+         * Creates a new instance.
+         * 
+         * @param name
+         */
+        public RefreshStateJob(StateCache cache, boolean quick)
         {
+            super("Refreshing ClearCase element state of " + cache.getResource());
             this.cache = cache;
             this.quick = quick;
+            setSystem(true);
+            
+            // lock as marker change (don't need to lock complete resource)
+            setRule(ResourcesPlugin.getWorkspace().getRuleFactory().markerRule(cache.getResource()));
+
+            setPriority(DECORATE);
         }
 
-        public void run()
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
+         */
+        public IStatus runInWorkspace(IProgressMonitor monitor)
+                throws CoreException
         {
             cache.update(quick);
-        }
-
-        public boolean equals(Object obj)
-        {
-            if (this == obj)
-                return true;
-
-            if (null == obj || obj.getClass() != UpdateCacheCommand.class)
-                return false;
-
-            return cache.equals(((UpdateCacheCommand) obj).cache);
-        }
-        public int hashCode()
-        {
-            return cache.hashCode();
+            return Status.OK_STATUS;
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     public String toString()
@@ -393,17 +425,13 @@ public class StateCache implements Serializable
         {
             toString.append(version);
 
-            if (isCheckedOut)
-                toString.append(" [CHECKED OUT]");
+            if (isCheckedOut) toString.append(" [CHECKED OUT]");
 
-            if (isDirty())
-                toString.append(" [DIRTY]");
+            if (isDirty()) toString.append(" [DIRTY]");
 
-            if (isHijacked)
-                toString.append(" [HIJACKED]");
+            if (isHijacked) toString.append(" [HIJACKED]");
 
-            if (isSnapShot)
-                toString.append(" [SNAPSHOT]");
+            if (isSnapShot) toString.append(" [SNAPSHOT]");
         }
         else
         {
@@ -413,30 +441,30 @@ public class StateCache implements Serializable
         return toString.toString();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode()
     {
-        if (null == resource)
-            return 0;
+        if (null == resource) return 0;
 
         return resource.hashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object obj)
     {
-        if (this == obj)
-            return true;
+        if (this == obj) return true;
 
-        if (null == obj || StateCache.class != obj.getClass())
-            return false;
+        if (null == obj || StateCache.class != obj.getClass()) return false;
 
-        if (null == resource)
-            return null == ((StateCache) obj).resource;
+        if (null == resource) return null == ((StateCache) obj).resource;
 
         return resource.equals(((StateCache) obj).resource);
     }

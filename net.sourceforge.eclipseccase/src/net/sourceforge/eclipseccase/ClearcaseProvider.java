@@ -69,8 +69,11 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     public void deconfigure() throws CoreException
     {}
 
-    public static ClearcaseProvider getProvider(IResource resource)
+    public static ClearcaseProvider getClearcaseProvider(IResource resource)
     {
+        if(null == resource || null == resource.getProject())
+            return null;
+        
         RepositoryProvider provider = RepositoryProvider.getProvider(resource.getProject());
         if (provider instanceof ClearcaseProvider)
             return (ClearcaseProvider) provider;
@@ -108,11 +111,11 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         execute(new IRecursiveOperation()
         {
-            public IStatus visit(IResource resource, IProgressMonitor progress)
+            public IStatus visit(IResource resource, IProgressMonitor pm)
             {
                 Status result = OK_STATUS;
                 StateCache cache = StateCacheFactory.getInstance().get(resource);
-                cache.updateAsync(false, true);
+                cache.updateAsync(false);
                 return result;
             }
         }, resources, depth, progress);
@@ -123,11 +126,11 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         execute(new IRecursiveOperation()
         {
-            public IStatus visit(IResource resource, IProgressMonitor progress)
+            public IStatus visit(IResource resource, IProgressMonitor pm)
             {
                 Status result = OK_STATUS;
                 StateCache cache = StateCacheFactory.getInstance().get(resource);
-                cache.updateAsync(true, true);
+                cache.updateAsync(true);
                 return result;
             }
 
@@ -449,14 +452,14 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         IStatus result = execute(new IRecursiveOperation()
         {
-            public IStatus visit(IResource resource, IProgressMonitor progress)
+            public IStatus visit(IResource resourceToVisit, IProgressMonitor progress)
             {
-                Status result = OK_STATUS;
+                Status resultStatus = OK_STATUS;
                 // probably overkill/expensive to do it here - should do it on a
                 // case by case basis for eac method that actually changes state
-                StateCache cache = StateCacheFactory.getInstance().get(resource);
+                StateCache cache = StateCacheFactory.getInstance().get(resourceToVisit);
                 cache.update(false);
-                return result;
+                return resultStatus;
             }
 
         }, resource, depth, monitor);
@@ -522,8 +525,9 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 // Sanity check - can't add something that already is under VC
                 if (hasRemote(resource))
                 {
+                    // return status with severity OK
                     return new Status(
-                        IStatus.WARNING,
+                        IStatus.OK,
                         ID,
                         TeamException.UNABLE,
                         MessageFormat.format(
@@ -562,15 +566,17 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                             if (status.status)
                             {
                                 File[] members = mkelemfolder.listFiles();
-                                for (int i = 0; i < members.length; i++)
+                                if(null != members)
                                 {
-                                    File member = members[i];
-                                    File newMember =
-                                        new File(origfolder.getPath(), member.getName());
-                                    member.renameTo(newMember);
+                                    for (int i = 0; i < members.length; i++)
+                                    {
+                                        File member = members[i];
+                                        File newMember =
+                                            new File(origfolder.getPath(), member.getName());
+                                        member.renameTo(newMember);
+                                    }
                                 }
                                 mkelemfolder.delete();
-                                changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
                             }
                             else
                             {
@@ -622,6 +628,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
                 progress.done();
             }
         }
@@ -632,11 +639,25 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         {
             try
             {
-                // Sanity check - can't uncheckout something that is not checked out
-                if (!isCheckedOut(resource))
+                // Sanity check - can't process something that is not part of clearcase
+                if (!hasRemote(resource))
                 {
                     return new Status(
                         IStatus.WARNING,
+                        ID,
+                        TeamException.NO_REMOTE_RESOURCE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not a ClearCase element!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                // Sanity check - can't uncheckout something that is not checked out
+                if (!isCheckedOut(resource))
+                {
+                    // return severity OK
+                    return new Status(
+                        IStatus.OK,
                         ID,
                         TeamException.NOT_CHECKED_OUT,
                         MessageFormat.format(
@@ -650,7 +671,6 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                     ClearcasePlugin.getEngine().uncheckout(
                         resource.getLocation().toOSString(),
                         false);
-                changeState(resource, IResource.DEPTH_ONE, progress);
                 if (!status.status)
                 {
                     result =
@@ -665,6 +685,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource, IResource.DEPTH_ONE, progress);
                 progress.done();
             }
         }
@@ -696,7 +717,6 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                             resource.getLocation().toOSString(),
                             getComment());
                     StateCacheFactory.getInstance().remove(resource);
-                    changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
                     if (!status.status)
                     {
                         result =
@@ -712,6 +732,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
                 progress.done();
             }
         }
@@ -722,7 +743,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         {
             try
             {
-                // Sanity check - can't delete something that is not part of clearcase
+                // Sanity check - can't check in something that is not part of clearcase
                 if (!hasRemote(resource))
                 {
                     return new Status(
@@ -738,8 +759,9 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 // Sanity check - can't checkin something that is not checked out
                 if (!isCheckedOut(resource))
                 {
+                    // return status with severity OK
                     return new Status(
-                        IStatus.WARNING,
+                        IStatus.OK,
                         ID,
                         TeamException.NOT_CHECKED_OUT,
                         MessageFormat.format(
@@ -754,7 +776,6 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                         resource.getLocation().toOSString(),
                         getComment(),
                         ClearcasePlugin.isCheckinPreserveTime());
-                changeState(resource, IResource.DEPTH_ZERO, progress);
                 if (!status.status)
                 {
                     result =
@@ -769,6 +790,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource, IResource.DEPTH_ZERO, progress);
                 progress.done();
             }
         }
@@ -795,8 +817,9 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 // Sanity check - can't checkout something that is already checked out
                 if (isCheckedOut(resource))
                 {
+                    // return status with severity OK
                     return new Status(
-                        IStatus.WARNING,
+                        IStatus.OK,
                         ID,
                         TeamException.NOT_CHECKED_IN,
                         MessageFormat.format(
@@ -813,7 +836,6 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                         getComment(),
                         reserved,
                         true);
-                changeState(resource, IResource.DEPTH_ZERO, progress);
                 if (!status.status)
                 {
                     result =
@@ -828,6 +850,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource, IResource.DEPTH_ZERO, progress);
                 progress.done();
             }
         }
@@ -838,7 +861,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         {
             try
             {
-                // Sanity check - can't delete something that is not part of clearcase
+                // Sanity check - can't update something that is not part of clearcase
                 if (!hasRemote(resource))
                 {
                     return new Status(
@@ -856,7 +879,6 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 IClearcase.Status status =
                     ClearcasePlugin.getEngine().cleartool(
                         "update -log NUL -force -ptime " + ClearcaseUtil.quote(filename));
-                changeState(resource, IResource.DEPTH_INFINITE, progress);
                 if (!status.status)
                 {
                     result =
@@ -871,6 +893,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             }
             finally
             {
+                changeState(resource, IResource.DEPTH_INFINITE, progress);
                 progress.done();
             }
         }

@@ -118,18 +118,14 @@ public class StateCacheFactory implements ISaveParticipant,
         cacheMap.put(resource, cache);
     }
 
-    public boolean isUpdatesPending()
-    {
-        return UpdateQueue.getInstance().isUpdatesPending();
-    }
-
     public synchronized void remove(IResource resource)
     {
         try
         {
             resource.accept(new IResourceVisitor()
             {
-                public boolean visit(IResource childResource) throws CoreException
+                public boolean visit(IResource childResource)
+                        throws CoreException
                 {
                     switch (childResource.getType())
                     {
@@ -308,7 +304,7 @@ public class StateCacheFactory implements ISaveParticipant,
                     IResource resourceToRefresh = (IResource) resources.next();
                     StateCache cache = StateCacheFactory.getInstance().get(
                             resourceToRefresh);
-                    cache.updateAsync(true, false);
+                    cache.updateAsync(true);
                 }
             }
         }

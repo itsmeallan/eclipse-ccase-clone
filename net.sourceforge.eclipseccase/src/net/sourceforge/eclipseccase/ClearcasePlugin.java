@@ -29,13 +29,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -501,7 +501,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         }
     }
 
-    private void loadCommentHistory() throws CoreException
+    private void loadCommentHistory()
     {
         IPath pluginStateLocation = getStateLocation()
                 .append(COMMENT_HIST_FILE);
