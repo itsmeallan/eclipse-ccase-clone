@@ -1,5 +1,4 @@
 bin
 build.xml
-eclipseccase.jar
-eclipseccasesrc.zip
-net.sourceforge.eclipseccase_*.zip
+eclipseccase*
+net.sourceforge.eclipseccase*
