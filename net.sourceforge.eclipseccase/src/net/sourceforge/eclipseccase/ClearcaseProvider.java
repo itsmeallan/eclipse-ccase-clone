@@ -526,7 +526,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 monitor.beginTask("Refreshing State " + resource.getFullPath(),
                         10);
                 // probably overkill/expensive to do it here - should do it
-                // on a
+                // on a 
                 // case by case basis for eac method that actually changes
                 // state
                 StateCache cache = StateCacheFactory.getInstance()
@@ -1082,7 +1082,6 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @return
      */
     public boolean isIgnored(IResource resource) {
-
         // ignore eclipse linked resource
         if (resource.isLinked()) return true;
 
@@ -1090,7 +1089,8 @@ public class ClearcaseProvider extends RepositoryProvider implements
         if (hasRemote(resource)) return false;
 
         // never ignore workspace root
-        if (null == resource.getParent()) return false;
+        IResource parent = resource.getParent(); 
+        if (null == parent) return false;
 
         // check the global ignores from Team (includes derived resources)
         if (Team.isIgnoredHint(resource)) return true;
@@ -1099,11 +1099,11 @@ public class ClearcaseProvider extends RepositoryProvider implements
         if (!isInsideView(resource)) return true;
 
         // bug 904248: do not ignore if parent is a linked resource
-        if (resource.getParent().isLinked()) return false;
+        if (parent.isLinked()) return false;
 
         // check the parent, if the parent is ignored
         // then this resource is ignored also
-        return isIgnored(resource.getParent());
+        return isIgnored(parent);
     }
 
     /**
