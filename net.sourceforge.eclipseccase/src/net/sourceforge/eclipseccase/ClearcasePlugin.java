@@ -37,6 +37,8 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static final String PREF_CHECKOUT_ON_EDIT_DEFAULT = "true";
 	public static final String PREF_REFACTOR_ADDS_DIR = "net.sourceforge.eclipseccase.refactor_adds_dir";
 	public static final String PREF_REFACTOR_ADDS_DIR_DEFAULT = "true";
+	public static final String PREF_TEXT_VERSION_DECORATION = "net.sourceforge.eclipseccase.text_decoration";
+	public static final String PREF_TEXT_VERSION_DECORATION_DEFAULT = "false";
 	
 	/**
 	 * The constructor.
@@ -78,6 +80,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(PREF_ADD_COMMENT, PREF_ADD_COMMENT_DEFAULT);
 		store.setDefault(PREF_CHECKOUT_ON_EDIT, PREF_CHECKOUT_ON_EDIT_DEFAULT);
 		store.setDefault(PREF_REFACTOR_ADDS_DIR, PREF_REFACTOR_ADDS_DIR_DEFAULT);
+		store.setDefault(PREF_TEXT_VERSION_DECORATION, PREF_TEXT_VERSION_DECORATION_DEFAULT);
 	}
 	
 	public static boolean isReservedCheckouts()
@@ -113,6 +116,23 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static boolean isRefactorAddsDir()
 	{
 		return getDefault().getPreferenceStore().getBoolean(PREF_REFACTOR_ADDS_DIR);
+	}
+
+	public static boolean isTextVersionDecoration()
+	{
+		return getDefault().getPreferenceStore().getBoolean(PREF_TEXT_VERSION_DECORATION);
+	}
+
+	/**
+	 * @see org.eclipse.core.runtime.Plugin#startup()
+	 */
+	public void startup() throws CoreException
+	{
+		super.startup();
+		StateCacheFactory cacheFactory = StateCacheFactory.getInstance();
+        ISavedState lastState =
+            ResourcesPlugin.getWorkspace().addSaveParticipant(this, cacheFactory);
+        cacheFactory.load(lastState);
 	}
 
 }
