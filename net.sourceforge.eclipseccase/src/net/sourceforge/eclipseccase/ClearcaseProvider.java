@@ -539,6 +539,16 @@ public class ClearcaseProvider
 						source.getLocation().toOSString(),
 						destination.getLocation().toOSString(),
 						comment);
+				if (!ccStatus.status)
+				{
+					return
+						new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.UNABLE,
+							"Could not move element: " + ccStatus.message,
+							null);
+				}
 				StateCacheFactory.getInstance().remove(source);
 				changeState(source.getParent(), IResource.DEPTH_ZERO, null);
 				changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
