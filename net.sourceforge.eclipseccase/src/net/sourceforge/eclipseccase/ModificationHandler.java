@@ -1,9 +1,9 @@
 
 package net.sourceforge.eclipseccase;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileModificationValidator;
@@ -36,7 +36,7 @@ public class ModificationHandler implements IFileModificationValidator
 								"The resource is not checked out, and checkout on edit is disabled", null);
 			
 		IStatus result = new Status(IStatus.OK, ClearcaseProvider.ID, TeamException.OK, "OK", null);
-		List needCheckout = new ArrayList();
+		Set needCheckout = new HashSet();
 		for (int i = 0; i < files.length; ++i)
 		{
 			StateCache cache = StateCacheFactory.getInstance().get(files[i]);
