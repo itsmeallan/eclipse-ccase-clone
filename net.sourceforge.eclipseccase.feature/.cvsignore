@@ -3,3 +3,4 @@ login.properties
 staging
 export
 *.jar
+*.zip

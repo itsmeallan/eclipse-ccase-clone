@@ -66,8 +66,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     /**
      * The constructor.
      */
-    public ClearcasePlugin(IPluginDescriptor descriptor) {
-        super(descriptor);
+    public ClearcasePlugin() {
+        super();
         plugin = this;
 
         String[] args = Platform.getCommandLineArgs();
