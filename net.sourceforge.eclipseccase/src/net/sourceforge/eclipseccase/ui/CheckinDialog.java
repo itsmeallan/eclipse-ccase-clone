@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase.ui;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
@@ -8,9 +9,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-public class CheckinDialog extends InputDialog {
-	
+public class CheckinDialog extends InputDialog
+{
 	Button recursiveButton;
+	boolean recursive = false;
 	
 	/**
 	 * Constructor for CheckinDialog.
@@ -25,14 +27,16 @@ public class CheckinDialog extends InputDialog {
 		String dialogTitle,
 		String dialogMessage,
 		String initialValue,
-		IInputValidator validator) {
+		IInputValidator validator)
+	{
 		super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
 	}
 
 	/**
 	 * @see Dialog#createButtonsForButtonBar(Composite)
 	 */
-	protected void createButtonsForButtonBar(Composite parent) {
+	protected void createButtonsForButtonBar(Composite parent)
+	{
 		super.createButtonsForButtonBar(parent);
 	}
 
@@ -40,16 +44,18 @@ public class CheckinDialog extends InputDialog {
 	 * Gets the recursive.
 	 * @return Returns a boolean
 	 */
-	public boolean isRecursive() {
-		return recursiveButton.getSelection();
+	public boolean isRecursive()
+	{
+		return recursive;
 	}
 
 	/**
 	 * Sets the recursive.
 	 * @param recursive The recursive to set
 	 */
-	public void setRecursive(boolean recursive) {
-		recursiveButton.setSelection(recursive);
+	public void setRecursive(boolean recursive)
+	{
+		this.recursive = recursive;
 	}
 
 	/**
@@ -63,4 +69,15 @@ public class CheckinDialog extends InputDialog {
 		return control;
 	}
 
+	/**
+	 * @see Dialog#buttonPressed(int)
+	 */
+	protected void buttonPressed(int buttonId)
+	{
+		if (buttonId == IDialogConstants.OK_ID)
+		{
+			recursive = recursiveButton.getSelection();
+		}
+		super.buttonPressed(buttonId);
+	}
 }

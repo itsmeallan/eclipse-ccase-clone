@@ -28,10 +28,12 @@ public class ClearcaseProvider
 {
 
 	private IMoveDeleteHook moveHandler = new MoveHandler(this);
-	private IFileModificationValidator modificationValidator = new ModificationHandler(this);
+	private IFileModificationValidator modificationValidator =
+		new ModificationHandler(this);
 	private String comment = "";
-	
-	public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider";
+
+	public static final String ID =
+		"net.sourceforge.eclipseccase.ClearcaseProvider";
 
 	/**
 	 * @see RepositoryProvider#configureProject()
@@ -190,29 +192,30 @@ public class ClearcaseProvider
 		}, resources, IResource.DEPTH_INFINITE, progress);
 	}
 
-	public void add(IResource[] resources, IProgressMonitor progress)
+	public void add(IResource[] resources, int depth, IProgressMonitor progress)
 		throws TeamException
 	{
-		execute(new IIterativeOperation()
+		execute(new IRecursiveOperation()
 		{
-			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
 				IStatus result;
-				
+
 				// Sanity check - can't add something that already is under VC
 				if (hasRemote(resource))
 				{
-					return new Status(IStatus.ERROR,
-										TeamPlugin.ID,
-										TeamException.UNABLE,
-										"Cannot add an element already under version control: " + resource.toString(),
-										null);
+					return new Status(
+						IStatus.ERROR,
+						TeamPlugin.ID,
+						TeamException.UNABLE,
+						"Cannot add an element already under version control: " + resource.toString(),
+						null);
 				}
-				
+
 				// Walk up parent heirarchy, find first ccase
 				// element that is a parent, and walk back down, adding each to ccase
 				IResource parent = resource.getParent();
-				
+
 				// When resource is a project, try checkout its parent, and if that fails,
 				// then neither project nor workspace is in clearcase.
 				if (resource instanceof IProject || hasRemote(parent))
@@ -220,10 +223,10 @@ public class ClearcaseProvider
 					result = checkoutParent(resource);
 				}
 				else
-				{						
-					result = visit(parent, depth, progress);
+				{
+					result = visit(parent, progress);
 				}
-				
+
 				if (result.isOK())
 				{
 					if (resource instanceof IFolder)
@@ -234,13 +237,14 @@ public class ClearcaseProvider
 							IPath mkelemPath = folder.getFullPath().addFileExtension("mkelem");
 							folder.move(mkelemPath, true, false, null);
 							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-							IFolder mkelemFolder =	root.getFolder(mkelemPath);
+							IFolder mkelemFolder = root.getFolder(mkelemPath);
 							Clearcase.Status status =
 								Clearcase.add(folder.getLocation().toOSString(), "", true);
 							if (status.status)
 							{
 								folder.refreshLocal(IResource.DEPTH_ZERO, null);
-								IResource[] members = mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
+								IResource[] members =
+									mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
 								for (int i = 0; i < members.length; i++)
 								{
 									IResource member = members[i];
@@ -259,7 +263,7 @@ public class ClearcaseProvider
 										"Add failed: " + status.message,
 										null);
 							}
-							
+
 						}
 						catch (CoreException ex)
 						{
@@ -283,10 +287,10 @@ public class ClearcaseProvider
 					}
 
 				}
-				
+
 				return result;
 			}
-		}, resources, IResource.DEPTH_INFINITE, progress);
+		}, resources, depth, progress);
 	}
 
 	/**
@@ -338,15 +342,20 @@ public class ClearcaseProvider
 
 		if (result.isOK())
 		{
-			Clearcase.Status ccStatus = Clearcase.move(source.getLocation().toOSString(),
-														destination.getLocation().toOSString(), "");
-			if (! ccStatus.status)
+			Clearcase.Status ccStatus =
+				Clearcase.move(
+					source.getLocation().toOSString(),
+					destination.getLocation().toOSString(),
+					"");
+			if (!ccStatus.status)
 			{
-				result = new Status(IStatus.ERROR,
-									TeamPlugin.ID,
-									TeamException.UNABLE,
-									ccStatus.message,
-									null);
+				result =
+					new Status(
+						IStatus.ERROR,
+						TeamPlugin.ID,
+						TeamException.UNABLE,
+						ccStatus.message,
+						null);
 			}
 		}
 		return result;
@@ -359,7 +368,7 @@ public class ClearcaseProvider
 		String parent = null;
 		// IProject's parent is the workspace directory, we want the filesystem
 		// parent if the workspace is not itself in clearcase
-		if (resource instanceof IProject && ! hasRemote(resource.getParent()))
+		if (resource instanceof IProject && !hasRemote(resource.getParent()))
 		{
 			parent = resource.getLocation().toFile().getParent().toString();
 		}
@@ -370,9 +379,10 @@ public class ClearcaseProvider
 		if (!Clearcase.isCheckedOut(parent))
 		{
 			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false);
-			if (! ccStatus.status)
+			if (!ccStatus.status)
 			{
-				result = new Status(
+				result =
+					new Status(
 						IStatus.ERROR,
 						TeamPlugin.ID,
 						TeamException.UNABLE,
@@ -382,8 +392,7 @@ public class ClearcaseProvider
 		}
 		return result;
 	}
-	
-	
+
 	/**
 	 * @see RepositoryProvider#getSimpleAccess()
 	 */
@@ -427,7 +436,7 @@ public class ClearcaseProvider
 	}
 
 	// Out of sheer laziness, I appropriated the following code from the team provider example =)
-	
+
 	/**
 	 * These interfaces are to operations that can be performed on the array of resources,
 	 * and on all resources identified by the depth parameter.
@@ -554,6 +563,5 @@ public class ClearcaseProvider
 		else
 			return new IResource[0];
 	}
-
 
 }

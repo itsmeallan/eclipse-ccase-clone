@@ -20,10 +20,19 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public class AddToClearcaseAction extends TeamAction {
 
+	private String lastComment = "";
+	
 	/*
 	 * Method declared on IActionDelegate.
 	 */
 	public void run(IAction action) {
+		CheckinDialog dlg = new CheckinDialog(shell, "Add to clearcase comment",
+										 "Enter a comment", lastComment, null);
+		if (dlg.open() == dlg.CANCEL)
+			return;
+		final String comment = dlg.getValue();
+		final int depth = dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
+		lastComment = comment;
 		run(new WorkspaceModifyOperation() {
 			public void execute(IProgressMonitor monitor) throws InterruptedException, InvocationTargetException {
 				try {
@@ -37,7 +46,12 @@ public class AddToClearcaseAction extends TeamAction {
 						RepositoryProvider provider = (RepositoryProvider)iterator.next();
 						List list = (List)table.get(provider);
 						IResource[] providerResources = (IResource[])list.toArray(new IResource[list.size()]);
-						((ClearcaseProvider) provider.getSimpleAccess()).add(providerResources, subMonitor);
+						if (provider instanceof ClearcaseProvider)
+						{
+							ClearcaseProvider ccprovider = (ClearcaseProvider) provider.getSimpleAccess();
+							ccprovider.setComment(comment);
+							ccprovider.add(providerResources, depth, subMonitor);
+						}
 					}
 				} catch (TeamException e) {
 					throw new InvocationTargetException(e);

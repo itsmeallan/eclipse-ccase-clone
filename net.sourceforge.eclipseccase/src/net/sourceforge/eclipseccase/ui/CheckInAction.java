@@ -28,7 +28,7 @@ public class CheckInAction  extends org.eclipse.team.ui.actions.CheckInAction
 		if (dlg.open() == dlg.CANCEL)
 			return;
 		final String comment = dlg.getValue();
-		final int depth = dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE;
+		final int depth = dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 		lastComment = comment;
 		run(new WorkspaceModifyOperation() {
 			public void execute(IProgressMonitor monitor) throws InterruptedException, InvocationTargetException {
@@ -44,8 +44,11 @@ public class CheckInAction  extends org.eclipse.team.ui.actions.CheckInAction
 						List list = (List)table.get(provider);
 						IResource[] providerResources = (IResource[])list.toArray(new IResource[list.size()]);
 						if (provider instanceof ClearcaseProvider)
-							((ClearcaseProvider) provider).setComment(comment);
-						provider.getSimpleAccess().checkin(providerResources, depth, subMonitor);
+						{
+							ClearcaseProvider ccprovider = (ClearcaseProvider) provider.getSimpleAccess();
+							ccprovider.setComment(comment);
+							ccprovider.checkin(providerResources, depth, subMonitor);
+						}
 					}
 				} catch (TeamException e) {
 					throw new InvocationTargetException(e);
