@@ -517,6 +517,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			if (!viewNameStatus.status)
 				throw new Exception(viewNameStatus.message);
 			String viewName = viewNameStatus.message.trim();
+			
+			boolean isSnapShot =
+				ClearcasePlugin.getEngine().isSnapShot(prefix);
+			boolean projectHasViewPath = prefix.indexOf(viewName) != -1;
 
 			IClearcase.Status result =
 				ClearcasePlugin.getEngine().cleartool(
@@ -528,19 +532,30 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			while (st.hasMoreTokens())
 			{
 				String entry = st.nextToken();
-				int idx = entry.indexOf(viewName);
-				String cleanEntry;
-				if (idx == -1)
+				// If snapshot, or dynamic but project in eclipse is in clearcase "views" directory,
+				// then just add the filename verbatim, otherwise we need to clean it up by remapping
+				// to the same drive/etc as path passed in.
+				if (isSnapShot || projectHasViewPath)
 				{
-					cleanEntry = entry;
+					resultList.add(entry);
 				}
 				else
 				{
-					idx += viewName.length();
-					cleanEntry = entry.substring(idx);
+					int idx = entry.indexOf(viewName);
+					String cleanEntry;
+					if (idx == -1)
+					{
+						cleanEntry = entry;
+					}
+					else
+					{
+						idx += viewName.length();
+						cleanEntry = entry.substring(idx);
+					}
+					if (cleanEntry.startsWith(prefixNoDrive))
+						resultList.add(drive + cleanEntry);
 				}
-				if (cleanEntry.startsWith(prefixNoDrive))
-					resultList.add(drive + cleanEntry);
+				
 			}
 
 			Collections.sort(resultList);
