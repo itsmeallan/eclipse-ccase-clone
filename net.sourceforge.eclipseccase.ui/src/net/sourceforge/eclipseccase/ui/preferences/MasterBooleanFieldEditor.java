@@ -25,8 +25,9 @@ import org.eclipse.swt.widgets.Control;
  * Upgrade of BooleanFieldEditor.
  * When this fieldeditor is unchecked/checked -> all slave Components get disabled/enabled
  * You just have to {@link #addSlave(FieldEditor) add} some slaves during control setup
- * and don't forget to activate the {@link #listen() listener} when the component gets initialized 
- */
+ * and don't forget to activate the {@link #listen() listener} when the component gets initialized
+ * @version $Id$\
+ * */
 public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 	Composite parent;
 	ArrayList slaves = new ArrayList();
