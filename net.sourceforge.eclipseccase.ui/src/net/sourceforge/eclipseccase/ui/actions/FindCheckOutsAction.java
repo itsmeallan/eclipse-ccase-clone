@@ -7,6 +7,7 @@ import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -26,6 +27,10 @@ public class FindCheckOutsAction extends ClearcaseAction
      */
     protected boolean isEnabled() throws TeamException
     {
+        // workaround for bug 960292
+        if(!Os.isFamily(Os.WINDOWS))
+            return false;
+        
         IResource[] resources = getSelectedResources();
         if (resources.length == 0)
             return false;
