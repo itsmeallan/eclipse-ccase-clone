@@ -913,7 +913,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         // For each resource in the local resources array until we have errors.
         try
         {
-            progress.beginTask("processing", 1000 * resources.length);
+            progress.beginTask("", 1000 * resources.length);
             for (int i = 0; i < resources.length && !multiStatus.matches(IStatus.ERROR); i++)
             {
                 progress.subTask(resources[i].getName());
@@ -985,7 +985,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
 
         try
         {
-            progress.beginTask("processing", 2000);
+            progress.beginTask("", 2000);
 
             // Visit the given resource first.
             IStatus status =
