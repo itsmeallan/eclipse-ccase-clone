@@ -1,6 +1,5 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 
 import org.eclipse.jface.action.IAction;
