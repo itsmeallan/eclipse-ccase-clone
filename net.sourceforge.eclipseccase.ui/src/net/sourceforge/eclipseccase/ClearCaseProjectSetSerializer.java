@@ -254,7 +254,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
             try
             {
                 description =
-                    workspace.loadProjectDescription(newProjectLocation.append(".project"));
+                    workspace.loadProjectDescription(newProjectLocation.append(IProjectDescription.DESCRIPTION_FILE_NAME));
             }
             catch (CoreException exception)
             {
