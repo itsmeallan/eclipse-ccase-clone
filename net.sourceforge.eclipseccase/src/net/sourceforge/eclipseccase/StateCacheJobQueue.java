@@ -89,32 +89,35 @@ class StateCacheJobQueue extends Job {
     private void executePendingJobs(IProgressMonitor monitor)
             throws CoreException, OperationCanceledException {
 
-        // synchonize on the buffer
-        synchronized (priorityBuffer) {
+        try {
+            monitor.beginTask(MESSAGE_QUEUE_NAME, priorityBuffer.size());
 
-            if (priorityBuffer.isEmpty()) return;
+            while (!priorityBuffer.isEmpty()) {
 
-            try {
-                monitor.beginTask(MESSAGE_QUEUE_NAME, priorityBuffer.size());
+                if (monitor.isCanceled())
+                        throw new OperationCanceledException();
 
-                while (!priorityBuffer.isEmpty()) {
+                StateCacheJob job = null;
 
-                    if (monitor.isCanceled())
-                            throw new OperationCanceledException();
-
-                    StateCacheJob job = (StateCacheJob) priorityBuffer.remove();
-                    if (null != job.getStateCache().getResource()) {
-                        monitor.subTask(Messages
-                                .getString("StateCacheJobQueue.task.refresh") //$NON-NLS-1$
-                                + job.getStateCache().getResource()
-                                        .getFullPath());
-                        job.execute(new SubProgressMonitor(monitor, 1));
-                    }
+                // synchonize on the buffer but execute job outside lock
+                synchronized (priorityBuffer) {
+                    if (!priorityBuffer.isEmpty())
+                            job = (StateCacheJob) priorityBuffer.remove();
                 }
-            } finally {
-                monitor.done();
-            }
 
+                // check if buffer was empty
+                if(null == job) break;
+                    
+                // execute job
+                if (null != job.getStateCache().getResource()) {
+                    monitor.subTask(Messages
+                            .getString("StateCacheJobQueue.task.refresh") //$NON-NLS-1$
+                            + job.getStateCache().getResource().getFullPath());
+                    job.execute(new SubProgressMonitor(monitor, 1));
+                }
+            }
+        } finally {
+            monitor.done();
         }
     }
 
@@ -216,6 +219,7 @@ class StateCacheJobQueue extends Job {
 
     /**
      * Indicates if the job queue is empty
+     * 
      * @return <code>true</code> if empty
      */
     public boolean isEmpty() {
