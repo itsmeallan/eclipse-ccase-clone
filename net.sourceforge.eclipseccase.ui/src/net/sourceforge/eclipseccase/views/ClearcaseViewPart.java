@@ -358,7 +358,9 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
                 .getClearcaseProvider(resource);
         if (null == provider || provider.isIgnored(resource)) return;
 
-        final boolean shouldAdd = shouldAdd(resource);
+        // do not add non existent resources
+        final boolean shouldAdd = resource.exists() && shouldAdd(resource);
+        
         if (null != getViewer() && null != getViewer().getControl()
                 && !getViewer().getControl().isDisposed()) {
             getViewer().getControl().getDisplay().syncExec(new Runnable() {
