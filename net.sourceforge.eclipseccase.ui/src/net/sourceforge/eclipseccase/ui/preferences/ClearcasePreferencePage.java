@@ -17,6 +17,7 @@ import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -103,6 +104,10 @@ public class ClearcasePreferencePage extends
         useCleartool.setEnabled(ClearcasePlugin.isWindows(),
                 getFieldEditorParent(GENERAL));
         addField(useCleartool);
+        
+		addField(new StringFieldEditor(CACHE_TIMEOUT,
+				PreferenceMessages.getString("Preferences.General.CacheTimeOut"), 2, getFieldEditorParent(GENERAL))); //$NON-NLS-1$
+        
 
         addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS,
                 PreferenceMessages

@@ -83,6 +83,10 @@ public interface IClearcasePreferenceConstants
             + ".useCleartool"; //$NON-NLS-1$
 
     /** ClearCase preference */
+    String CACHE_TIMEOUT = ClearcasePlugin.PLUGIN_ID
+            + ".cacheTimeOut"; //$NON-NLS-1$
+
+    /** ClearCase preference */
     String USE_CLEARDLG = ClearcasePlugin.PLUGIN_ID
             + ".useClearDlg"; //$NON-NLS-1$
 

@@ -14,6 +14,7 @@ package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.io.IOException;
 
+import net.sourceforge.clearcase.simple.ClearcaseJNI;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
 import org.eclipse.core.runtime.Platform;
@@ -129,6 +130,9 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
      */
     public void firePropertyChangeEvent(String name, Object oldValue,
             Object newValue) {
+    	
+    	if ((ClearcasePlugin.PLUGIN_ID+".cacheTimeOut").equals(name))
+    		ClearcaseJNI.setLifeTime(getInt("net.sourceforge.eclipseccase.cacheTimeOut")*1000);
 
         // efficiently handle case of 0 listeners
         if (listeners.isEmpty()) {

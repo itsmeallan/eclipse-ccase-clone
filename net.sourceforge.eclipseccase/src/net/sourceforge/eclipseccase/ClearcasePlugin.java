@@ -653,6 +653,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         // General preferences
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
                 !isWindows());
+        pref.setDefault(IClearcasePreferenceConstants.CACHE_TIMEOUT,
+                "2");
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
         pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
