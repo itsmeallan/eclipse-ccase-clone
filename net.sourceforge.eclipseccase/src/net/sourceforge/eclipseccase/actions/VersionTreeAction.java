@@ -1,10 +1,4 @@
-/**
- * Created on Apr 10, 2002
- *
- * To change this generated comment edit the template variable "filecomment":
- * Workbench>Preferences>Java>Templates.
- */
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +7,6 @@ import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
@@ -23,7 +16,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class ExternalUpdateAction extends TeamAction
+public class VersionTreeAction extends ClearcaseAction
 {
 
 	/**
@@ -41,8 +34,6 @@ public class ExternalUpdateAction extends TeamAction
 			if (provider == null || provider.isUnknownState(resource))
 				return false;
 			if (! provider.hasRemote(resource))
-				return false;
-			if (! provider.isSnapShot())
 				return false;
 		}
 		return true;
@@ -67,14 +58,12 @@ public class ExternalUpdateAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("update -graphical \"" + path + "\"");
+							ClearcasePlugin.getEngine().cleartool("lsvtree -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
-							process.waitFor();
+							Runtime.getRuntime().exec(new String[] {"clearvtree", resource.getLocation().toOSString()});
 						}
-						try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
 					}
 				}
 				catch (IOException ex)
@@ -82,7 +71,7 @@ public class ExternalUpdateAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Update ", TeamAction.PROGRESS_BUSYCURSOR);
+		}, "Version tree", TeamAction.PROGRESS_BUSYCURSOR);
 	}
-	
+
 }

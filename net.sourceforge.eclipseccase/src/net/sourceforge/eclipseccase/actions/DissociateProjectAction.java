@@ -1,8 +1,9 @@
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -14,7 +15,7 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class AssociateProjectAction extends TeamAction
+public class DissociateProjectAction extends ClearcaseAction
 {
 
 	/** (non-Javadoc)
@@ -32,17 +33,16 @@ public class AssociateProjectAction extends TeamAction
 				monitor.beginTask("Adding to clearcase", projects.length);
 
 				if (projects.length == 1)
-					message.append("Associated project ");
+					message.append("Dissociated project ");
 				else
-					message.append("Associated projects: ");
+					message.append("Dissociated projects: ");
 
 				for (int i = 0; i < projects.length; i++)
 				{
 					try
 					{
 						IProject project = projects[i];
-						String projectPath = project.getLocation().toOSString();
-						RepositoryProvider.map(project, ClearcaseProvider.ID);
+						RepositoryProvider.unmap(project);
 						if (i > 0)
 							message.append(", ");
 						message.append(project.getName());
@@ -58,16 +58,16 @@ public class AssociateProjectAction extends TeamAction
 						monitor.done();
 					}
 				}
-				message.append(" with clearcase");
+				message.append(" from clearcase");
 			}
-		}, "Associating with clearcase", TeamAction.PROGRESS_DIALOG);
-		
+		}, "Dissociating from clearcase", TeamAction.PROGRESS_DIALOG);
+
 		MessageDialog.openInformation(
 			shell,
 			"Clearcase Plugin",
 			message.toString());
 	}
-	
+
 	protected boolean isEnabled() throws TeamException
 	{
 		IProject[] projects = getSelectedProjects();
@@ -78,7 +78,7 @@ public class AssociateProjectAction extends TeamAction
 			IResource resource = projects[i];
 			ClearcaseProvider provider =
 				ClearcaseProvider.getProvider(resource);
-			if (provider != null)
+			if (provider == null)
 				return false;
 		}
 		return true;

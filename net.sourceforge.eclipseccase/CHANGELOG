@@ -4,8 +4,10 @@
 - Fixed ModificationHandler to ignore duplicate files (prevents the file already checked
   out dialog sometimes seen during refactoring)
 - Prevent plugin activation when clearcase engine fails to initialize
-- Synchronized access to JNI layer in simple api (hopefully prevents jvm crashes)
-- Added option to control preservig of modification time on checkin
+- Synchronized access to JNI layer in simple api (prevents jvm crashes)
+- Added option to control preserving of modification time on checkin
+- Fixed Internal compare with predecessor for snapshot views
+- Added actionset/commands/keybindings for most of the actions in the Team menu
 
 0.9.5
 -----

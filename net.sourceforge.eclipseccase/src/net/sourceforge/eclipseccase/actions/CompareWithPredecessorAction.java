@@ -1,10 +1,4 @@
-/**
- * Created on Apr 10, 2002
- *
- * To change this generated comment edit the template variable "filecomment":
- * Workbench>Preferences>Java>Templates.
- */
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +16,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class FindCheckOutsAction extends TeamAction
+public class CompareWithPredecessorAction extends ClearcaseAction
 {
 
 	/**
@@ -36,9 +30,6 @@ public class FindCheckOutsAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			if (resource.getType() == IResource.FILE)
-				return false;
-
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 			if (provider == null || provider.isUnknownState(resource))
 				return false;
@@ -67,11 +58,11 @@ public class FindCheckOutsAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("lscheckout -graphical \"" + path + "\"");
+							ClearcasePlugin.getEngine().cleartool("diff -graphical -pred \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec(new String[] {"clearfindco", resource.getLocation().toOSString()});
+							Runtime.getRuntime().exec(new String[] {"cleardlg", "/diffpred", path});
 						}
 					}
 				}
@@ -80,7 +71,7 @@ public class FindCheckOutsAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Find checkouts", TeamAction.PROGRESS_BUSYCURSOR);
+		}, "Compare with predecessor", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 
 }

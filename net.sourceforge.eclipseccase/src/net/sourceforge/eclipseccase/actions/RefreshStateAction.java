@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,7 +12,7 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class RefreshStateAction extends TeamAction
+public class RefreshStateAction extends ClearcaseAction
 {
 	/*
 	 * Method declared on IActionDelegate.
@@ -35,7 +35,6 @@ public class RefreshStateAction extends TeamAction
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 						provider.refresh(new IResource[] {resource},
 											IResource.DEPTH_INFINITE, subMonitor);
-						ClearcaseDecorator.refresh(resource);
 						monitor.worked(1);
 					}
 				}

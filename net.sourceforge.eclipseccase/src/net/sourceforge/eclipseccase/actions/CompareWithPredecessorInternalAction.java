@@ -1,10 +1,4 @@
-/**
- * Created on Apr 10, 2002
- *
- * To change this generated comment edit the template variable "filecomment":
- * Workbench>Preferences>Java>Templates.
- */
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.compare.ResourceCompareInput;
@@ -22,12 +16,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class CompareWithPredecessorInternalAction extends TeamAction
+public class CompareWithPredecessorInternalAction extends ClearcaseAction
 {
 
 	private ResourceCompareInput fInput;
@@ -97,4 +90,5 @@ public class CompareWithPredecessorInternalAction extends TeamAction
 		}
 		super.selectionChanged(action, selection);
 	}
+
 }

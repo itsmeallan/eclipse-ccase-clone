@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -8,18 +8,18 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class DeleteAction extends TeamAction
+public class RefreshStateQuickAction
+	extends ClearcaseAction
 {
+	/*
+	 * Method declared on IActionDelegate.
+	 */
 	public void run(IAction action)
 	{
-		boolean confirmed = MessageDialog.openConfirm(getShell(), "Confirm delete", "Are you sure you want to remove the selected elements from clearcase (rmname)?");
-		if (!confirmed)
-			return;
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
@@ -28,13 +28,18 @@ public class DeleteAction extends TeamAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Deleting...", resources.length);
+					monitor.beginTask("Refreshing state...", resources.length);
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-						provider.delete(new IResource[] {resource}, subMonitor);
+						IProgressMonitor subMonitor =
+							new SubProgressMonitor(monitor, 1000);
+						ClearcaseProvider provider =
+							ClearcaseProvider.getProvider(resource);
+						provider.refreshQuick(
+							new IResource[] { resource },
+							IResource.DEPTH_INFINITE,
+							subMonitor);
 						monitor.worked(1);
 					}
 				}
@@ -47,13 +52,10 @@ public class DeleteAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Deleting", TeamAction.PROGRESS_DIALOG);
+		}, "Refreshing state", TeamAction.PROGRESS_DIALOG);
 	}
 
-	/**
-	 * @see TeamAction#isEnabled()
-	 */
-	protected boolean isEnabled() throws TeamException
+	protected boolean isEnabled()
 	{
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0)
@@ -61,12 +63,12 @@ public class DeleteAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource))
-				return false;
-			if (! provider.hasRemote(resource))
+			ClearcaseProvider provider =
+				ClearcaseProvider.getProvider(resource);
+			if (provider == null)
 				return false;
 		}
 		return true;
 	}
+
 }

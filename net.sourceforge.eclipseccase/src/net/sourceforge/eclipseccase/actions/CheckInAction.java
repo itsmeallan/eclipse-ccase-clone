@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -7,6 +7,8 @@ import java.util.List;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ui.CommentDialog;
+import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,7 +18,7 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class CheckInAction extends TeamAction
+public class CheckInAction extends ClearcaseAction
 {
 	private String lastComment = "";
 

@@ -69,7 +69,7 @@
             id="net.sourceforge.eclipseccase.popups.Associate">
          <action
                label="Associate with clearcase"
-               class="net.sourceforge.eclipseccase.ui.AssociateProjectAction"
+               class="net.sourceforge.eclipseccase.actions.AssociateProjectAction"
                menubarPath="team.main/projectGroup"
                id="net.sourceforge.eclipseccase.popups.associate">
          </action>
@@ -87,96 +87,388 @@
          </filter>
          <action
                label="Dissociate from clearcase"
-               class="net.sourceforge.eclipseccase.ui.DissociateProjectAction"
+               class="net.sourceforge.eclipseccase.actions.DissociateProjectAction"
                menubarPath="team.main/projectGroup"
                id="net.sourceforge.eclipseccase.popups.dissociate">
          </action>
          <action
                label="Uncheckout"
-               class="net.sourceforge.eclipseccase.ui.UndoCheckOutAction"
+               class="net.sourceforge.eclipseccase.actions.UndoCheckOutAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.uncheckout">
          </action>
          <action
                label="Checkin"
-               class="net.sourceforge.eclipseccase.ui.CheckInAction"
+               class="net.sourceforge.eclipseccase.actions.CheckInAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkin">
          </action>
          <action
                label="Refresh State"
-               class="net.sourceforge.eclipseccase.ui.RefreshStateAction"
+               class="net.sourceforge.eclipseccase.actions.RefreshStateAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.refresh">
          </action>
          <action
                label="Refresh State (Quick)"
-               class="net.sourceforge.eclipseccase.ui.RefreshStateQuickAction"
+               class="net.sourceforge.eclipseccase.actions.RefreshStateQuickAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.refreshquick">
          </action>
          <action
                label="Checkout"
-               class="net.sourceforge.eclipseccase.ui.CheckOutAction"
+               class="net.sourceforge.eclipseccase.actions.CheckOutAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkout">
          </action>
          <action
                label="Update"
-               class="net.sourceforge.eclipseccase.ui.UpdateAction"
+               class="net.sourceforge.eclipseccase.actions.UpdateAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.update">
          </action>
          <action
                label="Add"
-               class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
+               class="net.sourceforge.eclipseccase.actions.AddToClearcaseAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.add">
          </action>
          <action
                label="Delete"
-               class="net.sourceforge.eclipseccase.ui.DeleteAction"
+               class="net.sourceforge.eclipseccase.actions.DeleteAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.delete">
          </action>
          <action
                label="Version Tree"
-               class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
+               class="net.sourceforge.eclipseccase.actions.VersionTreeAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.versiontree">
          </action>
          <action
                label="Update (External)"
-               class="net.sourceforge.eclipseccase.ui.ExternalUpdateAction"
+               class="net.sourceforge.eclipseccase.actions.ExternalUpdateAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.externalupdate">
          </action>
          <action
                label="History"
-               class="net.sourceforge.eclipseccase.ui.HistoryAction"
+               class="net.sourceforge.eclipseccase.actions.HistoryAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.history">
          </action>
          <action
                label="Compare with predecessor"
-               class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorAction"
+               class="net.sourceforge.eclipseccase.actions.CompareWithPredecessorAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.comparepredecessor">
          </action>
          <action
                label="Predecessor"
-               class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorInternalAction"
+               class="net.sourceforge.eclipseccase.actions.CompareWithPredecessorInternalAction"
                menubarPath="compareWithMenu/compareWithGroup"
                id="net.sourceforge.eclipseccase.popups.internalcomparepredecessor">
          </action>
          <action
                label="Find checkouts"
-               class="net.sourceforge.eclipseccase.ui.FindCheckOutsAction"
+               class="net.sourceforge.eclipseccase.actions.FindCheckOutsAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.findcheckouts">
          </action>
       </objectContribution>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Clearcase"
+            visible="true"
+            id="net.sourceforge.eclipseccase.actionset">
+		<menu id="eclipseccase_menu"
+			label="&amp;Clearcase"> 
+			<separator name="group1"/>
+			<separator name="group2"/>
+			<separator name="group3"/>
+		</menu>
+		<action
+               label="&amp;Uncheckout"
+               class="net.sourceforge.eclipseccase.actions.UndoCheckOutAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.uncheckout"
+               id="net.sourceforge.eclipseccase.actionset.uncheckout">
+		</action>
+         <action
+               label="Check&amp;in"
+               class="net.sourceforge.eclipseccase.actions.CheckInAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.checkin"
+               id="net.sourceforge.eclipseccase.actionset.checkin">
+         </action>
+         <action
+               label="&amp;Refresh State"
+               class="net.sourceforge.eclipseccase.actions.RefreshStateAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.refresh"
+               id="net.sourceforge.eclipseccase.actionset.refresh">
+         </action>
+         <action
+               label="Refresh State (&amp;Quick)"
+               class="net.sourceforge.eclipseccase.actions.RefreshStateQuickAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.refreshquick"
+               id="net.sourceforge.eclipseccase.actionset.refreshquick">
+         </action>
+         <action
+               label="Check&amp;out"
+               class="net.sourceforge.eclipseccase.actions.CheckOutAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.checkout"
+               id="net.sourceforge.eclipseccase.actionset.checkout">
+         </action>
+         <action
+               label="Upda&amp;te"
+               class="net.sourceforge.eclipseccase.actions.UpdateAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.update"
+               id="net.sourceforge.eclipseccase.actionset.update">
+         </action>
+         <action
+               label="&amp;Add"
+               class="net.sourceforge.eclipseccase.actions.AddToClearcaseAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.add"
+               id="net.sourceforge.eclipseccase.actionset.add">
+         </action>
+         <action
+               label="&amp;Delete"
+               class="net.sourceforge.eclipseccase.actions.DeleteAction"
+               menubarPath="eclipseccase_menu/group1"
+               definitionId="net.sourceforge.eclipseccase.actionset.delete"
+               id="net.sourceforge.eclipseccase.actionset.delete">
+         </action>
+         <action
+               label="&amp;Version Tree"
+               class="net.sourceforge.eclipseccase.actions.VersionTreeAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.versiontree"
+               id="net.sourceforge.eclipseccase.actionset.versiontree">
+         </action>
+         <action
+               label="Update (&amp;External)"
+               class="net.sourceforge.eclipseccase.actions.ExternalUpdateAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.externalupdate"
+               id="net.sourceforge.eclipseccase.actionset.externalupdate">
+         </action>
+         <action
+               label="&amp;History"
+               class="net.sourceforge.eclipseccase.actions.HistoryAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.history"
+               id="net.sourceforge.eclipseccase.actionset.history">
+         </action>
+         <action
+               label="&amp;Compare with predecessor"
+               class="net.sourceforge.eclipseccase.actions.CompareWithPredecessorAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.comparepredecessor"
+               id="net.sourceforge.eclipseccase.actionset.comparepredecessor">
+         </action>
+         <action
+               label="Compare with &amp;predecessor (Internal)"
+               class="net.sourceforge.eclipseccase.actions.CompareWithPredecessorInternalAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor"
+               id="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor">
+         </action>
+         <action
+               label="&amp;Find checkouts"
+               class="net.sourceforge.eclipseccase.actions.FindCheckOutsAction"
+               menubarPath="eclipseccase_menu/group2"
+               definitionId="net.sourceforge.eclipseccase.actionset.findcheckouts"
+               id="net.sourceforge.eclipseccase.actionset.findcheckouts">
+         </action>
+      </actionSet>
+   </extension>
+   
+	<extension
+         point="org.eclipse.ui.commands">
+		<category
+			name="Clearcase"
+			description="Clearcase actions"
+			id="net.sourceforge.eclipseccase.category">
+		</category>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Uncheckout"
+		    description="Cancels the checkout for the selected resources"
+		    id="net.sourceforge.eclipseccase.actionset.uncheckout">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+U"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.uncheckout"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Checkin"
+		    description="Checks in th selected resources"
+		    id="net.sourceforge.eclipseccase.actionset.checkin">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+I"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.checkin"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Refresh"
+		    description="Refreshes eclipse's cache of the resource's clearcase state"
+		    id="net.sourceforge.eclipseccase.actionset.refresh">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+R"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.refresh"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Refresh Quick"
+		    description="Quickly refreshes eclipse's cache of the resource's clearcase state"
+		    id="net.sourceforge.eclipseccase.actionset.refreshquick">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+Q"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.refreshquick"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Checkout"
+		    description="Checks out the selected resources"
+		    id="net.sourceforge.eclipseccase.actionset.checkout">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+O"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.checkout"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Update"
+		    description="Updates the seletced resources (Static view only)"
+		    id="net.sourceforge.eclipseccase.actionset.update">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+T"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.update"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Add"
+		    description="Adds the selected resources to clearcase"
+		    id="net.sourceforge.eclipseccase.actionset.add">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+A"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.add"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Delete"
+		    description="Removes the selected resources from clearcase"
+		    id="net.sourceforge.eclipseccase.actionset.delete">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+D"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.delete"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Version Tree"
+		    description="Opens the clearcase version tree browser on the slected resources (external tool)"
+		    id="net.sourceforge.eclipseccase.actionset.versiontree">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+V"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.versiontree"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Update (External)"
+		    description="Updates the selected resources (external tool)"
+		    id="net.sourceforge.eclipseccase.actionset.externalupdate">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+E"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.externalupdate"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="History"
+		    description="Opens the clearcase hostory browser on the selected resources (external tool)"
+		    id="net.sourceforge.eclipseccase.actionset.history">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+H"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.history"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Compare with predecessor"
+		    description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
+		    id="net.sourceforge.eclipseccase.actionset.comparepredecessor">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+C"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.comparepredecessor"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Compare with Predecessor (Internal)"
+		    description="Uses the eclipse compare api to compare the selected resource with its clearcase predecessor"
+		    id="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+P"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.internalcomparepredecessor"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+		<command
+			category="net.sourceforge.eclipseccase.category"
+		    name="Find Checkouts"
+		    description="Opens the clearcase find checkouts tool on the selected resource (external tool)"
+		    id="net.sourceforge.eclipseccase.actionset.findcheckouts">
+		</command>
+		<keyBinding
+		      string="Ctrl+C Ctrl+F"
+		      scope="org.eclipse.ui.globalScope"
+		      command="net.sourceforge.eclipseccase.actionset.findcheckouts"
+		      configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+		</keyBinding>
+	</extension>
+
+
    <extension
          point="org.eclipse.ui.views">
       <view

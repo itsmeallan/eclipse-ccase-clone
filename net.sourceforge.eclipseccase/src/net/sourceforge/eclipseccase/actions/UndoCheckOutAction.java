@@ -1,9 +1,12 @@
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,39 +16,16 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class AddToClearcaseAction extends TeamAction
+/**
+ * @author conwaym
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Workbench>Preferences>Java>Templates.
+ */
+public class UndoCheckOutAction extends ClearcaseAction
 {
-
-	private String lastComment = "";
-
-	/*
-	 * Method declared on IActionDelegate.
-	 */
 	public void run(IAction action)
 	{
-		String maybeComment = "";
-		int maybeDepth = IResource.DEPTH_ZERO;
-		
-		if (ClearcasePlugin.isAddComment())
-		{
-			CommentDialog dlg =
-				new CommentDialog(
-					shell,
-					"Add to clearcase comment",
-					"Enter a comment",
-					lastComment,
-					null);
-			if (dlg.open() == CommentDialog.CANCEL)
-				return;
-			maybeComment = dlg.getValue();
-			maybeDepth =
-				dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
-		}
-
-		final String comment = maybeComment;
-		final int depth = maybeDepth;
-		lastComment = comment;
-
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
@@ -54,15 +34,20 @@ public class AddToClearcaseAction extends TeamAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Adding to clearcase", resources.length);
+					monitor.beginTask("Undoing checkout...", resources.length);
+					
+					// Sort resources with directories last so that the modification of a
+					// directory doesn't abort the modification of files within it.
+					List resList = Arrays.asList(resources);
+					Collections.sort(resList, new DirectoryLastComparator());
+					
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-						provider.setComment(comment);
-						provider.add(new IResource[] {resource},
-										depth, subMonitor);
+						provider.uncheckout(new IResource[] {resource},
+										IResource.DEPTH_ZERO, subMonitor);
 						monitor.worked(1);
 					}
 				}
@@ -75,11 +60,9 @@ public class AddToClearcaseAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Adding to clearcase", TeamAction.PROGRESS_DIALOG);
+		}, "Undoing checkout", TeamAction.PROGRESS_DIALOG);
 	}
-	/**
-	 * @see TeamAction#isEnabled()
-	 */
+
 	protected boolean isEnabled() throws TeamException
 	{
 		IResource[] resources = getSelectedResources();
@@ -91,17 +74,10 @@ public class AddToClearcaseAction extends TeamAction
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 			if (provider == null || provider.isUnknownState(resource))
 				return false;
-
-			// Projects may be the view directory containing the VOBS, if so,
-			// don't want to be able to add em, or any resource diretcly under them
-			if (resource.getType() == IResource.PROJECT && ! provider.hasRemote(resource))
-				return false;
-			if (resource.getParent().getType() == IResource.PROJECT &&
-				! provider.hasRemote(resource.getParent()))
-				return false;
-			if (provider.hasRemote(resource))
+			if (! provider.isCheckedOut(resource))
 				return false;
 		}
 		return true;
 	}
+
 }

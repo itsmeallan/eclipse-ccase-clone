@@ -1,10 +1,4 @@
-/**
- * Created on Apr 10, 2002
- *
- * To change this generated comment edit the template variable "filecomment":
- * Workbench>Preferences>Java>Templates.
- */
-package net.sourceforge.eclipseccase.ui;
+package net.sourceforge.eclipseccase.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +16,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class CompareWithPredecessorAction extends TeamAction
+public class HistoryAction extends ClearcaseAction
 {
 
 	/**
@@ -64,11 +58,11 @@ public class CompareWithPredecessorAction extends TeamAction
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool())
 						{
-							ClearcasePlugin.getEngine().cleartool("diff -graphical -pred \"" + path + "\"");
+							ClearcasePlugin.getEngine().cleartool("lshistory -graphical \"" + path + "\"");
 						}
 						else
 						{
-							Runtime.getRuntime().exec(new String[] {"cleardlg", "/diffpred", path});
+							Runtime.getRuntime().exec(new String[] {"clearhistory", resource.getLocation().toOSString()});
 						}
 					}
 				}
@@ -77,7 +71,7 @@ public class CompareWithPredecessorAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Compare with predecessor", TeamAction.PROGRESS_BUSYCURSOR);
+		}, "History", TeamAction.PROGRESS_BUSYCURSOR);
 	}
 
 }
