@@ -92,6 +92,13 @@
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.delete">
          </action>
+         <action
+               label="Version Tree"
+               tooltip="Version Tree"
+               class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.versiontree">
+         </action>
       </objectContribution>
    </extension>
 

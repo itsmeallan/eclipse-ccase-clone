@@ -8,6 +8,8 @@ import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -210,7 +212,10 @@ public class ClearcaseProvider
 				// Walk up parent heirarchy, find first ccase
 				// element that is a parent, and walk back down, adding each to ccase
 				IResource parent = resource.getParent();
-				if (hasRemote(parent))
+				
+				// When resource is a project, try checkout its parent, and if that fails,
+				// then neither project nor workspace is in clearcase.
+				if (resource instanceof IProject || hasRemote(parent))
 				{
 					result = checkoutParent(resource);
 				}
@@ -221,31 +226,64 @@ public class ClearcaseProvider
 				
 				if (result.isOK())
 				{
-					Clearcase.Status status = null;
 					if (resource instanceof IFolder)
 					{
-						File resourceFile = resource.getLocation().toFile();
-						File mkelemFile = new File(resourceFile.toString() + ".mkelem");
-						resourceFile.renameTo(mkelemFile);
-						status =
-							Clearcase.add(resource.getLocation().toOSString(), "", true);						
+						try
+						{
+							IFolder folder = (IFolder) resource;
+							IPath mkelemPath = folder.getFullPath().addFileExtension("mkelem");
+							folder.move(mkelemPath, true, false, null);
+							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+							IFolder mkelemFolder =	root.getFolder(mkelemPath);
+							Clearcase.Status status =
+								Clearcase.add(folder.getLocation().toOSString(), "", true);
+							if (status.status)
+							{
+								folder.refreshLocal(IResource.DEPTH_ZERO, null);
+								IResource[] members = mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
+								for (int i = 0; i < members.length; i++)
+								{
+									IResource member = members[i];
+									IPath newPath = folder.getFullPath().append(member.getName());
+									member.move(newPath, true, null);
+								}
+								mkelemFolder.delete(true, false, null);
+							}
+							else
+							{
+								result =
+									new Status(
+										IStatus.ERROR,
+										TeamPlugin.ID,
+										TeamException.UNABLE,
+										"Add failed: " + status.message,
+										null);
+							}
+							
+						}
+						catch (CoreException ex)
+						{
+							result = ex.getStatus();
+						}
 					}
 					else
 					{
-						status =
+						Clearcase.Status status =
 							Clearcase.add(resource.getLocation().toOSString(), "", false);
+						if (!status.status)
+						{
+							result =
+								new Status(
+									IStatus.ERROR,
+									TeamPlugin.ID,
+									TeamException.UNABLE,
+									"Add failed: " + status.message,
+									null);
+						}
 					}
-					if (!status.status)
-					{
-						result =
-							new Status(
-								IStatus.ERROR,
-								TeamPlugin.ID,
-								TeamException.UNABLE,
-								"Add failed: " + status.message,
-								null);
-					}
+
 				}
+				
 				return result;
 			}
 		}, resources, IResource.DEPTH_INFINITE, progress);
@@ -319,8 +357,9 @@ public class ClearcaseProvider
 		IStatus result =
 			new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 		String parent = null;
-		// IProject's parent is the workspace directory, we want the filesystem parent
-		if (resource instanceof IProject)
+		// IProject's parent is the workspace directory, we want the filesystem
+		// parent if the workspace is not itself in clearcase
+		if (resource instanceof IProject && ! hasRemote(resource.getParent()))
 		{
 			parent = resource.getLocation().toFile().getParent().toString();
 		}
