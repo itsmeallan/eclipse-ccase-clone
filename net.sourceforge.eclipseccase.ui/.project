@@ -9,7 +9,6 @@
 		<project>org.eclipse.core.runtime.compatibility</project>
 		<project>org.eclipse.team.ui</project>
 		<project>org.eclipse.ui</project>
-		<project>org.eclipse.ui.ide</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
