@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -45,9 +42,9 @@ public class ClearcaseDecorator
     private final int DIRTY_STATE = 1;
     private final int UNKNOWN_STATE = 2;
 
-    private Timer parentUpdateTimer;
-    boolean decorationInProcess = false;
-    List parentQueue = new LinkedList();
+    //private Timer parentUpdateTimer;
+    //boolean decorationInProcess = false;
+    //List parentQueue = new LinkedList();
 
     public ClearcaseDecorator()
     {
@@ -57,35 +54,35 @@ public class ClearcaseDecorator
         addListener(manager);
         StateCacheFactory.getInstance().addStateChangeListerer(this);
 
-        parentUpdateTimer = new Timer();
-        parentUpdateTimer.schedule(new TimerTask()
-        {
-            public void run()
-            {
-                //synchronized (ClearcaseDecorator.this)
-                {
-                    if (decorationInProcess)
-                    {
-                        //decorationInProcess = false;
-                        return;
-                    }
-                }
-                synchronized (parentQueue)
-                {
-                    if (parentQueue.size() > 0)
-                    {
-                        resourceStateChanged(
-                            (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
-                        parentQueue.clear();
-                    }
-                }
-            }
-        }, 0, 500);
+        //parentUpdateTimer = new Timer();
+        //parentUpdateTimer.schedule(new TimerTask()
+        //{
+        //    public void run()
+        //    {
+        //        //synchronized (ClearcaseDecorator.this)
+        //        {
+        //            if (decorationInProcess)
+        //            {
+        //                //decorationInProcess = false;
+        //                return;
+        //            }
+        //        }
+        //        synchronized (parentQueue)
+        //        {
+        //            if (parentQueue.size() > 0)
+        //            {
+        //                resourceStateChanged(
+        //                    (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
+        //                parentQueue.clear();
+        //            }
+        //        }
+        //    }
+        //}, 0, 500);
     }
 
     public void dispose()
     {
-        parentUpdateTimer.cancel();
+        //parentUpdateTimer.cancel();
     }
 
     /**
@@ -253,63 +250,53 @@ public class ClearcaseDecorator
 
     public void resourceStateChanged(IResource[] changedResources)
     {
+        if (changedResources.length == 0)
+            return;
+
         boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
-        for (int i = 0; i < changedResources.length; i++)
+
+        if (!deepDecoration)
         {
-            if (deepDecoration)
-                queueParents(changedResources[i]);
+            postLabelEvent(new LabelProviderChangedEvent(this, changedResources));
+            return;
         }
 
-        Object[] elements = getElementsAndResource(changedResources);
-        postLabelEvent(new LabelProviderChangedEvent(this, elements));
-    }
-
-    /**
-     * @param changedResources
-     * @return
-     */
-    private Object[] getElementsAndResource(IResource[] changedResources)
-    {
         HashSet changedElements = new HashSet(changedResources.length * 2);
         for (int i = 0; i < changedResources.length; i++)
         {
+            //queueParents(changedResources[i]);
             IResource resource = changedResources[i];
-            changedElements.add(resource);
-            if (resourcesToElementsMap.containsKey(resource))
-                changedElements.addAll((Set) resourcesToElementsMap.get(resource));
+            // refresh also parents
+            while (null != resource && changedElements.add(resource))
+                resource = resource.getParent();
         }
-        return changedElements.toArray();
+        postLabelEvent(new LabelProviderChangedEvent(this, changedElements.toArray()));
     }
 
-    private void queueParents(IResource resource)
-    {
-        IResource current = resource.getParent();
-
-        while (current != null && current.getType() != IResource.ROOT)
-        {
-            synchronized (parentQueue)
-            {
-                if (!parentQueue.contains(current))
-                    parentQueue.add(current);
-            }
-            current = current.getParent();
-        }
-    }
+    //private void queueParents(IResource resource)
+    //{
+    //    IResource current = resource.getParent();
+    //
+    //    while (current != null && current.getType() != IResource.ROOT)
+    //    {
+    //        synchronized (parentQueue)
+    //        {
+    //            if (!parentQueue.contains(current))
+    //                parentQueue.add(current);
+    //        }
+    //        current = current.getParent();
+    //    }
+    //}
 
     private void postLabelEvent(final LabelProviderChangedEvent event)
     {
-        synchronized (this)
+        Display.getDefault().asyncExec(new Runnable()
         {
-            decorationInProcess = true;
-            Display.getDefault().asyncExec(new Runnable()
+            public void run()
             {
-                public void run()
-                {
-                    fireLabelProviderChanged(event);
-                    decorationInProcess = false;
-                }
-            });
-        }
+                fireLabelProviderChanged(event);
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -379,21 +366,9 @@ public class ClearcaseDecorator
         if (object instanceof IAdaptable)
         {
             IResource resource = (IResource) ((IAdaptable) object).getAdapter(IResource.class);
-            addMappedResource(resource, object);
             return resource;
         }
         return null;
-    }
-
-    private void addMappedResource(IResource resource, Object element)
-    {
-        Set elements = (Set) resourcesToElementsMap.get(resource);
-        if (null == elements)
-        {
-            elements = new HashSet(5);
-            resourcesToElementsMap.put(resource, elements);
-        }
-        elements.add(element);
     }
 
     private Map resourcesToElementsMap = Collections.synchronizedMap(new HashMap(50));
