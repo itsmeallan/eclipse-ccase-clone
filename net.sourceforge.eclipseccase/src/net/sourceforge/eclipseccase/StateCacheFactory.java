@@ -98,7 +98,10 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
         }
         else if (cache.isUninitialized())
         {
-            cache.updateAsync();
+            // do not update here, I found a threading issue where the same resource is updated
+            // again and again because the decorator thread started decoration which
+            // caused this methode to get called
+            //cache.updateAsync();
         }
         return cache;
     }

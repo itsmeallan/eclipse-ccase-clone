@@ -52,7 +52,7 @@ public class StateCache implements Serializable
     {
         updateAsync(false, false);
     }
-    
+
     private static final String DEBUG_ID = "StateCache";
 
     public synchronized void updateAsync(boolean quick, boolean asap)
@@ -65,15 +65,9 @@ public class StateCache implements Serializable
         Runnable cmd = new UpdateCacheCommand(this, quick);
         UpdateQueue queue = UpdateQueue.getInstance();
         if (asap)
-        {
-            queue.remove(cmd);
             queue.addFirst(cmd);
-        }
         else
-        {
-            if (!UpdateQueue.getInstance().contains(cmd))
-                UpdateQueue.getInstance().add(cmd);
-        }
+            queue.add(cmd);
     }
 
     private synchronized void doUpdate()
@@ -365,8 +359,12 @@ public class StateCache implements Serializable
 
         public boolean equals(Object obj)
         {
-            if (!(obj instanceof UpdateCacheCommand))
+            if (this == obj)
+                return true;
+
+            if (null == obj || obj.getClass() != UpdateCacheCommand.class)
                 return false;
+
             return cache.equals(((UpdateCacheCommand) obj).cache);
         }
         public int hashCode()
@@ -421,7 +419,7 @@ public class StateCache implements Serializable
     public int hashCode()
     {
         if (null == resource)
-            return super.hashCode();
+            return 0;
 
         return resource.hashCode();
     }
@@ -431,11 +429,14 @@ public class StateCache implements Serializable
      */
     public boolean equals(Object obj)
     {
+        if (this == obj)
+            return true;
+
         if (null == obj || StateCache.class != obj.getClass())
             return false;
 
         if (null == resource)
-            return super.equals(obj);
+            return null == ((StateCache) obj).resource;
 
         return resource.equals(((StateCache) obj).resource);
     }
