@@ -82,6 +82,23 @@ public interface IClearcasePreferenceConstants
     String USE_CLEARTOOL = ClearcasePlugin.PLUGIN_ID
             + ".useCleartool";
 
+    /** ClearCase preference */
+    String USE_CLEARDLG = ClearcasePlugin.PLUGIN_ID
+            + ".useClearDlg";
+
+    /** ClearCase preference */
+    String CLEARCASE_API = ClearcasePlugin.PLUGIN_ID
+            + ".clearcaseAPI";
+
+    /** preference value for <code>CLEARCASE_API</code> */
+    String CLEARCASE_NATIVE = "native_cal";
+
+    /** preference value for <code>CLEARCASE_API</code> */
+    String CLEARCASE_CLEARTOOL = "native_cleartool";
+
+    /** preference value for <code>CLEARCASE_API</code> */
+    String CLEARCASE_CLEARDLG = "compatible_cleardlg";
+
     /** preference value */
     String VALUE_ASK = "ask";
 

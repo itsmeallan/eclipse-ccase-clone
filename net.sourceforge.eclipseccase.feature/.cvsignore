@@ -4,3 +4,4 @@ staging
 export
 *.jar
 *.zip
+dev.properties

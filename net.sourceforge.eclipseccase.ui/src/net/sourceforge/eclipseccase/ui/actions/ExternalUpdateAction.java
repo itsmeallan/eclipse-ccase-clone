@@ -71,11 +71,8 @@ public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
                             }
                         }
                         
-                        // refresh state
-                        ClearcaseProvider provider = ClearcaseProvider
-                                .getClearcaseProvider(resource);
-                        provider.refresh(new IResource[] {resource},
-                                IResource.DEPTH_INFINITE, subMonitor(monitor));
+                        // refresh resources: will refresh state if necessary
+                        resource.refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
                     }
                 } finally {
                     monitor.done();

@@ -193,7 +193,9 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
                     op.run(monitor);
                 }
                 catch (InterruptedException e)
-                {}
+                {
+                    // canceled
+                }
                 catch (InvocationTargetException e)
                 {
                     Throwable t = e.getTargetException();
@@ -272,7 +274,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
             // bind to clear clase plugin
             RepositoryProvider.map(project, ClearcaseProvider.ID);
             StateCacheFactory.getInstance().remove(project);
-            StateCacheFactory.getInstance().fireStateChanged(StateCacheFactory.getInstance().get(project));
+            StateCacheFactory.getInstance().fireStateChanged(project);
             monitor.worked(100);
         }
         catch (CoreException e)

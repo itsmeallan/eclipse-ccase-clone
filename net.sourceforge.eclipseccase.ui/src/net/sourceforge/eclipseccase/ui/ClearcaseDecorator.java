@@ -18,9 +18,8 @@ import java.util.List;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.IResourceStateListener;
 import net.sourceforge.eclipseccase.StateCacheFactory;
-import net.sourceforge.eclipseccase.StateChangeListener;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -45,7 +44,7 @@ import org.eclipse.ui.internal.decorators.DecoratorManager;
  * The ClearCase label decorator.
  */
 public class ClearcaseDecorator extends LabelProvider implements
-        ILightweightLabelDecorator, StateChangeListener {
+        ILightweightLabelDecorator, IResourceStateListener {
 
     /*
      * Define a cached image descriptor which only creates the image data once
@@ -574,10 +573,10 @@ public class ClearcaseDecorator extends LabelProvider implements
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.eclipseccase.StateChangeListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
+     * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
      */
-    public void stateChanged(StateCache stateCache) {
-        refresh(new IResource[] { stateCache.getResource()});
+    public void resourceStateChanged(IResource resource) {
+        refresh(new IResource[] { resource });
     }
 
     /**

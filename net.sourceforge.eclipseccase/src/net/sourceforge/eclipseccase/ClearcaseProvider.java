@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
@@ -166,6 +167,14 @@ public class ClearcaseProvider extends RepositoryProvider implements
         } finally {
             setComment("");
         }
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.team.core.RepositoryProvider#getRuleFactory()
+     */
+    public IResourceRuleFactory getRuleFactory() {
+        return new ClearcaseResourceRuleFactory();
     }
 
     /**
@@ -431,7 +440,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
             doUpdateState(resource, depth, new SubProgressMonitor(monitor, 10));
         } catch (CoreException ex) {
             ClearcasePlugin.log(IStatus.ERROR,
-                    "Error refreshing clearcase/resource state", ex);
+                    "Error refreshing ClearCase state: " + ex.getMessage(), ex);
         } finally {
             monitor.done();
         }
@@ -1048,14 +1057,14 @@ public class ClearcaseProvider extends RepositoryProvider implements
         // never ignore handled resources
         if (hasRemote(resource)) return false;
 
-        // ignore resources outside vob
-        if (!isInsideView(resource)) return true;
-
         // never ignore workspace root
         if (null == resource.getParent()) return false;
 
         // check the global ignores from Team (includes derived resources)
         if (Team.isIgnoredHint(resource)) return true;
+
+        // ignore resources outside vob
+        if (!isInsideView(resource)) return true;
 
         // bug 904248: do not ignore if parent is a linked resource
         if (resource.getParent().isLinked()) return false;
@@ -1143,7 +1152,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @return <code>true</code> if the specified resource is a view
      *         directory
      */
-    public boolean isInsideView(IResource resource) {
+    public static boolean isInsideView(IResource resource) {
         IClearcase.Status status = ClearcasePlugin.getEngine().getViewRoot(
                 resource.getLocation().toOSString());
         

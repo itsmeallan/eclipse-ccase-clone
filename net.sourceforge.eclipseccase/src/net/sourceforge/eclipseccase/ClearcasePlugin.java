@@ -46,9 +46,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.osgi.service.environment.Constants;
 import org.eclipse.team.core.TeamException;
-
 import org.osgi.framework.BundleContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,6 +67,22 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
 
     private static final BASE64Encoder BASE64_ENCODER = new BASE64Encoder();
+    
+    /** job family for all clearcase operations */
+    public static final Object FAMILY_CLEARCASE_OPERATION = new Object();
+    
+    /** the scheduling rule for the whole clearcase engine */
+    public static final ISchedulingRule RULE_CLEARCASE_ENGING = new ISchedulingRule() {
+
+        public boolean contains(ISchedulingRule rule) {
+            return RULE_CLEARCASE_ENGING == rule;
+        }
+
+        public boolean isConflicting(ISchedulingRule rule) {
+            return RULE_CLEARCASE_ENGING == rule;
+        }
+    };
+    
 
     /** file name fo the history file */
     private static final String COMMENT_HIST_FILE = "commentHistory.xml"; //$NON-NLS-1$
@@ -116,6 +132,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 try {
                     debugFileWriter.close();
                 } catch (IOException e1) {
+                    // ignore
                 }
             }
             log(IStatus.ERROR, "Could not debug to file " + debug, e);
@@ -132,6 +149,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 try {
                     debugWriter.close();
                 } catch (IOException e1) {
+                    // ignore
                 }
             }
             log(IStatus.ERROR, "Could not debug to file " + debug, e);
@@ -361,6 +379,16 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     }
 
     /**
+     * Returns the preference value for <code>USE_CLEARDLG</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isUseClearDlg() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.USE_CLEARDLG);
+    }
+
+    /**
      * Logs an exception with the specified severity an message.
      * 
      * @param severity
@@ -500,6 +528,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         // General preferences
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
                 !isWindows());
+        pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
         pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
         pref.setDefault(IClearcasePreferenceConstants.RECURSIVE, true);
@@ -554,7 +583,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             }
         } catch (IOException e) {
             getLog().log(
-                    new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
+                    new Status(IStatus.ERROR, PLUGIN_ID, TeamException.UNABLE,
                             "Error while reading config file: "
                                     + e.getLocalizedMessage(), e));
         } catch (CoreException e) {
@@ -608,7 +637,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 }
             }
         } catch (Exception e) {
-            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
+            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
                     TeamException.UNABLE, "Error reading config file!", e));
         }
     }
@@ -646,12 +675,12 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 histFile.delete();
             }
             boolean renamed = tempFile.renameTo(histFile);
-            if (!renamed) { throw new CoreException(new Status(Status.ERROR,
+            if (!renamed) { throw new CoreException(new Status(IStatus.ERROR,
                     PLUGIN_ID, TeamException.UNABLE, MessageFormat.format(
                             "Could not rename file '{0}'!",
                             new Object[] { tempFile.getAbsolutePath()}), null)); }
         } catch (IOException e) {
-            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
+            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
                     TeamException.UNABLE, MessageFormat.format(
                             "Could not save file '{0}'!",
                             new Object[] { histFile.getAbsolutePath()}), e));
@@ -717,5 +746,4 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             writer.endTag(ELEMENT_COMMENT_HISTORY);
         }
     }
-
 }

@@ -442,7 +442,17 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
         useCleartool.setEnabled(ClearcasePlugin.isWindows(),
                 getFieldEditorParent(GENERAL));
         addField(useCleartool);
-
+        
+        //RadioGroupFieldEditor clearcaseLayer = new RadioGroupFieldEditor(CLEARCASE_API,
+        //        "Interface for ClearCase operations",1,
+        //        new String[][]{
+        //        {"Native - CAL (ClearCase Automation Library)", CLEARCASE_NATIVE},
+        //        {"Native - cleartool executable", CLEARCASE_CLEARTOOL},
+        //        {"Compatible - ClearDlg executable", CLEARCASE_CLEARDLG}
+        //        }
+        //        ,getFieldEditorParent(GENERAL),true);
+        //addField(clearcaseLayer);
+        
         addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS,
                 "Save dirty editors before ClearCase operations", 1,
                 new String[][] { { "Always", VALUE_FORCE},
@@ -466,6 +476,11 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
         addField(new BooleanFieldEditor(
                 CHECKOUT_LATEST,
                 "Update to latest version before checkout (useful on SnapShot views)",
+                getFieldEditorParent(SOURCE_MANAGEMENT)));
+
+        addField(new BooleanFieldEditor(
+                USE_CLEARDLG,
+                "Use ClearCase user interface (cleardlg executable)",
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new RadioGroupFieldEditor(

@@ -7,19 +7,20 @@ ToDos
 (must be ready with Eclipse 3.0)
 
   - general
-    - investigate new Eclipse API
+    - (in progress) investigate new Eclipse API
     
   - repository provider
-    - background jobs
-    - scheduling rules (IMoveDeleteHook, auto-checkout ...)
+    - (in progress) background jobs
+    - (in progress) scheduling rules (IMoveDeleteHook, auto-checkout ...)
   
   - ui
-    - finanlize "checkouts view"
+    - (in progress) finanlize "checkouts view"
     - finanlize recursive actions (eg. check for new when checkin folder)
     - rework auto-checkout to provide UI feedback instead of exceptions
+    - (in progress) support native ClearCase UI via "cleardlg" executable
 
   - clearcase
-    - API for detecting if a resource is checked out by someone else
+    - (done) API for detecting if a resource is checked out by someone else
 
 1.1.0
 -----

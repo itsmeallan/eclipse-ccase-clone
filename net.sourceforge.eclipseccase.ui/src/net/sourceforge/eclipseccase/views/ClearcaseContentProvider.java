@@ -1,7 +1,15 @@
-/*
- * Copyright (c) 2004 Intershop (www.intershop.de) Created on Apr 8, 2004
- */
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas from Eclipse
+ *     Gunnar Wagenknecht - new features, enhancements and bug fixes
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
@@ -11,9 +19,9 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.progress.DeferredTreeContentManager;
 
 /**
- * TODO Provide description for CheckoutsViewContentProvider.
+ * A content provider for the ClearcaseViewPart.
  * 
- * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
+ * @author Gunnar Wagenknecht (gunnar@wagenknecht.org)
  */
 public class ClearcaseContentProvider implements ITreeContentProvider
 {
@@ -70,6 +78,11 @@ public class ClearcaseContentProvider implements ITreeContentProvider
         return new Object[0];
     }
 
+    /**
+     * Cancels all pending jobs for the specified root.
+     * 
+     * @param root
+     */
     public void cancelJobs(ClearcaseViewRoot root)
     {
         if (manager != null)
@@ -104,7 +117,9 @@ public class ClearcaseContentProvider implements ITreeContentProvider
      * @see org.eclipse.jface.viewers.IContentProvider#dispose()
      */
     public void dispose()
-    {}
+    {
+        // nothing to dispose
+        }
 
     private IWorkingSet workingSet;
 

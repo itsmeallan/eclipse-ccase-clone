@@ -118,7 +118,7 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
         }
     }
 
-    // We may want to register a cache StateChangeListener so that if the state changes,
+    // We may want to register a cache IResourceStateListener so that if the state changes,
     // and we have not changed our selection, the action enablement gets updated to reflect
     // the new state.  May be too much overhead for too little benefit
     protected void updateActionEnablement()
@@ -342,5 +342,14 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
         if(monitor.isCanceled()) throw new OperationCanceledException();
         
         return new SubProgressMonitor(monitor, 10000);
+    }
+    
+    /**
+     * Checks if the monitor has been canceled.
+     * @param monitor
+     */
+    protected static void checkCanceled(IProgressMonitor monitor)
+    {
+        if(null != monitor && monitor.isCanceled()) throw new OperationCanceledException();
     }
 }

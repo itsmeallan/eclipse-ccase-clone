@@ -1,6 +1,7 @@
-1.0.0
------
+1.0.0.M1
+--------
 
+- requires Eclipse I20040514
 - target platform is now Eclipse 3.0 (no 2.x support any more)
 - reworked preferences pages
   - preferences are now organized in categories
@@ -8,10 +9,16 @@
 - improvements in the decorator
   - reworked icons to fit into Eclipse Team style
   - customizable text prefixes for dirty states
+  - added decoration for elements checked out in another view
 - support for background jobs
 - simplified refreshes (will execute in background)
-- several bug fixes in the ClearCase API
-
+- all actions and progress monitors has been reworked
+- several bug fixes in the plugin and ClearCase API
+- more features:
+  - checkout latest on snapshot views (updates before checkout)
+  - "Update External" also refreshes the state if resource was not checked out
+  - the state of files will be refreshed when they are opened in any editor
+  - started usage of native ClearCase UI (cleardlg)
 
 0.9.10
 ------

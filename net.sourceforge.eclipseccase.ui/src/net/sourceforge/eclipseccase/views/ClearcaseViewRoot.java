@@ -1,7 +1,15 @@
-/*
- * Copyright (c) 2004 Intershop (www.intershop.de) Created on Apr 8, 2004
- */
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas from Eclipse
+ *     Gunnar Wagenknecht - new features, enhancements and bug fixes
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
 import java.util.ArrayList;
@@ -15,14 +23,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.jface.progress.IElementCollector;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.progress.IDeferredWorkbenchAdapter;
+import org.eclipse.ui.progress.IElementCollector;
 
 /**
- * TODO Provide description for ClearcaseViewRoot.
+ * A generic root element for the <code>ClearcaseViewPart</code>.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */

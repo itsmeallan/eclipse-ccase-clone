@@ -6,7 +6,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 
 public class RefreshStateAction extends ClearcaseWorkspaceAction
@@ -23,15 +22,14 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Refreshing state...", resources.length);
+                    beginTask(monitor, "Refreshing state...", resources.length);
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
+                        checkCanceled(monitor);
 						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						provider.refresh(new IResource[] {resource},
-											IResource.DEPTH_INFINITE, subMonitor);
-						monitor.worked(1);
+											IResource.DEPTH_INFINITE, subMonitor(monitor));
 					}
 				}
 				finally

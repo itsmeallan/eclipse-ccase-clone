@@ -1,16 +1,23 @@
-/*
- * Copyright (c) 2004 Intershop (www.intershop.de) Created on Apr 8, 2004
- */
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas from Eclipse
+ *     Gunnar Wagenknecht - new features, enhancements and bug fixes
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
 import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.IResourceStateListener;
 import net.sourceforge.eclipseccase.StateCacheFactory;
-import net.sourceforge.eclipseccase.StateChangeListener;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 
 import org.eclipse.core.resources.IContainer;
@@ -24,36 +31,38 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.progress.IElementCollector;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.team.core.TeamException;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkingSet;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.progress.IElementCollector;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.navigator.ResourceSorter;
 
 /**
- * TODO Provide description for ClearcaseView.
+ * Base class for views showing ClearCase elements.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
 public abstract class ClearcaseViewPart extends ResourceNavigator implements
-        StateChangeListener, IResourceChangeListener
-{
+        IResourceStateListener, IResourceChangeListener {
 
     private ClearcaseContentProvider contentProvider;
 
     /**
      * @see org.eclipse.team.internal.ccvs.ui.repo.RemoteViewPart#getContentProvider()
      */
-    protected ClearcaseContentProvider getContentProvider()
-    {
-        if (contentProvider == null)
-        {
+    protected ClearcaseContentProvider getContentProvider() {
+        if (contentProvider == null) {
             contentProvider = new ClearcaseContentProvider();
         }
         return contentProvider;
@@ -64,8 +73,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#initContentProvider(org.eclipse.jface.viewers.TreeViewer)
      */
-    protected void initContentProvider(TreeViewer viewer)
-    {
+    protected void initContentProvider(TreeViewer viewer) {
         viewer.setContentProvider(getContentProvider());
         StateCacheFactory.getInstance().addStateChangeListerer(this);
     }
@@ -75,8 +83,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#initLabelProvider(org.eclipse.jface.viewers.TreeViewer)
      */
-    protected void initLabelProvider(TreeViewer viewer)
-    {
+    protected void initLabelProvider(TreeViewer viewer) {
         viewer.setLabelProvider(new DecoratingLabelProvider(
                 new ClearcaseViewLabelProvider(), getPlugin().getWorkbench()
                         .getDecoratorManager().getLabelDecorator()));
@@ -87,37 +94,34 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#setSorter(org.eclipse.ui.views.navigator.ResourceSorter)
      */
-    public void setSorter(ResourceSorter sorter)
-    {
-        super.setSorter(new ResourceSorter(sorter.getCriteria())
-        {
+    public void setSorter(ResourceSorter sorter) {
+        super.setSorter(new ResourceSorter(sorter.getCriteria()) {
+
             /*
              * (non-Javadoc)
              * 
              * @see org.eclipse.ui.views.navigator.ResourceSorter#compare(org.eclipse.jface.viewers.Viewer,
              *      java.lang.Object, java.lang.Object)
              */
-            public int compare(Viewer viewer, Object o1, Object o2)
-            {
+            public int compare(Viewer viewer, Object o1, Object o2) {
                 //have to deal with non-resources in navigator
                 //if one or both objects are not resources, returned a
                 // comparison
                 //based on class.
-                if (!(o1 instanceof IResource && o2 instanceof IResource))
-                {
-                    return compareClass(o1, o2);
-                }
+                if (!(o1 instanceof IResource && o2 instanceof IResource)) { return compareClass(
+                        o1, o2); }
                 IResource r1 = (IResource) o1;
                 IResource r2 = (IResource) o2;
 
-                if (getCriteria() == NAME) return compareNames(r1, r2);
-                else if (getCriteria() == TYPE) return compareTypes(r1, r2);
+                if (getCriteria() == NAME)
+                    return compareNames(r1, r2);
+                else if (getCriteria() == TYPE)
+                    return compareTypes(r1, r2);
                 else
                     return 0;
             }
 
-            protected int compareNames(IResource resource1, IResource resource2)
-            {
+            protected int compareNames(IResource resource1, IResource resource2) {
                 return collator.compare(resource1.getFullPath().toString(),
                         resource2.getFullPath().toString());
             }
@@ -129,8 +133,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#getInitialInput()
      */
-    protected IAdaptable getInitialInput()
-    {
+    protected IAdaptable getInitialInput() {
         return getRoot();
     }
 
@@ -141,16 +144,12 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#getRoot()
      */
-    protected ClearcaseViewRoot getRoot()
-    {
-        if (null == myRoot)
-        {
-            myRoot = new ClearcaseViewRoot()
-            {
+    protected ClearcaseViewRoot getRoot() {
+        if (null == myRoot) {
+            myRoot = new ClearcaseViewRoot() {
 
                 protected void collectElements(IProject[] clearcaseProjects,
-                        IElementCollector collector, IProgressMonitor monitor)
-                {
+                        IElementCollector collector, IProgressMonitor monitor) {
                     findResources(clearcaseProjects, collector, monitor);
                 }
             };
@@ -166,32 +165,27 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * @param monitor
      */
     protected void findResources(IProject[] clearcaseProjects,
-            IElementCollector collector, IProgressMonitor monitor)
-    {
-        try
-        {
+            IElementCollector collector, IProgressMonitor monitor) {
+        try {
             monitor.beginTask("Searching for resource",
                     clearcaseProjects.length * 100000);
-            for (int i = 0; i < clearcaseProjects.length; i++)
-            {
+            for (int i = 0; i < clearcaseProjects.length; i++) {
                 IProject project = clearcaseProjects[i];
                 monitor.subTask("Searching in project " + project.getName());
-                try
-                {
+                try {
                     findResources(project, collector, new SubProgressMonitor(
                             monitor, 100000,
                             SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
-                }
-                catch (CoreException ex)
-                {
+                } catch (CoreException ex) {
                     handleError(ex, "Error",
                             "An error occured while searching for resources in project "
                                     + project.getName() + ".");
                 }
+
+                if (monitor.isCanceled())
+                        throw new OperationCanceledException();
             }
-        }
-        finally
-        {
+        } finally {
             monitor.done();
         }
 
@@ -199,15 +193,15 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
 
     protected void findResources(IResource resource,
             final IElementCollector collector, final IProgressMonitor monitor)
-            throws CoreException
-    {
-        try
-        {
+            throws CoreException {
+        try {
+            if (monitor.isCanceled()) throw new OperationCanceledException();
+
             // filter out ignored resources
-            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-            if(null == provider || provider.isIgnored(resource))
-                return;
-            
+            ClearcaseProvider provider = ClearcaseProvider
+                    .getClearcaseProvider(resource);
+            if (null == provider || provider.isIgnored(resource)) return;
+
             // determine children
             IResource[] children = (resource instanceof IContainer) ? ((IContainer) resource)
                     .members()
@@ -221,18 +215,14 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
                             1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
 
             // process state
-            if (children.length > 0)
-            {
-                for (int i = 0; i < children.length; i++)
-                {
+            if (children.length > 0) {
+                for (int i = 0; i < children.length; i++) {
                     findResources(children[i], collector,
                             new SubProgressMonitor(monitor, 1000,
                                     SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
                 }
             }
-        }
-        finally
-        {
+        } finally {
             monitor.done();
         }
     }
@@ -242,35 +232,33 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#setWorkingSet(org.eclipse.ui.IWorkingSet)
      */
-    public void setWorkingSet(IWorkingSet workingSet)
-    {
+    public void setWorkingSet(IWorkingSet workingSet) {
         getContentProvider().setWorkingSet(workingSet);
         super.setWorkingSet(workingSet);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#updateTitle()
      */
-    public void updateTitle()
-    {
+    public void updateTitle() {
         // do nothing
-	}
+    }
 
     /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#makeActions()
      */
-    protected void makeActions()
-    {
+    protected void makeActions() {
         setActionGroup(new ClearcaseViewActionGroup(this));
     }
 
     /**
      * Refreshes the viewer.
      */
-    public void refresh()
-    {
+    public void refresh() {
         if (getViewer() == null) return;
         getContentProvider().cancelJobs(getRoot());
         getViewer().refresh();
@@ -288,39 +276,28 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * @param shell
      *            the shell to open the error dialog in
      */
-    public void handleError(Exception exception, String title, String message)
-    {
+    public void handleError(Exception exception, String title, String message) {
         IStatus status = null;
         boolean log = false;
         boolean dialog = false;
         Throwable t = exception;
-        if (exception instanceof TeamException)
-        {
+        if (exception instanceof TeamException) {
             status = ((TeamException) exception).getStatus();
             log = false;
             dialog = true;
-        }
-        else if (exception instanceof InvocationTargetException)
-        {
+        } else if (exception instanceof InvocationTargetException) {
             t = ((InvocationTargetException) exception).getTargetException();
-            if (t instanceof TeamException)
-            {
+            if (t instanceof TeamException) {
                 status = ((TeamException) t).getStatus();
                 log = false;
                 dialog = true;
-            }
-            else if (t instanceof CoreException)
-            {
+            } else if (t instanceof CoreException) {
                 status = ((CoreException) t).getStatus();
                 log = true;
                 dialog = true;
-            }
-            else if (t instanceof InterruptedException)
-            {
+            } else if (t instanceof InterruptedException) {
                 return;
-            }
-            else
-            {
+            } else {
                 status = new Status(IStatus.ERROR, ClearcaseUI.PLUGIN_ID, 1,
                         "An unknown exception occured: "
                                 + t.getLocalizedMessage(), t);
@@ -329,34 +306,27 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             }
         }
         if (status == null) return;
-        if (!status.isOK())
-        {
+        if (!status.isOK()) {
             IStatus toShow = status;
-            if (status.isMultiStatus())
-            {
+            if (status.isMultiStatus()) {
                 IStatus[] children = status.getChildren();
-                if (children.length == 1)
-                {
+                if (children.length == 1) {
                     toShow = children[0];
                 }
             }
-            if (title == null)
-            {
+            if (title == null) {
                 title = status.getMessage();
             }
-            if (message == null)
-            {
+            if (message == null) {
                 message = status.getMessage();
             }
             if (dialog && getViewSite() != null
-                    && getViewSite().getShell() != null)
-            {
+                    && getViewSite().getShell() != null) {
                 ErrorDialog.openError(getViewSite().getShell(), title, message,
                         toShow);
             }
             if (log || getViewSite() == null
-                    || getViewSite().getShell() == null)
-            {
+                    || getViewSite().getShell() == null) {
                 ClearcasePlugin.log(toShow.getSeverity(), message, t);
             }
         }
@@ -367,8 +337,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#dispose()
      */
-    public void dispose()
-    {
+    public void dispose() {
         StateCacheFactory.getInstance().removeStateChangeListerer(this);
         super.dispose();
     }
@@ -376,28 +345,22 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.eclipseccase.StateChangeListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
+     * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
      */
-    public void stateChanged(StateCache stateCache)
-    {
-        final IResource resource = stateCache.getResource();
-
+    public void resourceStateChanged(final IResource resource) {
         // filter out ignored resources
-        ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-        if(null == provider || provider.isIgnored(resource))
-            return;
-        
+        ClearcaseProvider provider = ClearcaseProvider
+                .getClearcaseProvider(resource);
+        if (null == provider || provider.isIgnored(resource)) return;
+
         final boolean shouldAdd = shouldAdd(resource);
         if (null != getViewer() && null != getViewer().getControl()
-                && !getViewer().getControl().isDisposed())
-        {
-            getViewer().getControl().getDisplay().syncExec(new Runnable()
-            {
-                public void run()
-                {
+                && !getViewer().getControl().isDisposed()) {
+            getViewer().getControl().getDisplay().syncExec(new Runnable() {
+
+                public void run() {
                     if (null != getViewer() && null != getViewer().getControl()
-                            && !getViewer().getControl().isDisposed())
-                    {
+                            && !getViewer().getControl().isDisposed()) {
                         // we remove in every case
                         getViewer().remove(resource);
 
@@ -411,10 +374,13 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
 
     /**
      * Indicates if the given resource should be shown in the viewer.
-     * <p>Ignored resources are already filtered out.</p>
+     * <p>
+     * Ignored resources are already filtered out.
+     * </p>
      * 
      * @param resource
-     * @return <code>true</code> if the given resource should be shown in the viewer
+     * @return <code>true</code> if the given resource should be shown in the
+     *         viewer
      */
     protected abstract boolean shouldAdd(IResource resource);
 
@@ -426,46 +392,62 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
      */
-    public void resourceChanged(IResourceChangeEvent event)
-    {
+    public void resourceChanged(IResourceChangeEvent event) {
         IResourceDelta rootDelta = event.getDelta();
-        if (null != rootDelta)
-        {
-            try
-            {
-                rootDelta.accept(new IResourceDeltaVisitor()
-                {
+        if (null != rootDelta) {
+            try {
+                rootDelta.accept(new IResourceDeltaVisitor() {
+
                     public boolean visit(IResourceDelta delta)
-                            throws CoreException
-                    {
-                        switch (delta.getKind())
-                        {
-                            case IResourceDelta.ADDED:
-                            case IResourceDelta.REMOVED:
-                                throw IS_AFFECTED_EX;
+                            throws CoreException {
+                        switch (delta.getKind()) {
+                        case IResourceDelta.ADDED:
+                        case IResourceDelta.REMOVED:
+                            throw IS_AFFECTED_EX;
 
-                            default:
-                                IResource resource = delta.getResource();
-                                if (null != resource)
-                                {
-                                    // filter out non clear case projects
-                                    if (resource.getType() == IResource.PROJECT)
-                                            return null != ClearcaseProvider
-                                                    .getClearcaseProvider(delta
-                                                            .getResource());
+                        default:
+                            IResource resource = delta.getResource();
+                            if (null != resource) {
+                                // filter out non clear case projects
+                                if (resource.getType() == IResource.PROJECT)
+                                        return null != ClearcaseProvider
+                                                .getClearcaseProvider(delta
+                                                        .getResource());
 
-                                    return true;
-                                }
-                                return false;
+                                return true;
+                            }
+                            return false;
                         }
                     }
                 });
-            }
-            catch (CoreException ex)
-            {
+            } catch (CoreException ex) {
                 // refresh on exception
                 if (IS_AFFECTED_EX == ex) refresh();
             }
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.views.navigator.ResourceNavigator#init(org.eclipse.ui.IViewSite,
+     *      org.eclipse.ui.IMemento)
+     */
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        super.init(site, memento);
+        IWorkbenchSiteProgressService progressService = getProgressService();
+        if(null != progressService) {
+            progressService.showBusyForFamily(ClearcasePlugin.FAMILY_CLEARCASE_OPERATION);
+        }
+    }
+
+    /**
+     * Returns the IWorkbenchSiteProgressService for the receiver.
+     * 
+     * @return IWorkbenchSiteProgressService (maybe <code>null</code>)
+     */
+    protected IWorkbenchSiteProgressService getProgressService() {
+        return (IWorkbenchSiteProgressService) getSite().getAdapter(
+                IWorkbenchSiteProgressService.class);
     }
 }

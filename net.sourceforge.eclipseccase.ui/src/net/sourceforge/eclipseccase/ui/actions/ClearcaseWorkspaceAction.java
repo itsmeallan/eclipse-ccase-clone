@@ -45,7 +45,7 @@ public abstract class ClearcaseWorkspaceAction extends ClearcaseAction
         }
         catch (InvocationTargetException ex)
         {
-            handle(ex, jobName, jobName + ": " + ex.getLocalizedMessage());
+            handle(ex, jobName, jobName + ": " + ex.getMessage());
         }
         catch (InterruptedException ex)
         {
