@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
@@ -34,13 +36,16 @@ public class ClearcaseProvider
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
 
+	private static final Status OK_STATUS =
+		new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+
 	Boolean isSnapShot = null;
-	
+
 	public ClearcaseProvider()
 	{
 		super();
 	}
-	
+
 	/**
 	 * @see RepositoryProvider#configureProject()
 	 */
@@ -65,27 +70,35 @@ public class ClearcaseProvider
 
 	public static ClearcaseProvider getProvider(IResource resource)
 	{
-			RepositoryProvider provider = RepositoryProvider.getProvider(resource.getProject());
-			if (provider instanceof ClearcaseProvider)
-				return (ClearcaseProvider) provider;
-			else
-				return null;
+		RepositoryProvider provider =
+			RepositoryProvider.getProvider(resource.getProject());
+		if (provider instanceof ClearcaseProvider)
+			return (ClearcaseProvider) provider;
+		else
+			return null;
 	}
-	
+
 	/**
 	 * @see SimpleAccessOperations#get(IResource[], int, IProgressMonitor)
 	 */
-	public void get(IResource[] resources, int depth, IProgressMonitor progress)
+	public void get(
+		IResource[] resources,
+		int depth,
+		IProgressMonitor progress)
 		throws TeamException
 	{
 		execute(new IIterativeOperation()
 		{
-			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+			public IStatus visit(
+				IResource resource,
+				int depth,
+				IProgressMonitor progress)
 			{
-				IStatus result =
-					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+				IStatus result = OK_STATUS;
 				String filename = resource.getLocation().toOSString();
-				IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("update -log NUL -force -ptime \"" + filename + "\"");
+				IClearcase.Status status =
+					ClearcasePlugin.getEngine().cleartool(
+						"update -log NUL -force -ptime \"" + filename + "\"");
 				changeState(resource, IResource.DEPTH_INFINITE, progress);
 				if (!status.status)
 				{
@@ -115,13 +128,18 @@ public class ClearcaseProvider
 		{
 			execute(new IRecursiveOperation()
 			{
-				public IStatus visit(IResource resource, IProgressMonitor progress)
+				public IStatus visit(
+					IResource resource,
+					IProgressMonitor progress)
 				{
-					IStatus result =
-						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+					IStatus result = OK_STATUS;
 					boolean reserved = ClearcasePlugin.isReservedCheckouts();
 					IClearcase.Status status =
-						ClearcasePlugin.getEngine().checkout(resource.getLocation().toOSString(), comment, reserved, true);
+						ClearcasePlugin.getEngine().checkout(
+							resource.getLocation().toOSString(),
+							comment,
+							reserved,
+							true);
 					changeState(resource, IResource.DEPTH_ZERO, progress);
 					if (!status.status)
 					{
@@ -153,9 +171,12 @@ public class ClearcaseProvider
 		{
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
-				IStatus result =
-					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-				changeClearcaseState(resource, IResource.DEPTH_ZERO, progress);
+				IStatus result = OK_STATUS;
+				result =
+					changeClearcaseState(
+						resource,
+						IResource.DEPTH_ZERO,
+						progress);
 				return result;
 			}
 		}, resources, depth, progress);
@@ -174,12 +195,16 @@ public class ClearcaseProvider
 		{
 			execute(new IRecursiveOperation()
 			{
-				public IStatus visit(IResource resource, IProgressMonitor progress)
+				public IStatus visit(
+					IResource resource,
+					IProgressMonitor progress)
 				{
-					IStatus result =
-						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+					IStatus result = OK_STATUS;
 					IClearcase.Status status =
-						ClearcasePlugin.getEngine().checkin(resource.getLocation().toOSString(), comment, true);
+						ClearcasePlugin.getEngine().checkin(
+							resource.getLocation().toOSString(),
+							comment,
+							true);
 					changeState(resource, IResource.DEPTH_ZERO, progress);
 					if (!status.status)
 					{
@@ -214,10 +239,11 @@ public class ClearcaseProvider
 		{
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
-				IStatus result =
-					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+				IStatus result = OK_STATUS;
 				IClearcase.Status status =
-					ClearcasePlugin.getEngine().uncheckout(resource.getLocation().toOSString(), false);
+					ClearcasePlugin.getEngine().uncheckout(
+						resource.getLocation().toOSString(),
+						false);
 				changeState(resource, IResource.DEPTH_ONE, progress);
 				if (!status.status)
 				{
@@ -242,15 +268,23 @@ public class ClearcaseProvider
 	{
 		execute(new IIterativeOperation()
 		{
-			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+			public IStatus visit(
+				IResource resource,
+				int depth,
+				IProgressMonitor progress)
 			{
 				IStatus result = checkoutParent(resource);
 				if (result.isOK())
 				{
 					IClearcase.Status status =
-						ClearcasePlugin.getEngine().delete(resource.getLocation().toOSString(), "");
+						ClearcasePlugin.getEngine().delete(
+							resource.getLocation().toOSString(),
+							"");
 					StateCacheFactory.getInstance().remove(resource);
-					changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
+					changeState(
+						resource.getParent(),
+						IResource.DEPTH_ONE,
+						progress);
 					if (!status.status)
 					{
 						result =
@@ -267,17 +301,22 @@ public class ClearcaseProvider
 		}, resources, IResource.DEPTH_INFINITE, progress);
 	}
 
-	public void add(IResource[] resources, int depth, IProgressMonitor progress)
+	public void add(
+		IResource[] resources,
+		int depth,
+		IProgressMonitor progress)
 		throws TeamException
 	{
 		try
 		{
 			execute(new IRecursiveOperation()
 			{
-				public IStatus visit(IResource resource, IProgressMonitor progress)
+				public IStatus visit(
+					IResource resource,
+					IProgressMonitor progress)
 				{
 					IStatus result;
-			
+
 					// Sanity check - can't add something that already is under VC
 					if (hasRemote(resource))
 					{
@@ -285,14 +324,15 @@ public class ClearcaseProvider
 							IStatus.ERROR,
 							ID,
 							TeamException.UNABLE,
-							"Cannot add an element already under version control: " + resource.toString(),
+							"Cannot add an element already under version control: "
+								+ resource.toString(),
 							null);
 					}
-			
+
 					// Walk up parent heirarchy, find first ccase
 					// element that is a parent, and walk back down, adding each to ccase
 					IResource parent = resource.getParent();
-			
+
 					// When resource is a project, try checkout its parent, and if that fails,
 					// then neither project nor workspace is in clearcase.
 					if (resource instanceof IProject || hasRemote(parent))
@@ -303,32 +343,36 @@ public class ClearcaseProvider
 					{
 						result = visit(parent, progress);
 					}
-			
+
 					if (result.isOK())
 					{
 						if (resource instanceof IFolder)
 						{
 							try
 							{
-								IFolder folder = (IFolder) resource;
-								IPath mkelemPath = folder.getFullPath().addFileExtension("mkelem");
-								folder.move(mkelemPath, true, false, null);
-								IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-								IFolder mkelemFolder = root.getFolder(mkelemPath);
+								String path = resource.getLocation().toOSString();
+								File origfolder = new File(path);
+								File mkelemfolder = new File(path + ".mkelem");
+								origfolder.renameTo(mkelemfolder);
 								IClearcase.Status status =
-									ClearcasePlugin.getEngine().add(folder.getLocation().toOSString(), "", true);
+									ClearcasePlugin.getEngine().add(
+										path,
+										comment,
+										true);
 								if (status.status)
 								{
-									changeState(folder.getParent(), IResource.DEPTH_ONE, progress);
-									IResource[] members =
-										mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
+									File[] members = mkelemfolder.listFiles();
 									for (int i = 0; i < members.length; i++)
 									{
-										IResource member = members[i];
-										IPath newPath = folder.getFullPath().append(member.getName());
-										member.move(newPath, true, progress);
+										File member = members[i];
+										File newMember = new File(origfolder.getPath(), member.getName());
+										member.renameTo(newMember);
 									}
-									mkelemFolder.delete(true, false, progress);
+									mkelemfolder.delete();
+									changeState(
+										resource.getParent(),
+										IResource.DEPTH_ONE,
+										progress);
 								}
 								else
 								{
@@ -340,18 +384,30 @@ public class ClearcaseProvider
 											"Add failed: " + status.message,
 											null);
 								}
-			
+
 							}
-							catch (CoreException ex)
+							catch (Exception ex)
 							{
-								result = ex.getStatus();
+								result = new Status(
+											IStatus.ERROR,
+											ID,
+											TeamException.UNABLE,
+											"Add failed: " + ex.getMessage(),
+											ex);
+
 							}
 						}
 						else
 						{
 							IClearcase.Status status =
-								ClearcasePlugin.getEngine().add(resource.getLocation().toOSString(), "", false);
-							changeState(resource, IResource.DEPTH_ZERO, progress);
+								ClearcasePlugin.getEngine().add(
+									resource.getLocation().toOSString(),
+									comment,
+									false);
+							changeState(
+								resource,
+								IResource.DEPTH_ZERO,
+								progress);
 							if (!status.status)
 							{
 								result =
@@ -363,9 +419,9 @@ public class ClearcaseProvider
 										null);
 							}
 						}
-			
+
 					}
-			
+
 					return result;
 				}
 			}, resources, depth, progress);
@@ -379,7 +435,10 @@ public class ClearcaseProvider
 	/**
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
 	 */
-	public void moved(IPath source, IResource target, IProgressMonitor progress)
+	public void moved(
+		IPath source,
+		IResource target,
+		IProgressMonitor progress)
 		throws TeamException
 	{
 	}
@@ -401,7 +460,10 @@ public class ClearcaseProvider
 		{
 			// no need to calculate this for each resource as all resources
 			// within a project must belong to the same view.
-			isSnapShot = new Boolean(ClearcasePlugin.getEngine().isSnapShot(getProject().getLocation().toOSString()));
+			isSnapShot =
+				new Boolean(
+					ClearcasePlugin.getEngine().isSnapShot(
+						getProject().getLocation().toOSString()));
 		}
 		return isSnapShot.booleanValue();
 	}
@@ -426,16 +488,18 @@ public class ClearcaseProvider
 	{
 		return StateCacheFactory.getInstance().get(resource).getVersion();
 	}
-	
+
 	public String getViewName(IResource resource)
 	{
-		IClearcase.Status status = ClearcasePlugin.getEngine().getViewName(resource.getLocation().toOSString());
+		IClearcase.Status status =
+			ClearcasePlugin.getEngine().getViewName(
+				resource.getLocation().toOSString());
 		if (status.status)
 			return status.message.trim();
 		else
 			return "none";
 	}
-	
+
 	public IStatus move(IResource source, IResource destination)
 	{
 		IStatus result = checkoutParent(source);
@@ -459,12 +523,12 @@ public class ClearcaseProvider
 
 	public IStatus checkoutParent(IResource resource)
 	{
-		IStatus result =
-			new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+		IStatus result = OK_STATUS;
 		String parent = null;
 		// IProject's parent is the workspace directory, we want the filesystem
 		// parent if the workspace is not itself in clearcase
-		boolean flag = resource instanceof IProject && !hasRemote(resource.getParent());
+		boolean flag =
+			resource instanceof IProject && !hasRemote(resource.getParent());
 		if (flag)
 		{
 			parent = resource.getLocation().toFile().getParent().toString();
@@ -475,8 +539,13 @@ public class ClearcaseProvider
 		}
 		if (!ClearcasePlugin.getEngine().isCheckedOut(parent))
 		{
-			IClearcase.Status ccStatus = ClearcasePlugin.getEngine().checkout(parent, "", ClearcasePlugin.isReservedCheckouts(), true);
-			if (! flag)
+			IClearcase.Status ccStatus =
+				ClearcasePlugin.getEngine().checkout(
+					parent,
+					"",
+					ClearcasePlugin.isReservedCheckouts(),
+					true);
+			if (!flag)
 				changeState(resource.getParent(), IResource.DEPTH_ZERO, null);
 			if (!ccStatus.status)
 			{
@@ -505,44 +574,63 @@ public class ClearcaseProvider
 		}
 		catch (CoreException ex)
 		{
+			ClearcasePlugin.log(IStatus.ERROR, "Error refreshing clearcase/resource state", ex);
 		}
 	}
 
 	// Notifies decorator that state has changed for an element
-	private void changeClearcaseState(
+	private IStatus changeClearcaseState(
 		IResource resource,
 		int depth,
 		IProgressMonitor monitor)
 	{
-		try
+		return execute(new IRecursiveOperation()
 		{
-			// probably overkill/expensive to do it here - should do it on a
-			// case by case basis for eac method that actually changes state
-			StateCache cache = StateCacheFactory.getInstance().get(resource);
-			cache.update();
+			public IStatus visit(IResource resource, IProgressMonitor progress)
+			{
+				Status result = OK_STATUS;
+				try
+				{
+					// probably overkill/expensive to do it here - should do it on a
+					// case by case basis for eac method that actually changes state
+					StateCache cache =
+						StateCacheFactory.getInstance().get(resource);
+					cache.update();
 
-			// This is a hack until I get around to creating my own state change mechanism for decorators
-			// create a marker and set attribute so decorator gets notified without the resource actually
-			// changing (so refactoring doesn't fail).  Should we delete the marker?
-			IMarker[] markers =
-				resource.findMarkers(
-					ClearcaseProvider.STATE_CHANGE_MARKER_TYPE,
-					false,
-					IResource.DEPTH_ZERO);
-			IMarker marker = null;
-			if (markers.length == 0)
-			{
-				marker = resource.createMarker(STATE_CHANGE_MARKER_TYPE);
+					// This is a hack until I get around to creating my own state change mechanism for decorators
+					// create a marker and set attribute so decorator gets notified without the resource actually
+					// changing (so refactoring doesn't fail).  Should we delete the marker?
+					IMarker[] markers =
+						resource.findMarkers(
+							ClearcaseProvider.STATE_CHANGE_MARKER_TYPE,
+							false,
+							IResource.DEPTH_ZERO);
+					IMarker marker = null;
+					if (markers.length == 0)
+					{
+						marker =
+							resource.createMarker(STATE_CHANGE_MARKER_TYPE);
+					}
+					else
+					{
+						marker = markers[0];
+					}
+					marker.setAttribute("statechanged", true);
+				}
+				catch (CoreException e)
+				{
+					result =
+						new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.UNABLE,
+							"Unable to refresh the clearcase state for the resource: "
+								+ resource.toString(),
+							e);
+				}
+				return result;
 			}
-			else
-			{
-				marker = markers[0];
-			}
-			marker.setAttribute("statechanged", true);
-		}
-		catch (CoreException ex)
-		{
-		}
+		}, resource, depth, monitor);
 	}
 
 	/**
@@ -599,7 +687,10 @@ public class ClearcaseProvider
 	}
 	public static interface IIterativeOperation extends IOperation
 	{
-		public IStatus visit(IResource resource, int depth, IProgressMonitor progress);
+		public IStatus visit(
+			IResource resource,
+			int depth,
+			IProgressMonitor progress);
 	}
 	public static interface IRecursiveOperation extends IOperation
 	{
@@ -630,10 +721,17 @@ public class ClearcaseProvider
 		{
 			if (operation instanceof IRecursiveOperation)
 				statuses[i] =
-					execute((IRecursiveOperation) operation, resources[i], depth, progress);
+					execute(
+						(IRecursiveOperation) operation,
+						resources[i],
+						depth,
+						progress);
 			else
 				statuses[i] =
-					((IIterativeOperation) operation).visit(resources[i], depth, progress);
+					((IIterativeOperation) operation).visit(
+						resources[i],
+						depth,
+						progress);
 			failureOccurred = failureOccurred || (!statuses[i].isOK());
 		}
 
@@ -641,7 +739,12 @@ public class ClearcaseProvider
 		// but if there were no problems exit silently.
 		if (failureOccurred)
 			throw new TeamException(
-				new MultiStatus(getID(), IStatus.ERROR, statuses, "Errors occurred.", null));
+				new MultiStatus(
+					getID(),
+					IStatus.ERROR,
+					statuses,
+					"Errors occurred.",
+					null));
 
 		// Cause all the resource changes to be broadcast to listeners.
 		//		TeamPlugin.getManager().broadcastResourceStateChanges(resources);
@@ -693,7 +796,8 @@ public class ClearcaseProvider
 
 		// Collect the responses in the multistatus.
 		for (int i = 0; i < members.length; i++)
-			multiStatus.add(execute(operation, members[i], childDepth, progress));
+			multiStatus.add(
+				execute(operation, members[i], childDepth, progress));
 
 		return multiStatus;
 	}
