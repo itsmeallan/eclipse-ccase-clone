@@ -53,6 +53,11 @@ public class Clearcase
 	public static native Status move(String file, String newfile, String comment);
 
 	/**
+	 Executes the command "cmd" just like a command line "cleartool cmd".
+	 */
+	public static native Status cleartool(String cmd);
+
+	/**
 	 Returns true if the file is under version control and checked
 	 out
 	 */

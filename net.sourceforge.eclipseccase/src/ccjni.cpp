@@ -7,6 +7,7 @@ using namespace std;
 using namespace ClearCase;
 
 static IClearCasePtr ccase = NULL;
+static IClearToolPtr cleartool = NULL;
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,6 +47,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_initializ
 	{ 
 		CoInitialize(NULL);
 		ccase = IClearCasePtr(CLSID_Application);
+		cleartool = IClearToolPtr(CLSID_ClearTool);
 	}
 	catch(_com_error& cerror) 
 	{ 
@@ -263,6 +265,36 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_move
 	env->ReleaseStringUTFChars(file, filestr);
 	env->ReleaseStringUTFChars(newfile, newfilestr);
 	env->ReleaseStringUTFChars(comment, commentstr);
+	return result;
+}
+
+/*
+ * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Method:    cleartool
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_cleartool
+  (JNIEnv * env, jclass obj, jstring cmd)
+{
+	jobject result = NULL;
+	const char *cmdstr = env->GetStringUTFChars(cmd, 0);
+	
+	try 
+	{
+		// Issue a ClearTool command 
+		_bstr_t output = cleartool->CmdExec(cmdstr);
+		result = createStatus(env, true, (const char*) output);
+	}
+	catch(_com_error& cerror) 
+	{ 
+		result = createStatus(env, false, cerror.Description());
+	}
+	catch(...)
+	{
+		raiseJNIException(env, "Unhandled Exception in Clearcase JNI layer");
+	}
+
+	env->ReleaseStringUTFChars(cmd, cmdstr);
 	return result;
 }
 
