@@ -86,7 +86,7 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                 }
             };
 
-            executeInForeground(runnable, TeamAction.PROGRESS_DIALOG,
+            executeInBackground(runnable, 
                     "Checking in ClearCase resources");
         }
 
