@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.eclipseccase.ui"
+   name="Clearcase Plugin UI"
+   version="0.9.10"
+   provider-name="eclipse-ccase.sourceforge.net"
+   class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
+
+   <runtime>
+      <library name="ui.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+   </requires>
+
+
+</plugin>
