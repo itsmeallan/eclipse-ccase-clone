@@ -21,6 +21,7 @@ public class ClearcasePreferencePage extends PreferencePage
 	private Button addCommentButton;
 	private Button checkoutOnEditButton;
 	private Button refactorAddsDirButton;
+	private Button textVersionDecorationButton;
 	
 	/**
 	 * Constructor for ClearcasePreferencePage.
@@ -66,6 +67,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		reservedCheckoutButton = createCheckBox(composite, "Reserved Checkouts");
 		checkoutOnEditButton = createCheckBox(composite, "Automatically checkout file when edited");
 		refactorAddsDirButton = createCheckBox(composite, "Automatically add dest dir to clearcase when refactoring");
+		textVersionDecorationButton = createCheckBox(composite, "Add text labels for element versions when decorating");
 		persistStateButton = createCheckBox(composite, "Persist element state cache across sessions");
 
 		initializeValues();
@@ -86,6 +88,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		addCommentButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_ADD_COMMENT));
 		checkoutOnEditButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
 		refactorAddsDirButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
+		textVersionDecorationButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION));
 	}
 
 	/**
@@ -128,6 +131,8 @@ public class ClearcasePreferencePage extends PreferencePage
 					   checkoutOnEditButton.getSelection());
 		store.setValue(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR,
 					   refactorAddsDirButton.getSelection());
+		store.setValue(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION,
+					   textVersionDecorationButton.getSelection());
 		savePreferenceStore();
 		return true;
 	}
@@ -143,6 +148,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		addCommentButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_ADD_COMMENT));
 		checkoutOnEditButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
 		refactorAddsDirButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
+		textVersionDecorationButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION));
 	}
 
 	public IPreferenceStore getPreferenceStore()
