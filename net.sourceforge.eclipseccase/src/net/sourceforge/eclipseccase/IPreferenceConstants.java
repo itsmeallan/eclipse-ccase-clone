@@ -13,7 +13,9 @@ public interface IPreferenceConstants
 	public static final String USE_CLEARTOOL = "useCleartool";
 
 	/* For Decorator preference page */
-	public static final String TEXT_DECORATIONS = "textDecorations";
+	public static final String TEXT_VERSION_DECORATION = "textVersionDecoration";
+	public static final String TEXT_VIEW_DECORATION = "textViewDecoration";
+	public static final String TEXT_DIRTY_DECORATION = "textDirtyDecoration";
 	public static final String DEEP_DECORATIONS = "deepDecorations";
 
 }

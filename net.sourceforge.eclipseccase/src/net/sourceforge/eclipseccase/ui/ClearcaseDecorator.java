@@ -144,6 +144,7 @@ public class ClearcaseDecorator
 		{
 			final ClearcaseDecorator activeDecorator =
 				(ClearcaseDecorator) manager.getLabelDecorator(ID);
+			activeDecorator.availableDecorations.clear();
 			Display.getDefault().asyncExec(new Runnable()
 			{
 				public void run()
@@ -161,7 +162,7 @@ public class ClearcaseDecorator
 			ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
 		if (manager.getEnabled(ID))
 		{
-			ClearcaseDecorator activeDecorator =
+			final ClearcaseDecorator activeDecorator =
 				(ClearcaseDecorator) manager.getLabelDecorator(ID);
 			final List resources = new LinkedList();
 			try
@@ -174,6 +175,7 @@ public class ClearcaseDecorator
 					public boolean visit(IResource resource) throws CoreException
 					{
 						resources.add(resource);
+						activeDecorator.invalidateKeys(resource);
 						return true;
 					}
 				});
@@ -222,14 +224,14 @@ public class ClearcaseDecorator
 
 		StringBuffer buffer = new StringBuffer(text);
 
-		if (resource.getType() == IResource.PROJECT)
+		if (ClearcasePlugin.isTextViewDecoration() && resource.getType() == IResource.PROJECT)
 		{
 			buffer.append(" [view: ");
 			buffer.append(p.getViewName(resource));
 			buffer.append("]");
 		}
 
-		if (ClearcasePlugin.isTextVersionDecoration())
+		if (ClearcasePlugin.isTextDirtyDecoration())
 		{
 			int dirty = isDirty(resource);
 			if (dirty == DIRTY_STATE)
@@ -240,7 +242,10 @@ public class ClearcaseDecorator
 			{
 				buffer.insert(0, "?>");
 			}
-			
+		}
+		
+		if (ClearcasePlugin.isTextVersionDecoration())
+		{
 			buffer.append(" : ");
 			buffer.append(p.getVersion(resource));
 		}

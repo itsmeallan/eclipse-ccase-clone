@@ -86,7 +86,9 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(IPreferenceConstants.USE_CLEARTOOL, ! isWindows);
 
 		// Decorator preferences
-		store.setDefault(IPreferenceConstants.TEXT_DECORATIONS, false);
+		store.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
+		store.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
+		store.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
 		store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
 	}
 	
@@ -125,9 +127,19 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
 	}
 
+	public static boolean isTextViewDecoration()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.TEXT_VIEW_DECORATION);
+	}
+	
 	public static boolean isTextVersionDecoration()
 	{
-		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.TEXT_DECORATIONS);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.TEXT_VERSION_DECORATION);
+	}
+	
+	public static boolean isTextDirtyDecoration()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.TEXT_DIRTY_DECORATION);
 	}
 	
 	public static boolean isDeepDecoration()
@@ -151,5 +163,6 @@ public class ClearcasePlugin extends AbstractUIPlugin {
             ResourcesPlugin.getWorkspace().addSaveParticipant(this, cacheFactory);
         cacheFactory.load(lastState);
 	}
+
 
 }
