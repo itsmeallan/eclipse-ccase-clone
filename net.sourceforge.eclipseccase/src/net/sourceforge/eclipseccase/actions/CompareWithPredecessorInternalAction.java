@@ -125,17 +125,17 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 				break;
 			default :
 				{
-					System.out.println(
-						"took "
-							+ (System.currentTimeMillis() - time)
-							+ " resource.getType() "
-							+ resource.getType());
+//					System.out.println(
+//						"took "
+//							+ (System.currentTimeMillis() - time)
+//							+ " resource.getType() "
+//							+ resource.getType());
 					return false;
 				}
 		}
 
 		IResource[] comparables= new IResource[] { current, predecessor };
-		System.out.println("took " + (System.currentTimeMillis() - time));
+//		System.out.println("took " + (System.currentTimeMillis() - time));
 		return fInput.setResources(comparables);
 	}
 
