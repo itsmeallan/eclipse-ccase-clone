@@ -7,15 +7,15 @@ ToDos
 (must be ready with Eclipse 3.0)
 
   - general
-    - (in progress) investigate new Eclipse API
+    o (postponed) investigate new Eclipse API
     
   - repository provider
-    - (in progress) background jobs
-    - (in progress) scheduling rules (IMoveDeleteHook, auto-checkout ...)
+    x (done) background jobs
+    x (done) scheduling rules (IMoveDeleteHook, auto-checkout ...)
   
   - ui
     x (done) finanlize "checkouts view"
-    - finanlize recursive actions (eg. check for new when checkin folder)
+    o (postponed) finanlize recursive actions (eg. check for new when checkin folder)
     x (done) rework auto-checkout to provide UI feedback instead of exceptions
     x (done) support native ClearCase UI via "cleardlg" executable
 
@@ -25,8 +25,9 @@ ToDos
 1.1.0
 -----
 
+  - finanlize recursive actions (eg. check for new when checkin folder)
   - "compare with" support
-  - investigate new workflow (research)
+  - investigate new Eclipse API / new workflow (research)
   
   
 long term goals

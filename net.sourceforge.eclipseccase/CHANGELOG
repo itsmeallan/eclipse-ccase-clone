@@ -1,3 +1,10 @@
+1.0.0.RC1
+---------
+
+- applied patch 1024155 (fix for preference setting)
+- checkins are now also performed in the background
+
+
 1.0.0.M3
 --------
 
@@ -7,6 +14,7 @@
 - preference to set lifetime of cached JNI calls (in seconds)
   [0=disable caching, 5=huge speed improvement]
 - fixed bugs: 981248, 939301 and a lot more unreported issues
+
 
 1.0.0.M2
 --------
