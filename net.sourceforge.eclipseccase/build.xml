@@ -93,11 +93,8 @@
 	
 	<target name="jni_dll" depends="init,jni_headers">
 		<echo message="Compiling jni dll"/>
-		<cc debug="${debug}" link="shared" outfile="${output.dll}">
-			<compiler name="msvc">
-				<compilerarg value="-GX"/>
-			</compiler>
-			<linker name="msvc"/>
+		<cc objdir="${jni.build}" outfile="${output.dll}"
+			 name="msvc" debug="${debug}" outtype="shared" runtime="static" exceptions="true">
 			<includepath location="${jdk.home}/include"/>
 			<includepath location="${jdk.home}/include/win32"/>
 			<includepath location="${jni.build}"/>
