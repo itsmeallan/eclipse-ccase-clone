@@ -183,7 +183,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                             throw CORE_UNKNOWN_EXCEPTION;
 
                     // test if new
-                    if (decorateNew && !p.hasRemote(childResource))
+                    if (decorateNew  && ClearcaseUI.isDeepNew() && !p.hasRemote(childResource))
                             throw CORE_DIRTY_EXCEPTION;
 
                     // test if hijacked
@@ -525,71 +525,71 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param resources
      */
     public void refresh(IResource[] resources) {
-        if (resources.length == 0) return;
+		if (resources.length == 0)
+			return;
 
-        // if deep decoration is disabled, update only the specified resources
-        if (!ClearcaseUI.isDeepDecoration()) {
-            fireLabelProviderChanged(new LabelProviderChangedEvent(this,
-                    resources));
-            return;
-        }
+		// if deep decoration is disabled, update only the specified resources
+		if (!ClearcaseUI.isDeepDecoration()) {
+			fireLabelProviderChanged(new LabelProviderChangedEvent(this,
+					resources));
+		} else {
+			// deep decoration is enabled: update parents also
+			final HashSet changedResources = new HashSet(resources.length + 20);
+			for (int i = 0; i < resources.length; i++) {
+				IResource resource = resources[i];
+				changedResources.add(resource);
 
-        // deep decoration is enabled: update parents also
-        final HashSet changedResources = new HashSet(resources.length + 20);
-        for (int i = 0; i < resources.length; i++) {
-            IResource resource = resources[i];
-            changedResources.add(resource);
+				// collect parents
+				IResource parent = resource.getParent();
+				while (null != parent && changedResources.add(parent))
+					parent = parent.getParent();
 
-            // collect parents
-            IResource parent = resource.getParent();
-            while (null != parent && changedResources.add(parent))
-                parent = parent.getParent();
+				//// collect children
+				//if (resource.isAccessible())
+				//{
+				//
+				//    try
+				//    {
+				//        // refresh children
+				//        resource.accept(new IResourceVisitor()
+				//        {
+				//            public boolean visit(IResource child)
+				//                    throws CoreException
+				//            {
+				//                return changedresources.add(child);
+				//            }
+				//        });
+				//    }
+				//    catch (CoreException ex)
+				//    {
+				//        ClearcasePlugin.log(IStatus.ERROR,
+				//                "Could not access resource: "
+				//                        + resource.getFullPath().toString(), ex);
+				//    }
+				//
+				//}
+			}
 
-            //// collect children
-            //if (resource.isAccessible())
-            //{
-            //
-            //    try
-            //    {
-            //        // refresh children
-            //        resource.accept(new IResourceVisitor()
-            //        {
-            //            public boolean visit(IResource child)
-            //                    throws CoreException
-            //            {
-            //                return changedresources.add(child);
-            //            }
-            //        });
-            //    }
-            //    catch (CoreException ex)
-            //    {
-            //        ClearcasePlugin.log(IStatus.ERROR,
-            //                "Could not access resource: "
-            //                        + resource.getFullPath().toString(), ex);
-            //    }
-            //
-            //}
-        }
-
-        // fire the change
-        fireLabelProviderChanged(new LabelProviderChangedEvent(this,
-                changedResources.toArray()));
-    }
+			// fire the change
+			fireLabelProviderChanged(new LabelProviderChangedEvent(this,
+					changedResources.toArray()));
+		}
+	}
 
     /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
-     */
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
+	 */
     public void resourceStateChanged(IResource resource) {
         refresh(new IResource[] { resource });
     }
 
     /**
-     * Delegates the event to the super class for firing.
-     * 
-     * @param event
-     */
+	 * Delegates the event to the super class for firing.
+	 * 
+	 * @param event
+	 */
     final void superFireLabelProviderChanged(LabelProviderChangedEvent event) {
         super.fireLabelProviderChanged(event);
     }

@@ -29,7 +29,10 @@ public interface IClearcaseUIPreferenceConstants
     String TEXT_PREFIX_DECORATION = ClearcaseUI.PLUGIN_ID + ".textPrefixDecoration";
 
     /** decorator preference */
-    String DEEP_DECORATIONS = ClearcaseUI.PLUGIN_ID + ".deepDecorations";
+    String GENERAL_DEEP_DECORATIONS = ClearcaseUI.PLUGIN_ID + ".deepDecorations";
+
+    /** decorator preference */
+    String GENERAL_DEEP_NEW = ClearcaseUI.PLUGIN_ID + ".general.deepNew";
 
     /** decorator preference */
     String TEXT_PREFIX_DIRTY = ClearcaseUI.PLUGIN_ID + ".text.prefixDirty";

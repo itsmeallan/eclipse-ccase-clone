@@ -50,7 +50,8 @@ public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 	}
 	
 	void addSlave(FieldEditor slave) {
-		indent(slave.getLabelControl(parent));
+		//todo Below code works for StringField, but not for BooleanField. Why?
+//		indent(slave.getLabelControl(parent));
 		slaves.add(slave);
 	}
 

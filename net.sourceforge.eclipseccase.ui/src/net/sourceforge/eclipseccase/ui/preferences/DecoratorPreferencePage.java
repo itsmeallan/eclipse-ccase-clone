@@ -42,7 +42,7 @@ public class DecoratorPreferencePage
 	private static final String[] CATEGORIES = new String[]{TEXT, IMAGES
 			,GENERAL};
 
-	MasterBooleanFieldEditor master;
+	MasterBooleanFieldEditor masterPrefix, masterDeep;
 	/**
 	 * Creates a new instance.
 	 */
@@ -59,13 +59,19 @@ public class DecoratorPreferencePage
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
 	 */
 	protected void createFieldEditors() {
+		FieldEditor slave;
 		// general
-
-		addField(new BooleanFieldEditor(
-				IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
+		masterDeep = new MasterBooleanFieldEditor(
+				IClearcaseUIPreferenceConstants.GENERAL_DEEP_DECORATIONS,
 				PreferenceMessages.getString("Decorator.General.DeepDecorations"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL)));
+				getFieldEditorParent(GENERAL));
+		addField(masterDeep);
+		slave = new BooleanFieldEditor(GENERAL_DEEP_NEW,
+				PreferenceMessages.getString("Decorator.General.DeepNew"), getFieldEditorParent(GENERAL)); //$NON-NLS-1$
 
+		addField(slave);
+		masterDeep.addSlave(slave);
+		
 		// image decoration
 
 		addField(new BooleanFieldEditor(ICON_DECORATE_EDITED,
@@ -92,39 +98,39 @@ public class DecoratorPreferencePage
 				PreferenceMessages.getString("Decorator.Text.VersionDecoration"), //$NON-NLS-1$
 				getFieldEditorParent(TEXT)));
 
-		master = new MasterBooleanFieldEditor(
+		masterPrefix = new MasterBooleanFieldEditor(
 				IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION,
 				PreferenceMessages.getString("Decorator.Text.PrefixDecoration"), //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 
-		addField(master);
+		addField(masterPrefix);
 
-		FieldEditor slave = new StringFieldEditor(TEXT_PREFIX_DIRTY,
+		slave = new StringFieldEditor(TEXT_PREFIX_DIRTY,
 				PreferenceMessages.getString("Decorator.Text.PrefixDirty"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
-		master.addSlave(slave);
+		masterPrefix.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_HIJACKED,
 				PreferenceMessages.getString("Decorator.Text.PrefixHijacked"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
-		master.addSlave(slave);
+		masterPrefix.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_NEW,
 				PreferenceMessages.getString("Decorator.Text.PrefixNew"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
-		master.addSlave(slave);
+		masterPrefix.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_EDITED,
 				PreferenceMessages.getString("Decorator.Text.PrefixEdited"), 4, //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 		addField(slave);
-		master.addSlave(slave);
+		masterPrefix.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_UNKNOWN,
 				PreferenceMessages.getString("Decorator.Text.PrefixUnknown"), 4, //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 		addField(slave);
-		master.addSlave(slave);
+		masterPrefix.addSlave(slave);
 	}
 
 	/*
@@ -161,8 +167,10 @@ public class DecoratorPreferencePage
 	 */
 	protected void initialize() {
 		super.initialize();
-		if (master != null)
-			master.listen();
+		if (masterPrefix != null)
+			masterPrefix.listen();
+		if (masterDeep != null)
+			masterDeep.listen();
 	}
 	/*
 	 * (non-Javadoc)
