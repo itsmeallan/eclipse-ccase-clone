@@ -33,21 +33,23 @@ public class ClearcaseProvider
 	private IFileModificationValidator modificationValidator =
 		new ModificationHandler(this);
 	private String comment = "";
-	private boolean isSnapShot = false;
+	private Boolean isSnapShot = null;
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
 	public static final String STATE_CHANGE_MARKER_TYPE =
 		"net.sourceforge.eclipseccase.statechangedmarker";
 
+	public ClearcaseProvider()
+	{
+		super();
+	}
+	
 	/**
 	 * @see RepositoryProvider#configureProject()
 	 */
 	public void configureProject() throws CoreException
 	{
-		// no need to calculate this for each resource as all resources
-		// within a project must belong to the same view
-		isSnapShot = Clearcase.isSnapShot(getProject().getLocation().toOSString());
 	}
 
 	/**
@@ -87,20 +89,17 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				String filename = resource.getLocation().toOSString();
-				if (Clearcase.isSnapShot(filename))
+				Clearcase.Status status = Clearcase.cleartool("update -ptime " + filename);
+				changeState(resource, IResource.DEPTH_INFINITE, progress);
+				if (!status.status)
 				{
-					Clearcase.Status status = Clearcase.cleartool("update -ptime " + filename);
-					changeState(resource, IResource.DEPTH_INFINITE, progress);
-					if (!status.status)
-					{
-						result =
-							new Status(
-								IStatus.ERROR,
-								ID,
-								TeamException.UNABLE,
-								"Update failed: " + status.message,
-								null);
-					}
+					result =
+						new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.UNABLE,
+							"Update failed: " + status.message,
+							null);
 				}
 				return result;
 			}
@@ -140,9 +139,6 @@ public class ClearcaseProvider
 		}, resources, depth, progress);
 	}
 
-	/**
-	 * @see SimpleAccessOperations#checkout(IResource[], int, IProgressMonitor)
-	 */
 	public void refresh(
 		IResource[] resources,
 		int depth,
@@ -381,7 +377,13 @@ public class ClearcaseProvider
 	 */
 	public boolean isSnapShot()
 	{
-		return isSnapShot;
+		if (isSnapShot == null)
+		{
+			// no need to calculate this for each resource as all resources
+			// within a project must belong to the same view.
+			isSnapShot = new Boolean(Clearcase.isSnapShot(getProject().getLocation().toOSString()));
+		}
+		return isSnapShot.booleanValue();
 	}
 
 	/**
