@@ -80,7 +80,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         {
             public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
             {
-                // Sanity check - can't get something that is not part of clearcase
+                // Sanity check - can't delete something that is not part of clearcase
                 if (!hasRemote(resource))
                 {
                     return new Status(
@@ -88,7 +88,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                         ID,
                         TeamException.NO_REMOTE_RESOURCE,
                         MessageFormat.format(
-                            "Resource \"{0}\" is not under source control!",
+                            "Resource \"{0}\" is not a ClearCase element!",
                             new Object[] { resource.getFullPath().toString()}),
                         null);
                 }
@@ -126,6 +126,19 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             {
                 public IStatus visit(IResource resource, IProgressMonitor progress)
                 {
+                    // Sanity check - can't delete something that is not part of clearcase
+                    if (!hasRemote(resource))
+                    {
+                        return new Status(
+                            IStatus.WARNING,
+                            ID,
+                            TeamException.NO_REMOTE_RESOURCE,
+                            MessageFormat.format(
+                                "Resource \"{0}\" is not a ClearCase element!",
+                                new Object[] { resource.getFullPath().toString()}),
+                            null);
+                    }
+
                     // Sanity check - can't checkout something that is already checked out
                     if (isCheckedOut(resource))
                     {
@@ -210,6 +223,19 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             {
                 public IStatus visit(IResource resource, IProgressMonitor progress)
                 {
+                    // Sanity check - can't delete something that is not part of clearcase
+                    if (!hasRemote(resource))
+                    {
+                        return new Status(
+                            IStatus.WARNING,
+                            ID,
+                            TeamException.NO_REMOTE_RESOURCE,
+                            MessageFormat.format(
+                                "Resource \"{0}\" is not a ClearCase element!",
+                                new Object[] { resource.getFullPath().toString()}),
+                            null);
+                    }
+
                     // Sanity check - can't checkin something that is not checked out
                     if (!isCheckedOut(resource))
                     {
@@ -313,7 +339,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                             ID,
                             TeamException.NO_REMOTE_RESOURCE,
                             MessageFormat.format(
-                                "Resource \"{0}\" is not under source control!",
+                                "Resource \"{0}\" is not a ClearCase element!",
                                 new Object[] { resource.getFullPath().toString()}),
                             null);
                     }
@@ -964,21 +990,26 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
      */
     public boolean isIgnored(IResource resource)
     {
+        // always ignore eclipse linked resource
+        String linkedParentName = resource.getProjectRelativePath().segment(0);
+        if(null != linkedParentName)
+        {
+            IFolder linkedParent = resource.getProject().getFolder(linkedParentName);
+            if (linkedParent.isLinked())
+                return true;
+        }
+
         // never ignore handled resources
         if (hasRemote(resource))
             return false;
 
-        // If the resource is a derived or linked resource, it is ignored
-        if (resource.isDerived() || resource.isLinked())
-            return true;
-
-        // check the global ignores from Team
-        if (Team.isIgnoredHint(resource))
-            return true;
-
         // never ignore workspace root
         if (null == resource.getParent())
             return false;
+
+        // check the global ignores from Team (includes derived resources)
+        if (Team.isIgnoredHint(resource))
+            return true;
 
         // check the parent, if the parent is ignored 
         // then this resource is ignored also

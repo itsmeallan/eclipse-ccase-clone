@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,17 +64,19 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.ide.IDE.SharedImages;
 import org.eclipse.ui.part.ViewPart;
 
+/**
+ * The Checkouts view
+ */
 public class CheckoutsView extends ViewPart implements StateChangeListener
 {
-    private TableViewer viewer;
+    TableViewer viewer;
 
-    private Action refreshAction;
+    Action refreshAction;
 
-    private Collection checkouts = Collections
-            .synchronizedSortedSet(new TreeSet(new Comparator()
+    Collection checkouts = Collections.synchronizedSortedSet(new TreeSet(
+            new Comparator()
             {
                 public int compare(Object o1, Object o2)
                 {
@@ -92,7 +95,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 }
             }));
 
-    private static final CoreException FIND_NEEDED_EXCEPTION = new CoreException(
+    static final CoreException FIND_NEEDED_EXCEPTION = new CoreException(
             new Status(IStatus.OK, "findNeeded", 1, "", null));
 
     private static class ProjectChangedDeltaVisitor implements
@@ -132,7 +135,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             }
             return false;
         }
-    };
+    }
 
     // Listener to find checkouts if project is added/removed/opened/losed
     private final IResourceChangeListener updateListener = new IResourceChangeListener()
@@ -175,7 +178,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             {
                 IStructuredSelection selection = (IStructuredSelection) event
                         .getSelection();
-                for (Iterator iter = selection.iterator(); iter.hasNext(); )
+                for (Iterator iter = selection.iterator(); iter.hasNext();)
                 {
                     IResource element = (IResource) iter.next();
                     if (element.getType() == IResource.FILE)
@@ -206,10 +209,14 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             IStructuredContentProvider
     {
         public void inputChanged(Viewer v, Object oldInput, Object newInput)
-        {}
+        {
+            // ignore
+        }
 
         public void dispose()
-        {}
+        {
+            // ignore
+        }
 
         public Object[] getElements(Object parent)
         {
@@ -247,7 +254,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                     break;
                 case IResource.PROJECT:
                     image = PlatformUI.getWorkbench().getSharedImages()
-                            .getImage(SharedImages.IMG_OBJ_PROJECT);
+                            .getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
                     break;
                 default:
                     image = PlatformUI.getWorkbench().getSharedImages()
@@ -261,8 +268,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
     /**
      * The constructor.
      */
-    public CheckoutsView()
-    {
+    public CheckoutsView() {
         StateCacheFactory.getInstance().addStateChangeListerer(this);
     }
 
@@ -359,7 +365,9 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                     showError(e.getTargetException().toString());
                 }
                 catch (InterruptedException e)
-                {}
+                {
+                    // ignore
+                }
             }
         };
         refreshAction.setText("Refresh");
@@ -368,13 +376,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 .getImageDescriptor(ClearcaseImages.IMG_REFRESH));
     }
 
-    private void showMessage(String message)
+    void showMessage(String message)
     {
         MessageDialog.openInformation(viewer.getControl().getShell(),
                 "Checkouts View", message);
     }
 
-    private void showError(String message)
+    void showError(String message)
     {
         MessageDialog.openError(viewer.getControl().getShell(),
                 "Checkouts View", message);
@@ -434,7 +442,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         return actionPerformed;
     }
 
-    private void findCheckouts(IProgressMonitor monitor)
+    void findCheckouts(IProgressMonitor monitor)
     {
         checkouts.clear();
         IProject[] projects = ClearcasePlugin.getWorkspace().getRoot()
@@ -456,11 +464,11 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             if (project.isOpen()
                     && ClearcaseProvider.getProvider((IResource) project) != null)
             {
-                List checkouts = findCheckouts(project);
+                List foundCheckouts = findCheckouts(project);
 
                 // Iterate over all checkouts and add them to the checkouts
                 // view
-                for (Iterator iter = checkouts.iterator(); iter.hasNext(); )
+                for (Iterator iter = foundCheckouts.iterator(); iter.hasNext();)
                 {
                     IResource resource = null;
                     String checkout = (String) iter.next();
@@ -497,7 +505,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
         // The collection of resources each of which we find checkouts for the
         // subtree
-        Collection findResources = new LinkedList();
+        Collection findResources = new HashSet();
 
         //RDM: For snapshot views, the basedir of the snapshot view itself is
         // not in CC, but it's children are.
@@ -518,10 +526,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 IResource child = members[j];
                 //RDM: No matter what, we scan all the children of the project
                 // to find CC-children
-                if (/* child.isLinked()&& */StateCacheFactory.getInstance()
-                        .get(child).hasRemote())
+                if (null != child.getLocation() && /* child.isLinked()&& */
+                StateCacheFactory.getInstance().get(child).hasRemote())
                 {
-                    findResources.add(child);
+                    findResources.add(child.getLocation().toOSString());
                 }
             }
         }
@@ -533,10 +541,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         }
 
         // Find checkouts for all the important resources
-        for (Iterator iter = findResources.iterator(); iter.hasNext(); )
+        for (Iterator iter = findResources.iterator(); iter.hasNext();)
         {
-            IResource each = (IResource) iter.next();
-            checkouts.addAll(findCheckouts(each.getLocation().toOSString()));
+            String path = (String) iter.next();
+            checkouts.addAll(findCheckouts(path));
         }
         return checkouts;
     }

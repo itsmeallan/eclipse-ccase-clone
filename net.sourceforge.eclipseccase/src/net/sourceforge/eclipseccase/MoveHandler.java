@@ -37,7 +37,7 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-		if (provider.isIgnored(file))
+		if (provider.isIgnored(file) || !provider.hasRemote(file))
 		{
 			tree.standardDeleteFile(file, updateFlags, monitor);
 			return true;
@@ -83,7 +83,7 @@ public class MoveHandler implements IMoveDeleteHook
 		return true;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#deleteFolder(IResourceTree, IFolder, int, IProgressMonitor)
 	 */
 	public boolean deleteFolder(
@@ -92,7 +92,7 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-        if (provider.isIgnored(folder))
+        if (provider.isIgnored(folder) || !provider.hasRemote(folder))
         {
 			tree.standardDeleteFolder(folder, updateFlags, monitor);
 			return true;
@@ -148,7 +148,7 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-        if (provider.isIgnored(project))
+        if (provider.isIgnored(project) || !provider.hasRemote(project))
         {
 			tree.standardDeleteProject(project, updateFlags, monitor);
 			return true;
@@ -249,7 +249,7 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-        if (provider.isIgnored(source))
+        if (provider.isIgnored(source) || !provider.hasRemote(source))
         {
 			tree.standardMoveFile(source, destination, updateFlags | IResource.SHALLOW, monitor);
 			return true;
@@ -297,7 +297,7 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-        if (provider.isIgnored(source))
+        if (provider.isIgnored(source) || !provider.hasRemote(source))
         {
 			tree.standardMoveFolder(source, destination, updateFlags | IResource.SHALLOW, monitor);
 			return true;
@@ -346,7 +346,7 @@ public class MoveHandler implements IMoveDeleteHook
 	{
 		IResource destination = source.getFolder(description.getLocation());
 
-        if (provider.isIgnored(source))
+        if (provider.isIgnored(source) || !provider.hasRemote(source))
         {
 			tree.standardMoveProject(source, description, updateFlags, monitor);
 			return true;

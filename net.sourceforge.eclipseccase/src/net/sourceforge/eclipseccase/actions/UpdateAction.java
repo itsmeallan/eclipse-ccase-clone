@@ -24,7 +24,7 @@ public class UpdateAction extends ClearcaseAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Updating...", resources.length);
+					monitor.beginTask("Updating...", resources.length * 1000);
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
@@ -32,7 +32,6 @@ public class UpdateAction extends ClearcaseAction
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 						provider.get(new IResource[] {resource},
 											IResource.DEPTH_ZERO, subMonitor);
-						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -61,8 +60,8 @@ public class UpdateAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
-				return false;
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+                return false;
 			if (! provider.isSnapShot(resource))
 				return false;
 		}

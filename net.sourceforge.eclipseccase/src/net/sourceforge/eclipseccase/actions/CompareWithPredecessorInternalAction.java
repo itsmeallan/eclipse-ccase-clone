@@ -37,7 +37,7 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
         }
         IResource resource = resources[0];
         ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-        if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+        if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
             return false;
 
         // Only allow comparing of folders for dynamic views for now

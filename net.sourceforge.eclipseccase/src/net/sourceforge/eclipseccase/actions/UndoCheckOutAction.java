@@ -34,7 +34,7 @@ public class UndoCheckOutAction extends ClearcaseAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Undoing checkout...", resources.length);
+					monitor.beginTask("Undoing checkout...", resources.length * 1000);
 					
 					// Sort resources with directories last so that the modification of a
 					// directory doesn't abort the modification of files within it.
@@ -48,7 +48,6 @@ public class UndoCheckOutAction extends ClearcaseAction
 						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 						provider.uncheckout(new IResource[] {resource},
 										IResource.DEPTH_ZERO, subMonitor);
-						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -74,8 +73,8 @@ public class UndoCheckOutAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
-				return false;
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+                return false;
 			if (!provider.isCheckedOut(resource))
 				return false;
 		}

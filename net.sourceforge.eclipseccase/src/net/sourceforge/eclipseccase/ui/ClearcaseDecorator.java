@@ -67,9 +67,12 @@ public class ClearcaseDecorator
                 }
                 synchronized (parentQueue)
                 {
-                    resourceStateChanged(
-                        (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
-                    parentQueue.clear();
+                    if (parentQueue.size() > 0)
+                    {
+                        resourceStateChanged(
+                            (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
+                        parentQueue.clear();
+                    }
                 }
             }
         }, 0, 500);
@@ -91,8 +94,15 @@ public class ClearcaseDecorator
         ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
         if (p == null)
             return;
-            
-        if(p.isIgnored(resource))
+
+        if (p.isIgnored(resource))
+            return;
+
+        // Projects may be the view directory containing the VOBS, if so,
+        // don't want to be able to add em, or any resource diretcly under them
+        if ((resource.getType() == IResource.PROJECT && !p.hasRemote(resource))
+            || (resource.getParent().getType() == IResource.PROJECT
+                && !p.hasRemote(resource.getParent())))
             return;
 
         if (p.isUnknownState(resource))
@@ -289,7 +299,6 @@ public class ClearcaseDecorator
         super.fireLabelProviderChanged(event);
     }
 
-
     private int isDirty(IResource resource)
     {
         // Since dirty == checkout/hijacked for files, redundant to show files as dirty
@@ -308,9 +317,9 @@ public class ClearcaseDecorator
                     ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
                     if (p == null)
                         return false;
-                        
-                    if(p.isIgnored(resource))
-                        return false;                    
+
+                    if (p.isIgnored(resource))
+                        return false;
 
                     if (p.isUnknownState(resource))
                         throw CORE_UNKNOWN_EXCEPTION;

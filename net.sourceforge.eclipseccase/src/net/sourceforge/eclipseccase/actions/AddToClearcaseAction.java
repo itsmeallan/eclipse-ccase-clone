@@ -44,7 +44,7 @@ public class AddToClearcaseAction extends ClearcaseAction
                 try
                 {
                     IResource[] resources = getSelectedResources();
-                    monitor.beginTask("Adding to clearcase", resources.length);
+                    monitor.beginTask("Adding to clearcase", resources.length * 1000);
                     for (int i = 0; i < resources.length; i++)
                     {
                         IResource resource = resources[i];
@@ -52,7 +52,6 @@ public class AddToClearcaseAction extends ClearcaseAction
                         ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
                         provider.setComment(comment);
                         provider.add(new IResource[] { resource }, depth, subMonitor);
-                        monitor.worked(1);
                     }
                 }
                 catch (TeamException e)
@@ -68,6 +67,9 @@ public class AddToClearcaseAction extends ClearcaseAction
 
         updateActionEnablement();
     }
+
+    private static final String DEBUG_ID = "AddToClearCaseAction";
+
     /**
      * @see TeamAction#isEnabled()
      */
@@ -80,18 +82,29 @@ public class AddToClearcaseAction extends ClearcaseAction
         {
             IResource resource = resources[i];
             ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+            if (provider == null
+                || provider.isUnknownState(resource)
+                || provider.isIgnored(resource))
                 return false;
 
             // Projects may be the view directory containing the VOBS, if so,
             // don't want to be able to add em, or any resource diretcly under them
             if (resource.getType() == IResource.PROJECT && !provider.hasRemote(resource))
+            {
+                ClearcasePlugin.debug(DEBUG_ID, "disabled for project without remote: " + resource);
                 return false;
+            }
             if (resource.getParent().getType() == IResource.PROJECT
                 && !provider.hasRemote(resource.getParent()))
+            {
+                ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because parent is project without remote: " + resource.getParent());
                 return false;
+            }
             if (provider.hasRemote(resource))
+            {
+                ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because already has remote");
                 return false;
+            }
         }
         return true;
     }

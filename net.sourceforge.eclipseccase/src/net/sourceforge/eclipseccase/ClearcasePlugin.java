@@ -2,9 +2,11 @@ package net.sourceforge.eclipseccase;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -16,13 +18,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.clearcase.simple.ClearcaseException;
 import net.sourceforge.clearcase.simple.ClearcaseFactory;
 import net.sourceforge.clearcase.simple.IClearcase;
+import net.sourceforge.clearcase.simple.IClearcaseDebugger;
 import net.sourceforge.eclipseccase.tools.XMLWriter;
 import net.sourceforge.eclipseccase.ui.ClearcaseImages;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.team.core.TeamException;
@@ -47,223 +48,263 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ClearcasePlugin extends AbstractUIPlugin
+public class ClearcasePlugin extends AbstractUIPlugin implements IClearcaseDebugger
 {
-	//The shared instance.
-	private static ClearcasePlugin plugin;
+    //The shared instance.
+    private static ClearcasePlugin plugin;
     public static final String ID = "net.sourceforge.eclipseccase.ClearcasePlugin";
     static final boolean isWindows =
-		System.getProperty("os.name").toLowerCase().indexOf("windows") != -1;
+        System.getProperty("os.name").toLowerCase().indexOf("windows") != -1;
 
-	private IClearcase clearcaseImpl;
-    private IResourceChangeListener updateListener = new IResourceChangeListener()
-	{
-		public void resourceChanged(IResourceChangeEvent event)
-		{
-            if (isRefreshOnChange() && event.getType() == IResourceChangeEvent.POST_CHANGE)
-			{
-				try
-				{
-					event.getDelta().accept(new IResourceDeltaVisitor()
-					{
-                        public boolean visit(IResourceDelta delta) throws CoreException
-						{
-							StateCache cache =
-                                StateCacheFactory.getInstance().get(delta.getResource());
-							cache.updateAsync(true, false);
-							return true;
-						}
-					});
-				}
-				catch (CoreException e)
-				{
-                    log(IStatus.ERROR, "Unable to do a quick update of resource", null);
-				}
-			}
-		}
-	};
+    private IClearcase clearcaseImpl;
 
-	/**
-	 * The constructor.
-	 */
-	public ClearcasePlugin(IPluginDescriptor descriptor)
-	{
-		super(descriptor);
-		plugin = this;
-		ClearcaseImages.initializeImages();
-	}
+    /**
+     * The constructor.
+     */
+    public ClearcasePlugin(IPluginDescriptor descriptor)
+    {
+        super(descriptor);
+        plugin = this;
+        ClearcaseImages.initializeImages();
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static ClearcasePlugin getDefault()
-	{
-		return plugin;
-	}
+        String[] args = Platform.getCommandLineArgs();
+        for (int i = 0; i < args.length; i++)
+        {
+            if ("-debugClearCase".equalsIgnoreCase(args[i].trim()))
+            {
+                debug = Platform.getLocation().append("clearcase.debug.log");
+                break;
+            }
+        }
+    }
 
-	/**
-	 * Returns the workspace instance.
-	 */
-	public static IWorkspace getWorkspace()
-	{
-		return ResourcesPlugin.getWorkspace();
-	}
+    /**
+     * Returns the shared instance.
+     */
+    public static ClearcasePlugin getDefault()
+    {
+        return plugin;
+    }
 
-	public static void log(int severity, String message, Throwable ex)
-	{
-		ILog log = ClearcasePlugin.getDefault().getLog();
+    /**
+     * Returns the workspace instance.
+     */
+    public static IWorkspace getWorkspace()
+    {
+        return ResourcesPlugin.getWorkspace();
+    }
+
+    public static void log(int severity, String message, Throwable ex)
+    {
+        ILog log = ClearcasePlugin.getDefault().getLog();
         log.log(new Status(severity, ClearcasePlugin.ID, severity, message, ex));
-	}
+    }
 
-	public static IClearcase getEngine()
-	{
-		IClearcase impl = null;
-		try
-		{
-			impl = ClearcasePlugin.getDefault().getClearcase();
-		}
-		catch (CoreException e)
-		{
-			log(IStatus.ERROR, "Could not get a clearcase engine", e);
-		}
-		return impl;
-	}
+    public static void debug(String id, String message)
+    {
+        if (!isDebug())
+            return;
 
-	public IClearcase getClearcase() throws CoreException
-	{
-		try
-		{
-			if (clearcaseImpl == null)
-			{
-				if (isUseCleartool())
-					clearcaseImpl =
+        BufferedWriter debugWriter = null;
+        FileWriter debugFileWriter = null;
+        try
+        {
+
+            File debugFile = debug.toFile();
+            debugFile.createNewFile();
+            debugFileWriter = new FileWriter(debugFile, true);
+            debugWriter = new BufferedWriter(debugFileWriter);
+        }
+        catch (Exception e)
+        {
+            if (null != debugFileWriter)
+            {
+                try
+                {
+                    debugFileWriter.close();
+                }
+                catch (IOException e1)
+                {}
+            }
+            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            debug = null;
+            return;
+        }
+
+        try
+        {
+            debugWriter.write(id + "\t" + message + "\n");
+            debugWriter.flush();
+            debugWriter.close();
+        }
+        catch (Exception e)
+        {
+            if (null != debugWriter)
+            {
+                try
+                {
+                    debugWriter.close();
+                }
+                catch (IOException e1)
+                {}
+            }
+            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            debug = null;
+        }
+    }
+
+    public static IClearcase getEngine()
+    {
+        IClearcase impl = null;
+        try
+        {
+            impl = ClearcasePlugin.getDefault().getClearcase();
+
+            if (isDebug())
+                impl.setDebugger(plugin);
+        }
+        catch (CoreException e)
+        {
+            log(IStatus.ERROR, "Could not get a clearcase engine", e);
+        }
+        return impl;
+    }
+
+    public IClearcase getClearcase() throws CoreException
+    {
+        try
+        {
+            if (clearcaseImpl == null)
+            {
+                if (isUseCleartool())
+                    clearcaseImpl =
                         ClearcaseFactory.getInstance().createInstance(ClearcaseFactory.CLI);
-				else
-					clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
-			}
-			return clearcaseImpl;
-		}
-		catch (ClearcaseException e)
-		{
-			throw new CoreException(
-				new Status(
-					IStatus.ERROR,
-					ClearcasePlugin.ID,
-					TeamException.UNABLE,
-					"Could not retrieve a valid clearcase engine",
-					e));
-		}
-	}
+                else
+                    clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
+            }
+            return clearcaseImpl;
+        }
+        catch (ClearcaseException e)
+        {
+            throw new CoreException(
+                new Status(
+                    IStatus.ERROR,
+                    ClearcasePlugin.ID,
+                    TeamException.UNABLE,
+                    "Could not retrieve a valid clearcase engine",
+                    e));
+        }
+    }
 
-	public void resetClearcase()
-	{
-		if (clearcaseImpl != null)
-		{
-			clearcaseImpl.destroy();
-			clearcaseImpl = null;
-		}
-	}
+    public void resetClearcase()
+    {
+        if (clearcaseImpl != null)
+        {
+            clearcaseImpl.destroy();
+            clearcaseImpl = null;
+        }
+    }
 
-	protected void initializeDefaultPreferences(IPreferenceStore store)
-	{
-		// General preferences
-		store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
-		store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
-		store.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
-		store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
-		store.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
-		store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
-		store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
-		store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
-		store.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
-		store.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
+    protected void initializeDefaultPreferences(IPreferenceStore store)
+    {
+        // General preferences
+        store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
+        store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
+        store.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
+        store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
+        store.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
+        store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
+        store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
+        store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
+        store.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
+        store.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
         store.setDefault(IPreferenceConstants.ESCAPE_COMMENTS, false);
         store.setDefault(IPreferenceConstants.MULTILINE_COMMENTS, true);
 
-		// Decorator preferences
-		store.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
-		store.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
-		store.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
+        // Decorator preferences
+        store.setDefault(IPreferenceConstants.TEXT_VIEW_DECORATION, true);
+        store.setDefault(IPreferenceConstants.TEXT_VERSION_DECORATION, false);
+        store.setDefault(IPreferenceConstants.TEXT_DIRTY_DECORATION, false);
         store.setDefault(IPreferenceConstants.TEXT_NEW_DECORATION, false);
-		store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
-	}
+        store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
+    }
 
-	public static boolean isReservedCheckouts()
-	{
+    public static boolean isReservedCheckouts()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.RESERVED_CHECKOUT);
-	}
+    }
 
-	public static boolean isPersistState()
-	{
+    public static boolean isPersistState()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.PERSIST_STATE);
-	}
+    }
 
-	public static boolean isRefreshOnChange()
-	{
+    public static boolean isRefreshOnChange()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFRESH_ON_CHANGE);
-	}
+    }
 
-	public static boolean isCheckinComment()
-	{
+    public static boolean isCheckinComment()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKIN_COMMENT);
-	}
+    }
 
-	public static boolean isCheckinPreserveTime()
-	{
-		return getDefault().getPreferenceStore().getBoolean(
-			IPreferenceConstants.CHECKIN_PRESERVE_TIME);
-	}
+    public static boolean isCheckinPreserveTime()
+    {
+        return getDefault().getPreferenceStore().getBoolean(
+            IPreferenceConstants.CHECKIN_PRESERVE_TIME);
+    }
 
-	public static boolean isCheckoutComment()
-	{
+    public static boolean isCheckoutComment()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
-	}
+    }
 
-	public static boolean isAddComment()
-	{
+    public static boolean isAddComment()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.ADD_COMMENT);
-	}
+    }
 
-	public static boolean isCheckoutOnEdit()
-	{
+    public static boolean isCheckoutOnEdit()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
-	}
+    }
 
-	public static boolean isRefactorAddsDir()
-	{
+    public static boolean isRefactorAddsDir()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
-	}
+    }
 
-	public static boolean isTextViewDecoration()
-	{
-		return getDefault().getPreferenceStore().getBoolean(
-			IPreferenceConstants.TEXT_VIEW_DECORATION);
-	}
+    public static boolean isTextViewDecoration()
+    {
+        return getDefault().getPreferenceStore().getBoolean(
+            IPreferenceConstants.TEXT_VIEW_DECORATION);
+    }
 
-	public static boolean isTextVersionDecoration()
-	{
-		return getDefault().getPreferenceStore().getBoolean(
-			IPreferenceConstants.TEXT_VERSION_DECORATION);
-	}
+    public static boolean isTextVersionDecoration()
+    {
+        return getDefault().getPreferenceStore().getBoolean(
+            IPreferenceConstants.TEXT_VERSION_DECORATION);
+    }
 
-	public static boolean isTextDirtyDecoration()
-	{
-		return getDefault().getPreferenceStore().getBoolean(
-			IPreferenceConstants.TEXT_DIRTY_DECORATION);
-	}
+    public static boolean isTextDirtyDecoration()
+    {
+        return getDefault().getPreferenceStore().getBoolean(
+            IPreferenceConstants.TEXT_DIRTY_DECORATION);
+    }
 
     public static boolean isTextNewDecoration()
-	{
-		return getDefault().getPreferenceStore().getBoolean(
+    {
+        return getDefault().getPreferenceStore().getBoolean(
             IPreferenceConstants.TEXT_NEW_DECORATION);
-	}
+    }
     public static boolean isDeepDecoration()
     {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.DEEP_DECORATIONS);
     }
 
-	public static boolean isUseCleartool()
-	{
+    public static boolean isUseCleartool()
+    {
         return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.USE_CLEARTOOL);
     }
 
@@ -274,39 +315,43 @@ public class ClearcasePlugin extends AbstractUIPlugin
 
     public static boolean isMultiLineComments()
     {
-		return getDefault().getPreferenceStore().getBoolean(
+        return getDefault().getPreferenceStore().getBoolean(
             IPreferenceConstants.MULTILINE_COMMENTS);
-	}
+    }
 
-	public void startup() throws CoreException
-	{
-		super.startup();
+    public void startup() throws CoreException
+    {
+        super.startup();
 
-		// Disables plugin if clearcase is not available (throws CoreEx)
-		getClearcase();
+        // Disables plugin if clearcase is not available (throws CoreEx)
+        getClearcase();
 
-		StateCacheFactory cacheFactory = StateCacheFactory.getInstance();
-		ISavedState lastState =
+        StateCacheFactory cacheFactory = StateCacheFactory.getInstance();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(
+            cacheFactory,
+            IResourceChangeEvent.POST_CHANGE);
+        ISavedState lastState =
             ResourcesPlugin.getWorkspace().addSaveParticipant(this, cacheFactory);
-		cacheFactory.load(lastState);
+        if (null != lastState)
+        {
+            cacheFactory.load(lastState);
+            lastState.processResourceChangeEvents(cacheFactory);
+        }
 
         loadCommentHistory();
+    }
 
-        getWorkspace().addResourceChangeListener(updateListener, IResourceChangeEvent.POST_CHANGE);
+    public void shutdown() throws CoreException
+    {
+        getWorkspace().removeResourceChangeListener(StateCacheFactory.getInstance());
 
-	}
-
-	public void shutdown() throws CoreException
-	{
-        getWorkspace().removeResourceChangeListener(updateListener);
-
-		resetClearcase();
+        resetClearcase();
 
         saveCommentHistory();
 
         super.shutdown();
 
-	}
+    }
 
     /** The previously remembered comment */
     static String[] previousComments = new String[0];
@@ -336,7 +381,7 @@ public class ClearcasePlugin extends AbstractUIPlugin
         for (int i = 1; i < newComments.length; i++)
         {
             newComments[i] = previousComments[i - 1];
-}
+        }
         previousComments = newComments;
     }
 
@@ -501,6 +546,21 @@ public class ClearcasePlugin extends AbstractUIPlugin
                     "Error reading config file!",
                     e));
         }
+    }
+
+    private static IPath debug = null;
+
+    public static boolean isDebug()
+    {
+        return null != debug;
+    }
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.clearcase.simple.IClearcaseDebugger#debugClearcase(java.lang.String, java.lang.String)
+     */
+    public void debugClearcase(String id, String message)
+    {
+        debug(id, message);
     }
 
 }

@@ -1,0 +1,2 @@
+# Turn on debug tracing for net.sourceforge.eclipseccase plugin
+net.sourceforge.eclipseccase /debug=false

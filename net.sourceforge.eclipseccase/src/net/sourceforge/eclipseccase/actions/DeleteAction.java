@@ -32,14 +32,13 @@ public class DeleteAction extends ClearcaseAction
                 try
                 {
                     IResource[] resources = getSelectedResources();
-                    monitor.beginTask("Deleting...", resources.length);
+                    monitor.beginTask("Deleting...", resources.length * 1000);
                     for (int i = 0; i < resources.length; i++)
                     {
                         IResource resource = resources[i];
                         IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
                         ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
                         provider.delete(new IResource[] { resource }, subMonitor);
-                        monitor.worked(1);
                     }
                 }
                 catch (TeamException e)
@@ -68,9 +67,7 @@ public class DeleteAction extends ClearcaseAction
         {
             IResource resource = resources[i];
             ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-            if (provider == null
-                || provider.isUnknownState(resource)
-                || provider.isIgnored(resource))
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
                 return false;
         }
         return true;

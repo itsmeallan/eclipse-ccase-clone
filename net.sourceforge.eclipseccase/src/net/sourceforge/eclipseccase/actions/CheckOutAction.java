@@ -45,7 +45,7 @@ public class CheckOutAction extends ClearcaseAction
 				try
 				{
 					IResource[] resources = getSelectedResources();
-					monitor.beginTask("Checking out...", resources.length);
+					monitor.beginTask("Checking out...", resources.length * 1000);
 
 					// Sort resources with directories last so that the modification of a
 					// directory doesn't abort the modification of files within it.
@@ -60,7 +60,6 @@ public class CheckOutAction extends ClearcaseAction
 						provider.setComment(comment);
 						provider.checkout(new IResource[] {resource},
 											depth, subMonitor);
-						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -86,7 +85,7 @@ public class CheckOutAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
                 return false;
 			if (provider.isCheckedOut(resource))
 				return false;
