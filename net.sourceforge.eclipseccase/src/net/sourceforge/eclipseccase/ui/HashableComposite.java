@@ -1,6 +1,7 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -9,24 +10,27 @@ import org.eclipse.ui.internal.misc.OverlayComposite;
 
 public class HashableComposite
 {
-	private OverlayComposite comp;
 	private Image backgroundImage;
 	private List foregroundImages = new ArrayList();
 
 	public HashableComposite(Image backgroundImage)
 	{
 		this.backgroundImage = backgroundImage;
-		comp = new OverlayComposite(backgroundImage.getImageData());
 	}
 	
 	public void addForegroundImage(ImageDescriptor desc)
 	{
 		foregroundImages.add(desc);
-		comp.addForegroundImage(desc.getImageData());
 	}
 	
 	public Image createImage()
 	{
+		OverlayComposite comp = new OverlayComposite(backgroundImage.getImageData());
+		for (Iterator iter = foregroundImages.iterator(); iter.hasNext();)
+		{
+			ImageDescriptor desc = (ImageDescriptor) iter.next();
+			comp.addForegroundImage(desc.getImageData());
+		}
 		return comp.createImage();
 	}
 		

@@ -44,6 +44,7 @@ public class DissociateProjectAction extends TeamAction
 						if (i > 0)
 							message.append(", ");
 						message.append(project.getName());
+						ClearcaseDecorator.refresh(project);
 						monitor.worked(1);
 					}
 					catch (TeamException e)
@@ -59,8 +60,6 @@ public class DissociateProjectAction extends TeamAction
 			}
 		}, "Dissociating from clearcase", this.PROGRESS_DIALOG);
 
-		ClearcaseDecorator.refresh();
-		
 		MessageDialog.openInformation(
 			shell,
 			"Clearcase Plugin",

@@ -1,8 +1,8 @@
 package net.sourceforge.eclipseccase.ui;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class ClearcaseDecorator
 	private static final int LABEL_QUEUE_RETRY = 5;
 
 	private List labelQueue = Collections.synchronizedList(new LinkedList());
-	private List parentLabelQueue = Collections.synchronizedList(new LinkedList());
+	private Map availableDecorations = Collections.synchronizedMap(new HashMap());
 	private Thread labelQueueThread;
 
 	public ClearcaseDecorator()
@@ -65,43 +65,64 @@ public class ClearcaseDecorator
 		labelQueueThread = new Thread(new Runnable() {
 			public void run()
 			{
-				IResource[] resources;
-				int parentCounter = 0;
 				while(true)
 				{
-					// Use polling instead of wait/notify as otherwise you end up
-					// flooding the UI event queue, thereby making the UI unresponsive
-					try{ Thread.sleep(500); } catch (InterruptedException e) {}
-	
 					int size = labelQueue.size();
-					resources = new IResource[size];
+					while (size == 0)
+					{
+						synchronized(labelQueue)
+						{
+							try
+							{
+								labelQueue.wait();
+							}
+							catch (InterruptedException e)
+							{
+							}
+						}
+						size = labelQueue.size();
+					}							
+					List resources = new LinkedList();
 					for (int i = 0; i < size; i++)
 					{
-						IResource resource = (IResource) labelQueue.remove(0);
-						resources[i] = resource;
-					}
-					postLabelEvent(new LabelProviderChangedEvent(ClearcaseDecorator.this, resources));
-					if (size == 0)
-					{
-						if (parentCounter++ > 4)
+						Key key = (Key) labelQueue.remove(0);
+						key.decorate();
+						synchronized(availableDecorations)
 						{
-							parentCounter = 0;
-							int psize = parentLabelQueue.size();
-							resources = new IResource[psize];
-							for(int p = 0; p < psize; p++)
-							{
-								IResource resource = (IResource) parentLabelQueue.remove(0);
-								resources[p] = resource;
-							}
-							postLabelEvent(new LabelProviderChangedEvent(ClearcaseDecorator.this, resources));
+							availableDecorations.put(key, key);
 						}
+						resources.add(key.resource);
 					}
+					postLabelEvent(new LabelProviderChangedEvent(ClearcaseDecorator.this, resources.toArray(new IResource[resources.size()])));
 				}
 			}
 		}, "ClearcaseProvider Decorator thread");
 		labelQueueThread.start();
 	}
 
+	private void addToQueue(Key key)
+	{
+		if (! labelQueue.contains(key))
+			labelQueue.add(key);
+		synchronized(labelQueue)
+		{
+			labelQueue.notify();
+		}
+	}
+	
+	private void invalidateKeys(IResource resource)
+	{
+		synchronized(availableDecorations)
+		{
+			for (Iterator iter = availableDecorations.values().iterator(); iter.hasNext();)
+			{
+				Key element = (Key) iter.next();
+				if (resource.equals(element.resource))
+					element.invalid = true;
+			}
+		}
+	}
+	
 	public static void refresh()
 	{
 		IDecoratorManager manager =
@@ -120,12 +141,44 @@ public class ClearcaseDecorator
 			});
 		}
 	}
-
+	
+	public static void refresh(IResource resource)
+	{
+		IDecoratorManager manager =
+			ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+		if (manager.getEnabled(ID))
+		{
+			ClearcaseDecorator activeDecorator =
+				(ClearcaseDecorator) manager.getLabelDecorator(ID);
+			final List resources = new LinkedList();
+			try
+			{
+				resource.accept(new IResourceVisitor()
+				{
+					/**
+					 * @see org.eclipse.core.resources.IResourceVisitor#visit(IResource)
+					 */
+					public boolean visit(IResource resource) throws CoreException
+					{
+						resources.add(resource);
+						return true;
+					}
+				});
+			}
+			catch (CoreException ex)
+			{
+			}
+			activeDecorator.postLabelEvent(new LabelProviderChangedEvent(activeDecorator, resources.toArray(new IResource[resources.size()])));
+		}
+	}
+	
+	
 	/*
 	 * @see ITeamDecorator#getText(String, IResource)
 	 */
 	public String decorateText(String text, Object element)
 	{
+		
 		IResource resource = getResource(element);
 		if (resource == null || resource.getType() == IResource.ROOT)
 			return text;
@@ -133,6 +186,24 @@ public class ClearcaseDecorator
 		if (p == null)
 			return text;
 
+		TextKey key = new TextKey(resource, text);
+		TextKey val = (TextKey) availableDecorations.get(key);
+		if (val != null)
+		{
+			if (val.invalid)
+				addToQueue(key);
+			return (String) val.decoration;
+		}
+		else
+		{
+			addToQueue(key);
+			return text;
+		}
+	}
+	
+	public String generateText(IResource resource, String text)
+	{
+		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		if (!p.hasRemote(resource))
 			return text;
 
@@ -176,6 +247,67 @@ public class ClearcaseDecorator
 		return image;
 	}
 
+	abstract class Key
+	{
+		IResource resource;
+		Object second;
+		Object decoration;
+		boolean invalid;
+
+		Key(IResource resource, Object second)
+		{
+			this.resource = resource;
+			this.second = second;
+		}
+			
+		public boolean equals(Object obj)
+		{
+			if (!(obj instanceof Key))
+				return false;
+			Key rhs = (Key) obj;
+	
+			return resource.equals(rhs.resource) && second.equals(rhs.second);	
+		}
+		
+		public int hashCode()
+		{
+			return resource.hashCode() + second.hashCode();
+		}
+
+		abstract Object decorate();
+	}
+	
+	class ImageKey extends Key
+	{
+				
+		ImageKey(IResource resource, Image image)
+		{
+			super(resource, image);
+		}
+
+		Object decorate()
+		{
+			if (decoration == null)
+				decoration = generateImage(resource, (Image) second);
+			return decoration;
+		}
+	}
+	
+	class TextKey extends Key
+	{
+		TextKey(IResource resource, String text)
+		{
+			super(resource, text);
+		}
+		
+		Object decorate()
+		{
+			if (decoration == null)
+				decoration = generateText(resource, (String) second);
+			return decoration;
+		}
+	}
+	
 	public Image decorateImage(Image image, Object element)
 	{
 		IResource resource = getResource(element);
@@ -185,6 +317,24 @@ public class ClearcaseDecorator
 		if (p == null)
 			return image;
 
+		ImageKey key = new ImageKey(resource, image);
+		ImageKey val = (ImageKey) availableDecorations.get(key);
+		if (val != null)
+		{
+			if (val.invalid)
+				addToQueue(key);
+			return (Image) val.decoration;
+		}
+		else
+		{
+			addToQueue(key);
+			return image;
+		}
+	}
+	
+	public Image generateImage(IResource resource, Image image)
+	{
+		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		HashableComposite result = new HashableComposite(image);
 
 		if (p.isUnknownState(resource))
@@ -405,14 +555,16 @@ public class ClearcaseDecorator
 
 	public void postLabelResource(IResource resource)
 	{
-		labelQueue.add(resource);
+		List resources = new LinkedList();
+		invalidateKeys(resource);
+		resources.add(resource);
 		for (IResource parent = resource.getParent();
 			parent != null;
 			parent = parent.getParent())
 		{
-			if (! parentLabelQueue.contains(parent))
-				parentLabelQueue.add(parent);
+			invalidateKeys(parent);
+			resources.add(parent);
 		}
+		postLabelEvent(new LabelProviderChangedEvent(this, resources.toArray(new IResource[resources.size()])));
 	}
-
 }
