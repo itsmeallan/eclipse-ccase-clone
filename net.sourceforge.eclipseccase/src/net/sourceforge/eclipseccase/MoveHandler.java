@@ -2,8 +2,6 @@
 package net.sourceforge.eclipseccase;
 
 
-import org.eclipse.core.internal.resources.File;
-import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -11,14 +9,11 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.resources.team.IResourceTree;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.core.TeamPlugin;
-
-import net.sourceforge.eclipseccase.jni.Clearcase;
 
 public class MoveHandler implements IMoveDeleteHook
 {
@@ -174,9 +169,24 @@ public class MoveHandler implements IMoveDeleteHook
 		}
 		// KEEP_HISTORY not needed for project delete
 		
-		// Can't honor NEVER_DELETE_PROJECT_CONTENTS for dynamic views as its
-		// out of our control.  When we handle static views, we will need to honor it
-		
+		if (project.isOpen())
+		{
+			// If project open, don't delete cotents if flag is true
+			if ((IResource.NEVER_DELETE_PROJECT_CONTENT & updateFlags) != 0)
+			{
+				tree.deletedProject(project);
+				return true;	
+			}
+		}
+		else
+		{
+			// If project closed, don't delete cotents if flag is false
+			if ((IResource.ALWAYS_DELETE_PROJECT_CONTENT & updateFlags) == 0)
+			{
+				tree.deletedProject(project);				
+				return true;
+			}
+		}		
 		
 		if (! failed)
 		{
