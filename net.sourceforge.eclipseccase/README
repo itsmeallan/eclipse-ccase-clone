@@ -1,5 +1,5 @@
 The plugin is pretty simple right now, but works for me under Windows
-NT sp6a with clearcase version 4.2 and eclipse M5 -> F2 (Due to API
+NT sp6a with clearcase version 4.2 and eclipse version >= F3 (Due to API
 changes, older versions of eclipse need older versions of the plugin)
 If you get the plugin working with a different configuration, feel
 free to post your setup to the sourceforge forums for this project
@@ -21,3 +21,6 @@ clearcase version control - though once you have a
 Project dir under clearcase, you can add a subtree of
 files to clearcase, so only requirement is the initial
 project directory under clearcase.
+
+You can do some basic configuration via the eclipse preferences
+dialog, under the Team->Clearcase entry.
