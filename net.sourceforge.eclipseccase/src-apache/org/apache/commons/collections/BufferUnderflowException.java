@@ -70,7 +70,7 @@ import java.util.NoSuchElementException;
  * @author Stephen Colebourne
  */
 public class BufferUnderflowException extends NoSuchElementException {
-    
+    private static final long serialVersionUID = 4054570024234606028L;
     /** The root cause throwable */
     private final Throwable throwable;
 
