@@ -661,7 +661,7 @@
       <decorator
             lightweight="true"
             adaptable="true"
-            label="Clearcase Decorator"
+            label="ClearCase"
             class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
             state="false"
             id="net.sourceforge.eclipseccase.ui.decorator">
