@@ -300,6 +300,8 @@ public class ClearcaseUI extends AbstractUIPlugin {
 		createImageDescriptor(reg, ClearcaseImages.IMG_LINK);
 		createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING);
 		createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED);
+        createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH);
+        createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH_DISABLED);
 	}
 
 	private static void createImageDescriptor(ImageRegistry reg, String id) {
