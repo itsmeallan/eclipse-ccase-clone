@@ -1,0 +1,90 @@
+<project name="eclipse-ccase-site" default="all">
+		
+	<target name="init-properties">
+		<tstamp>
+			<format property="release.date" pattern="MM/dd/yyyy"/>
+		</tstamp>
+		
+		<!-- must contain properties "user" and "password"-->
+		<property file="login.properties"/>
+
+		<!-- import version from site.xml -->				
+		<xmlproperty file="${basedir}/site.xml" collapseAttributes="true"/>
+
+		<property name="staging.dir" value="${basedir}"/>
+		<property name="features.dir" value="${staging.dir}/features"/>
+		<property name="plugins.dir" value="${staging.dir}/plugins"/>
+		
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${site.feature.version}.zip"/>
+		<property name="feature.eclipseccase.3.package" value="${staging.dir}/full/net.sourceforge.eclipseccase.3_${site.feature.version}.zip"/>
+
+		<property name="site.deploy.host" value="shell.sourceforge.net"/>	
+		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update"/>
+		<property name="site.url" value="http://eclipse-ccase.sourceforge.net/update"/>
+		
+		<fileset id="site.deploy.files" dir="${staging.dir}">
+			<include name="site.xml"/>
+			<include name="features/*"/>
+			<include name="plugins/*"/>
+		</fileset>
+	</target>
+
+	<target name="init-custom-tasks" depends="init-properties">
+		<path id="tasks.classpath">
+			<fileset dir="${basedir}/lib" includes="*.jar"/>
+		</path>
+		<!-- http://3sp.com/tutorials/j2ssh/sshanttask.htm -->
+		<taskdef	name="ssh"
+					classname="com.sshtools.ant.Ssh"
+					classpathref="tasks.classpath"/>
+		<!-- http://sfutils.sourceforge.net/ -->
+		<taskdef 	name="sfpublish"
+					classname="org.apache.tools.ant.taskdefs.optional.sourceforge.SourceForgePublish"
+					classpathref="tasks.classpath"/>
+	</target>
+	
+	<target name="init" depends="init-properties,init-custom-tasks">
+	</target>
+	
+	<target name="clean" depends="init">
+		<ant antfile="${basedir}/build.xml" target="clean"/>
+		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
+	</target>
+	
+	<target name="all" depends="init,deploy-site,deploy-sf-release">
+	</target>
+
+	<target name="deploy-site" depends="init">
+		<ssh	host="${site.deploy.host}"
+				username="${user}"
+				password="${password}"
+				verifyhost="false">
+			<sftp action="put"
+					depends="true"
+					remotedir="${site.deploy.root}"
+					skipFailedTransfers="true">
+				<fileset refid="site.deploy.files"/>
+			</sftp>
+		</ssh>
+	</target>
+	
+	<target name="deploy-sf-release" depends="init">
+		<sfpublish	releasename="${site.feature.version}"
+					packagename="eclipse-ccase"
+					packagehidden="no"
+					hidden="no"
+					projectshortname="eclipse-ccase"
+					projectname="Clearcase plugin for Eclipse"
+					username="${user}"
+					password="${password}"
+					releasedate="${release.date}">
+        <filespec file="${feature.eclipseccase.package}" 
+                  filetype="gzip_file" 
+                  processortype="platform_independent"/>
+        <filespec file="${feature.eclipseccase.3.package}" 
+                  filetype="gzip_file" 
+                  processortype="platform_independent"/>
+      </sfpublish>
+    </target>
+    
+</project>
