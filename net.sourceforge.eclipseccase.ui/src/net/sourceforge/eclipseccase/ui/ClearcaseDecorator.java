@@ -41,8 +41,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.team.internal.ui.TeamUIPlugin;
 import org.eclipse.team.ui.ISharedImages;
+import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -116,11 +116,11 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static final int STATE_UNKNOWN = 2;
 
     static {
-        IMG_DESC_DIRTY = new CachedImageDescriptor(TeamUIPlugin
+        IMG_DESC_DIRTY = new CachedImageDescriptor(TeamImages
                 .getImageDescriptor(ISharedImages.IMG_DIRTY_OVR));
-        IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamUIPlugin
+        IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamImages
                 .getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR));
-        IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamUIPlugin
+        IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamImages
                 .getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR));
         IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages
                 .getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE));
