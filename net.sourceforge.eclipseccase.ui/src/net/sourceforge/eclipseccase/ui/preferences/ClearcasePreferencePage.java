@@ -36,11 +36,11 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCategories
         implements IWorkbenchPreferencePage, IClearcasePreferenceConstants {
 
-    private static final String GENERAL = Messages.getString("Preferences.Category.General"); //$NON-NLS-1$
+    private static final String GENERAL = PreferenceMessages.getString("Preferences.Category.General"); //$NON-NLS-1$
 
-    private static final String SOURCE_MANAGEMENT = Messages.getString("Preferences.Category.Source"); //$NON-NLS-1$
+    private static final String SOURCE_MANAGEMENT = PreferenceMessages.getString("Preferences.Category.Source"); //$NON-NLS-1$
 
-    private static final String COMMENTS = Messages.getString("Preferences.Category.Comments"); //$NON-NLS-1$
+    private static final String COMMENTS = PreferenceMessages.getString("Preferences.Category.Comments"); //$NON-NLS-1$
 
     private static final String[] CATEGORIES = new String[] { GENERAL,
             SOURCE_MANAGEMENT, COMMENTS};
@@ -399,7 +399,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
      * Creates a new instance.
      */
     public ClearcasePreferencePage() {
-        setDescription(Messages.getString("Preferences.Description")); //$NON-NLS-1$
+        setDescription(PreferenceMessages.getString("Preferences.Description")); //$NON-NLS-1$
 
         // Set the preference store for the preference page.
         setPreferenceStore(new ClearcasePreferenceStore());
@@ -424,33 +424,33 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
         // general settings
 
         addField(new BooleanFieldEditor(IGNORE_NEW,
-                Messages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$
                 getFieldEditorParent(GENERAL)));
 
         addField(new BooleanFieldEditor(HIDE_REFRESH_STATE_ACTIVITY,
-                Messages.getString("Preferences.General.HideRefreshStateActivity"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.General.HideRefreshStateActivity"), //$NON-NLS-1$
                 getFieldEditorParent(GENERAL)));
         
         addField(new BooleanFieldEditor(RECURSIVE,
-                Messages.getString("Preferences.General.Recursive"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.General.Recursive"), //$NON-NLS-1$
                 getFieldEditorParent(GENERAL)));
 
         addField(new BooleanFieldEditor(PRESERVE_TIMES,
-                Messages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
                 getFieldEditorParent(GENERAL)));
 
         // use cleartool option only available on windows
         BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL,
-                Messages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
                 getFieldEditorParent(GENERAL));
         useCleartool.setEnabled(ClearcasePlugin.isWindows(),
                 getFieldEditorParent(GENERAL));
         addField(useCleartool);
         
         addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS,
-                Messages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
-                new String[][] { { Messages.getString("Force"), VALUE_FORCE}, //$NON-NLS-1$
-                        { Messages.getString("Ask"), VALUE_ASK}, { Messages.getString("Never"), VALUE_NEVER}}, //$NON-NLS-1$ //$NON-NLS-2$
+                PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
+                new String[][] { { PreferenceMessages.getString("Force"), VALUE_FORCE}, //$NON-NLS-1$
+                        { PreferenceMessages.getString("Ask"), VALUE_ASK}, { PreferenceMessages.getString("Never"), VALUE_NEVER}}, //$NON-NLS-1$ //$NON-NLS-2$
                 getFieldEditorParent(GENERAL), true));
 
         //RadioGroupFieldEditor clearcaseLayer = new RadioGroupFieldEditor(CLEARCASE_API,
@@ -467,55 +467,55 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
         // source management
 
         addField(new BooleanFieldEditor(CHECKOUT_AUTO,
-                Messages.getString("Preferences.Source.CheckoutAuto"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.CheckoutAuto"), //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new BooleanFieldEditor(ADD_AUTO,
-                Messages.getString("Preferences.Source.AddAuto"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.AddAuto"), //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new BooleanFieldEditor(ADD_WITH_CHECKIN,
-                Messages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new BooleanFieldEditor(
                 CHECKOUT_LATEST,
-                Messages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new BooleanFieldEditor(
                 USE_CLEARDLG,
-                Messages.getString("Preferences.Source.ClearDlg"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.ClearDlg"), //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT)));
 
         addField(new RadioGroupFieldEditor(
                 IClearcasePreferenceConstants.CHECKOUT_RESERVED,
-                Messages.getString("Preferences.Source.CheckoutReserved"), 1, new String[][] { //$NON-NLS-1$
-                        { Messages.getString("Always"), VALUE_FORCE}, //$NON-NLS-1$
-                        { Messages.getString("IfPossible"), VALUE_IF_POSSIBLE}, //$NON-NLS-1$
-                        { Messages.getString("Never"), VALUE_NEVER}}, //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, new String[][] { //$NON-NLS-1$
+                        { PreferenceMessages.getString("Always"), VALUE_FORCE}, //$NON-NLS-1$
+                        { PreferenceMessages.getString("IfPossible"), VALUE_IF_POSSIBLE}, //$NON-NLS-1$
+                        { PreferenceMessages.getString("Never"), VALUE_NEVER}}, //$NON-NLS-1$
                 getFieldEditorParent(SOURCE_MANAGEMENT), true));
 
         // comments
 
-        addField(new BooleanFieldEditor(COMMENT_ADD, Messages.getString("Preferences.Comments.CommentAdd"), //$NON-NLS-1$
+        addField(new BooleanFieldEditor(COMMENT_ADD, PreferenceMessages.getString("Preferences.Comments.CommentAdd"), //$NON-NLS-1$
                 getFieldEditorParent(COMMENTS)));
 
-        addField(new BooleanFieldEditor(COMMENT_CHECKIN, Messages.getString("Preferences.Comments.CommentCheckin"), //$NON-NLS-1$
+        addField(new BooleanFieldEditor(COMMENT_CHECKIN, PreferenceMessages.getString("Preferences.Comments.CommentCheckin"), //$NON-NLS-1$
                 getFieldEditorParent(COMMENTS)));
 
-        addField(new BooleanFieldEditor(COMMENT_CHECKOUT, Messages.getString("Preferences.Comments.CommentCheckout"), //$NON-NLS-1$
+        addField(new BooleanFieldEditor(COMMENT_CHECKOUT, PreferenceMessages.getString("Preferences.Comments.CommentCheckout"), //$NON-NLS-1$
                 getFieldEditorParent(COMMENTS)));
 
         addField(new BooleanFieldEditor(COMMENT_CHECKOUT_NEVER_ON_AUTO,
-                Messages.getString("Preferences.Comments.CommentCheckoutNeverOnAuto"), getFieldEditorParent(COMMENTS))); //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Comments.CommentCheckoutNeverOnAuto"), getFieldEditorParent(COMMENTS))); //$NON-NLS-1$
 
         addField(new BooleanFieldEditor(COMMENT_ADD_NEVER_ON_AUTO,
-                Messages.getString("Preferences.Comments.CommentAddNeverOnAuto"), getFieldEditorParent(COMMENTS))); //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Comments.CommentAddNeverOnAuto"), getFieldEditorParent(COMMENTS))); //$NON-NLS-1$
 
         addField(new BooleanFieldEditor(
                 IClearcasePreferenceConstants.COMMENT_ESCAPE,
-                Messages.getString("Preferences.Comments.CommentEscape"), //$NON-NLS-1$
+                PreferenceMessages.getString("Preferences.Comments.CommentEscape"), //$NON-NLS-1$
                 getFieldEditorParent(COMMENTS)));
     }
 
@@ -546,11 +546,11 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
      */
     protected String getDescription(String category) {
         if(GENERAL.equals(category))
-            return Messages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$
+            return PreferenceMessages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$
         if(SOURCE_MANAGEMENT.equals(category))
-            return Messages.getString("Preferences.Description.Category.Source"); //$NON-NLS-1$
+            return PreferenceMessages.getString("Preferences.Description.Category.Source"); //$NON-NLS-1$
         if(COMMENTS.equals(category))
-            return Messages.getString("Preferences.Description.Category.Comments"); //$NON-NLS-1$
+            return PreferenceMessages.getString("Preferences.Description.Category.Comments"); //$NON-NLS-1$
         return null;
     }
 

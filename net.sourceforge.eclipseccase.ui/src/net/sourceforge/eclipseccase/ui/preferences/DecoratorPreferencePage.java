@@ -35,14 +35,14 @@ public class DecoratorPreferencePage
 		implements
 			IWorkbenchPreferencePage,
 			IClearcaseUIPreferenceConstants {
-	private static final String TEXT = Messages.getString("Decorator.Category.Text"); //$NON-NLS-1$
+	private static final String TEXT = PreferenceMessages.getString("Decorator.Category.Text"); //$NON-NLS-1$
 
-	private static final String IMAGES = Messages.getString("Decorator.Category.Images"); //$NON-NLS-1$
+	private static final String IMAGES = PreferenceMessages.getString("Decorator.Category.Images"); //$NON-NLS-1$
 
-	private static final String GENERAL = Messages.getString("Decorator.Category.General"); //$NON-NLS-1$
+	private static final String GENERAL = PreferenceMessages.getString("Decorator.Category.General"); //$NON-NLS-1$
 
-	private static final String[] CATEGORIES = new String[]{GENERAL, IMAGES,
-			TEXT};
+	private static final String[] CATEGORIES = new String[]{TEXT, IMAGES
+			,GENERAL};
 
 	MasterBooleanFieldEditor master;
 	/**
@@ -54,7 +54,7 @@ public class DecoratorPreferencePage
 		// Set the preference store for the preference page.
 		setPreferenceStore(ClearcaseUI.getInstance().getPreferenceStore());
 
-		setDescription(Messages.getString("Decorator.Description")); //$NON-NLS-1$
+		setDescription(PreferenceMessages.getString("Decorator.Description")); //$NON-NLS-1$
 	}
 
 	/**
@@ -65,65 +65,65 @@ public class DecoratorPreferencePage
 
 		addField(new BooleanFieldEditor(
 				IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
-				Messages.getString("Decorator.General.DeepDecorations"), //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.General.DeepDecorations"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
 		// image decoration
 
 		addField(new BooleanFieldEditor(ICON_DECORATE_EDITED,
-				Messages.getString("Decorator.Images.DecorateEdited"), getFieldEditorParent(IMAGES))); //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Images.DecorateEdited"), getFieldEditorParent(IMAGES))); //$NON-NLS-1$
 
-		addField(new BooleanFieldEditor(ICON_DECORATE_HIJACKED, Messages.getString("Decorator.Images.DecorateHijacked"), //$NON-NLS-1$
+		addField(new BooleanFieldEditor(ICON_DECORATE_HIJACKED, PreferenceMessages.getString("Decorator.Images.DecorateHijacked"), //$NON-NLS-1$
 				getFieldEditorParent(IMAGES)));
 
-		addField(new BooleanFieldEditor(ICON_DECORATE_NEW, Messages.getString("Decorator.Images.DecorateNew"), //$NON-NLS-1$
+		addField(new BooleanFieldEditor(ICON_DECORATE_NEW, PreferenceMessages.getString("Decorator.Images.DecorateNew"), //$NON-NLS-1$
 				getFieldEditorParent(IMAGES)));
 
-		addField(new BooleanFieldEditor(ICON_DECORATE_UNKNOWN, Messages.getString("Decorator.Images.DecorateUnknown"), //$NON-NLS-1$
+		addField(new BooleanFieldEditor(ICON_DECORATE_UNKNOWN, PreferenceMessages.getString("Decorator.Images.DecorateUnknown"), //$NON-NLS-1$
 				getFieldEditorParent(IMAGES)));
 
 		// text decorations
 
 		addField(new BooleanFieldEditor(
 				IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
-				Messages.getString("Decorator.Text.ViewDecoration"), //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.ViewDecoration"), //$NON-NLS-1$
 				getFieldEditorParent(TEXT)));
 
 		addField(new BooleanFieldEditor(
 				IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION,
-				Messages.getString("Decorator.Text.VersionDecoration"), //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.VersionDecoration"), //$NON-NLS-1$
 				getFieldEditorParent(TEXT)));
 
 		master = new MasterBooleanFieldEditor(
 				IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION,
-				Messages.getString("Decorator.Text.PrefixDecoration"), //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixDecoration"), //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 
 		addField(master);
 
 		FieldEditor slave = new StringFieldEditor(TEXT_PREFIX_DIRTY,
-				Messages.getString("Decorator.Text.PrefixDirty"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixDirty"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
 		master.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_HIJACKED,
-				Messages.getString("Decorator.Text.PrefixHijacked"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixHijacked"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
 		master.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_NEW,
-				Messages.getString("Decorator.Text.PrefixNew"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixNew"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
 		addField(slave);
 		master.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_EDITED,
-				Messages.getString("Decorator.Text.PrefixEdited"), 4, //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixEdited"), 4, //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 		addField(slave);
 		master.addSlave(slave);
 
 		slave = new StringFieldEditor(TEXT_PREFIX_UNKNOWN,
-				Messages.getString("Decorator.Text.PrefixUnknown"), 4, //$NON-NLS-1$
+				PreferenceMessages.getString("Decorator.Text.PrefixUnknown"), 4, //$NON-NLS-1$
 				getFieldEditorParent(TEXT));
 		addField(slave);
 		master.addSlave(slave);
@@ -173,11 +173,11 @@ public class DecoratorPreferencePage
 	 */
 	protected String getDescription(String category) {
 		if (GENERAL.equals(category))
-			return Messages.getString("Decorator.Description.Category.General"); //$NON-NLS-1$
+			return PreferenceMessages.getString("Decorator.Description.Category.General"); //$NON-NLS-1$
 		if (IMAGES.equals(category))
-			return Messages.getString("Decorator.Description.Category.Images"); //$NON-NLS-1$
+			return PreferenceMessages.getString("Decorator.Description.Category.Images"); //$NON-NLS-1$
 		if (TEXT.equals(category))
-			return Messages.getString("Decorator.Description.Category.Text"); //$NON-NLS-1$
+			return PreferenceMessages.getString("Decorator.Description.Category.Text"); //$NON-NLS-1$
 
 		return null;
 	}
