@@ -186,5 +186,15 @@
             id="net.sourceforge.eclipseccase.views.CheckoutsView">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
+            name="Clearcase Element Properties"
+            class="net.sourceforge.eclipseccase.ElementPropertyPage"
+            id="net.sourceforge.eclipseccase.elementPropertyPage">
+      </page>
+   </extension>
 
 </plugin>
