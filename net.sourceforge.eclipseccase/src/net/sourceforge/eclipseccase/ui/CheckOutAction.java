@@ -8,6 +8,11 @@ import org.eclipse.team.core.internal.simpleAccess.SimpleAccessOperations;
 
 public class CheckOutAction extends org.eclipse.team.ui.actions.CheckOutAction {
 	
+	public CheckOutAction()
+	{
+		super();
+	}
+	
 	protected boolean isEnabled() throws TeamException {
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0) return false;

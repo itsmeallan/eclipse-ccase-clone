@@ -67,7 +67,7 @@
          <action
                label="Checkin"
                tooltip="Checkin"
-               class="org.eclipse.team.ui.actions.CheckInAction"
+               class="net.sourceforge.eclipseccase.ui.CheckInAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkin">
          </action>

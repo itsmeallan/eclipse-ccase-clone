@@ -1,0 +1,59 @@
+package net.sourceforge.eclipseccase.ui;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.team.core.TeamException;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+
+public class CheckInAction  extends org.eclipse.team.ui.actions.CheckInAction
+{
+	private String lastComment = "";
+	
+	/*
+	 * Method declared on IActionDelegate.
+	 */
+	public void run(IAction action) {
+		CheckinDialog dlg = new CheckinDialog(shell, "Checkin comment",
+										 "Enter a checkin comment", lastComment, null);
+		if (dlg.open() == dlg.CANCEL)
+			return;
+		final String comment = dlg.getValue();
+		lastComment = comment;
+		run(new WorkspaceModifyOperation() {
+			public void execute(IProgressMonitor monitor) throws InterruptedException, InvocationTargetException {
+				try {
+					Hashtable table = getProviderMapping();
+					Set keySet = table.keySet();
+					monitor.beginTask("", keySet.size() * 1000);
+					monitor.setTaskName("Checking in...");
+					Iterator iterator = keySet.iterator();
+					while (iterator.hasNext()) {
+						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
+						RepositoryProvider provider = (RepositoryProvider)iterator.next();
+						List list = (List)table.get(provider);
+						IResource[] providerResources = (IResource[])list.toArray(new IResource[list.size()]);
+						if (provider instanceof ClearcaseProvider)
+							((ClearcaseProvider) provider).setComment(comment);
+						provider.getSimpleAccess().checkin(providerResources, IResource.DEPTH_INFINITE, subMonitor);
+					}
+				} catch (TeamException e) {
+					throw new InvocationTargetException(e);
+				} finally {
+					monitor.done();
+				}
+			}
+		}, "Checkin", this.PROGRESS_DIALOG);
+	}
+
+
+}
