@@ -218,7 +218,7 @@ public class MoveHandler implements IMoveDeleteHook
 		if (failed || status.getCode() != IStatus.OK)
 			tree.failed(status);
 		else
-			tree.movedFile(source, destination, tree.computeTimestamp(destination));
+			tree.movedFile(source, destination);
 
 
 		return true;

@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.0.1"
+   version="0.0.2"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -10,10 +10,12 @@
       <library name="clearcase.jar"/>
    </runtime>
    <requires>
+      <import plugin="org.eclipse.core.boot"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.swt"/>
+	  <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.team.ui"/>
    </requires>
 

@@ -7,6 +7,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
@@ -32,7 +33,7 @@ public class AssociateProjectAction implements IObjectActionDelegate
 		{
 			if (RepositoryProvider.getProvider(getSelectedProject()) == null)
 			{
-				RepositoryProvider.addNatureToProject(
+				Team.addNatureToProject(
 					getSelectedProject(),
 					ClearcaseProvider.ID,
 					null);

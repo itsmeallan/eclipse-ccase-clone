@@ -1,72 +1,103 @@
-<project name="clearcase" default="all">
+<project name="ccjni" default="all">
 
-	<property	name="version" value="0.0.1"/>
+	<property	name="version" value="0.0.2"/>
 	<property 	name="debug" value="true"/>
 	<property	name="jdk.home" value="${java.home}/.."/>
+	
+	<property	name="java.build" value="${basedir}/bin"/>
+	<property	name="jar.name" value="clearcase.jar"/>
+	<property	name="srcjar.name" value="clearcasesrc.jar"/>
+	<property	name="output.jar" value="${java.build}/${jar.name}"/>
+	<property	name="src.jar" value="${java.build}/${srcjar.name}"/>
+
+	<property	name="jni.build" value="${java.build}/jni"/>
+	<property	name="dll.name" value="ccjni.dll"/>
+	<property	name="output.dll" value="${jni.build}/${dll.name}"/>
 	
 	<target name="all" depends="init,dist">
 		<echo message="Build complete"/>		
 	</target>
 
-	<target name="init">
-		<mkdir dir="bin"/>
+	<target name="init" depends="properties">
+		<mkdir dir="${jni.build}"/>
+	</target>
+
+	<target name="properties">
+		<property name="build.compiler" value="org.eclipse.pde.internal.core.JDTCompilerAdapter"/>
+		<property name="plugin.path" value="file:/${basedir}/../../plugins/"/>
+		<pluginLocation plugin="org.eclipse.swt" property="location.org.eclipse.swt"/>
+		<pluginLocation plugin="org.eclipse.ui" property="location.org.eclipse.ui"/>
+		<pluginLocation plugin="org.eclipse.compare" property="location.org.eclipse.compare"/>
+		<pluginLocation plugin="org.eclipse.help" property="location.org.eclipse.help"/>
+		<pluginLocation plugin="org.eclipse.core.boot" property="location.org.eclipse.core.boot"/>
+		<pluginLocation plugin="org.apache.lucene" property="location.org.apache.lucene"/>
+		<pluginLocation plugin="org.eclipse.team.ui" property="location.org.eclipse.team.ui"/>
+		<pluginLocation plugin="org.eclipse.core.runtime" property="location.org.eclipse.core.runtime"/>
+		<pluginLocation plugin="org.eclipse.team.core" property="location.org.eclipse.team.core"/>
+		<pluginLocation plugin="org.apache.xerces" property="location.org.apache.xerces"/>
+		<pluginLocation plugin="org.eclipse.core.resources" property="location.org.eclipse.core.resources"/>
+		<property name="compilePath" value="${location.org.eclipse.core.runtime}/bin;${location.org.eclipse.core.runtime}/runtime.jar;${location.org.eclipse.core.boot}/bin;${location.org.eclipse.core.boot}/boot.jar;${location.net.sourceforge.eclipseccase}/bin;${location.net.sourceforge.eclipseccase}/clearcase.jar;${location.org.apache.xerces}/bin;${location.org.apache.xerces}/xerces.jar;${location.org.eclipse.core.resources}/bin;${location.org.eclipse.core.resources}/resources.jar;${location.org.eclipse.ui}/bin;${location.org.eclipse.ui}/workbench.jar;${location.org.eclipse.help}/bin;${location.org.eclipse.help}/help.jar;${location.org.apache.lucene}/bin;${location.org.apache.lucene}/lucene-1.2-rc2.jar;${location.org.apache.lucene}/lucenedemo.zip;${location.org.eclipse.swt}/bin;${location.org.eclipse.swt}/ws/win32/swt-pi.jar;${location.org.eclipse.swt}/ws/win32/swt.jar;${location.org.eclipse.team.core}/bin;${location.org.eclipse.team.core}/team.jar;${location.org.eclipse.team.ui}/bin;${location.org.eclipse.team.ui}/teamui.jar;${location.org.eclipse.compare}/bin;${location.org.eclipse.compare}/compare.jar"/>
+		<echo message="cp: '${compilePath}'"/>
 	</target>
 	
 	<target name="clean">
-		<delete dir="bin" quiet="true"/>
+		<delete dir="${java.build}" quiet="true"/>
+		<delete file="dependencies.xml" quiet="true"/>
+		<delete file="${dll.name}" quiet="true"/>
 		<echo message="Clean complete"/>		
 	</target>
+
 			
 	<target name="dist" depends="init,jar,jni_dll">
 		<echo message="Generating distribution"/>
 		<zip zipfile="bin/eclipse-ccase-${version}.zip">
-			<zipfileset dir="bin"
+			<zipfileset dir="${java.build}"
 						prefix="plugins/net.sourceforge.eclipseccase">
-				<include name="clearcase.jar"/>
-				<include name="ccjni.dll"/>
+				<include name="${jar.name}"/>
+				<include name="${srcjar.name}"/>
+			</zipfileset>
+			<zipfileset dir="${jni.build}"
+						prefix="plugins/net.sourceforge.eclipseccase">
+				<include name="${dll.name}"/>
 			</zipfileset>
 			<zipfileset dir="."
 						prefix="plugins/net.sourceforge.eclipseccase"
 						includes="plugin.xml"/>
 		</zip>
+		<copy file="${output.dll}" todir="."/>
 	</target>
 
 	<target name="jar" depends="init,java_compile">
 		<echo message="Generating plugin jar"/>
-		<jar jarfile="bin/clearcase.jar" basedir="bin" includes="**/*.class"/>
+		<jar jarfile="${output.jar}" basedir="bin" includes="**/*.class"/>
+		<jar jarfile="${src.jar}" basedir="src"/>
 	</target>
 
 	<target name="java_compile" depends="init">
 		<echo message="Compiling java src"/>
-		<available	classname="org.eclipse.core.launcher.Main"
-					property="build.compiler"
-					value="org.eclipse.pde.internal.core.JDTCompilerAdapter"/>
-		<javac srcdir="src" destdir="bin" debug="${debug}"/>
+		<javac classpath="${compilePath}" srcdir="src" destdir="bin" debug="${debug}"/>
 	</target>
-	
-	<target name="jni_headers" depends="init,java_compile">
+
+	<target name="jni_headers" depends="init">
 		<echo message="Generating jni headers"/>
-		<!--
-		<javah destdir="bin" classpath="bin" class="net.sourceforge.eclipseccase.jni.Clearcase"/>
-		-->
-		<java 	classname="com.sun.tools.javah.Main"
-				classpath="${jdk.home}/lib/tools.jar"
-				fork="true"
-				dir="bin">
+		<exec 	executable="javah"
+				failonerror="true"
+				dir="${jni.build}">
+			<arg line="-classpath ${java.build}"/>
 			<arg value="net.sourceforge.eclipseccase.jni.Clearcase"/>
-		</java>
+		</exec>
 	</target>
 	
 	<target name="jni_dll" depends="init,jni_headers">
 		<echo message="Compiling jni dll"/>
-		<cc debug="${debug}" link="shared" outfile="bin/ccjni.dll">
+		<cc debug="${debug}" link="shared" outfile="${output.dll}">
 			<compiler name="msvc">
 				<compilerarg value="-GX"/>
 			</compiler>
 			<linker name="msvc"/>
 			<includepath location="${jdk.home}/include"/>
 			<includepath location="${jdk.home}/include/win32"/>
-			<includepath location="bin"/>
+			<includepath location="${jni.build}"/>
 			<fileset dir="src" includes="*.cpp"/>
 		</cc>
 	</target>
