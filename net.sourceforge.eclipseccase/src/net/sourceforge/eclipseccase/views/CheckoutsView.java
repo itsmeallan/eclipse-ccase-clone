@@ -245,15 +245,21 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		boolean actionPerformed = false;
 		IResource resource = stateCache.getResource();
 		boolean contains = checkouts.contains(resource);
-		if (stateCache.isCheckedOut() && ! contains)
+		if (stateCache.isCheckedOut())
 		{
-			checkouts.add(resource);
-			actionPerformed = true;
+			if (! contains)
+			{
+				checkouts.add(resource);
+				actionPerformed = true;
+			}
 		}
-		else if (contains)
+		else
 		{
-			checkouts.remove(resource);
-			actionPerformed = true;
+			if (contains)
+			{
+				checkouts.remove(resource); 
+				actionPerformed = true;
+			}
 		}
 		return actionPerformed;
 	}
