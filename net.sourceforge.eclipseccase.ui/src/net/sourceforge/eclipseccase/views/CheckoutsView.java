@@ -266,7 +266,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 case IResource.PROJECT :
                     image =
                         PlatformUI.getWorkbench().getSharedImages().getImage(
-                            ISharedImages.IMG_OBJ_PROJECT);
+                        		org.eclipse.ui.ide.IDE.SharedImages.IMG_OBJ_PROJECT);
                     break;
                 default :
                     image =
