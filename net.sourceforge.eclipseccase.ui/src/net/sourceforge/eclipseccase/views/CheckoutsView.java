@@ -65,6 +65,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
 
@@ -266,7 +267,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 case IResource.PROJECT :
                     image =
                         PlatformUI.getWorkbench().getSharedImages().getImage(
-                            ISharedImages.IMG_OBJ_PROJECT);
+                            IDE.SharedImages.IMG_OBJ_PROJECT);
                     break;
                 default :
                     image =
