@@ -30,6 +30,7 @@
 		<path id="dependent.plugins">
 			<fileset dir="${plugin.dir}" includes="org.eclipse.swt*/**/*.jar"/>
 			<fileset dir="${plugin.dir}" includes="org.eclipse.ui*/**/*.jar"/>
+			<fileset dir="${plugin.dir}" includes="org.eclipse.jface*/**/*.jar"/>
 			<fileset dir="${plugin.dir}" includes="org.eclipse.compare*/**/*.jar"/>
 			<fileset dir="${plugin.dir}" includes="org.eclipse.help*/**/*.jar"/>
 			<fileset dir="${plugin.dir}" includes="org.eclipse.core.boot*/**/*.jar"/>
