@@ -106,7 +106,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 
     private static ImageDescriptor IMG_DESC_NEW_RESOURCE;
 
-    private static ImageDescriptor IMG_DESC_UNKOWN_STATE;
+    private static ImageDescriptor IMG_DESC_UNKNOWN_STATE;
 
     /** internal state constant */
     private static final int STATE_CLEAN = 0;
@@ -125,17 +125,17 @@ public class ClearcaseDecorator extends LabelProvider implements
         IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamImages
                 .getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR));
         IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE));
+                .getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE_OVR));
         IMG_DESC_EDITED = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_EDITED));
-        IMG_DESC_UNKOWN_STATE = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_NO_REMOTEDIR));
+                .getImageDescriptor(ClearcaseImages.IMG_EDITED_OVR));
+        IMG_DESC_UNKNOWN_STATE = new CachedImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
         IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_LINK));
+                .getImageDescriptor(ClearcaseImages.IMG_LINK_OVR));
         IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING));
+                .getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING_OVR));
         IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_HIJACKED));
+                .getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
     }
 
     /**
@@ -337,7 +337,7 @@ public class ClearcaseDecorator extends LabelProvider implements
     private static void decorateUnknown(IDecoration decoration) {
         if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateUnknown"); //$NON-NLS-1$
         if (ClearcaseUI.isIconUnknownDecoration())
-                decoration.addOverlay(IMG_DESC_UNKOWN_STATE);
+                decoration.addOverlay(IMG_DESC_UNKNOWN_STATE);
         if (ClearcaseUI.isTextPrefixDecoration())
                 decoration.addPrefix(ClearcaseUI.getTextPrefixUnknown());
     }

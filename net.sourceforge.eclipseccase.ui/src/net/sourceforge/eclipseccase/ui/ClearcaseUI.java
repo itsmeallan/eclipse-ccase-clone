@@ -329,12 +329,12 @@ public class ClearcaseUI extends AbstractUIPlugin {
         super.initializeImageRegistry(reg);
 
         // objects
-        createImageDescriptor(reg, ClearcaseImages.IMG_QUESTIONABLE);
-        createImageDescriptor(reg, ClearcaseImages.IMG_EDITED);
-        createImageDescriptor(reg, ClearcaseImages.IMG_NO_REMOTEDIR);
-        createImageDescriptor(reg, ClearcaseImages.IMG_LINK);
-        createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING);
-        createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED);
+        createImageDescriptor(reg, ClearcaseImages.IMG_QUESTIONABLE_OVR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_EDITED_OVR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_UNKNOWN_OVR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_LINK_OVR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING_OVR);
+        createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED_OVR);
         createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH);
         createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH_DISABLED);
     }

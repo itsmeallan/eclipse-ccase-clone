@@ -9,12 +9,12 @@ public class ClearcaseImages
     public static final String ICON_PATH = "icons/full/"; //$NON-NLS-1$
 
     // images (don't forget to add to ClearcaseUI#initialize...)
-    public static final String IMG_HIJACKED = "hijacked.gif"; //$NON-NLS-1$
-    public static final String IMG_LINK = "link_ovr.gif"; //$NON-NLS-1$
-    public static final String IMG_LINK_WARNING = "linkwarn_ovr.gif"; //$NON-NLS-1$
-	public static final String IMG_QUESTIONABLE = "question_ov.gif"; //$NON-NLS-1$
-	public static final String IMG_EDITED = "edited_ov.gif"; //$NON-NLS-1$
-	public static final String IMG_NO_REMOTEDIR = "no_remotedir_ov.gif"; //$NON-NLS-1$
+	public static final String IMG_EDITED_OVR = "edited_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_HIJACKED_OVR = "hijacked_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK_OVR = "link_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK_WARNING_OVR = "linkwarn_ovr.gif"; //$NON-NLS-1$
+	public static final String IMG_UNKNOWN_OVR = "unknown_ovr.gif"; //$NON-NLS-1$
+	public static final String IMG_QUESTIONABLE_OVR = "question_ovr.gif"; //$NON-NLS-1$
     public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
     public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
     
