@@ -1,6 +1,7 @@
 package net.sourceforge.eclipseccase.actions;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.compare.ResourceCompareInput;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFile;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFolder;
@@ -45,9 +46,10 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 		if (resource.getType() == IResource.FOLDER && provider.isSnapShot())
 			return false;
 
+		// refresh so cached version number is accurate
+		StateCacheFactory.getInstance().get(resource).update(false);
+
 		IResource current = null;
-		//TODO	 check if this works for dynamic views, and do the same for folders and projects
-		//Provide version informations in Tab of Compare Window
 		IResource predecessor = null;
 		String version = provider.getPredecessorVersion(resource);
 		String currentversion = provider.getVersion(resource);
@@ -62,15 +64,17 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 				break;
 			case IResource.FOLDER:
 				predecessor = new VersionExtendedFolder((IFolder) resource, version);
+				current = new VersionExtendedFolder((IFolder) resource, currentversion);
 				break;
 			case IResource.PROJECT:
 				predecessor = new VersionExtendedProject((IProject) resource, version);
+				current = new VersionExtendedProject((IProject) resource, currentversion);
 				break;
 			default:
 				return false;
 		}
 
-		IResource[] comparables = new IResource[] {(current!=null?current:resource), predecessor};
+		IResource[] comparables = new IResource[] {current, predecessor};
 		return fInput.setResources(comparables);
 	}
 

@@ -80,6 +80,11 @@ abstract public class VersionExtendedContainer
 
 	public synchronized IResource[] members(int memberFlags) throws CoreException
 	{
+		if (getVersionExtendedPath().endsWith("/CHECKEDOUT"))
+		{
+			return container.members(memberFlags);
+		}
+
 		if (members == null)
 		{
 			members = new LinkedList();

@@ -39,25 +39,32 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 		InputStream contents = null;
 		try
 		{
-			StateCache cache = StateCacheFactory.getInstance().get(file);
-			if (cache.isSnapShot())
+			if (getVersionExtendedPath().endsWith("/CHECKEDOUT"))
 			{
-				final File tempFile = File.createTempFile("eclipseccase", null);
-				tempFile.delete();
-				tempFile.deleteOnExit();
-				Status status = ClearcasePlugin.getEngine().cleartool("get -to " + tempFile.getPath() + " " + getVersionExtendedPath());
-				contents = new FileInputStream(tempFile.getPath())
-				{
-					public void close() throws IOException
-					{
-						super.close();
-						tempFile.delete();
-					}
-				};
+				contents = file.getContents();
 			}
 			else
 			{
-				contents = new FileInputStream(getVersionExtendedPath());
+				StateCache cache = StateCacheFactory.getInstance().get(file);
+				if (cache.isSnapShot())
+				{
+					final File tempFile = File.createTempFile("eclipseccase", null);
+					tempFile.delete();
+					tempFile.deleteOnExit();
+					Status status = ClearcasePlugin.getEngine().cleartool("get -to " + tempFile.getPath() + " " + getVersionExtendedPath());
+					contents = new FileInputStream(tempFile.getPath())
+					{
+						public void close() throws IOException
+						{
+							super.close();
+							tempFile.delete();
+						}
+					};
+				}
+				else
+				{
+					contents = new FileInputStream(getVersionExtendedPath());
+				}
 			}
 		}
 		catch (FileNotFoundException e)
