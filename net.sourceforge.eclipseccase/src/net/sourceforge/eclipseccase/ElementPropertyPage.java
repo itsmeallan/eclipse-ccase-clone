@@ -2,6 +2,8 @@ package net.sourceforge.eclipseccase;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -14,9 +16,14 @@ import org.eclipse.ui.dialogs.PropertyPage;
 public class ElementPropertyPage extends PropertyPage
 {
 
+	private Text predecessorVersionValue;
+
 	private static final int TEXT_FIELD_WIDTH = 50;
 
-	private Text ownerText;
+	private Text versionLabelValue;
+	private Button checkedOutValue;
+	private Button hijackedValue;
+	private Button dirtyValue;
 
 	/**
 	 * Constructor for SamplePropertyPage.
@@ -57,37 +64,38 @@ public class ElementPropertyPage extends PropertyPage
 		StateCache cache = StateCacheFactory.getInstance().get(resource);		
 		cache.update(false);
 
-		Label versionLabel = new Label(composite, SWT.NONE);
-		versionLabel.setText("Version:");
-		Text versionValueText = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		versionValueText.setText(cache.getVersion());
-		
 		if (cache.hasRemote())
 		{
+			Label versionLabel = new Label(composite, SWT.NONE);
+			versionLabel.setText("Version:");
+			versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+		
+			Label predecessorVersionLabel = new Label(composite, SWT.NONE);
+			predecessorVersionLabel.setText("Predecessor Version:");
+			predecessorVersionValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+		
 			Label checkedOutLabel = new Label(composite, SWT.NONE);
 			checkedOutLabel.setText("Checked Out:");
-			Button checkedOutValue = new Button(composite, SWT.CHECK);
+			checkedOutValue = new Button(composite, SWT.CHECK);
 			checkedOutValue.setEnabled(false);
-			checkedOutValue.setSelection(cache.isCheckedOut());
 	
 			if (cache.isSnapShot())
 			{
 				Label hijackedLabel = new Label(composite, SWT.NONE);
 				hijackedLabel.setText("Hijacked:");
-				Button hijackedValue = new Button(composite, SWT.CHECK);
+				hijackedValue = new Button(composite, SWT.CHECK);
 				hijackedValue.setEnabled(false);
-				hijackedValue.setSelection(cache.isHijacked());			
 			}
 			
 			if (cache.isCheckedOut())
 			{
 				Label dirtyLabel = new Label(composite, SWT.NONE);
-				dirtyLabel.setText("Dirty:");
-				Button dirtyValue = new Button(composite, SWT.CHECK);
+				dirtyLabel.setText("Contents differ from predecessor:");
+				dirtyValue = new Button(composite, SWT.CHECK);
 				dirtyValue.setEnabled(false);
-				dirtyValue.setSelection(cache.isDirty());			
 				
 			}
+			performRefresh();
 		}
 		else
 		{
@@ -131,13 +139,37 @@ public class ElementPropertyPage extends PropertyPage
 
 	protected void performRefresh()
 	{
-		StateCacheFactory.getInstance().get((IResource) getElement()).update(
-			false);
+		StateCache cache = StateCacheFactory.getInstance().get((IResource) getElement());
+		cache.update(false);
+		if (versionLabelValue != null)
+			versionLabelValue.setText(cache.getVersion());
+		if (predecessorVersionValue != null)
+			predecessorVersionValue.setText(cache.getPredecessorVersion());
+		if (checkedOutValue != null)
+			checkedOutValue.setSelection(cache.isCheckedOut());
+		if (hijackedValue != null)
+			hijackedValue.setSelection(cache.isHijacked());
+		if (dirtyValue != null)
+			dirtyValue.setSelection(cache.isDirty());
 	}
 
 	public void dispose()
 	{
 		super.dispose();
+	}
+
+	protected void contributeButtons(Composite parent)
+	{
+		Button refreshButton = new Button(parent, SWT.PUSH);
+		refreshButton.setText("Refresh");
+		refreshButton.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				performRefresh();
+			}
+		});
+		((GridLayout) parent.getLayout()).numColumns++;
 	}
 
 }
