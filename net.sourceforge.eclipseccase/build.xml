@@ -1,5 +1,6 @@
 <project name="clearcase" default="all">
 
+	<property	name="version" value="0.0.1"/>
 	<property 	name="debug" value="true"/>
 	<property	name="jdk.home" value="${java.home}/.."/>
 	
@@ -18,7 +19,7 @@
 			
 	<target name="dist" depends="init,jar,jni_dll">
 		<echo message="Generating distribution"/>
-		<zip zipfile="bin/eclipse-clearcase.zip">
+		<zip zipfile="bin/eclipse-ccase-${version}.zip">
 			<zipfileset dir="bin"
 						prefix="plugins/net.sourceforge.eclipseccase">
 				<include name="clearcase.jar"/>
