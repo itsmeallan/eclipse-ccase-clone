@@ -430,7 +430,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 return result;
             }
             monitor.worked(2);
-            if (!ClearcasePlugin.getEngine().isCheckedOut(parent)) {
+            if (!ClearcasePlugin.getEngine().isCheckedOut(parent,ClearcasePlugin.getEngine().isSymbolicLink(parent))) {
                 IClearcase.Status ccStatus = ClearcasePlugin.getEngine()
                         .checkout(parent, getComment(),
                                 ClearcasePlugin.isReservedCheckoutsAlways(),

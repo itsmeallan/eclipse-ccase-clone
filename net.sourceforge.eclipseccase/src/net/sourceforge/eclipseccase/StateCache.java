@@ -170,24 +170,24 @@ public class StateCache implements Serializable {
                 setFlag(SYM_LINK, newIsSymbolicLink);
 
                 boolean newIsCheckedOut = newHasRemote
-                        && ClearcasePlugin.getEngine().isCheckedOut(osPath);
+                        && ClearcasePlugin.getEngine().isCheckedOut(osPath,newIsSymbolicLink);
                 changed |= newIsCheckedOut != this.isCheckedOut();
                 setFlag(CHECKED_OUT, newIsCheckedOut);
 
                 boolean newIsSnapShot = newHasRemote
-                        && ClearcasePlugin.getEngine().isSnapShot(osPath);
+                        && ClearcasePlugin.getEngine().isSnapShot(osPath,newIsSymbolicLink);
                 changed |= newIsSnapShot != this.isSnapShot();
                 setFlag(SNAPSHOT, newIsSnapShot);
 
                 boolean newIsHijacked = newIsSnapShot
-                        && ClearcasePlugin.getEngine().isHijacked(osPath);
+                        && ClearcasePlugin.getEngine().isHijacked(osPath,newIsSymbolicLink);
                 changed |= newIsHijacked != this.isHijacked();
                 setFlag(HIJACKED, newIsHijacked);
 
                 boolean newIsEdited = newHasRemote
                         && !newIsCheckedOut
                         && ClearcasePlugin.getEngine()
-                                .isCheckedOutInAnotherView(osPath);
+                                .isCheckedOutInAnotherView(osPath,newIsSymbolicLink);
                 changed |= newIsEdited != this.isEdited();
                 setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 

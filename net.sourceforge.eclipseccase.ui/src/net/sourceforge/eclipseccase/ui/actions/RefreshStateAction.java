@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.clearcase.simple.ClearcaseJNI;
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
 import org.eclipse.core.resources.IResource;
@@ -21,6 +23,8 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction
             {
 				try
 				{
+				    //only using 'quick and dirty' caching during "Refresh State" actions
+			    	ClearcaseJNI.setLifeTime(ClearcasePlugin.getCacheTimeOut());
 					IResource[] resources = getSelectedResources();
                     beginTask(monitor, "Refreshing state...", resources.length);
 					for (int i = 0; i < resources.length; i++)
@@ -34,6 +38,8 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction
 				finally
 				{
 					monitor.done();
+				    //always DISABLE caching			    	
+					ClearcaseJNI.setLifeTime(0);
 				}
 			}
         };

@@ -505,6 +505,16 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     }
 
     /**
+     * Returns the preference value for <code>CACHE_TIMEOUT</code>.
+     * 
+     * @return the preference value
+     */
+    public static int getCacheTimeOut() {
+        return getInstance().getPluginPreferences().getInt(
+                IClearcasePreferenceConstants.CACHE_TIMEOUT);
+    }    
+    
+    /**
      * Logs an exception with the specified severity an message.
      * 
      * @param severity
