@@ -17,7 +17,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import sun.security.krb5.internal.i;
 
 /**
  *  Pulls up the clearcase version tree for the element

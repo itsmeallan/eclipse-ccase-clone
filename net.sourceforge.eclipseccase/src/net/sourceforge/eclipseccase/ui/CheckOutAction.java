@@ -15,8 +15,6 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import sun.security.krb5.internal.i;
-import sun.security.krb5.internal.crypto.e;
 
 public class CheckOutAction extends TeamAction
 {
