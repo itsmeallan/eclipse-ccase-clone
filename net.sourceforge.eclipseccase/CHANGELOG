@@ -2,6 +2,7 @@
 -----
 
 - Updated for 3.0 - should still work with 2.1.x, uses local images instead of trying to reuse Team images through API
+- Added QuickDiff provider for eclipse 3.0 - to use it right click in left ruler of editor, Set QuickDiff Reference->Clearcase Predecessor
 - Fixed some minor bugs
 - Created feature and update site accesible at http://eclipse-ccase.sourceforge.net/update
 
