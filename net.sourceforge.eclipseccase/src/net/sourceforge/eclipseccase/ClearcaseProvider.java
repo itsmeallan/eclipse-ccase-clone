@@ -584,8 +584,9 @@ public class ClearcaseProvider extends RepositoryProvider implements
                             File mkelemfolder = new File(path + ".mkelem");
                             origfolder.renameTo(mkelemfolder);
                             monitor.worked(10);
+                            // FIXME: support -master
                             IClearcase.Status status = ClearcasePlugin
-                                    .getEngine().add(path, getComment(), true);
+                                    .getEngine().add(path, getComment(), true, false);
                             monitor.worked(10);
                             if (status.status) {
                                 File[] members = mkelemfolder.listFiles();
@@ -617,9 +618,10 @@ public class ClearcaseProvider extends RepositoryProvider implements
                                     new SubProgressMonitor(monitor, 10));
                         }
                     } else {
+                        // FIXME: support -master
                         IClearcase.Status status = ClearcasePlugin.getEngine()
                                 .add(resource.getLocation().toOSString(),
-                                        getComment(), false);
+                                        getComment(), false, false);
                         monitor.worked(40);
                         updateState(resource, IResource.DEPTH_ZERO,
                                 new SubProgressMonitor(monitor, 40));
