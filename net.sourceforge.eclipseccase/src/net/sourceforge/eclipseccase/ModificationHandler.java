@@ -42,7 +42,7 @@ public class ModificationHandler implements IFileModificationValidator
 			StateCache cache = StateCacheFactory.getInstance().get(files[i]);
 			if (cache.isUninitialized())
 				cache.update(false);
-			if (cache.hasRemote() && ! cache.isCheckedOut())
+			if (cache.hasRemote() && ! cache.isCheckedOut() && files[i].isReadOnly())
 				needCheckout.add(files[i]);
 		}
 		try
