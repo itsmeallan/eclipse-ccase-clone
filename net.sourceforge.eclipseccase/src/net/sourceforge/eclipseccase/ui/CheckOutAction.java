@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -19,11 +19,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 public class CheckOutAction extends TeamAction
 {
 
-	public CheckOutAction()
-	{
-		super();
-	}
-
 	public void run(IAction action)
 	{
 		run(new WorkspaceModifyOperation()
@@ -33,21 +28,16 @@ public class CheckOutAction extends TeamAction
 			{
 				try
 				{
-					Hashtable table = getProviderMapping();
-					Set keySet = table.keySet();
-					monitor.beginTask("Checking out...", keySet.size() * 1000);
-					Iterator iterator = keySet.iterator();
-					while (iterator.hasNext())
+					IResource[] resources = getSelectedResources();
+					monitor.beginTask("Checking out...", resources.length);
+					for (int i = 0; i < resources.length; i++)
 					{
+						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						RepositoryProvider provider = (RepositoryProvider) iterator.next();
-						List list = (List) table.get(provider);
-						IResource[] providerResources =
-							(IResource[]) list.toArray(new IResource[list.size()]);
-						provider.getSimpleAccess().checkout(
-							providerResources,
-							IResource.DEPTH_ZERO,
-							subMonitor);
+						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						provider.checkout(new IResource[] {resource},
+											IResource.DEPTH_ZERO, subMonitor);
+						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -61,6 +51,7 @@ public class CheckOutAction extends TeamAction
 			}
 		}, "Checking out", this.PROGRESS_DIALOG);
 	}
+
 	protected boolean isEnabled() throws TeamException
 	{
 		IResource[] resources = getSelectedResources();
@@ -69,10 +60,12 @@ public class CheckOutAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			StateCache cache = StateCache.getState(resource);
-			if (!cache.hasRemote())
+			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			if (provider == null)
 				return false;
-			if (cache.isCheckedOut())
+			if (! provider.hasRemote(resource))
+				return false;
+			if (provider.isCheckedOut(resource))
 				return false;
 		}
 		return true;

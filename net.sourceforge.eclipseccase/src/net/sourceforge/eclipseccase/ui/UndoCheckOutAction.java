@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -33,21 +33,16 @@ public class UndoCheckOutAction extends TeamAction
 			{
 				try
 				{
-					Hashtable table = getProviderMapping();
-					Set keySet = table.keySet();
-					monitor.beginTask("Undoing checkout...", keySet.size() * 1000);
-					Iterator iterator = keySet.iterator();
-					while (iterator.hasNext())
+					IResource[] resources = getSelectedResources();
+					monitor.beginTask("Undoing checkout...", resources.length);
+					for (int i = 0; i < resources.length; i++)
 					{
+						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						RepositoryProvider provider = (RepositoryProvider) iterator.next();
-						List list = (List) table.get(provider);
-						IResource[] providerResources =
-							(IResource[]) list.toArray(new IResource[list.size()]);
-						provider.getSimpleAccess().uncheckout(
-							providerResources,
-							IResource.DEPTH_ZERO,
-							subMonitor);
+						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						provider.uncheckout(new IResource[] {resource},
+										IResource.DEPTH_ZERO, subMonitor);
+						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -70,10 +65,10 @@ public class UndoCheckOutAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			StateCache cache = StateCache.getState(resource);
-			if (!cache.hasRemote())
+			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			if (provider == null)
 				return false;
-			if (!cache.isCheckedOut())
+			if (! provider.isCheckedOut(resource))
 				return false;
 		}
 		return true;

@@ -1,14 +1,51 @@
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.StateCache;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
+import java.lang.reflect.InvocationTargetException;
 
-public class UpdateAction extends org.eclipse.team.ui.actions.GetAction
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.team.core.TeamException;
+import org.eclipse.team.ui.actions.TeamAction;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+
+public class UpdateAction extends TeamAction
 {
+	public void run(IAction action)
+	{
+		run(new WorkspaceModifyOperation()
+		{
+			public void execute(IProgressMonitor monitor)
+				throws InterruptedException, InvocationTargetException
+			{
+				try
+				{
+					IResource[] resources = getSelectedResources();
+					monitor.beginTask("Updating...", resources.length);
+					for (int i = 0; i < resources.length; i++)
+					{
+						IResource resource = resources[i];
+						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
+						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						provider.get(new IResource[] {resource},
+											IResource.DEPTH_ZERO, subMonitor);
+						monitor.worked(1);
+					}
+				}
+				catch (TeamException e)
+				{
+					throw new InvocationTargetException(e);
+				}
+				finally
+				{
+					monitor.done();
+				}
+			}
+		}, "Updating", this.PROGRESS_DIALOG);
+	}
+
 	/**
 	 * @see TeamAction#isEnabled()
 	 */
@@ -20,10 +57,12 @@ public class UpdateAction extends org.eclipse.team.ui.actions.GetAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			StateCache cache = StateCache.getState(resource);
-			if (!cache.hasRemote())
+			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			if (provider == null)
 				return false;
-			if (!cache.isSnapShot())
+			if (! provider.hasRemote(resource))
+				return false;
+			if (! provider.isSnapShot())
 				return false;
 		}
 		return true;

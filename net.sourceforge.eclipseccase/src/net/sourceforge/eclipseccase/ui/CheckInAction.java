@@ -46,24 +46,17 @@ public class CheckInAction extends TeamAction
 			{
 				try
 				{
-					Hashtable table = getProviderMapping();
-					Set keySet = table.keySet();
-					monitor.beginTask("", keySet.size() * 1000);
-					monitor.setTaskName("Checking in...");
-					Iterator iterator = keySet.iterator();
-					while (iterator.hasNext())
+					IResource[] resources = getSelectedResources();
+					monitor.beginTask("Checking in...", resources.length);
+					for (int i = 0; i < resources.length; i++)
 					{
+						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						RepositoryProvider provider = (RepositoryProvider) iterator.next();
-						List list = (List) table.get(provider);
-						IResource[] providerResources =
-							(IResource[]) list.toArray(new IResource[list.size()]);
-						if (provider instanceof ClearcaseProvider)
-						{
-							ClearcaseProvider ccprovider = (ClearcaseProvider) provider.getSimpleAccess();
-							ccprovider.setComment(comment);
-							ccprovider.checkin(providerResources, depth, subMonitor);
-						}
+						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						provider.setComment(comment);
+						provider.checkin(new IResource[] {resource},
+										depth, subMonitor);
+						monitor.worked(1);
 					}
 				}
 				catch (TeamException e)
@@ -86,8 +79,10 @@ public class CheckInAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			StateCache cache = StateCache.getState(resource);
-			if (!cache.isCheckedOut())
+			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			if (provider == null)
+				return false;
+			if (! provider.isCheckedOut(resource))
 				return false;
 		}
 		return true;

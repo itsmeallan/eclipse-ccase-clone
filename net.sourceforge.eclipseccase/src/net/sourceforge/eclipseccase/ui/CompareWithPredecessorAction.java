@@ -9,7 +9,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
@@ -34,8 +34,10 @@ public class CompareWithPredecessorAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			StateCache cache = StateCache.getState(resource);
-			if (!cache.hasRemote())
+			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			if (provider == null)
+				return false;
+			if (! provider.hasRemote(resource))
 				return false;
 		}
 		return true;
