@@ -1,5 +1,6 @@
-package net.sourceforge.eclipseccase;
+package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
