@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 
@@ -58,8 +57,8 @@ public class CheckInAction extends ClearcaseWorkspaceAction
                         IResource[] resources = getSelectedResources();
                         if (resources.length > 0)
                         {
-                            monitor.beginTask("Checking in...",
-                                    resources.length * 1000);
+                            beginTask(monitor, "Checking in...",
+                                    resources.length);
 
                             // Sort resources with directories last so that the
                             // modification of a
@@ -68,26 +67,15 @@ public class CheckInAction extends ClearcaseWorkspaceAction
                             Arrays.sort(resources,
                                     new DirectoryLastComparator());
 
-                            //for (int i = 0; i < resources.length; i++)
-                            //{
-                            //    IResource resource = resources[i];
-                            //    IProgressMonitor subMonitor = new
-                            // SubProgressMonitor(monitor, 1000);
-                            //    ClearcaseProvider provider =
-                            // ClearcaseProvider.getProvider(resource);
-                            //    provider.setComment(comment);
-                            //    provider.checkin(new IResource[] { resource },
-                            // depth, subMonitor);
-                            //}
-
-                            IProgressMonitor subMonitor = new SubProgressMonitor(
-                                    monitor,
-                                    resources.length * 1000,
-                                    SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
-                            ClearcaseProvider provider = ClearcaseProvider
-                                    .getClearcaseProvider(resources[0]);
-                            provider.setComment(comment);
-                            provider.checkin(resources, depth, subMonitor);
+                            for (int i = 0; i < resources.length; i++)
+                            {
+                                IResource resource = resources[i];
+                                ClearcaseProvider provider = ClearcaseProvider
+                                        .getClearcaseProvider(resource);
+                                provider.setComment(comment);
+                                provider.checkin(new IResource[]{resource},
+                                        depth, subMonitor(monitor));
+                            }
                         }
                     }
                     finally
@@ -97,7 +85,8 @@ public class CheckInAction extends ClearcaseWorkspaceAction
                 }
             };
 
-            executeInForeground(runnable, TeamAction.PROGRESS_DIALOG, "Checking in");
+            executeInForeground(runnable, TeamAction.PROGRESS_DIALOG,
+                    "Checking in ClearCase resources");
         }
 
         updateActionEnablement();

@@ -14,7 +14,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
 
@@ -46,8 +45,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction
                 try
                 {
                     IResource[] resources = getSelectedResources();
-                    monitor.beginTask("Checking out...",
-                            resources.length * 1000);
+                    beginTask(monitor, "Checking out...", resources.length);
 
                     // Sort resources with directories last so that the
                     // modification of a
@@ -59,13 +57,11 @@ public class CheckOutAction extends ClearcaseWorkspaceAction
                     for (int i = 0; i < resources.length; i++)
                     {
                         IResource resource = resources[i];
-                        IProgressMonitor subMonitor = new SubProgressMonitor(
-                                monitor, 1000);
                         ClearcaseProvider provider = ClearcaseProvider
                                 .getClearcaseProvider(resource);
                         provider.setComment(comment);
                         provider.checkout(new IResource[]{resource}, depth,
-                                subMonitor);
+                                subMonitor(monitor));
                     }
                 }
                 finally
@@ -74,7 +70,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction
                 }
             }
         };
-        executeInBackground(runnable, "Checking out");
+        executeInBackground(runnable, "Checking out resources from ClearCase");
     }
 
     protected boolean isEnabled() throws TeamException

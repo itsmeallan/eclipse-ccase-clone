@@ -7,7 +7,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
 
@@ -22,16 +21,14 @@ public class UpdateAction extends ClearcaseWorkspaceAction
                 try
                 {
                     IResource[] resources = getSelectedResources();
-                    monitor.beginTask("Updating...", resources.length * 1000);
+                    beginTask(monitor, "Updating...", resources.length);
                     for (int i = 0; i < resources.length; i++)
                     {
                         IResource resource = resources[i];
-                        IProgressMonitor subMonitor = new SubProgressMonitor(
-                                monitor, 1000);
                         ClearcaseProvider provider = ClearcaseProvider
                                 .getClearcaseProvider(resource);
                         provider.get(new IResource[]{resource},
-                                IResource.DEPTH_ZERO, subMonitor);
+                                IResource.DEPTH_ZERO, subMonitor(monitor));
                     }
                 }
                 finally
@@ -40,10 +37,12 @@ public class UpdateAction extends ClearcaseWorkspaceAction
                 }
             }
         };
-        executeInBackground(runnable, "Updating");
+        executeInBackground(runnable, "Updating resources from ClearCase");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.team.internal.ui.actions.TeamAction#isEnabled()
      */
     protected boolean isEnabled() throws TeamException

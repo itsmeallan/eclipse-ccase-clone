@@ -197,6 +197,9 @@ public class StateCache implements Serializable
     {
         if (osPath == null) return false;
 
+        // performance improve: if not checked out it is not dirty
+        if(!isCheckedOut) return false;
+            
         try
         {
             return ClearcasePlugin.getEngine().isDifferent(osPath);

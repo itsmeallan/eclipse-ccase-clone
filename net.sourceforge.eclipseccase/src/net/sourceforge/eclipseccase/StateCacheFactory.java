@@ -140,33 +140,41 @@ public class StateCacheFactory implements ISaveParticipant,
         cacheMap.put(resource, cache);
     }
 
-    public synchronized void remove(IResource resource)
+    public void remove(IResource resource)
     {
-        try
+        if (resource.isAccessible())
         {
-            resource.accept(new IResourceVisitor()
+            try
             {
-                public boolean visit(IResource childResource)
-                        throws CoreException
+                resource.accept(new IResourceVisitor()
                 {
-                    switch (childResource.getType())
+                    public boolean visit(IResource childResource)
+                            throws CoreException
                     {
-                        case IResource.PROJECT:
-                        case IResource.FOLDER:
-                            cacheMap.remove(childResource);
-                            return true;
+                        switch (childResource.getType())
+                        {
+                            case IResource.PROJECT:
+                            case IResource.FOLDER:
+                                removeSingle(childResource);
+                                return true;
 
-                        default:
-                            cacheMap.remove(childResource);
-                            return false;
+                            default:
+                                removeSingle(childResource);
+                                return false;
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (CoreException ex)
+            {
+                // not accessible
+            }
         }
-        catch (CoreException ex)
-        {
-            ex.printStackTrace();
-        }
+        removeSingle(resource);
+    }
+
+    synchronized void removeSingle(IResource resource)
+    {
         cacheMap.remove(resource);
     }
 

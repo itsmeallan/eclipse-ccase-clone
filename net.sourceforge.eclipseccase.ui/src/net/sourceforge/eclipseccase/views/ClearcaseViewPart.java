@@ -247,6 +247,14 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
         getContentProvider().setWorkingSet(workingSet);
         super.setWorkingSet(workingSet);
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.views.navigator.ResourceNavigator#updateTitle()
+     */
+    public void updateTitle()
+    {
+        // do nothing
+	}
 
     /*
      * (non-Javadoc)

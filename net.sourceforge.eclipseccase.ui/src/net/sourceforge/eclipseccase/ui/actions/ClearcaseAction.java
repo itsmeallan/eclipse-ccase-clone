@@ -17,6 +17,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -318,5 +320,27 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
     protected void handle(Exception exception, String title, String message)
     {
         super.handle(exception, title, message);
+    }
+
+    /**
+     * @param monitor
+     * @param resources
+     */
+    protected static void beginTask(IProgressMonitor monitor, String taskName, int length)
+    {
+        monitor.beginTask(taskName, length * 10000);
+    }
+
+    /**
+     * @param monitor
+     * @return new submonitor
+     */
+    protected static IProgressMonitor subMonitor(IProgressMonitor monitor)
+    {
+        if(monitor == null) return new NullProgressMonitor();
+        
+        if(monitor.isCanceled()) throw new OperationCanceledException();
+        
+        return new SubProgressMonitor(monitor, 10000);
     }
 }
