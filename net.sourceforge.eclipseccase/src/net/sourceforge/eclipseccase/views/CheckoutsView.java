@@ -71,8 +71,16 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	{
 		public int compare(Object o1, Object o2)
 		{
-			return ((IResource) o1).getFullPath().toString().compareTo(
-				((IResource) o2).getFullPath().toString());
+			IResource r1 = (IResource) o1;
+			IResource r2 = (IResource) o2;
+			boolean isFolder1 = r1.getType() != IResource.FILE;
+			boolean isFolder2 = r2.getType() != IResource.FILE;
+			if (isFolder1 && ! isFolder2)
+				return -1;
+			else if (! isFolder1 && isFolder2)
+				return 1;
+			else
+				return r1.getFullPath().toString().compareTo(r2.getFullPath().toString());
 		}
 	}));
 
@@ -407,13 +415,25 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 				// Iterate over all checkouts and add them to the checkouts view
 				for (Iterator iter = checkouts.iterator(); iter.hasNext();)
 				{
+					IResource resource = null;
 					String checkout = (String) iter.next();
-					IResource resource =
-						ClearcasePlugin
+					File cofile = new File(checkout);
+					if (cofile.isDirectory())
+					{
+						resource = ClearcasePlugin
+							.getWorkspace()
+							.getRoot()
+							.getContainerForLocation(
+							new Path(checkout));
+					}
+					else
+					{
+						resource = ClearcasePlugin
 							.getWorkspace()
 							.getRoot()
 							.getFileForLocation(
 							new Path(checkout));
+					}
 					if (resource != null)
 					{
 						StateCache cache =
