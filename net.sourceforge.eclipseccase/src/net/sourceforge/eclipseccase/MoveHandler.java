@@ -45,7 +45,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(file, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -55,7 +55,7 @@ public class MoveHandler implements IMoveDeleteHook
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) > 0)
+		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			tree.addToLocalHistory(file);
 		}
@@ -94,7 +94,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(folder, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -104,7 +104,7 @@ public class MoveHandler implements IMoveDeleteHook
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) > 0)
+		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			// Have to do this recursively for children?
 			//tree.addToLocalHistory(folder);
@@ -144,7 +144,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(project, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -195,7 +195,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -205,7 +205,7 @@ public class MoveHandler implements IMoveDeleteHook
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) > 0)
+		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			tree.addToLocalHistory(source);
 		}
@@ -237,7 +237,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -247,7 +247,7 @@ public class MoveHandler implements IMoveDeleteHook
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) > 0)
+		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			// Have to do this recursively for children?
 			//tree.addToLocalHistory(source);
@@ -279,7 +279,7 @@ public class MoveHandler implements IMoveDeleteHook
 		boolean failed = false;
 		IStatus status = null;
 
-		if ((IResource.FORCE & updateFlags) > 0 &&
+		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
 			failed = true;
@@ -289,7 +289,7 @@ public class MoveHandler implements IMoveDeleteHook
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) > 0)
+		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			// Have to do this recursively for children?
 			//tree.addToLocalHistory(source);
