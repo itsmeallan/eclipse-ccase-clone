@@ -33,8 +33,6 @@ public class CheckinDialog extends InputDialog {
 	 * @see Dialog#createButtonsForButtonBar(Composite)
 	 */
 	protected void createButtonsForButtonBar(Composite parent) {
-		recursiveButton = new Button(parent, SWT.CHECK);
-		recursiveButton.setText("Recurse");
 		super.createButtonsForButtonBar(parent);
 	}
 
@@ -52,6 +50,17 @@ public class CheckinDialog extends InputDialog {
 	 */
 	public void setRecursive(boolean recursive) {
 		recursiveButton.setSelection(recursive);
+	}
+
+	/**
+	 * @see Dialog#createDialogArea(Composite)
+	 */
+	protected Control createDialogArea(Composite parent)
+	{
+		Composite control = (Composite) super.createDialogArea(parent);
+		recursiveButton = new Button(control, SWT.CHECK);
+		recursiveButton.setText("Recurse");
+		return control;
 	}
 
 }
