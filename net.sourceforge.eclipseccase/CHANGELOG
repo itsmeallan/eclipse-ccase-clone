@@ -1,3 +1,12 @@
+1.0.0.M3
+--------
+
+- added UI support for auto checkouts
+- changed persitent state cache to human readable XML file
+- fixed a lot bugs
+- added debug support via Eclipse ".options" file
+
+
 1.0.0.M2
 --------
 
