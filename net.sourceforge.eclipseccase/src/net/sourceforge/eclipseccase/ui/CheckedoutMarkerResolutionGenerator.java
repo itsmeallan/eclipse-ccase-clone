@@ -39,8 +39,8 @@ public class CheckedoutMarkerResolutionGenerator
 		
 		public void run(IMarker marker)
 		{
-			String maybeComment = "";
-			int maybeDepth = IResource.DEPTH_ZERO;
+			String comment = "";
+			int depth = IResource.DEPTH_ZERO;
 
 			if (ClearcasePlugin.isCheckinComment())
 			{
@@ -53,13 +53,11 @@ public class CheckedoutMarkerResolutionGenerator
 						null);
 				if (dlg.open() == CommentDialog.CANCEL)
 					return;
-				maybeComment = dlg.getValue();
-				maybeDepth =
+				comment = dlg.getValue();
+				depth =
 					dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 			}
 
-			final String comment = maybeComment;
-			final int depth = maybeDepth;
 			IResource resource = marker.getResource();
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
 			provider.setComment(comment);
