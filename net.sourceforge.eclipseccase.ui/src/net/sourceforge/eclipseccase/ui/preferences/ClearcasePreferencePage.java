@@ -37,8 +37,11 @@ public class ClearcasePreferencePage extends
     private static final String COMMENTS = PreferenceMessages
             .getString("Preferences.Category.Comments"); //$NON-NLS-1$
 
-    private static final String[] CATEGORIES = new String[] { GENERAL,
-            SOURCE_MANAGEMENT, COMMENTS };
+    private static final String PERFORMANCE = PreferenceMessages
+    .getString("Preferences.Category.Performance"); //$NON-NLS-1$
+    
+    private static final String[] CATEGORIES = new String[] { GENERAL, 
+            SOURCE_MANAGEMENT, COMMENTS, PERFORMANCE };
 
     static final String[][] ALWAYS_NEVER_PROMPT = new String[][] {
             { PreferenceMessages.getString("Always"), ALWAYS }, //$NON-NLS-1$
@@ -105,8 +108,10 @@ public class ClearcasePreferencePage extends
                 getFieldEditorParent(GENERAL));
         addField(useCleartool);
         
+        // performance
+        
 		addField(new StringFieldEditor(CACHE_TIMEOUT,
-				PreferenceMessages.getString("Preferences.General.CacheTimeOut"), 2, getFieldEditorParent(GENERAL))); //$NON-NLS-1$
+				PreferenceMessages.getString("Preferences.Performance.CacheTimeOut"), 2, getFieldEditorParent(PERFORMANCE))); //$NON-NLS-1$
         
 
         addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS,
