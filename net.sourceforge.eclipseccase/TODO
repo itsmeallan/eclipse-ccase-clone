@@ -14,13 +14,13 @@ ToDos
     - (in progress) scheduling rules (IMoveDeleteHook, auto-checkout ...)
   
   - ui
-    - (in progress) finanlize "checkouts view"
+    x (done) finanlize "checkouts view"
     - finanlize recursive actions (eg. check for new when checkin folder)
-    - rework auto-checkout to provide UI feedback instead of exceptions
-    - (in progress) support native ClearCase UI via "cleardlg" executable
+    x (done) rework auto-checkout to provide UI feedback instead of exceptions
+    x (done) support native ClearCase UI via "cleardlg" executable
 
   - clearcase
-    - (done) API for detecting if a resource is checked out by someone else
+    x (done) API for detecting if a resource is checked out by someone else
 
 1.1.0
 -----
