@@ -1,9 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
+import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.StateCacheFactory;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -37,28 +41,43 @@ public class AssociateProjectAction extends ClearcaseAction
                 else
                     message.append("Associated projects: ");
 
-                for (int i = 0; i < projects.length; i++)
+                List associatedProjects = new ArrayList(projects.length);
+                try
                 {
-                    try
+                    for (int i = 0; i < projects.length; i++)
                     {
-                        IProject project = projects[i];
-                        RepositoryProvider.map(project, ClearcaseProvider.ID);
-                        if (i > 0)
-                            message.append(", ");
-                        message.append(project.getName());
-                        ClearcaseDecorator.refresh(project);
-                        monitor.worked(1);
+                        try
+                        {
+                            IProject project = projects[i];
+                            associatedProjects.add(StateCacheFactory.getInstance().get(project));
+                            RepositoryProvider.map(project, ClearcaseProvider.ID);
+                            StateCacheFactory.getInstance().remove(project);
+                            if (i > 0)
+                                message.append(", ");
+                            message.append(project.getName());
+                            monitor.worked(1);
+                        }
+                        catch (TeamException e)
+                        {
+                            throw new InvocationTargetException(e);
+                        }
+                        finally
+                        {
+                            monitor.done();
+                        }
                     }
-                    catch (TeamException e)
-                    {
-                        throw new InvocationTargetException(e);
-                    }
-                    finally
-                    {
-                        monitor.done();
-                    }
+                    message.append(" with clearcase");
                 }
-                message.append(" with clearcase");
+                finally
+                {
+                    for (Iterator changedStates = associatedProjects.iterator(); changedStates
+                            .hasNext();)
+                    {
+                        StateCache state = (StateCache) changedStates.next();
+                        StateCacheFactory.getInstance().fireStateChanged(state);
+                    }
+                    
+                }
             }
         }, "Associating with clearcase", TeamAction.PROGRESS_DIALOG);
 

@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -161,10 +158,10 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
             {
                 WorkspaceModifyOperation op = new WorkspaceModifyOperation()
                 {
-                    public void execute(IProgressMonitor monitor)
+                    public void execute(IProgressMonitor progressMonitor)
                         throws InterruptedException, InvocationTargetException
                     {
-                        monitor.beginTask("", 1000 * num[0]); //$NON-NLS-1$
+                        progressMonitor.beginTask("", 1000 * num[0]); //$NON-NLS-1$
                         try
                         {
                             for (int i = 0; i < size; i++)
@@ -178,7 +175,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
                                         vobRoot,
                                         vobs[i],
                                         vobRelativePathes[i],
-                                        new SubProgressMonitor(monitor, 1000));
+                                        new SubProgressMonitor(progressMonitor, 1000));
                                 }
                             }
                         }
@@ -188,7 +185,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
                         }
                         finally
                         {
-                            monitor.done();
+                            progressMonitor.done();
                         }
                     }
                 };
@@ -275,7 +272,8 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
 
             // bind to clear clase plugin
             RepositoryProvider.map(project, ClearcaseProvider.ID);
-            ClearcaseDecorator.refresh(project);
+            StateCacheFactory.getInstance().remove(project);
+            StateCacheFactory.getInstance().fireStateChanged(StateCacheFactory.getInstance().get(project));
             monitor.worked(100);
         }
         catch (CoreException e)

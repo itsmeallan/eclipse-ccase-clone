@@ -1,11 +1,7 @@
+
 package net.sourceforge.eclipseccase.ui;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -24,22 +20,25 @@ import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IDecoratorManager;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.decorators.DecoratorManager;
 
-public class ClearcaseDecorator
-    extends LabelProvider
-    implements ILightweightLabelDecorator, StateChangeListener
+public class ClearcaseDecorator extends LabelProvider implements
+        ILightweightLabelDecorator, StateChangeListener
 {
-    private static final String ID = "net.sourceforge.eclipseccase.ui.decorator";
+    public static final String ID = "net.sourceforge.eclipseccase.ui.decorator";
 
     // Used to exit the isDirty resource visitor
-    static final CoreException CORE_DIRTY_EXCEPTION =
-        new CoreException(new Status(IStatus.OK, "dirty", 1, "", null));
-    static final CoreException CORE_UNKNOWN_EXCEPTION =
-        new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
+    static final CoreException CORE_DIRTY_EXCEPTION = new CoreException(
+            new Status(IStatus.OK, "dirty", 1, "", null));
+
+    static final CoreException CORE_UNKNOWN_EXCEPTION = new CoreException(
+            new Status(IStatus.OK, "unknown", 1, "", null));
+
     private final int CLEAN_STATE = 0;
+
     private final int DIRTY_STATE = 1;
+
     private final int UNKNOWN_STATE = 2;
 
     //private Timer parentUpdateTimer;
@@ -49,8 +48,8 @@ public class ClearcaseDecorator
     public ClearcaseDecorator()
     {
         super();
-        DecoratorManager manager =
-            (DecoratorManager) ClearcaseUI.getInstance().getWorkbench().getDecoratorManager();
+        DecoratorManager manager = (DecoratorManager) ClearcaseUI.getInstance()
+                .getWorkbench().getDecoratorManager();
         addListener(manager);
         StateCacheFactory.getInstance().addStateChangeListerer(this);
 
@@ -72,7 +71,8 @@ public class ClearcaseDecorator
         //            if (parentQueue.size() > 0)
         //            {
         //                resourceStateChanged(
-        //                    (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
+        //                    (IResource[]) parentQueue.toArray(new
+        // IResource[parentQueue.size()]));
         //                parentQueue.clear();
         //            }
         //        }
@@ -82,43 +82,45 @@ public class ClearcaseDecorator
 
     public void dispose()
     {
-        //parentUpdateTimer.cancel();
+    //parentUpdateTimer.cancel();
     }
 
     /**
-     * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
+     * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object,
+     *      org.eclipse.jface.viewers.IDecoration)
      */
     public void decorate(Object element, IDecoration decoration)
     {
         IResource resource = getResource(element);
-        if (resource == null || resource.getType() == IResource.ROOT)
-            return;
-        ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
-        if (p == null)
-            return;
+        if (resource == null || resource.getType() == IResource.ROOT
+                || resource.getLocation() == null || !resource.exists())
+                return;
 
-        if (p.isIgnored(resource))
-            return;
+        ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
+        if (p == null) return;
+
+        if (p.isIgnored(resource)) return;
 
         // Projects may be the view directory containing the VOBS, if so,
         // don't want to be able to add em, or any resource diretcly under them
         if ((resource.getType() == IResource.PROJECT && !p.hasRemote(resource))
-            || (resource.getParent().getType() == IResource.PROJECT
-                && !p.hasRemote(resource.getParent())))
-            return;
+                || (resource.getParent().getType() == IResource.PROJECT && !p
+                        .hasRemote(resource.getParent()))) return;
 
         if (p.isUnknownState(resource))
         {
-            decoration.addOverlay(
-                ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
+            decoration.addOverlay(ClearcaseImages
+                    .getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
         }
-        else if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource))
+        else if (resource.getType() != IResource.PROJECT
+                && !p.hasRemote(resource))
         {
             // decorate new elements not added to ClearCase
-            decoration.addOverlay(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_NEW_OVR));
+            decoration.addOverlay(ClearcaseImages
+                    .getImageDescriptor(ClearcaseImages.IMG_NEW_OVR));
 
             if (ClearcasePlugin.isTextNewDecoration())
-                decoration.addPrefix("*");
+                    decoration.addPrefix("*");
         }
         else
         {
@@ -126,34 +128,37 @@ public class ClearcaseDecorator
 
             if (p.isCheckedOut(resource))
             {
-                decoration.addOverlay(
-                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
+                decoration
+                        .addOverlay(ClearcaseImages
+                                .getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
             }
             else if (dirty == DIRTY_STATE)
             {
-                decoration.addOverlay(
-                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR));
+                decoration.addOverlay(ClearcaseImages
+                        .getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR));
             }
             else if (dirty == UNKNOWN_STATE)
             {
-                decoration.addOverlay(
-                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DIRTY_UNKNOWN_OVR));
+                decoration
+                        .addOverlay(ClearcaseImages
+                                .getImageDescriptor(ClearcaseImages.IMG_DIRTY_UNKNOWN_OVR));
             }
             else if (p.isHijacked(resource))
             {
-                decoration.addOverlay(
-                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
+                decoration.addOverlay(ClearcaseImages
+                        .getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
             }
             else if (p.hasRemote(resource))
             {
-                decoration.addOverlay(
-                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDIN_OVR));
+                decoration.addOverlay(ClearcaseImages
+                        .getImageDescriptor(ClearcaseImages.IMG_CHECKEDIN_OVR));
             }
 
             StringBuffer prefix = new StringBuffer();
             StringBuffer suffix = new StringBuffer();
 
-            if (ClearcasePlugin.isTextViewDecoration() && resource.getType() == IResource.PROJECT)
+            if (ClearcasePlugin.isTextViewDecoration()
+                    && resource.getType() == IResource.PROJECT)
             {
                 suffix.append(" [view: ");
                 suffix.append(p.getViewName(resource));
@@ -184,122 +189,75 @@ public class ClearcaseDecorator
 
     }
 
-    public static void refresh()
+    /**
+     * The state of the specified resources has changed.
+     * 
+     * @param changedResources
+     */
+    private void resourceStateChanged(IResource[] changedResources)
     {
-        IDecoratorManager manager = ClearcaseUI.getInstance().getWorkbench().getDecoratorManager();
-        if (manager.getEnabled(ID))
-        {
-            ClearcaseDecorator activeDecorator =
-                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-            if (activeDecorator != null)
-            {
-                activeDecorator.postLabelEvent(new LabelProviderChangedEvent(activeDecorator));
-            }
-        }
-    }
-
-    public static void refresh(IResource resource)
-    {
-        final List resources = new LinkedList();
-        try
-        {
-            resource.accept(new IResourceVisitor()
-            {
-                /**
-                 * @see org.eclipse.core.resources.IResourceVisitor#visit(IResource)
-                 */
-                public boolean visit(IResource resource) throws CoreException
-                {
-                    resources.add(resource);
-                    return true;
-                }
-            });
-        }
-        catch (CoreException ex)
-        {}
-        labelResources((IResource[]) resources.toArray(new IResource[resources.size()]));
-    }
-
-    public static void labelResource(IResource resource)
-    {
-        IDecoratorManager manager = ClearcaseUI.getInstance().getWorkbench().getDecoratorManager();
-        if (manager.getEnabled(ID))
-        {
-            ClearcaseDecorator activeDecorator =
-                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-            if (activeDecorator != null)
-            {
-                activeDecorator.resourceStateChanged(new IResource[] { resource });
-            }
-        }
-    }
-
-    public static void labelResources(IResource[] resources)
-    {
-        IDecoratorManager manager = ClearcaseUI.getInstance().getWorkbench().getDecoratorManager();
-        if (manager.getEnabled(ID))
-        {
-            ClearcaseDecorator activeDecorator =
-                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-            if (activeDecorator != null)
-            {
-                activeDecorator.resourceStateChanged(resources);
-            }
-        }
-    }
-
-    public void resourceStateChanged(IResource[] changedResources)
-    {
-        if (changedResources.length == 0)
-            return;
+        if (changedResources.length == 0) return;
 
         boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
 
         if (!deepDecoration)
         {
-            postLabelEvent(new LabelProviderChangedEvent(this, changedResources));
+            fireChange(new LabelProviderChangedEvent(this, changedResources));
             return;
         }
 
-        HashSet changedElements = new HashSet(changedResources.length * 2);
+        final HashSet changedElements = new HashSet(changedResources.length * 20);
         for (int i = 0; i < changedResources.length; i++)
         {
-            //queueParents(changedResources[i]);
             IResource resource = changedResources[i];
+
+            try
+            {
+                // refresh children
+                resource.accept(new IResourceVisitor()
+                {
+                    public boolean visit(IResource child) throws CoreException
+                    {
+                        return changedElements.add(child);
+                    }
+                });
+            }
+            catch (CoreException ex)
+            {
+                ex.printStackTrace();
+            }
+            
             // refresh also parents
             while (null != resource && changedElements.add(resource))
                 resource = resource.getParent();
         }
-        postLabelEvent(new LabelProviderChangedEvent(this, changedElements.toArray()));
+        fireChange(new LabelProviderChangedEvent(this, changedElements
+                .toArray()));
     }
 
-    //private void queueParents(IResource resource)
-    //{
-    //    IResource current = resource.getParent();
-    //
-    //    while (current != null && current.getType() != IResource.ROOT)
-    //    {
-    //        synchronized (parentQueue)
-    //        {
-    //            if (!parentQueue.contains(current))
-    //                parentQueue.add(current);
-    //        }
-    //        current = current.getParent();
-    //    }
-    //}
-
-    private void postLabelEvent(final LabelProviderChangedEvent event)
+    /**
+     * Fire event in the ui thread.
+     * 
+     * @param event
+     */
+    private void fireChange(final LabelProviderChangedEvent event)
     {
-        Display.getDefault().asyncExec(new Runnable()
+        Display display = PlatformUI.getWorkbench().getDisplay();
+        if (null != display && !display.isDisposed())
         {
-            public void run()
+            display.asyncExec(new Runnable()
             {
-                fireLabelProviderChanged(event);
-            }
-        });
+                public void run()
+                {
+                    fireLabelProviderChanged(event);
+                }
+            });
+        }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.jface.viewers.LabelProvider#fireLabelProviderChanged(org.eclipse.jface.viewers.LabelProviderChangedEvent)
      */
     protected void fireLabelProviderChanged(LabelProviderChangedEvent event)
@@ -309,34 +267,35 @@ public class ClearcaseDecorator
 
     private int isDirty(IResource resource)
     {
-        // Since dirty == checkout/hijacked for files, redundant to show files as dirty
-        if (resource.getType() == IResource.FILE)
-            return CLEAN_STATE;
+        // Since dirty == checkout/hijacked for files, redundant to show files
+        // as dirty
+        if (resource.getType() == IResource.FILE || !resource.exists()
+                || resource.getLocation() == null) return CLEAN_STATE;
 
-        if (!ClearcasePlugin.isDeepDecoration())
-            return CLEAN_STATE;
+        if (!ClearcasePlugin.isDeepDecoration()) return CLEAN_STATE;
 
         try
         {
             resource.accept(new IResourceVisitor()
             {
-                public boolean visit(IResource resource) throws CoreException
+                public boolean visit(IResource childResource)
+                        throws CoreException
                 {
-                    ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
-                    if (p == null)
-                        return false;
+                    ClearcaseProvider p = ClearcaseProvider
+                            .getProvider(childResource);
+                    if (p == null) return false;
 
-                    if (p.isIgnored(resource))
-                        return false;
+                    if (p.isIgnored(childResource)) return false;
 
-                    if (p.isUnknownState(resource))
-                        throw CORE_UNKNOWN_EXCEPTION;
+                    if (p.isUnknownState(childResource))
+                            throw CORE_UNKNOWN_EXCEPTION;
 
-                    if (!p.hasRemote(resource))
-                        throw CORE_DIRTY_EXCEPTION;
+                    if (!p.hasRemote(childResource))
+                            throw CORE_DIRTY_EXCEPTION;
 
-                    if (p.isCheckedOut(resource) || p.isHijacked(resource))
-                        throw CORE_DIRTY_EXCEPTION;
+                    if (p.isCheckedOut(childResource)
+                            || p.isHijacked(childResource))
+                            throw CORE_DIRTY_EXCEPTION;
 
                     return true;
                 }
@@ -357,6 +316,14 @@ public class ClearcaseDecorator
         return CLEAN_STATE;
     }
 
+    /**
+     * Returns the resource for the given input object, or null if there is no
+     * resource associated with it.
+     * 
+     * @param object
+     *            the object to find the resource for
+     * @return the resource for the given object, or null
+     */
     private IResource getResource(Object object)
     {
         if (object instanceof IResource)
@@ -365,17 +332,28 @@ public class ClearcaseDecorator
         }
         if (object instanceof IAdaptable)
         {
-            IResource resource = (IResource) ((IAdaptable) object).getAdapter(IResource.class);
-            return resource;
+            return (IResource) ((IAdaptable) object)
+                    .getAdapter(IResource.class);
         }
         return null;
     }
 
-    private Map resourcesToElementsMap = Collections.synchronizedMap(new HashMap(50));
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.eclipseccase.StateChangeListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
+     */
     public void stateChanged(StateCache stateCache)
     {
-        resourceStateChanged(new IResource[] { stateCache.getResource()});
+        resourceStateChanged(new IResource[]{stateCache.getResource()});
+    }
+
+    /**
+     * Refreshes this label provider.
+     */
+    public void refresh()
+    {
+        fireChange(new LabelProviderChangedEvent(this));
     }
 
 }

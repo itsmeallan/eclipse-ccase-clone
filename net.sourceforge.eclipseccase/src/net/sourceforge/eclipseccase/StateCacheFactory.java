@@ -219,7 +219,7 @@ public class StateCacheFactory implements ISaveParticipant,
         }
     }
 
-    public void load(ISavedState context) throws CoreException
+    public void load(ISavedState context)
     {
         try
         {

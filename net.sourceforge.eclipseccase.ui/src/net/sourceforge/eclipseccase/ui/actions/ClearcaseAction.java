@@ -43,9 +43,9 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
         super();
     }
 
-    public void init(IWorkbenchWindow window)
+    public void init(IWorkbenchWindow workbenchWindow)
     {
-        this.window = window;
+        this.window = workbenchWindow;
     }
 
     public void dispose()
@@ -133,9 +133,9 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
         }
     }
 
-    public void selectionChanged(IAction action, ISelection selection)
+    public void selectionChanged(IAction action, ISelection newSlection)
     {
-        super.selectionChanged(action, selection);
+        super.selectionChanged(action, newSlection);
         registerAction(action);
     }
 
