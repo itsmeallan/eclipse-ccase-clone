@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.1.1"
+   version="0.2.0"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -37,13 +37,13 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true"
             id="net.sourceforge.eclipseccase.popups.Associate">
          <action
                label="Associate with clearcase"
-               class="net.sourceforge.eclipseccase.AssociateProjectAction"
+               class="net.sourceforge.eclipseccase.ui.AssociateProjectAction"
                menubarPath="team.main/group1"
-               enablesFor="1"
-               id="net.sourceforge.eclipseccase.AssociateProjectAction">
+               id="net.sourceforge.eclipseccase.popups.associate">
          </action>
       </objectContribution>
    </extension>
@@ -57,6 +57,12 @@
                name="projectNature"
                value="net.sourceforge.eclipseccase.ClearcaseProvider">
          </filter>
+         <action
+               label="Dissociate from clearcase"
+               class="net.sourceforge.eclipseccase.ui.DissociateProjectAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.dissociate">
+         </action>
          <action
                label="Uncheckout"
                tooltip="Uncheckout"

@@ -13,7 +13,7 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.IWorkbenchPart;
 
-public class AssociateProjectAction extends TeamAction
+public class DissociateProjectAction extends TeamAction
 {
 
 	/** (non-Javadoc)
@@ -27,20 +27,20 @@ public class AssociateProjectAction extends TeamAction
 		{
 			try
 			{
-				Team.addNatureToProject(projects[i], ClearcaseProvider.ID, null);
+				Team.removeNatureFromProject(projects[i], ClearcaseProvider.ID, null);
 				//SimpleProvider p = (SimpleProvider) RepositoryProvider.getProvider(project);
 				//p.configureProvider(config);
 				MessageDialog.openInformation(
 					shell,
 					"Clearcase Plugin",
-					"Associated project '" + projects[i].getName() + "' with clearcase");
+					"Dissociated project '" + projects[i].getName() + "' from clearcase");
 			}
 			catch (TeamException e)
 			{
 				ErrorDialog.openError(
 					shell,
 					"Clearcase Error",
-					"Could not associate project '" + projects[i].getName() + "' with clearcase",
+					"Could not dissociate project '" + projects[i].getName() + "' from clearcase",
 					e.getStatus());
 			}
 		}
@@ -56,7 +56,7 @@ public class AssociateProjectAction extends TeamAction
 			IResource resource = projects[i];
 			RepositoryProvider provider =
 				RepositoryProvider.getProvider(resource.getProject());
-			if (provider != null)
+			if (! (provider instanceof ClearcaseProvider))
 				return false;
 		}
 		return true;
