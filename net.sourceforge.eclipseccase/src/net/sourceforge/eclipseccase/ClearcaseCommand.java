@@ -22,7 +22,7 @@ public class ClearcaseCommand
 
 	private void startProcess() throws Exception
 	{
-		cleartool = Runtime.getRuntime().exec("cleartool.exe");
+		cleartool = Runtime.getRuntime().exec("cleartool.exe -status");
 		stdout = new BufferedReader(new InputStreamReader(new BufferedInputStream(cleartool.getInputStream())));
 		stderr = new BufferedReader(new InputStreamReader(new BufferedInputStream(cleartool.getErrorStream())));
 		stdin = new OutputStreamWriter(cleartool.getOutputStream());
