@@ -2,6 +2,7 @@
 package net.sourceforge.eclipseccase;
 
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -209,6 +210,35 @@ public class MoveHandler implements IMoveDeleteHook
 		return true;
 	}
 
+	private IStatus validateDest(IResource destination, IProgressMonitor monitor)
+	{
+		IStatus status = new Status(IStatus.OK, ClearcaseProvider.ID, TeamException.OK, "OK", null);
+		IContainer destParent = destination.getParent();
+		if (! provider.hasRemote(destParent))
+		{
+			if (ClearcasePlugin.isRefactorAddsDir())
+			{
+				try
+				{
+					provider.add(new IResource[] {destParent}, IResource.DEPTH_ZERO, monitor);
+				}
+				catch (TeamException ex)
+				{
+					status = ex.getStatus();
+				}
+			}
+			else
+			{
+				status = new Status(IStatus.ERROR,
+									ClearcaseProvider.ID,
+									TeamException.UNABLE,
+									"Destination folder is not a clearcase element: " + destParent.getLocation().toOSString(),
+									null);
+			}
+		}
+		return status;
+	}
+
 	/**
 	 * @see IMoveDeleteHook#moveFile(IResourceTree, IFile, IFile, int, IProgressMonitor)
 	 */
@@ -225,33 +255,33 @@ public class MoveHandler implements IMoveDeleteHook
 			return true;
 		}
 
-		boolean failed = false;
-		IStatus status = null;
+		IStatus status = validateDest(destination, monitor);
+
 
 		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
-			failed = true;
 			status = new Status(IStatus.ERROR,
 								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
+		
+		if (status.getCode() == IStatus.OK && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			tree.addToLocalHistory(source);
 		}
 		
-		if (! failed)
+		if (status.getCode() == IStatus.OK)
 		{
 			status = provider.move(source, destination);
 		}
 		
-		if (failed || status.getCode() != IStatus.OK)
-			tree.failed(status);
-		else
+		if (status.getCode() == IStatus.OK)
 			tree.movedFile(source, destination);
+		else
+			tree.failed(status);
 
 
 		return true;
@@ -273,33 +303,32 @@ public class MoveHandler implements IMoveDeleteHook
 			return true;
 		}
 
-		boolean failed = false;
-		IStatus status = null;
+		IStatus status = validateDest(destination, monitor);
 
 		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
-			failed = true;
 			status = new Status(IStatus.ERROR,
 								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
+		if (status.getCode() == IStatus.OK && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			// Have to do this recursively for children?
 			//tree.addToLocalHistory(source);
 		}
-		if (! failed)
+		
+		if (status.getCode() == IStatus.OK)
 		{
 			status = provider.move(source, destination);
 		}
 
-		if (failed || status.getCode() != IStatus.OK)
-			tree.failed(status);
-		else
+		if (status.getCode() == IStatus.OK)
 			tree.movedFolderSubtree(source, destination);
+		else
+			tree.failed(status);
 
 
 		return true;
@@ -315,40 +344,39 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
+		IResource destination = source.getFolder(description.getLocation());
+
 		if (! provider.hasRemote(source))
 		{
 			tree.standardMoveProject(source, description, updateFlags, monitor);
 			return true;
 		}
 
-		boolean failed = false;
-		IStatus status = null;
+		IStatus status = validateDest(destination, monitor);
 
 		if ((IResource.FORCE & updateFlags) != 0 &&
 			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
 		{
-			failed = true;
 			status = new Status(IStatus.ERROR,
 								ClearcaseProvider.ID,
 								TeamException.UNABLE,
 								"Tree not synchronized",
 								null);
 		}
-		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0)
+		if (status.getCode() == IStatus.OK && (IResource.KEEP_HISTORY & updateFlags) != 0)
 		{
 			// Have to do this recursively for children?
 			//tree.addToLocalHistory(source);
 		}
-		if (! failed)
+		if (status.getCode() == IStatus.OK)
 		{
-			IResource destination = source.getFolder(description.getLocation());
 			status = provider.move(source, destination);
 		}
 
-		if (failed || status.getCode() != IStatus.OK)
-			tree.failed(status);
-		else
+		if (status.getCode() == IStatus.OK)
 			tree.movedProjectSubtree(source, description);
+		else
+			tree.failed(status);
 
 
 		return true;
