@@ -7,34 +7,17 @@
 
    <install-handler/>
 
-   <requires>
-      <import feature="org.eclipse.platform" version="3.0.0" match="compatible"/>
-   </requires>
-
    <url>
-      <update label="Eclipse clearcase plugin" url="http://eclipse-ccase.sourceforge.net/update"/>
+      <update label="Eclipse ClearCase Integration" url="http://eclipse-ccase.sourceforge.net/update/"/>
    </url>
 
-   <plugin
-         id="net.sourceforge.clearcase"
-         download-size="1000"
-         install-size="1000"
-         version="0.9.10"/>
-
-   <plugin
-         id="net.sourceforge.eclipseccase"
-         download-size="1000"
-         install-size="1000"
-         version="0.9.10"/>
+   <requires>
+      <import feature="org.eclipse.platform" version="3.0.0" match="compatible"/>
+      <import feature="net.sourceforge.eclipseccase.feature" version="0.9.10"/>
+   </requires>
 
    <plugin
          id="net.sourceforge.eclipseccase.3"
-         download-size="1000"
-         install-size="1000"
-         version="0.9.10"/>
-
-   <plugin
-         id="net.sourceforge.eclipseccase.ui"
          download-size="1000"
          install-size="1000"
          version="0.9.10"/>
