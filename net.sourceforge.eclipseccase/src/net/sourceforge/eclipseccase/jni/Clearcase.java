@@ -38,9 +38,10 @@ public class Clearcase
 	/**
 	 Adds the given file to clearcase source control.  This requires
 	 the parent directory to be under version control and checked
-	 out.  Comment can be empty string.
+	 out.  The isdirectory flag causes creation of a directory element
+	 when true.  Comment can be empty string.
 	 */
-	public static native Status add(String file, String comment);
+	public static native Status add(String file, String comment, boolean isdirectory);
 
 	/**
 	 Removes the given file from clearcase source control (rmname NOT
@@ -94,7 +95,7 @@ public class Clearcase
 		{
 			String newfile = args[1];
 			System.out.println("isElement: " + isElement(newfile));
-			System.out.println("add: " + add(newfile, "").message);
+			System.out.println("add: " + add(newfile, "", false).message);
 			System.out.println("isElement: " + isElement(newfile));
 			System.out.println("checkin: " + checkin(newfile, "").message);
 			System.out.println("delete: " + delete(newfile, "").message);

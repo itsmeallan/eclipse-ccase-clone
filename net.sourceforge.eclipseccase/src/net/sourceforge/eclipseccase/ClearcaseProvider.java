@@ -1,8 +1,11 @@
 package net.sourceforge.eclipseccase;
 
+import java.io.File;
+
 import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
@@ -192,13 +195,46 @@ public class ClearcaseProvider
 		{
 			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
 			{
-				// Should really walk up parent heirarchy, find first ccase
+				IStatus result;
+				
+				// Sanity check - can't add something that already is under VC
+				if (hasRemote(resource))
+				{
+					return new Status(IStatus.ERROR,
+										TeamPlugin.ID,
+										TeamException.UNABLE,
+										"Cannot add an element already under version control: " + resource.toString(),
+										null);
+				}
+				
+				// Walk up parent heirarchy, find first ccase
 				// element that is a parent, and walk back down, adding each to ccase
-				IStatus result = checkoutParent(resource);
+				IResource parent = resource.getParent();
+				if (hasRemote(parent))
+				{
+					result = checkoutParent(resource);
+				}
+				else
+				{						
+					result = visit(parent, depth, progress);
+				}
+				
 				if (result.isOK())
 				{
-					Clearcase.Status status =
-						Clearcase.add(resource.getLocation().toOSString(), "");
+					Clearcase.Status status = null;
+					if (resource instanceof IFolder)
+					{
+						File resourceFile = resource.getLocation().toFile();
+						File mkelemFile = new File(resourceFile.toString() + ".mkelem");
+						resourceFile.renameTo(mkelemFile);
+						status =
+							Clearcase.add(resource.getLocation().toOSString(), "", true);						
+					}
+					else
+					{
+						status =
+							Clearcase.add(resource.getLocation().toOSString(), "", false);
+					}
 					if (!status.status)
 					{
 						result =

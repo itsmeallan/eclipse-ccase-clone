@@ -200,7 +200,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_delete
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_add
-  (JNIEnv * env, jclass obj, jstring file, jstring comment)
+  (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean isdirectory)
 {
 	jobject result = NULL;
 	const char *filestr = env->GetStringUTFChars(file, 0);
@@ -208,7 +208,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_add
 
 	try 
 	{ 
-		ICCCheckedOutFilePtr cofile = ccase->CreateElement(filestr, commentstr, false);
+		ICCCheckedOutFilePtr cofile;
+		if (isdirectory)
+			cofile = ccase->CreateElement(filestr, commentstr, false, "directory");
+		else
+			cofile = ccase->CreateElement(filestr, commentstr, false);
 		result = createStatus(env, true, "Add Successful");
 	}
 	catch(_com_error& cerror) 
