@@ -238,6 +238,8 @@ public class ClearcaseProvider
 				{
 					Clearcase.Status status =
 						Clearcase.delete(resource.getLocation().toOSString(), "");
+					
+					try { resource.getParent().refreshLocal(IResource.DEPTH_ZERO, progress); } catch (CoreException e) {}
 					if (!status.status)
 					{
 						result =
@@ -416,8 +418,8 @@ public class ClearcaseProvider
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
-			changeState(source, IResource.DEPTH_ZERO, null);
-			changeState(destination, IResource.DEPTH_ZERO, null);
+			changeState(source.getParent(), IResource.DEPTH_ZERO, null);
+			changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
 		}
 		return result;
 	}
