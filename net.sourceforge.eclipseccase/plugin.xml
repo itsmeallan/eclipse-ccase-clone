@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.9.7"
+   version="0.9.8"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -612,7 +612,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Clearcase Checkouts"
-            icon="../org.eclipse.team.ui/icons/full/clcl16/contents.gif"
+            icon="icons/full/contents.gif"
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
             id="net.sourceforge.eclipseccase.views.CheckoutsView">

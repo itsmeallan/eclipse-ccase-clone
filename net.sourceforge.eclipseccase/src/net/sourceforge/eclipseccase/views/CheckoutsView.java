@@ -18,6 +18,7 @@ import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.StateChangeListener;
+import net.sourceforge.eclipseccase.ui.ClearcaseImages;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -56,8 +57,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.team.internal.ui.UIConstants;
-import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
@@ -357,8 +356,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		};
 		refreshAction.setText("Refresh");
 		refreshAction.setToolTipText("Refreshes the list of checked out files");
-		refreshAction.setImageDescriptor(
-			TeamImages.getImageDescriptor(UIConstants.IMG_REFRESH));
+		refreshAction.setImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_REFRESH));
 	}
 
 	private void showMessage(String message)

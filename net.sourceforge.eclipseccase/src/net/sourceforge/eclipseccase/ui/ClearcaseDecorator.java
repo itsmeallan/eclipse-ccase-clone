@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.internal.decorators.DecoratorManager;
 
@@ -116,7 +115,7 @@ public class ClearcaseDecorator
 			{
 				decoration.addOverlay(
 					ClearcaseImages.getImageDescriptor(
-						ISharedImages.IMG_CHECKEDOUT_OVR));
+				ClearcaseImages.IMG_CHECKEDOUT_OVR));
 			}
 			else if (dirty == DIRTY_STATE)
 			{
@@ -140,7 +139,7 @@ public class ClearcaseDecorator
 			{
 				decoration.addOverlay(
 					ClearcaseImages.getImageDescriptor(
-						ISharedImages.IMG_CHECKEDIN_OVR));
+				ClearcaseImages.IMG_CHECKEDIN_OVR));
 			}
 
 			StringBuffer prefix = new StringBuffer();
