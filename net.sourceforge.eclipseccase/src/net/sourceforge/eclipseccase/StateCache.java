@@ -22,13 +22,13 @@ public class StateCache implements Serializable {
 
     private String workspaceResourcePath;
 
-    private transient IResource resource;
+    transient IResource resource;
 
-    private transient long updateTimeStamp = IResource.NULL_STAMP;
+    transient long updateTimeStamp = IResource.NULL_STAMP;
 
-    private int flags = 0;
+    int flags = 0;
 
-    private String version;
+    String version;
 
     StateCache(IResource resource) {
         if (null == resource)
@@ -49,7 +49,7 @@ public class StateCache implements Serializable {
 
     private static final String DEBUG_ID = "StateCache"; //$NON-NLS-1$
 
-    private String symbolicLinkTarget;
+    String symbolicLinkTarget;
 
     // flags
 
@@ -147,43 +147,48 @@ public class StateCache implements Serializable {
 
         // only synchronize here
         synchronized (this) {
+            
             osPath = location.toOSString();
 
+            if(ClearcasePlugin.DEBUG_STATE_CACHE) {
+                ClearcasePlugin.trace("StateCache", "updating " + resource);  //$NON-NLS-1$//$NON-NLS-2$
+            }
+                
             if (resource.isAccessible()) {
                 boolean newHasRemote = ClearcasePlugin.getEngine().isElement(
                         osPath);
-                changed = changed || newHasRemote != this.hasRemote();
+                changed |= newHasRemote != this.hasRemote();
                 setFlag(HAS_REMOTE, newHasRemote);
 
                 boolean newInsideView = checkInsideView(osPath);
-                changed = changed || newInsideView != this.isInsideView();
+                changed |= newInsideView != this.isInsideView();
                 setFlag(INSIDE_VIEW, newInsideView);
 
                 boolean newIsSymbolicLink = newHasRemote
                         && ClearcasePlugin.getEngine().isSymbolicLink(osPath);
-                changed = changed || newIsSymbolicLink != this.isSymbolicLink();
+                changed |= newIsSymbolicLink != this.isSymbolicLink();
                 setFlag(SYM_LINK, newIsSymbolicLink);
 
                 boolean newIsCheckedOut = newHasRemote
                         && ClearcasePlugin.getEngine().isCheckedOut(osPath);
-                changed = changed || newIsCheckedOut != this.isCheckedOut();
+                changed |= newIsCheckedOut != this.isCheckedOut();
                 setFlag(CHECKED_OUT, newIsCheckedOut);
 
                 boolean newIsSnapShot = newHasRemote
                         && ClearcasePlugin.getEngine().isSnapShot(osPath);
-                changed = changed || newIsSnapShot != this.isSnapShot();
+                changed |= newIsSnapShot != this.isSnapShot();
                 setFlag(SNAPSHOT, newIsSnapShot);
 
                 boolean newIsHijacked = newIsSnapShot
                         && ClearcasePlugin.getEngine().isHijacked(osPath);
-                changed = changed || newIsHijacked != this.isHijacked();
+                changed |= newIsHijacked != this.isHijacked();
                 setFlag(HIJACKED, newIsHijacked);
 
                 boolean newIsEdited = newHasRemote
                         && !newIsCheckedOut
                         && ClearcasePlugin.getEngine()
                                 .isCheckedOutInAnotherView(osPath);
-                changed = changed || newIsEdited != this.isEdited();
+                changed |= newIsEdited != this.isEdited();
                 setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 
                 String newVersion = newHasRemote ? ClearcasePlugin.getEngine()
@@ -192,7 +197,7 @@ public class StateCache implements Serializable {
                                         + " " + ClearcaseUtil.quote(osPath)).message //$NON-NLS-1$
                         .trim().replace('\\', '/')
                         : null;
-                changed = changed || newVersion == null ? null != this.version
+                changed |= newVersion == null ? null != this.version
                         : !newVersion.equals(this.version);
                 this.version = newVersion;
 
@@ -203,7 +208,7 @@ public class StateCache implements Serializable {
                         String newTarget = status.message;
                         if (null != newTarget && newTarget.trim().length() == 0)
                                 newTarget = null;
-                        changed = changed || null == newTarget ? null != this.symbolicLinkTarget
+                        changed |= null == newTarget ? null != this.symbolicLinkTarget
                                 : !newTarget.equals(this.symbolicLinkTarget);
                         this.symbolicLinkTarget = newTarget;
                     }
@@ -238,6 +243,12 @@ public class StateCache implements Serializable {
         if (changed) {
             ClearcasePlugin.debug(DEBUG_ID, "updated " + this); //$NON-NLS-1$
             StateCacheFactory.getInstance().fireStateChanged(this.resource);
+        }
+        else {
+            // no changes
+            if(ClearcasePlugin.DEBUG_STATE_CACHE) {
+                ClearcasePlugin.trace("StateCache", "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
     }
 

@@ -48,6 +48,9 @@ import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 public class ClearcaseProvider extends RepositoryProvider implements
         SimpleAccessOperations {
 
+    /** trace id */
+    private static final String TRACE_ID_IS_IGNORED = "ClearcaseProvider#isIgnored"; //$NON-NLS-1$
+
     UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
     CheckInOperation CHECK_IN = new CheckInOperation();
@@ -77,21 +80,27 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
     DeleteOperation DELETE = new DeleteOperation();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.team.core.RepositoryProvider#configureProject()
      */
     public void configureProject() throws CoreException {
         // configureProject
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.team.core.RepositoryProvider#getID()
      */
     public String getID() {
         return ID;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.core.resources.IProjectNature#deconfigure()
      */
     public void deconfigure() throws CoreException {
@@ -135,8 +144,8 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @param monitor
      * @throws CoreException
      */
-    public void refreshRecursive(IResource resourceToRefresh, IProgressMonitor monitor)
-            throws CoreException {
+    public void refreshRecursive(IResource resourceToRefresh,
+            IProgressMonitor monitor) throws CoreException {
 
         try {
             monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
@@ -522,7 +531,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 monitor.beginTask("Refreshing State " + resource.getFullPath(),
                         10);
                 // probably overkill/expensive to do it here - should do it
-                // on a 
+                // on a
                 // case by case basis for eac method that actually changes
                 // state
                 StateCache cache = StateCacheFactory.getInstance()
@@ -1079,20 +1088,38 @@ public class ClearcaseProvider extends RepositoryProvider implements
      */
     public boolean isIgnored(IResource resource) {
         // ignore eclipse linked resource
-        if (resource.isLinked()) return true;
+        if (resource.isLinked()) {
+            if (ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES)
+                    ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
+                            "linked resource: " + resource); //$NON-NLS-1$
+            return true;
+        }
 
         // never ignore handled resources
         if (hasRemote(resource)) return false;
-
+        
         // never ignore workspace root
-        IResource parent = resource.getParent(); 
+        IResource parent = resource.getParent();
         if (null == parent) return false;
 
         // check the global ignores from Team (includes derived resources)
-        if (Team.isIgnoredHint(resource)) return true;
+        if (Team.isIgnoredHint(resource)) {
+            if (ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES)
+                ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
+                        "ignore hint from team plug-in: " + resource); //$NON-NLS-1$
+            return true;
+        }
 
-        // ignore resources outside vob
-        if (!isInsideView(resource)) return true;
+        // never ignore uninitialized resources
+        if (isUnknownState(resource)) return false;
+        
+        // ignore resources outside view
+        if (!isInsideView(resource)) {
+            if (ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES)
+                ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
+                        "outside view: " + resource); //$NON-NLS-1$
+            return true;
+        }
 
         // bug 904248: do not ignore if parent is a linked resource
         if (parent.isLinked()) return false;

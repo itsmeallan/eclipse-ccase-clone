@@ -10,18 +10,26 @@
  ******************************************************************************/
 package net.sourceforge.eclipseccase;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import net.sourceforge.eclipseccase.tools.XMLWriter;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -33,6 +41,8 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ISavedState;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -41,9 +51,17 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class StateCacheFactory implements ISaveParticipant,
         IResourceChangeListener {
+
+    /** trace id */
+    private static final String TRACE_STATECACHEFACTORY = "StateCacheFactory"; //$NON-NLS-1$
 
     private static final String SAVE_FILE_NAME = "statecache"; //$NON-NLS-1$
 
@@ -314,12 +332,20 @@ public class StateCacheFactory implements ISaveParticipant,
                         .getStateLocation().append(saveFileName);
 
                 // save state cache
-                ObjectOutputStream os = new ObjectOutputStream(
+                //ObjectOutputStream os = new ObjectOutputStream(
+                //        new FileOutputStream(statePath.toFile()));
+                //Collection serList = new LinkedList(cacheMap.values());
+                //os.writeObject(serList);
+                //os.flush();
+                //os.close();
+                OutputStream os = new BufferedOutputStream(
                         new FileOutputStream(statePath.toFile()));
-                Collection serList = new LinkedList(cacheMap.values());
-                os.writeObject(serList);
-                os.flush();
-                os.close();
+                try {
+                    writeStateCache(os);
+                    os.flush();
+                } finally {
+                    os.close();
+                }
                 context.map(new Path(SAVE_FILE_NAME), new Path(saveFileName));
                 context.needSaveNumber();
             } catch (IOException ex) {
@@ -335,6 +361,84 @@ public class StateCacheFactory implements ISaveParticipant,
         }
     }
 
+    /** xml element name */
+    static final String ELEMENT_RESOURCE = "resource"; //$NON-NLS-1$
+
+    /** xml element name */
+    static final String ELEMENT_STATES = "states"; //$NON-NLS-1$
+
+    /** xml attribute name */
+    static final String ATTR_PATH = "path"; //$NON-NLS-1$
+
+    /** xml attribute name */
+    static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+
+    /** xml attribute name */
+    static final String ATTR_TIME_STAMP = "timeStamp"; //$NON-NLS-1$
+
+    /** xml attribute name */
+    static final String ATTR_STATE = "state"; //$NON-NLS-1$
+
+    /** xml attribute name */
+    static final String ATTR_SYMLINK_TARGET = "symlinkTarget"; //$NON-NLS-1$
+
+    /** the version */
+    static final String STATE_CACHE_VERSION = "20040617_104400_GMT+0200"; //$NON-NLS-1$
+
+    /**
+     * Writes the comment history to the specified writer.
+     * 
+     * @param writer
+     * @throws IOException
+     */
+    private void writeStateCache(OutputStream os) throws IOException {
+
+        // create XML writer
+        XMLWriter writer = new XMLWriter(os);
+        Set knownResource = cacheMap.keySet();
+
+        // get and sort resources
+        IResource[] resources = (IResource[]) knownResource
+                .toArray(new IResource[knownResource.size()]);
+        Arrays.sort(resources, new Comparator() {
+
+            public int compare(Object o1, Object o2) {
+                return ((IResource) o1).getFullPath().toString().compareTo(
+                        ((IResource) o2).getFullPath().toString());
+            }
+        });
+
+        // start root tag
+        HashMap attributes = new HashMap(1);
+        attributes.put(ATTR_VERSION, STATE_CACHE_VERSION);
+        writer.startTag(ELEMENT_STATES, attributes, true);
+
+        // write resource tags
+        for (int i = 0; i < resources.length; i++) {
+            IResource resource = resources[i];
+            // only persist state of initialized, existing and non derived
+            // resources
+            if (isUnitialized(resource) || !resource.exists()
+                    || resource.isDerived()) continue;
+            StateCache cache = get(resource);
+            attributes = new HashMap(5);
+            attributes.put(ATTR_PATH, resource.getFullPath().toString());
+            attributes.put(ATTR_STATE, Integer.toString(cache.flags));
+            attributes.put(ATTR_TIME_STAMP, Long
+                    .toString(cache.updateTimeStamp));
+            if (null != cache.version)
+                    attributes.put(ATTR_VERSION, cache.version);
+            if (null != cache.symbolicLinkTarget)
+                    attributes.put(ATTR_SYMLINK_TARGET,
+                            cache.symbolicLinkTarget);
+            writer.startAndEndTag(ELEMENT_RESOURCE, attributes, true);
+        }
+
+        // finish root TAG
+        writer.endTag(ELEMENT_STATES);
+        writer.flush();
+    }
+
     /**
      * Loads the state cache from the specified context.
      * 
@@ -348,23 +452,30 @@ public class StateCacheFactory implements ISaveParticipant,
                 File stateFile = ClearcasePlugin.getInstance()
                         .getStateLocation().append(saveFileName).toFile();
                 if (stateFile.exists()) {
-                    ObjectInputStream is = new ObjectInputStream(
+                    //ObjectInputStream is = new ObjectInputStream(
+                    //        new FileInputStream(stateFile));
+                    //Collection values = (Collection) is.readObject();
+                    //for (Iterator iter = values.iterator(); iter.hasNext();)
+                    // {
+                    //    StateCache element = (StateCache) iter.next();
+                    //    IResource resource = element.getResource();
+                    //    if (resource != null && resource.isAccessible()) {
+                    //        synchronized (cacheMap) {
+                    //            cacheMap.put(resource, element);
+                    //        }
+                    //
+                    //        // inform listeners about a new state
+                    //        fireStateChanged(resource);
+                    //    }
+                    //}
+                    //is.close();
+                    BufferedInputStream is = new BufferedInputStream(
                             new FileInputStream(stateFile));
-                    Collection values = (Collection) is.readObject();
-                    for (Iterator iter = values.iterator(); iter.hasNext();) {
-                        StateCache element = (StateCache) iter.next();
-                        IResource resource = element.getResource();
-                        if (resource != null && resource.isAccessible()) {
-                            cacheMap.put(resource, element);
-                        }
-                        //else
-                        //{
-                        //	ClearcasePlugin.log(Status.WARNING, "Loaded an
-                        // invalid cache entry from persistent state cache,
-                        // ignoring...", null);
-                        //}
+                    try {
+                        readStateCache(is);
+                    } finally {
+                        is.close();
                     }
-                    is.close();
                 }
             }
         } catch (Exception ex) {
@@ -373,6 +484,82 @@ public class StateCacheFactory implements ISaveParticipant,
                             IStatus.WARNING,
                             "Could not load saved clearcase state cache, resetting cache", //$NON-NLS-1$
                             ex);
+        }
+    }
+
+    /**
+     * Builds (reads) the state cache from the specified input stream.
+     * 
+     * @param stream
+     * @throws Exception
+     * @throws CoreException
+     */
+    private void readStateCache(InputStream stream) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder parser = factory.newDocumentBuilder();
+        InputSource source = new InputSource(stream);
+        Document document = parser.parse(source);
+        NodeList list = document.getChildNodes();
+        for (int i = 0; i < list.getLength(); i++) {
+            Node node = list.item(i);
+            if (node instanceof Element) {
+                Element element = (Element) node;
+
+                // find root node
+                if (ELEMENT_STATES.equals(element.getTagName())) {
+
+                    // check version
+                    if (!STATE_CACHE_VERSION.equals(element
+                            .getAttribute(ATTR_VERSION))) return;
+
+                    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace()
+                            .getRoot();
+                    // process resources
+                    NodeList resources = element
+                            .getElementsByTagName(ELEMENT_RESOURCE);
+                    for (int j = 0; j < resources.getLength(); j++) {
+                        Element resourceElement = (Element) resources.item(j);
+                        String resourcePath = resourceElement
+                                .getAttribute(ATTR_PATH);
+                        if (null == resourcePath) continue;
+
+                        // determine resource
+                        IPath path = new Path(resourcePath);
+                        IResource resource = root.findMember(path);
+                        if (resource != null && resource.isAccessible()) {
+                            try {
+                                // create cache
+                                StateCache cache = new StateCache(resource);
+                                cache.flags = Integer.parseInt(resourceElement
+                                        .getAttribute(ATTR_STATE));
+                                cache.version = resourceElement
+                                        .getAttribute(ATTR_VERSION);
+                                cache.symbolicLinkTarget = resourceElement
+                                        .getAttribute(ATTR_SYMLINK_TARGET);
+                                cache.updateTimeStamp = Long
+                                        .parseLong(resourceElement
+                                                .getAttribute(ATTR_TIME_STAMP));
+
+                                // store cache
+                                synchronized (cacheMap) {
+                                    cacheMap.put(resource, cache);
+                                }
+
+                                if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                                    ClearcasePlugin.trace(
+                                            TRACE_STATECACHEFACTORY,
+                                            "state cache restored: " + cache); //$NON-NLS-1$
+                                }
+
+                                // fire change
+                                fireStateChanged(resource);
+                            } catch (RuntimeException e) {
+                                // ignore
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

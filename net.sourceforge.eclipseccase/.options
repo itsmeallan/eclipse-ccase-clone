@@ -1,2 +1,6 @@
-# Turn on debug tracing for net.sourceforge.eclipseccase plugin
-net.sourceforge.eclipseccase /debug=false
+# debug option
+net.sourceforge.eclipseccase/debug = true
+net.sourceforge.eclipseccase/debug/plugin = false
+net.sourceforge.eclipseccase/debug/provider = false
+net.sourceforge.eclipseccase/debug/provider/ignoredResources = false
+net.sourceforge.eclipseccase/debug/stateCache = false

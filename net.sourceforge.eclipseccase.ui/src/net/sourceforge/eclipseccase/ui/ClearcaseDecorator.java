@@ -51,6 +51,9 @@ public class ClearcaseDecorator extends LabelProvider implements
         ILightweightLabelDecorator, IResourceStateListener,
         IResourceChangeListener {
 
+    /** trace if */
+    private static final String DECORATOR = "ClearcaseDecorator"; //$NON-NLS-1$
+
     /*
      * Define a cached image descriptor which only creates the image data once
      */
@@ -188,20 +191,36 @@ public class ClearcaseDecorator extends LabelProvider implements
                     if (p.isIgnored(childResource)) return false;
 
                     // test if unknown
-                    if (decorateUnknown && p.isUnknownState(childResource))
-                            throw CORE_UNKNOWN_EXCEPTION;
+                    if (decorateUnknown && p.isUnknownState(childResource)) {
+                        if (ClearcaseUI.DEBUG_DECORATION)
+                                ClearcaseUI.trace(DECORATOR,
+                                        "  is dirty: child with unknown state"); //$NON-NLS-1$
+                        throw CORE_UNKNOWN_EXCEPTION;
+                    }
 
                     // test if new
-                    if (decorateNew && !p.hasRemote(childResource))
-                            throw CORE_DIRTY_EXCEPTION;
+                    if (decorateNew && !p.hasRemote(childResource)) {
+                        if (ClearcaseUI.DEBUG_DECORATION)
+                                ClearcaseUI.trace(DECORATOR,
+                                        "  is dirty: child without remote"); //$NON-NLS-1$
+                        throw CORE_DIRTY_EXCEPTION;
+                    }
 
                     // test if hijacked
-                    if (decorateHijacked && p.isHijacked(childResource))
-                            throw CORE_DIRTY_EXCEPTION;
+                    if (decorateHijacked && p.isHijacked(childResource)) {
+                        if (ClearcaseUI.DEBUG_DECORATION)
+                                ClearcaseUI.trace(DECORATOR,
+                                        "  is dirty: hijacked child"); //$NON-NLS-1$
+                        throw CORE_DIRTY_EXCEPTION;
+                    }
 
                     // test if checked out
-                    if (p.isCheckedOut(childResource))
-                            throw CORE_DIRTY_EXCEPTION;
+                    if (p.isCheckedOut(childResource)) {
+                        if (ClearcaseUI.DEBUG_DECORATION)
+                                ClearcaseUI.trace(DECORATOR,
+                                        "  is dirty: child is checked out"); //$NON-NLS-1$
+                        throw CORE_DIRTY_EXCEPTION;
+                    }
 
                     // go into children
                     return true;
@@ -227,6 +246,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateCheckedIn(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateCheckedIn"); //$NON-NLS-1$
         decoration.addOverlay(IMG_DESC_CHECKED_IN);
     }
 
@@ -236,6 +256,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateCheckedOut(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateCheckedOut"); //$NON-NLS-1$
         decoration.addOverlay(IMG_DESC_CHECKED_OUT);
         if (ClearcaseUI.isTextPrefixDecoration())
                 decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
@@ -247,6 +268,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateDirty(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateDirty"); //$NON-NLS-1$
         decoration.addOverlay(IMG_DESC_DIRTY);
         if (ClearcaseUI.isTextPrefixDecoration())
                 decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
@@ -258,6 +280,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateEdited(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateEdited"); //$NON-NLS-1$
         if (ClearcaseUI.isIconEditedDecoration())
                 decoration.addOverlay(IMG_DESC_EDITED);
         if (ClearcaseUI.isTextPrefixDecoration())
@@ -270,6 +293,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateHijacked(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateHijacked"); //$NON-NLS-1$
         if (ClearcaseUI.isIconHijackedDecoration())
                 decoration.addOverlay(IMG_DESC_HIJACKED);
         if (ClearcaseUI.isTextPrefixDecoration())
@@ -283,6 +307,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     private static void decorateLink(IDecoration decoration, String linkTarget,
             boolean isValidLinkTarget) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateLink"); //$NON-NLS-1$
         if (isValidLinkTarget) {
             decoration.addOverlay(IMG_DESC_LINK);
         } else
@@ -297,6 +322,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateNew(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateNew"); //$NON-NLS-1$
         if (ClearcaseUI.isIconNewDecoration())
                 decoration.addOverlay(IMG_DESC_NEW_RESOURCE);
         if (ClearcaseUI.isTextPrefixDecoration())
@@ -309,6 +335,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateUnknown(IDecoration decoration) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateUnknown"); //$NON-NLS-1$
         if (ClearcaseUI.isIconUnknownDecoration())
                 decoration.addOverlay(IMG_DESC_UNKOWN_STATE);
         if (ClearcaseUI.isTextPrefixDecoration())
@@ -321,6 +348,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateVersion(IDecoration decoration, String version) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateVersion"); //$NON-NLS-1$
         if (ClearcaseUI.isTextVersionDecoration() && null != version)
                 decoration.addSuffix("  " + version); //$NON-NLS-1$
     }
@@ -331,6 +359,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param decoration
      */
     private static void decorateViewName(IDecoration decoration, String viewName) {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  decorateViewName"); //$NON-NLS-1$
         if (ClearcaseUI.isTextViewDecoration() && null != viewName)
                 decoration.addSuffix(" [" + viewName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
@@ -367,7 +396,9 @@ public class ClearcaseDecorator extends LabelProvider implements
     public ClearcaseDecorator() {
         super();
         StateCacheFactory.getInstance().addStateChangeListerer(this);
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this,
+                IResourceChangeEvent.POST_CHANGE);
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "activated"); //$NON-NLS-1$
     }
 
     /**
@@ -382,16 +413,39 @@ public class ClearcaseDecorator extends LabelProvider implements
                 || resource.getLocation() == null || !resource.isAccessible())
                 return;
 
+        if (ClearcaseUI.DEBUG_DECORATION)
+                ClearcaseUI.trace(DECORATOR,
+                        "decorating " + resource.getFullPath().toString()); //$NON-NLS-1$
+
         // get our provider
         ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
-        if (p == null) return;
+        if (p == null) {
+            if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  no ClearcaseProvider"); //$NON-NLS-1$
+            return;
+        }
 
         // test if ignored
-        if (p.isIgnored(resource)) return;
+        if (p.isIgnored(resource)) {
+            if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  ignored"); //$NON-NLS-1$
+            return;
+        }
+
+        // test if uninitialized before all other checks
+        if (p.isUnknownState(resource)) {
+
+            // unknown state
+            decorateUnknown(decoration);
+
+            // no further decoration
+            return;
+        }
 
         // Projects may be the view directory containing the VOBS, if so,
         // they are not decoratable
-        if (p.isViewRoot(resource) || p.isVobRoot(resource)) return;
+        if (p.isViewRoot(resource) || p.isVobRoot(resource)) {
+            if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "  view or vob root"); //$NON-NLS-1$
+            return;
+        }
 
         // decorate view tag for projects
         if (resource.getType() == IResource.PROJECT) {
@@ -401,15 +455,7 @@ public class ClearcaseDecorator extends LabelProvider implements
         /*
          * test the different states
          */
-
-        if (p.isUnknownState(resource)) {
-            // unknown state
-            decorateUnknown(decoration);
-
-            // no further decoration
-            return;
-        } else if (resource.getType() != IResource.PROJECT
-                && !p.hasRemote(resource)) {
+        if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource)) {
             // decorate new elements not added to ClearCase
             decorateNew(decoration);
 
@@ -472,6 +518,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
      */
     public void dispose() {
+        if (ClearcaseUI.DEBUG_DECORATION) ClearcaseUI.trace(DECORATOR, "disposed"); //$NON-NLS-1$
         StateCacheFactory.getInstance().removeStateChangeListerer(this);
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         super.dispose();
@@ -614,7 +661,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                     public boolean visit(IResourceDelta delta)
                             throws CoreException {
                         switch (delta.getKind()) {
-                        
+
                         case IResourceDelta.ADDED:
                         case IResourceDelta.REMOVED:
                             // if resource was added or removed
@@ -623,7 +670,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                                 resources.add(delta.getResource().getParent());
                             }
                             return false;
-                            
+
                         }
                         return true;
                     }

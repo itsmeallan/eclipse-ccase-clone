@@ -1,0 +1,4 @@
+# debug option
+net.sourceforge.eclipseccase.ui/debug = true
+net.sourceforge.eclipseccase.ui/debug/plugin = false
+net.sourceforge.eclipseccase.ui/debug/decoration = false

@@ -37,16 +37,19 @@ import net.sourceforge.eclipseccase.tools.XMLWriter;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.environment.Constants;
 import org.eclipse.team.core.TeamException;
 import org.osgi.framework.BundleContext;
@@ -109,6 +112,92 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     /** constant (value <code>UTF-8</code>) */
     public static final String UTF_8 = "UTF-8"; //$NON-NLS-1$
 
+    /** debug option */
+    private static final String DEBUG_OPTION_PROVIDER = ClearcasePlugin.PLUGIN_ID
+            + "/debug/provider"; //$NON-NLS-1$
+
+    /** debug option */
+    private static final String DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES = ClearcasePlugin.PLUGIN_ID
+            + "/debug/provider/ignoredResources"; //$NON-NLS-1$
+
+    /** debug option */
+    private static final String DEBUG_OPTION_PLUGIN = ClearcasePlugin.PLUGIN_ID
+            + "/debug/plugin"; //$NON-NLS-1$
+
+    /** debug option */
+    private static final String DEBUG_OPTION_STATE_CACHE = ClearcasePlugin.PLUGIN_ID
+            + "/debug/stateCache"; //$NON-NLS-1$
+
+    /** indicates if debugging is enabled */
+    public static boolean DEBUG = false;
+
+    /**
+     * Configures debug settings.
+     */
+    static void configureDebugOptions() {
+        if (ClearcasePlugin.getInstance().isDebugging()) {
+
+            if (getDebugOption(DEBUG_OPTION_PROVIDER)) {
+                trace("debugging " + DEBUG_OPTION_PROVIDER); //$NON-NLS-1$
+                ClearcasePlugin.DEBUG_PROVIDER = true;
+            }
+
+            if (getDebugOption(DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES)) {
+                trace("debugging " + DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES); //$NON-NLS-1$
+                ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES = true;
+            }
+
+            if (getDebugOption(DEBUG_OPTION_PLUGIN)) {
+                trace("debugging " + DEBUG_OPTION_PLUGIN); //$NON-NLS-1$
+                ClearcasePlugin.DEBUG = true;
+            }
+
+            if (getDebugOption(DEBUG_OPTION_STATE_CACHE)) {
+                trace("debugging " + DEBUG_OPTION_STATE_CACHE); //$NON-NLS-1$
+                ClearcasePlugin.DEBUG_STATE_CACHE = true;
+            }
+
+            String[] args = Platform.getCommandLineArgs();
+            for (int i = 0; i < args.length; i++) {
+                if ("-debugClearCase".equalsIgnoreCase(args[i].trim())) { //$NON-NLS-1$
+                    debug = Platform.getLocation()
+                            .append("clearcase.debug.log"); //$NON-NLS-1$
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the value of the specified debug option.
+     * 
+     * @param optionId
+     * @return <code>true</code> if the option is enabled
+     */
+    static boolean getDebugOption(String optionId) {
+        String option = Platform.getDebugOption(optionId);
+        return option != null ? Boolean.valueOf(option).booleanValue() : false; //$NON-NLS-1$
+    }
+
+    /**
+     * Prints out a trace message.
+     * 
+     * @param message
+     */
+    public static void trace(String message) {
+        System.out.println("**Clearcase** " + message); //$NON-NLS-1$
+    }
+
+    /**
+     * Prints out a trace message.
+     * 
+     * @param traceId
+     * @param message
+     */
+    public static void trace(String traceId, String message) {
+        trace("[" + traceId + "] " + message); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     /** the file modification validator */
     private ClearcaseModificationHandler clearcaseModificationHandler = new ClearcaseModificationHandler();
 
@@ -137,13 +226,14 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                     // ignore
                 }
             }
-            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            log(IStatus.ERROR, Messages
+                    .getString("ClearcasePlugin.error.debug") + debug, e); //$NON-NLS-1$
             debug = null;
             return;
         }
 
         try {
-            debugWriter.write(id + "\t" + message + "\n");
+            debugWriter.write(id + "\t" + message + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
             debugWriter.flush();
             debugWriter.close();
         } catch (Exception e) {
@@ -154,7 +244,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                     // ignore
                 }
             }
-            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            log(IStatus.ERROR, Messages
+                    .getString("ClearcasePlugin.error.debug") + debug, e); //$NON-NLS-1$
             debug = null;
         }
     }
@@ -174,7 +265,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
             if (isDebug()) impl.setDebugger(plugin);
         } catch (CoreException e) {
-            log(IStatus.ERROR, "Could not get a clearcase engine", e);
+            log(IStatus.ERROR, Messages
+                    .getString("ClearcasePlugin.error.noClearcase"), e); //$NON-NLS-1$
         }
         return impl;
     }
@@ -439,20 +531,21 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
     private IClearcase clearcaseImpl;
 
+    /** debug flag */
+    public static boolean DEBUG_PROVIDER = false;
+
+    /** debug flag */
+    public static boolean DEBUG_PROVIDER_IGNORED_RESOURCES = false;
+
+    /** debug flag */
+    public static boolean DEBUG_STATE_CACHE = false;
+
     /**
      * The constructor.
      */
     public ClearcasePlugin() {
         super();
         plugin = this;
-
-        String[] args = Platform.getCommandLineArgs();
-        for (int i = 0; i < args.length; i++) {
-            if ("-debugClearCase".equalsIgnoreCase(args[i].trim())) { //$NON-NLS-1$
-                debug = Platform.getLocation().append("clearcase.debug.log"); //$NON-NLS-1$
-                break;
-            }
-        }
     }
 
     /**
@@ -510,17 +603,25 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     public IClearcase getClearcase() throws CoreException {
         try {
             if (clearcaseImpl == null) {
-                if (isUseCleartool())
+                if (DEBUG) trace("initializing clearcase engine"); //$NON-NLS-1$
+                if (isUseCleartool()) {
+                    if (DEBUG) trace("using cleartool engine"); //$NON-NLS-1$
                     clearcaseImpl = ClearcaseFactory.getInstance()
                             .createInstance(ClearcaseFactory.CLI);
-                else
+                } else {
+                    if (DEBUG) trace("using default engine"); //$NON-NLS-1$
                     clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
+                }
             }
             return clearcaseImpl;
         } catch (ClearcaseException e) {
-            throw new CoreException(new Status(IStatus.ERROR,
-                    ClearcasePlugin.PLUGIN_ID, TeamException.UNABLE,
-                    "Could not retrieve a valid clearcase engine", e));
+            throw new CoreException(
+                    new Status(
+                            IStatus.ERROR,
+                            ClearcasePlugin.PLUGIN_ID,
+                            TeamException.UNABLE,
+                            Messages
+                                    .getString("ClearcasePlugin.error.noValidClearcase"), e)); //$NON-NLS-1$
         }
     }
 
@@ -565,7 +666,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         // source management
         pref.setDefault(IClearcasePreferenceConstants.ADD_AUTO, true);
-        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO, IClearcasePreferenceConstants.PROMPT);
+        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO,
+                IClearcasePreferenceConstants.PROMPT);
         pref.setDefault(IClearcasePreferenceConstants.ADD_WITH_CHECKIN, false);
         pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_RESERVED,
                 IClearcasePreferenceConstants.NEVER);
@@ -610,10 +712,15 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 is.close();
             }
         } catch (IOException e) {
-            getLog().log(
-                    new Status(IStatus.ERROR, PLUGIN_ID, TeamException.UNABLE,
-                            "Error while reading config file: "
-                                    + e.getLocalizedMessage(), e));
+            getLog()
+                    .log(
+                            new Status(
+                                    IStatus.ERROR,
+                                    PLUGIN_ID,
+                                    TeamException.UNABLE,
+                                    Messages
+                                            .getString("ClearcasePlugin.error.readingConfig.1") //$NON-NLS-1$
+                                            + e.getLocalizedMessage(), e));
         } catch (CoreException e) {
             getLog().log(e.getStatus());
         }
@@ -665,8 +772,13 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                 }
             }
         } catch (Exception e) {
-            throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
-                    TeamException.UNABLE, "Error reading config file!", e));
+            throw new CoreException(
+                    new Status(
+                            IStatus.ERROR,
+                            PLUGIN_ID,
+                            TeamException.UNABLE,
+                            Messages
+                                    .getString("ClearcasePlugin.error.readingConfig.2"), e)); //$NON-NLS-1$
         }
     }
 
@@ -708,7 +820,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      */
     private void saveCommentHistory() throws CoreException {
         IPath pluginStateLocation = getStateLocation();
-        File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp")
+        File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp") //$NON-NLS-1$
                 .toFile(); //$NON-NLS-1$
         File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
         try {
@@ -724,13 +836,14 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             }
             boolean renamed = tempFile.renameTo(histFile);
             if (!renamed) { throw new CoreException(new Status(IStatus.ERROR,
-                    PLUGIN_ID, TeamException.UNABLE, MessageFormat.format(
-                            "Could not rename file '{0}'!",
+                    PLUGIN_ID, TeamException.UNABLE,
+                    MessageFormat.format(Messages
+                            .getString("ClearcasePlugin.error.renameFile"), //$NON-NLS-1$
                             new Object[] { tempFile.getAbsolutePath() }), null)); }
         } catch (IOException e) {
             throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
-                    TeamException.UNABLE, MessageFormat.format(
-                            "Could not save file '{0}'!",
+                    TeamException.UNABLE, MessageFormat.format(Messages
+                            .getString("ClearcasePlugin.error.saveFile"), //$NON-NLS-1$
                             new Object[] { histFile.getAbsolutePath() }), e));
         }
     }
@@ -743,18 +856,55 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
+        configureDebugOptions();
+
         // Disables plugin if clearcase is not available (throws CoreEx)
         getClearcase();
 
-        StateCacheFactory cacheFactory = StateCacheFactory.getInstance();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(cacheFactory,
-                IResourceChangeEvent.POST_CHANGE);
-        ISavedState lastState = ResourcesPlugin.getWorkspace()
-                .addSaveParticipant(this, cacheFactory);
-        if (null != lastState) {
-            cacheFactory.load(lastState);
-            lastState.processResourceChangeEvents(cacheFactory);
-        }
+        // process deltas since last activated in another thread
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=67449
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=60566
+        Job processSavedState = new Job(Messages
+                .getString("savedState.jobName")) { //$NON-NLS-1$
+
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+                    // add save participant and process delta atomically
+                    // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=67449
+                    workspace.run(new IWorkspaceRunnable() {
+
+                        public void run(IProgressMonitor progress)
+                                throws CoreException {
+                            StateCacheFactory cacheFactory = StateCacheFactory
+                                    .getInstance();
+                            ISavedState savedState = workspace
+                                    .addSaveParticipant(ClearcasePlugin.this,
+                                            cacheFactory);
+                            if (savedState != null) {
+                                if (DEBUG) trace("loading saved state"); //$NON-NLS-1$
+                                cacheFactory.load(savedState);
+                                // the event type coming from the saved state is
+                                // always POST_AUTO_BUILD
+                                // force it to be POST_CHANGE so that the delta
+                                // processor can handle it
+                                savedState
+                                        .processResourceChangeEvents(cacheFactory);
+                            }
+                            workspace.addResourceChangeListener(cacheFactory,
+                                    IResourceChangeEvent.POST_CHANGE);
+                        }
+                    }, monitor);
+                } catch (CoreException e) {
+                    return e.getStatus();
+                }
+                return Status.OK_STATUS;
+            }
+        };
+        processSavedState.setSystem(!DEBUG);
+        processSavedState.setPriority(Job.LONG); 
+        processSavedState.schedule(500);
 
         loadCommentHistory();
     }
