@@ -9,7 +9,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.team.ui.ISharedImages;
+import org.eclipse.team.internal.ui.ITeamUIImages;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionFactory;
@@ -21,16 +21,14 @@ import org.eclipse.ui.views.navigator.ShowInNavigatorAction;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public class ClearcaseViewActionGroup extends MainActionGroup
-{
+public class ClearcaseViewActionGroup extends MainActionGroup {
 
     /**
      * Creates a new instance.
      * 
      * @param navigator
      */
-    public ClearcaseViewActionGroup(ClearcaseViewPart navigator)
-    {
+    public ClearcaseViewActionGroup(ClearcaseViewPart navigator) {
         super(navigator);
     }
 
@@ -43,24 +41,22 @@ public class ClearcaseViewActionGroup extends MainActionGroup
      * 
      * @see org.eclipse.ui.views.navigator.MainActionGroup#makeActions()
      */
-    protected void makeActions()
-    {
+    protected void makeActions() {
         super.makeActions();
 
         refreshAction = new Action("&Refresh View", TeamImages
-                .getImageDescriptor(ISharedImages.IMG_REFRESH))
-        {
-            public void run()
-            {
+                .getImageDescriptor(ITeamUIImages.IMG_REFRESH)) {
+
+            public void run() {
                 getClearcaseView().refresh();
             }
 
         };
         refreshAction.setToolTipText("Refreshes the view");
         refreshAction.setDisabledImageDescriptor(TeamImages
-                .getImageDescriptor(ISharedImages.IMG_REFRESH_DISABLED));
+                .getImageDescriptor(ITeamUIImages.IMG_REFRESH_DISABLED));
         refreshAction.setHoverImageDescriptor(TeamImages
-                .getImageDescriptor(ISharedImages.IMG_REFRESH_ENABLED));
+                .getImageDescriptor(ITeamUIImages.IMG_REFRESH_ENABLED));
 
         showInNavigatorAction = new ShowInNavigatorAction(getClearcaseView()
                 .getSite().getPage(), getClearcaseView().getViewer());
@@ -71,8 +67,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup
      * 
      * @see org.eclipse.ui.views.navigator.MainActionGroup#fillActionBars(org.eclipse.ui.IActionBars)
      */
-    public void fillActionBars(IActionBars actionBars)
-    {
+    public void fillActionBars(IActionBars actionBars) {
         IMenuManager menu = actionBars.getMenuManager();
         menu.add(showInNavigatorAction);
         menu.add(new Separator());
@@ -92,8 +87,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup
      * 
      * @see org.eclipse.ui.views.navigator.MainActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
      */
-    public void fillContextMenu(IMenuManager menu)
-    {
+    public void fillContextMenu(IMenuManager menu) {
         menu.add(showInNavigatorAction);
         menu.add(new Separator());
 
@@ -105,8 +99,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup
      * 
      * @see org.eclipse.ui.views.navigator.MainActionGroup#runDefaultAction(org.eclipse.jface.viewers.IStructuredSelection)
      */
-    public void runDefaultAction(IStructuredSelection selection)
-    {
+    public void runDefaultAction(IStructuredSelection selection) {
         showInNavigatorAction.selectionChanged(selection);
         showInNavigatorAction.run();
     }
@@ -114,8 +107,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup
     /**
      * @return
      */
-    protected ClearcaseViewPart getClearcaseView()
-    {
+    protected ClearcaseViewPart getClearcaseView() {
         return ((ClearcaseViewPart) getNavigator());
     }
 
@@ -124,8 +116,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup
      * 
      * @see org.eclipse.ui.views.navigator.MainActionGroup#updateActionBars()
      */
-    public void updateActionBars()
-    {
+    public void updateActionBars() {
         super.updateActionBars();
 
         IStructuredSelection selection = (IStructuredSelection) getContext()
