@@ -3,13 +3,11 @@ package net.sourceforge.eclipseccase.ui;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 public class ClearcaseImages
 {
@@ -42,23 +40,7 @@ public class ClearcaseImages
 			createImageDescriptor(IMG_HIJACKED_OVR, baseURL);
 		}
 	}
-
-	public static void disposeImages()
-	{
-		if (imageDescriptors != null)
-		{
-			for (Iterator iter = imageDescriptors.values().iterator(); iter.hasNext();)
-			{
-				Image img = (Image) iter.next();
-				if (!img.isDisposed())
-				{
-					img.dispose();
-				}
-			}
-			imageDescriptors = null;
-		}
-	}
-
+	
 	protected static void createImageDescriptor(String id, URL baseURL)
 	{
 		URL url = null;

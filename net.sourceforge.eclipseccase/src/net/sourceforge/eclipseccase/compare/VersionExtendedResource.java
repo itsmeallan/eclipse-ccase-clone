@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 
 public abstract class VersionExtendedResource implements IResource
@@ -333,6 +334,16 @@ public abstract class VersionExtendedResource implements IResource
 	public Object getAdapter(Class adapter)
 	{
 		return null;
+	}
+
+	public boolean contains(ISchedulingRule rule)
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isConflicting(ISchedulingRule rule)
+	{
+		throw new UnsupportedOperationException();
 	}
 
 }

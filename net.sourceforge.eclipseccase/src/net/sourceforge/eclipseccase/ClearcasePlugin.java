@@ -282,7 +282,6 @@ public class ClearcasePlugin extends AbstractUIPlugin
 		resetClearcase();
 
 		getWorkspace().removeResourceChangeListener(updateListener);
-		ClearcaseImages.disposeImages();
 	}
 
 
