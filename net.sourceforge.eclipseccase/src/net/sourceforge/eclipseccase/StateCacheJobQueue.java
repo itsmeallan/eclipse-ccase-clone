@@ -36,7 +36,7 @@ class StateCacheJobQueue extends Job {
     private static final int DEFAULT_DELAY = 100;
 
     /** the priority buffer */
-    private PriorityBuffer priorityBuffer;
+    private PriorityBuffer priorityQueue;
 
     /**
      * Creates a new instance.
@@ -47,7 +47,7 @@ class StateCacheJobQueue extends Job {
         super(MESSAGE_QUEUE_NAME);
 
         // create underlying priority queue
-        this.priorityBuffer = new PriorityBuffer(80, false);
+        this.priorityQueue = new PriorityBuffer(80, false);
 
         // execute as system job if hidden
         setSystem(ClearcasePlugin.isHideRefreshActivity());
@@ -90,9 +90,9 @@ class StateCacheJobQueue extends Job {
             throws CoreException, OperationCanceledException {
 
         try {
-            monitor.beginTask(MESSAGE_QUEUE_NAME, priorityBuffer.size());
+            monitor.beginTask(MESSAGE_QUEUE_NAME, priorityQueue.size());
 
-            while (!priorityBuffer.isEmpty()) {
+            while (!priorityQueue.isEmpty()) {
 
                 if (monitor.isCanceled())
                         throw new OperationCanceledException();
@@ -100,9 +100,9 @@ class StateCacheJobQueue extends Job {
                 StateCacheJob job = null;
 
                 // synchonize on the buffer but execute job outside lock
-                synchronized (priorityBuffer) {
-                    if (!priorityBuffer.isEmpty())
-                            job = (StateCacheJob) priorityBuffer.remove();
+                synchronized (priorityQueue) {
+                    if (!priorityQueue.isEmpty())
+                            job = (StateCacheJob) priorityQueue.remove();
                 }
 
                 // check if buffer was empty
@@ -151,19 +151,19 @@ class StateCacheJobQueue extends Job {
         cancel();
 
         // synchronize on the buffer
-        synchronized (priorityBuffer) {
+        synchronized (priorityQueue) {
 
             for (int i = 0; i < jobs.length; i++) {
                 StateCacheJob job = jobs[i];
-                if (priorityBuffer.contains(job)) {
+                if (priorityQueue.contains(job)) {
                     // only reschedule high priority jobs
                     if (StateCacheJob.PRIORITY_HIGH == job.getPriority()) {
                         // reschedule
-                        priorityBuffer.remove(job);
-                        priorityBuffer.add(job);
+                        priorityQueue.remove(job);
+                        priorityQueue.add(job);
                     }
                 } else {
-                    priorityBuffer.add(job);
+                    priorityQueue.add(job);
                 }
             }
         }
@@ -210,8 +210,8 @@ class StateCacheJobQueue extends Job {
     public boolean cancel(boolean clean) {
         boolean canceled = cancel();
         if (clean) {
-            synchronized (priorityBuffer) {
-                priorityBuffer.clear();
+            synchronized (priorityQueue) {
+                priorityQueue.clear();
             }
         }
         return canceled;
@@ -224,6 +224,6 @@ class StateCacheJobQueue extends Job {
      */
     public boolean isEmpty() {
         // do not synchronize
-        return priorityBuffer.isEmpty();
+        return priorityQueue.isEmpty();
     }
 }

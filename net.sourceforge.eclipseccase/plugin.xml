@@ -11,7 +11,6 @@
       <library name="eclipseccase.jar">
          <export name="*"/>
       </library>
-      <library name="lib/commons-collections-3.0.jar"/>
    </runtime>
    <requires>
       <import plugin="org.eclipse.team.core" export="true"/>
