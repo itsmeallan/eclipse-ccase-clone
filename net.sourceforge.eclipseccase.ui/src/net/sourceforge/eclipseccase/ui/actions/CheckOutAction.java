@@ -62,9 +62,13 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
                             IResource resource = resources[i];
                             ClearcaseProvider provider = ClearcaseProvider
                                     .getClearcaseProvider(resource);
-                            provider.setComment(comment);
-                            provider.checkout(new IResource[] { resource },
-                                    depth, subMonitor(monitor));
+                            // fix for 1046462 
+                            // TODO: investigate null here 
+                            if (null != provider) {
+                                provider.setComment(comment);
+                                provider.checkout(new IResource[] { resource },
+                                        depth, subMonitor(monitor));
+                            }
                         }
                     }
                 } finally {

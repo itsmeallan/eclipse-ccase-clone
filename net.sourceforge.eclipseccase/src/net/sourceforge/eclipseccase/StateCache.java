@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.team.core.Team;
 
 public class StateCache implements Serializable {
 
@@ -47,7 +48,7 @@ public class StateCache implements Serializable {
         }
     }
 
-    private static final String DEBUG_ID = "StateCache"; //$NON-NLS-1$
+    private static final String TRACE_ID = "StateCache"; //$NON-NLS-1$
 
     String symbolicLinkTarget;
 
@@ -100,7 +101,7 @@ public class StateCache implements Serializable {
                 synchronized (this) {
                     updateTimeStamp = IResource.NULL_STAMP;
                 }
-                ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this); //$NON-NLS-1$
+                ClearcasePlugin.trace(TRACE_ID, "invalidating " + this); //$NON-NLS-1$
                 // fireing state change (the update was forced)
                 StateCacheFactory.getInstance().fireStateChanged(this.resource);
             }
@@ -140,90 +141,118 @@ public class StateCache implements Serializable {
         if (location == null) {
             // resource has been invalidated in the workspace since request was
             // queued, so ignore update request.
-            ClearcasePlugin.debug(DEBUG_ID, "not updating - invalid resource: " //$NON-NLS-1$
+            if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+            ClearcasePlugin.trace(TRACE_ID, "not updating - invalid resource: " //$NON-NLS-1$
                     + resource);
+            }
             return;
         }
 
         // only synchronize here
         synchronized (this) {
-            
+
             osPath = location.toOSString();
 
-            if(ClearcasePlugin.DEBUG_STATE_CACHE) {
-                ClearcasePlugin.trace("StateCache", "updating " + resource);  //$NON-NLS-1$//$NON-NLS-2$
+            if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$//$NON-NLS-2$
             }
-                
+
             if (resource.isAccessible()) {
-                boolean newHasRemote = ClearcasePlugin.getEngine().isElement(
-                        osPath);
-                changed |= newHasRemote != this.hasRemote();
-                setFlag(HAS_REMOTE, newHasRemote);
 
-                boolean newInsideView = checkInsideView(osPath);
-                changed |= newInsideView != this.isInsideView();
-                setFlag(INSIDE_VIEW, newInsideView);
+                // check the global ignores from Team (includes derived
+                // resources)
+                if (!Team.isIgnoredHint(resource)) {
 
-                boolean newIsSymbolicLink = newHasRemote
-                        && ClearcasePlugin.getEngine().isSymbolicLink(osPath);
-                changed |= newIsSymbolicLink != this.isSymbolicLink();
-                setFlag(SYM_LINK, newIsSymbolicLink);
+                    boolean newHasRemote = ClearcasePlugin.getEngine()
+                            .isElement(osPath);
+                    changed |= newHasRemote != this.hasRemote();
+                    setFlag(HAS_REMOTE, newHasRemote);
 
-                boolean newIsCheckedOut = newHasRemote
-                        && ClearcasePlugin.getEngine().isCheckedOut(osPath,newIsSymbolicLink);
-                changed |= newIsCheckedOut != this.isCheckedOut();
-                setFlag(CHECKED_OUT, newIsCheckedOut);
+                    boolean newInsideView = checkInsideView(osPath);
+                    changed |= newInsideView != this.isInsideView();
+                    setFlag(INSIDE_VIEW, newInsideView);
 
-                boolean newIsSnapShot = newHasRemote
-                        && ClearcasePlugin.getEngine().isSnapShot(osPath,newIsSymbolicLink);
-                changed |= newIsSnapShot != this.isSnapShot();
-                setFlag(SNAPSHOT, newIsSnapShot);
+                    boolean newIsSymbolicLink = newHasRemote
+                            && ClearcasePlugin.getEngine().isSymbolicLink(
+                                    osPath);
+                    changed |= newIsSymbolicLink != this.isSymbolicLink();
+                    setFlag(SYM_LINK, newIsSymbolicLink);
 
-                boolean newIsHijacked = newIsSnapShot
-                        && ClearcasePlugin.getEngine().isHijacked(osPath,newIsSymbolicLink);
-                changed |= newIsHijacked != this.isHijacked();
-                setFlag(HIJACKED, newIsHijacked);
+                    boolean newIsCheckedOut = newHasRemote
+                            && ClearcasePlugin.getEngine().isCheckedOut(osPath,
+                                    newIsSymbolicLink);
+                    changed |= newIsCheckedOut != this.isCheckedOut();
+                    setFlag(CHECKED_OUT, newIsCheckedOut);
 
-                boolean newIsEdited = newHasRemote
-                        && !newIsCheckedOut
-                        && ClearcasePlugin.getEngine()
-                                .isCheckedOutInAnotherView(osPath,newIsSymbolicLink);
-                changed |= newIsEdited != this.isEdited();
-                setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
+                    boolean newIsSnapShot = newHasRemote
+                            && ClearcasePlugin.getEngine().isSnapShot(osPath,
+                                    newIsSymbolicLink);
+                    changed |= newIsSnapShot != this.isSnapShot();
+                    setFlag(SNAPSHOT, newIsSnapShot);
 
-                String newVersion = newHasRemote ? ClearcasePlugin.getEngine()
-                        .cleartool(
-                                "describe -fmt " + ClearcaseUtil.quote("%Vn") //$NON-NLS-1$ //$NON-NLS-2$
-                                        + " " + ClearcaseUtil.quote(osPath)).message //$NON-NLS-1$
-                        .trim().replace('\\', '/')
-                        : null;
-                changed |= newVersion == null ? null != this.version
-                        : !newVersion.equals(this.version);
-                this.version = newVersion;
+                    boolean newIsHijacked = newIsSnapShot
+                            && ClearcasePlugin.getEngine().isHijacked(osPath,
+                                    newIsSymbolicLink);
+                    changed |= newIsHijacked != this.isHijacked();
+                    setFlag(HIJACKED, newIsHijacked);
 
-                if (newIsSymbolicLink) {
-                    IClearcase.Status status = ClearcasePlugin.getEngine()
-                            .getSymbolicLinkTarget(osPath);
-                    if (status.status) {
-                        String newTarget = status.message;
-                        if (null != newTarget && newTarget.trim().length() == 0)
-                                newTarget = null;
-                        changed |= null == newTarget ? null != this.symbolicLinkTarget
-                                : !newTarget.equals(this.symbolicLinkTarget);
-                        this.symbolicLinkTarget = newTarget;
+                    boolean newIsEdited = newHasRemote
+                            && !newIsCheckedOut
+                            && ClearcasePlugin.getEngine()
+                                    .isCheckedOutInAnotherView(osPath,
+                                            newIsSymbolicLink);
+                    changed |= newIsEdited != this.isEdited();
+                    setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
+
+                    String newVersion = newHasRemote ? ClearcasePlugin
+                            .getEngine()
+                            .cleartool(
+                                    "describe -fmt " + ClearcaseUtil.quote("%Vn") //$NON-NLS-1$ //$NON-NLS-2$
+                                            + " " + ClearcaseUtil.quote(osPath)).message //$NON-NLS-1$
+                            .trim().replace('\\', '/')
+                            : null;
+                    changed |= newVersion == null ? null != this.version
+                            : !newVersion.equals(this.version);
+                    this.version = newVersion;
+
+                    if (newIsSymbolicLink) {
+                        IClearcase.Status status = ClearcasePlugin.getEngine()
+                                .getSymbolicLinkTarget(osPath);
+                        if (status.status) {
+                            String newTarget = status.message;
+                            if (null != newTarget
+                                    && newTarget.trim().length() == 0)
+                                    newTarget = null;
+                            changed |= null == newTarget ? null != this.symbolicLinkTarget
+                                    : !newTarget
+                                            .equals(this.symbolicLinkTarget);
+                            this.symbolicLinkTarget = newTarget;
+                        }
+
+                        boolean newIsTargetValid = ClearcasePlugin.getEngine()
+                                .isSymbolicLinkTargetValid(osPath);
+                        changed = changed
+                                || newIsTargetValid != this
+                                        .isSymbolicLinkTargetValid();
+                        setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
+
+                    } else if (null != this.symbolicLinkTarget) {
+                        this.symbolicLinkTarget = null;
+                        setFlag(SYM_LINK_TARGET_VALID, false);
+                        changed = true;
                     }
 
-                    boolean newIsTargetValid = ClearcasePlugin.getEngine()
-                            .isSymbolicLinkTargetValid(osPath);
-                    changed = changed
-                            || newIsTargetValid != this
-                                    .isSymbolicLinkTargetValid();
-                    setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
-
-                } else if (null != this.symbolicLinkTarget) {
-                    this.symbolicLinkTarget = null;
-                    setFlag(SYM_LINK_TARGET_VALID, false);
-                    changed = true;
+                } else {
+                    // resource is ignored by Team plug-ins
+                    flags = 0;
+                    version = null;
+                    symbolicLinkTarget = null;
+                    changed = false;
+                    if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                    ClearcasePlugin.trace(TRACE_ID,
+                            "resource must be ignored: " //$NON-NLS-1$
+                                    + resource);
+                    }
                 }
 
             } else {
@@ -232,8 +261,10 @@ public class StateCache implements Serializable {
                 version = null;
                 symbolicLinkTarget = null;
                 changed = true;
-                ClearcasePlugin.debug(DEBUG_ID, "resource not accessible: " //$NON-NLS-1$
+                if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                ClearcasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
                         + resource);
+                }
             }
 
             updateTimeStamp = resource.getModificationStamp();
@@ -241,13 +272,14 @@ public class StateCache implements Serializable {
 
         // fire state change (lock must be released prior)
         if (changed) {
-            ClearcasePlugin.debug(DEBUG_ID, "updated " + this); //$NON-NLS-1$
+            if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+            ClearcasePlugin.trace(TRACE_ID, "updated " + this); //$NON-NLS-1$
+            }
             StateCacheFactory.getInstance().fireStateChanged(this.resource);
-        }
-        else {
+        } else {
             // no changes
-            if(ClearcasePlugin.DEBUG_STATE_CACHE) {
-                ClearcasePlugin.trace("StateCache", "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+                ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
@@ -364,6 +396,11 @@ public class StateCache implements Serializable {
      * @return boolean
      */
     public boolean isUninitialized() {
+        // always ignore Team-ignore resources
+        if(Team.isIgnoredHint(resource))
+            return false;
+        
+        // check if we have a timestamp
         return IResource.NULL_STAMP == updateTimeStamp;
     }
 
@@ -531,18 +568,20 @@ public class StateCache implements Serializable {
      * @return <code>true</code> if the specified resource is a view directory
      */
     static boolean checkInsideView(String file) {
-        IClearcase.Status status = ClearcasePlugin.getEngine().getViewRoot(file);
+        IClearcase.Status status = ClearcasePlugin.getEngine()
+                .getViewRoot(file);
         return null != status && status.status;
     }
-    
+
     /**
      * Indicates if the resource is within a ClearCase view.
+     * 
      * @return
      */
     public boolean isInsideView() {
         return getFlag(INSIDE_VIEW);
     }
-    
+
     /**
      * Returns <code>true</code> if the specified flag is set.
      * 

@@ -56,7 +56,7 @@ class StateCacheJobQueue extends Job {
         setPriority(DECORATE);
 
         // set the rule to the clearcase engine
-        setRule(ClearcasePlugin.RULE_CLEARCASE_ENGING);
+        setRule(ClearcasePlugin.RULE_CLEARCASE_REFRESH);
     }
 
     /*
@@ -194,7 +194,7 @@ class StateCacheJobQueue extends Job {
             break;
         }
     }
-    
+
     /*
      * (non-Javadoc)
      * 

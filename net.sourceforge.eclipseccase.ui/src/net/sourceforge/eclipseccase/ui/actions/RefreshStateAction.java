@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.team.core.Team;
 
 public class RefreshStateAction extends ClearcaseWorkspaceAction
 {
@@ -52,6 +53,16 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0)
 			return false;
+        if (resources.length == 1) {
+            
+            // always ignore derived resources
+            if(Team.isIgnoredHint(resources[0]))
+                return false;
+            
+            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resources[0]);
+            if (provider == null)
+                return false;
+        }
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];

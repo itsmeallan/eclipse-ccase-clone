@@ -86,6 +86,25 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         }
     };
 
+    /** the scheduling rule for the refresh jobs */
+    public static final ISchedulingRule RULE_CLEARCASE_REFRESH = new ISchedulingRule() {
+
+        public boolean contains(ISchedulingRule rule) {
+            // can contain engine and refresh rules
+            return RULE_CLEARCASE_ENGING == rule
+                    || RULE_CLEARCASE_REFRESH == rule;
+        }
+
+        public boolean isConflicting(ISchedulingRule rule) {
+            // conflict with engine
+            // conflict with refresh
+            // conflict with workspace (fix for 1055293)
+            return RULE_CLEARCASE_ENGING == rule 
+                    || RULE_CLEARCASE_REFRESH == rule 
+                    || getWorkspace().getRuleFactory().buildRule() == rule; 
+        }
+    };
+
     /** file name fo the history file */
     private static final String COMMENT_HIST_FILE = "commentHistory.xml"; //$NON-NLS-1$
 
@@ -512,8 +531,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     public static int getCacheTimeOut() {
         return getInstance().getPluginPreferences().getInt(
                 IClearcasePreferenceConstants.CACHE_TIMEOUT);
-    }    
-    
+    }
+
     /**
      * Logs an exception with the specified severity an message.
      * 
@@ -914,7 +933,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             }
         };
         processSavedState.setSystem(!DEBUG);
-        processSavedState.setPriority(Job.LONG); 
+        processSavedState.setPriority(Job.LONG);
         processSavedState.schedule(500);
 
         loadCommentHistory();
