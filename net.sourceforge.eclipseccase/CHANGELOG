@@ -3,6 +3,7 @@
 
 - Updated for 3.0 - should still work with 2.1.x, uses local images instead of trying to reuse Team images through API
 - Fixed some minor bugs
+- Created feature and update site accesible at http://eclipse-ccase.sourceforge.net/update
 
 0.9.7
 -----
