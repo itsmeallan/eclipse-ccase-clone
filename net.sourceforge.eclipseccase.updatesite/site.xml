@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/net.sourceforge.eclipseccase_1.0.0.M3.jar" id="net.sourceforge.eclipseccase" version="1.0.0.M3" label="Eclipse ClearCase Integration">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.0.RC1.jar" id="net.sourceforge.eclipseccase" version="1.0.0.RC1" label="Eclipse ClearCase Integration">
       <category name="eclipse-ccase"/>
    </feature>
    <feature url="features/net.sourceforge.eclipseccase_0.9.11.jar" id="net.sourceforge.eclipseccase" version="0.9.11" label="Eclipse ClearCase Integration">
