@@ -60,10 +60,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -75,56 +80,53 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
     Action refreshAction;
 
-    Collection checkouts = Collections.synchronizedSortedSet(new TreeSet(
-            new Comparator()
-            {
-                public int compare(Object o1, Object o2)
-                {
-                    IResource r1 = (IResource) o1;
-                    IResource r2 = (IResource) o2;
-                    /*
-                     * // Sorts by folder first - I don't like it - leave
-                     * commented till I figure out how to sort by column
-                     * boolean isFolder1 = r1.getType() != IResource.FILE;
-                     * boolean isFolder2 = r2.getType() != IResource.FILE; if
-                     * (isFolder1 && ! isFolder2) return -1; else if (!
-                     * isFolder1 && isFolder2) return 1; else
-                     */
-                    return r1.getFullPath().toString().compareTo(
-                            r2.getFullPath().toString());
-                }
-            }));
+    Collection checkouts = Collections.synchronizedSortedSet(new TreeSet(new Comparator()
+    {
+        public int compare(Object o1, Object o2)
+        {
+            IResource r1 = (IResource) o1;
+            IResource r2 = (IResource) o2;
+            /*
+             * // Sorts by folder first - I don't like it - leave
+             * commented till I figure out how to sort by column
+             * boolean isFolder1 = r1.getType() != IResource.FILE;
+             * boolean isFolder2 = r2.getType() != IResource.FILE; if
+             * (isFolder1 && ! isFolder2) return -1; else if (!
+             * isFolder1 && isFolder2) return 1; else
+             */
+            return r1.getFullPath().toString().compareTo(r2.getFullPath().toString());
+        }
+    }));
 
-    static final CoreException FIND_NEEDED_EXCEPTION = new CoreException(
-            new Status(IStatus.OK, "findNeeded", 1, "", null));
+    static final CoreException FIND_NEEDED_EXCEPTION =
+        new CoreException(new Status(IStatus.OK, "findNeeded", 1, "", null));
 
-    private static class ProjectChangedDeltaVisitor implements
-            IResourceDeltaVisitor
+    private static class ProjectChangedDeltaVisitor implements IResourceDeltaVisitor
     {
         public boolean visit(IResourceDelta delta) throws CoreException
         {
             IResource resource = delta.getResource();
             switch (resource.getType())
             {
-                case IResource.ROOT:
+                case IResource.ROOT :
                     return true;
-                case IResource.PROJECT:
+                case IResource.PROJECT :
                     {
                         switch (delta.getKind())
                         {
                             // Can't get os string for resource after deleted,
                             // so do a refresh for all project deletions
-                            case IResourceDelta.REMOVED:
+                            case IResourceDelta.REMOVED :
                                 throw FIND_NEEDED_EXCEPTION;
-                            // Don't refresh on add, only when description
-                            // changes (i.e. associated with ccase) and when
-                            // openeing/closing
-                            case IResourceDelta.CHANGED:
-                                if ((delta.getFlags() & (IResourceDelta.OPEN | IResourceDelta.DESCRIPTION)) != 0
-                                        && ClearcasePlugin.getEngine()
-                                                .isElement(
-                                                        resource.getLocation()
-                                                                .toOSString()))
+                                // Don't refresh on add, only when description
+                                // changes (i.e. associated with ccase) and when
+                                // openeing/closing
+                            case IResourceDelta.CHANGED :
+                                if ((delta.getFlags()
+                                    & (IResourceDelta.OPEN | IResourceDelta.DESCRIPTION))
+                                    != 0
+                                    && ClearcasePlugin.getEngine().isElement(
+                                        resource.getLocation().toOSString()))
                                 {
                                     throw FIND_NEEDED_EXCEPTION;
                                 }
@@ -142,7 +144,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
     {
         public void resourceChanged(IResourceChangeEvent event)
         {
-            if (event.getType() != IResourceChangeEvent.POST_CHANGE) return;
+            if (event.getType() != IResourceChangeEvent.POST_CHANGE)
+                return;
 
             ProjectChangedDeltaVisitor visitor = new ProjectChangedDeltaVisitor();
             try
@@ -163,8 +166,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 }
                 else
                 {
-                    ClearcasePlugin.log(IStatus.ERROR,
-                            "Unable to do a quick update of resource", null);
+                    ClearcasePlugin.log(
+                        IStatus.ERROR,
+                        "Unable to do a quick update of resource",
+                        null);
                 }
             }
         }
@@ -176,8 +181,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         {
             if (event.getSelection() instanceof IStructuredSelection)
             {
-                IStructuredSelection selection = (IStructuredSelection) event
-                        .getSelection();
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 for (Iterator iter = selection.iterator(); iter.hasNext();)
                 {
                     IResource element = (IResource) iter.next();
@@ -185,18 +189,29 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                     {
                         try
                         {
-                            IDE.openEditor(
-                                    PlatformUI.getWorkbench()
-                                            .getActiveWorkbenchWindow()
-                                            .getActivePage(), (IFile) element,
+                            // limit to 2.1 AND 3.0 compatible implementation
+                            IFile file = (IFile) element;
+                            IWorkbench workbench = PlatformUI.getWorkbench();
+                            IEditorDescriptor desc =
+                                workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                            if (desc != null)
+                            {
+                                PlatformUI
+                                    .getWorkbench()
+                                    .getActiveWorkbenchWindow()
+                                    .getActivePage()
+                                    .openEditor(
+                                    new FileEditorInput(file),
+                                    desc.getId(),
                                     true);
+                            }
                         }
                         catch (PartInitException e)
                         {
-                            ClearcasePlugin
-                                    .log(IStatus.ERROR,
-                                            "Could not create editor for "
-                                                    + element, e);
+                            ClearcasePlugin.log(
+                                IStatus.ERROR,
+                                "Could not create editor for " + element,
+                                e);
                         }
                     }
 
@@ -205,8 +220,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         }
     }
 
-    private final class ViewContentProvider implements
-            IStructuredContentProvider
+    private final class ViewContentProvider implements IStructuredContentProvider
     {
         public void inputChanged(Viewer v, Object oldInput, Object newInput)
         {
@@ -220,13 +234,11 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
         public Object[] getElements(Object parent)
         {
-            return (IResource[]) checkouts.toArray(new IResource[checkouts
-                    .size()]);
+            return (IResource[]) checkouts.toArray(new IResource[checkouts.size()]);
         }
     }
 
-    private final class ViewLabelProvider extends LabelProvider implements
-            ITableLabelProvider
+    private final class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
     {
         public String getColumnText(Object obj, int index)
         {
@@ -244,21 +256,25 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             IResource resource = (IResource) obj;
             switch (resource.getType())
             {
-                case IResource.FILE:
-                    image = PlatformUI.getWorkbench().getSharedImages()
-                            .getImage(ISharedImages.IMG_OBJ_FILE);
+                case IResource.FILE :
+                    image =
+                        PlatformUI.getWorkbench().getSharedImages().getImage(
+                            ISharedImages.IMG_OBJ_FILE);
                     break;
-                case IResource.FOLDER:
-                    image = PlatformUI.getWorkbench().getSharedImages()
-                            .getImage(ISharedImages.IMG_OBJ_FOLDER);
+                case IResource.FOLDER :
+                    image =
+                        PlatformUI.getWorkbench().getSharedImages().getImage(
+                            ISharedImages.IMG_OBJ_FOLDER);
                     break;
-                case IResource.PROJECT:
-                    image = PlatformUI.getWorkbench().getSharedImages()
-                            .getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
+                case IResource.PROJECT :
+                    image =
+                        PlatformUI.getWorkbench().getSharedImages().getImage(
+                            ISharedImages.IMG_OBJ_PROJECT);
                     break;
-                default:
-                    image = PlatformUI.getWorkbench().getSharedImages()
-                            .getImage(ISharedImages.IMG_OBJ_ELEMENT);
+                default :
+                    image =
+                        PlatformUI.getWorkbench().getSharedImages().getImage(
+                            ISharedImages.IMG_OBJ_ELEMENT);
                     break;
             }
             return image;
@@ -268,7 +284,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
     /**
      * The constructor.
      */
-    public CheckoutsView() {
+    public CheckoutsView()
+    {
         StateCacheFactory.getInstance().addStateChangeListerer(this);
     }
 
@@ -278,8 +295,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
     public void dispose()
     {
         StateCacheFactory.getInstance().removeStateChangeListerer(this);
-        ClearcasePlugin.getWorkspace().removeResourceChangeListener(
-                updateListener);
+        ClearcasePlugin.getWorkspace().removeResourceChangeListener(updateListener);
         super.dispose();
     }
 
@@ -289,8 +305,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
      */
     public void createPartControl(Composite parent)
     {
-        viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-                | SWT.V_SCROLL);
+        viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         viewer.setContentProvider(new ViewContentProvider());
         viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setInput(ResourcesPlugin.getWorkspace());
@@ -301,7 +316,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
         refreshAction.run();
         ClearcasePlugin.getWorkspace().addResourceChangeListener(
-                updateListener, IResourceChangeEvent.POST_CHANGE);
+            updateListener,
+            IResourceChangeEvent.POST_CHANGE);
 
     }
 
@@ -339,17 +355,15 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         {
             public void run()
             {
-                IStatusLineManager statusLineManager = getViewSite()
-                        .getActionBars().getStatusLineManager();
+                IStatusLineManager statusLineManager =
+                    getViewSite().getActionBars().getStatusLineManager();
                 statusLineManager.setCancelEnabled(true);
-                final IProgressMonitor progressMonitor = statusLineManager
-                        .getProgressMonitor();
+                final IProgressMonitor progressMonitor = statusLineManager.getProgressMonitor();
 
                 final IRunnableWithProgress op = new IRunnableWithProgress()
                 {
                     public void run(IProgressMonitor monitor)
-                            throws InvocationTargetException,
-                            InterruptedException
+                        throws InvocationTargetException, InterruptedException
                     {
                         findCheckouts(monitor);
                     }
@@ -357,8 +371,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
                 try
                 {
-                    ModalContext.run(op, true, progressMonitor, Display
-                            .getCurrent());
+                    ModalContext.run(op, true, progressMonitor, Display.getCurrent());
                 }
                 catch (InvocationTargetException e)
                 {
@@ -372,20 +385,18 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         };
         refreshAction.setText("Refresh");
         refreshAction.setToolTipText("Refreshes the list of checked out files");
-        refreshAction.setImageDescriptor(ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_REFRESH));
+        refreshAction.setImageDescriptor(
+            ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_REFRESH));
     }
 
     void showMessage(String message)
     {
-        MessageDialog.openInformation(viewer.getControl().getShell(),
-                "Checkouts View", message);
+        MessageDialog.openInformation(viewer.getControl().getShell(), "Checkouts View", message);
     }
 
     void showError(String message)
     {
-        MessageDialog.openError(viewer.getControl().getShell(),
-                "Checkouts View", message);
+        MessageDialog.openError(viewer.getControl().getShell(), "Checkouts View", message);
     }
 
     /**
@@ -445,8 +456,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
     void findCheckouts(IProgressMonitor monitor)
     {
         checkouts.clear();
-        IProject[] projects = ClearcasePlugin.getWorkspace().getRoot()
-                .getProjects();
+        IProject[] projects = ClearcasePlugin.getWorkspace().getRoot().getProjects();
         monitor.beginTask("Finding checkouts", projects.length);
 
         for (int i = 0; i < projects.length; i++)
@@ -461,8 +471,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             IProject project = projects[i];
             // Only find checkouts for each project if the project is open and
             // associated with ccase
-            if (project.isOpen()
-                    && ClearcaseProvider.getProvider((IResource) project) != null)
+            if (project.isOpen() && ClearcaseProvider.getProvider((IResource) project) != null)
             {
                 List foundCheckouts = findCheckouts(project);
 
@@ -475,18 +484,19 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                     File cofile = new File(checkout);
                     if (cofile.isDirectory())
                     {
-                        resource = ClearcasePlugin.getWorkspace().getRoot()
-                                .getContainerForLocation(new Path(checkout));
+                        resource =
+                            ClearcasePlugin.getWorkspace().getRoot().getContainerForLocation(
+                                new Path(checkout));
                     }
                     else
                     {
-                        resource = ClearcasePlugin.getWorkspace().getRoot()
-                                .getFileForLocation(new Path(checkout));
+                        resource =
+                            ClearcasePlugin.getWorkspace().getRoot().getFileForLocation(
+                                new Path(checkout));
                     }
                     if (resource != null)
                     {
-                        StateCache cache = StateCacheFactory.getInstance().get(
-                                resource);
+                        StateCache cache = StateCacheFactory.getInstance().get(resource);
                         cache.update(true);
                         updateCheckout(cache);
                     }
@@ -527,7 +537,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                 //RDM: No matter what, we scan all the children of the project
                 // to find CC-children
                 if (null != child.getLocation() && /* child.isLinked()&& */
-                StateCacheFactory.getInstance().get(child).hasRemote())
+                    StateCacheFactory.getInstance().get(child).hasRemote())
                 {
                     findResources.add(child.getLocation().toOSString());
                 }
@@ -535,9 +545,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         }
         catch (CoreException e)
         {
-            ClearcasePlugin.log(IStatus.ERROR,
-                    "Could not determine children of project for finding checkouts: "
-                            + project, e);
+            ClearcasePlugin.log(
+                IStatus.ERROR,
+                "Could not determine children of project for finding checkouts: " + project,
+                e);
         }
 
         // Find checkouts for all the important resources
@@ -563,19 +574,19 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
             String prefixNoDrive = prefix.substring(slashIdx);
             String drive = prefix.substring(0, slashIdx);
 
-            IClearcase.Status viewNameStatus = ClearcasePlugin.getEngine()
-                    .getViewName(prefix);
+            IClearcase.Status viewNameStatus = ClearcasePlugin.getEngine().getViewName(prefix);
             if (!viewNameStatus.status)
-                    throw new Exception(viewNameStatus.message);
+                throw new Exception(viewNameStatus.message);
             String viewName = viewNameStatus.message.trim();
 
             boolean isSnapShot = ClearcasePlugin.getEngine().isSnapShot(prefix);
             boolean projectHasViewPath = prefix.indexOf(viewName) != -1;
 
-            IClearcase.Status result = ClearcasePlugin.getEngine().cleartool(
-                    "lsco -me -cview -short -all "
-                            + ClearcaseUtil.quote(prefix));
-            if (!result.status) throw new Exception(result.message);
+            IClearcase.Status result =
+                ClearcasePlugin.getEngine().cleartool(
+                    "lsco -me -cview -short -all " + ClearcaseUtil.quote(prefix));
+            if (!result.status)
+                throw new Exception(result.message);
 
             StringTokenizer st = new StringTokenizer(result.message, "\r\n");
             while (st.hasMoreTokens())
@@ -604,7 +615,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
                         cleanEntry = entry.substring(idx);
                     }
                     if (cleanEntry.startsWith(prefixNoDrive))
-                            resultList.add(drive + cleanEntry);
+                        resultList.add(drive + cleanEntry);
                 }
 
             }
@@ -613,8 +624,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
         }
         catch (Exception e)
         {
-            ClearcasePlugin.log(IStatus.ERROR,
-                    "Could not find checkouts for path: " + path, e);
+            ClearcasePlugin.log(IStatus.ERROR, "Could not find checkouts for path: " + path, e);
         }
 
         return resultList;
