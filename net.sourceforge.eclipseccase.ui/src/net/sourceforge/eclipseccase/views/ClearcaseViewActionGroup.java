@@ -44,15 +44,17 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
     protected void makeActions() {
         super.makeActions();
 
-        refreshAction = new Action("&Refresh View", ClearcaseImages
-                .getImageDescriptor(ClearcaseImages.IMG_REFRESH)) {
+        refreshAction = new Action(
+                Messages.getString("ClearcaseViewActionGroup.refresh.name"), ClearcaseImages //$NON-NLS-1$
+                        .getImageDescriptor(ClearcaseImages.IMG_REFRESH)) {
 
             public void run() {
                 getClearcaseView().refresh();
             }
 
         };
-        refreshAction.setToolTipText("Refreshes the view");
+        refreshAction.setToolTipText(Messages
+                .getString("ClearcaseViewActionGroup.refresh.description")); //$NON-NLS-1$
         refreshAction.setDisabledImageDescriptor(ClearcaseImages
                 .getImageDescriptor(ClearcaseImages.IMG_REFRESH_DISABLED));
         refreshAction.setHoverImageDescriptor(ClearcaseImages

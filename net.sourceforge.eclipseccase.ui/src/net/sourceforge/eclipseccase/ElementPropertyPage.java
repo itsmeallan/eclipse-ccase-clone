@@ -146,8 +146,6 @@ public class ElementPropertyPage extends PropertyPage
 			checkedOutValue.setSelection(cache.isCheckedOut());
 		if (hijackedValue != null)
 			hijackedValue.setSelection(cache.isHijacked());
-		if (dirtyValue != null)
-			dirtyValue.setSelection(cache.isDirty());
 	}
 
 	public void dispose()
