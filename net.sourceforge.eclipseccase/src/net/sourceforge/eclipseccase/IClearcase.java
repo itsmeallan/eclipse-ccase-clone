@@ -14,6 +14,9 @@ public interface IClearcase
 		}
 	}
 
+	/** Destroys this instance */
+	public void destroy();
+	
 	/**
 	 Does a clearcase checkout of the given file.  Comment can be
 	 empty string.  If reserved is true, does a reserved checkout.

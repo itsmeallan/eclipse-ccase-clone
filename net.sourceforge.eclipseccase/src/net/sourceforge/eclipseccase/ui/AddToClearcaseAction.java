@@ -88,8 +88,9 @@ public class AddToClearcaseAction extends TeamAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null)
+			if (provider == null || provider.isUnknownState(resource))
 				return false;
+
 			// Projects may be the view directory containing the VOBS, if so,
 			// don't want to be able to add em, or any resource diretcly under them
 			if (resource.getType() == IResource.PROJECT && ! provider.hasRemote(resource))

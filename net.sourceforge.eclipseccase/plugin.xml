@@ -28,6 +28,10 @@
 			class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
 			id="net.sourceforge.eclipseccase.ClearcasePreferencePage">
 		</page>
+		<page name="Label Decorations" category="net.sourceforge.eclipseccase.ClearcasePreferencePage"
+			class="net.sourceforge.eclipseccase.DecoratorPreferencePage"
+			id="net.sourceforge.eclipseccase.DecoratorPreferencePage">
+		</page>
 	</extension>
 	
 	<extension point="org.eclipse.ui.decorators">

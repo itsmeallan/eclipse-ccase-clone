@@ -49,6 +49,8 @@ public class RefreshStateAction extends TeamAction
 				}
 			}
 		}, "Refreshing state", this.PROGRESS_DIALOG);
+
+		ClearcaseDecorator.refresh();
 	}
 
 	protected boolean isEnabled()

@@ -22,12 +22,14 @@ public class StateCache implements Serializable
 	private boolean hasRemote = false;
 	private boolean isCheckedOut = false;
 	private boolean isDirty = false;
+	private boolean isSnapShot = false;
+	private boolean isHijacked = false;
 	private String version = "";
 
-	public StateCache(String osPath)
+	public StateCache(IResource resource)
 	{
-		this.osPath = osPath;
-		createResource();
+		this.resource = resource;
+		this.osPath = resource.getLocation().toOSString();
 	}
 
 	private void createResource()
@@ -48,25 +50,35 @@ public class StateCache implements Serializable
 	
 	public synchronized void updateAsync()
 	{
+		updateAsync(false);
+	}
+	
+	public synchronized void updateAsync(boolean asap)
+	{
 		uninitialized = true;
-		ClearcaseDecorator.labelResource(resource);
-		UpdateQueue.getInstance().add(new Runnable()
+		Runnable cmd = new Runnable()
 		{
 			public void run() { update(); }
-		});
+		};
+		if (asap)
+			UpdateQueue.getInstance().addFirst(cmd);
+		else
+			UpdateQueue.getInstance().add(cmd);
 	}
 
-	
 	public synchronized void update()
 	{
 		hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
 		isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
-		isDirty = (!hasRemote) || isCheckedOut;
-		version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
+		isDirty = isCheckedOut && ClearcasePlugin.getEngine().isDifferent(osPath);
+		isSnapShot = hasRemote && ClearcasePlugin.getEngine().isSnapShot(osPath);
+		isHijacked = isSnapShot && ClearcasePlugin.getEngine().isHijacked(osPath);
+		if (hasRemote)
+			version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
 		uninitialized = false;
-		ClearcaseDecorator.labelResource(resource);
+		//ClearcaseDecorator.labelResource(resource);
 	}
-
+	
 	/**
 	 * Gets the hasRemote.
 	 * @return Returns a boolean
@@ -119,6 +131,33 @@ public class StateCache implements Serializable
 	public boolean isUninitialized()
 	{
 		return uninitialized;
+	}
+
+	/**
+	 * Returns the isHijacked.
+	 * @return boolean
+	 */
+	public boolean isHijacked()
+	{
+		return isHijacked;
+	}
+
+	/**
+	 * Returns the isSnapShot.
+	 * @return boolean
+	 */
+	public boolean isSnapShot()
+	{
+		return isSnapShot;
+	}
+
+	/**
+	 * Returns the resource.
+	 * @return IResource
+	 */
+	public IResource getResource()
+	{
+		return resource;
 	}
 
 }

@@ -1,18 +1,20 @@
 package net.sourceforge.eclipseccase.ui;
 
+import java.lang.reflect.InvocationTargetException;
+
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public class AssociateProjectAction extends TeamAction
 {
@@ -22,49 +24,58 @@ public class AssociateProjectAction extends TeamAction
 	 */
 	public void run(IAction action)
 	{
-		IProject[] projects = getSelectedProjects();
-		for (int i = 0; i < projects.length; i++)
+		final StringBuffer message = new StringBuffer();
+		run(new WorkspaceModifyOperation()
 		{
-			try
+			public void execute(IProgressMonitor monitor)
+				throws InterruptedException, InvocationTargetException
 			{
-				final IProject project = projects[i];
-				String projectPath = project.getLocation().toOSString();
-				if (! ClearcasePlugin.getEngine().getViewName(projectPath).status)
-					throw new TeamException("The Project directory must exist within a clearcase view");
-				RepositoryProvider.map(project, ClearcaseProvider.ID);
-				Team.removeNatureFromProject(project, ClearcaseProvider.ID, new NullProgressMonitor());
-				final ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
-				Thread t = new Thread()
-				{
-					public void run()
-					{
-						try
-						{
-							provider.refresh(new IResource[] {project}, IResource.DEPTH_INFINITE, null);
-						}
-						catch (TeamException e)
-						{
-							ClearcasePlugin.log(IStatus.ERROR, "Problems refreshing clearcase state for project", e);
-						}
-					}
-				};
-				t.start();
-				MessageDialog.openInformation(
-					shell,
-					"Clearcase Plugin",
-					"Associated project '" + projects[i].getName() + "' with clearcase");
-			}
-			catch (TeamException e)
-			{
-				ErrorDialog.openError(
-					shell,
-					"Clearcase Error",
-					"Could not associate project '" + projects[i].getName() + "' with clearcase",
-					e.getStatus());
-			}
-		}
-	}
+				IProject[] projects = getSelectedProjects();
+				monitor.beginTask("Adding to clearcase", projects.length);
 
+				if (projects.length == 1)
+					message.append("Associated project ");
+				else
+					message.append("Associated projects: ");
+
+				for (int i = 0; i < projects.length; i++)
+				{
+					try
+					{
+						IProject project = projects[i];
+						String projectPath = project.getLocation().toOSString();
+						if (!ClearcasePlugin
+							.getEngine()
+							.getViewName(projectPath)
+							.status)
+							throw new TeamException("The Project directory must exist within a clearcase view");
+						RepositoryProvider.map(project, ClearcaseProvider.ID);
+						if (i > 0)
+							message.append(", ");
+						message.append(project.getName());
+						monitor.worked(1);
+					}
+					catch (TeamException e)
+					{
+						throw new InvocationTargetException(e);
+					}
+					finally
+					{
+						monitor.done();
+					}
+				}
+				message.append(" with clearcase");
+			}
+		}, "Associating with clearcase", this.PROGRESS_DIALOG);
+		
+		ClearcaseDecorator.refresh();
+		
+		MessageDialog.openInformation(
+			shell,
+			"Clearcase Plugin",
+			message.toString());
+	}
+	
 	protected boolean isEnabled() throws TeamException
 	{
 		IProject[] projects = getSelectedProjects();

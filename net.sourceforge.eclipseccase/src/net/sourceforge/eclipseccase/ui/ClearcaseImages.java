@@ -10,6 +10,7 @@ public class ClearcaseImages extends TeamImages
 {
 	public static final String IMG_DIRTY_OVR = "dirty.gif";
 	public static final String IMG_UNKNOWN_OVR = "unknown.gif";
+	public static final String IMG_HIJACKED_OVR = "hijacked.gif";
 	
 	static
 	{
@@ -23,6 +24,7 @@ public class ClearcaseImages extends TeamImages
 		// View decoration overlays
 		TeamImages.createImageDescriptor(IMG_DIRTY_OVR, baseURL);
 		TeamImages.createImageDescriptor(IMG_UNKNOWN_OVR, baseURL);
+		TeamImages.createImageDescriptor(IMG_HIJACKED_OVR, baseURL);
 	}
 	
 	public static ImageDescriptor getImageDescriptor(String id) {

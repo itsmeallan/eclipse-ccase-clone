@@ -19,25 +19,6 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static final String ID = "net.sourceforge.eclipseccase.ClearcasePlugin";
 	private static boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows") != -1;
 	
-	public static final String PREF_RESERVED_CHECKOUT = "net.sourceforge.eclipseccase.reserved_checkouts";
-	public static final String PREF_RESERVED_CHECKOUT_DEFAULT = "false";
-	public static final String PREF_PERSIST_STATE = "net.sourceforge.eclipseccase.persist_state";
-	public static final String PREF_PERSIST_STATE_DEFAULT = "true";
-	public static final String PREF_CHECKIN_COMMENT = "net.sourceforge.eclipseccase.checkin_comment";
-	public static final String PREF_CHECKIN_COMMENT_DEFAULT = "true";
-	public static final String PREF_CHECKOUT_COMMENT = "net.sourceforge.eclipseccase.checkout_comment";
-	public static final String PREF_CHECKOUT_COMMENT_DEFAULT = "false";
-	public static final String PREF_ADD_COMMENT = "net.sourceforge.eclipseccase.add_comment";
-	public static final String PREF_ADD_COMMENT_DEFAULT = "true";
-	public static final String PREF_CHECKOUT_ON_EDIT = "net.sourceforge.eclipseccase.checkout_on_edit";
-	public static final String PREF_CHECKOUT_ON_EDIT_DEFAULT = "true";
-	public static final String PREF_REFACTOR_ADDS_DIR = "net.sourceforge.eclipseccase.refactor_adds_dir";
-	public static final String PREF_REFACTOR_ADDS_DIR_DEFAULT = "true";
-	public static final String PREF_TEXT_VERSION_DECORATION = "net.sourceforge.eclipseccase.text_decoration";
-	public static final String PREF_TEXT_VERSION_DECORATION_DEFAULT = "false";
-	public static final String PREF_USE_CLEARTOOL = "net.sourceforge.eclipseccase.use_cleartool";
-	public static final String PREF_USE_CLEARTOOL_DEFAULT = new Boolean(! isWindows).toString();
-	
 	private IClearcase clearcaseImpl;
 	
 	/**
@@ -87,67 +68,75 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	
 	public void resetClearcase()
 	{
-			clearcaseImpl = null;
+		if (clearcaseImpl != null)
+			clearcaseImpl.destroy();
+		clearcaseImpl = null;
 	}
 	
 	/**
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeDefaultPreferences(IPreferenceStore)
 	 */
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
-		store.setDefault(PREF_RESERVED_CHECKOUT, PREF_RESERVED_CHECKOUT_DEFAULT);
-		store.setDefault(PREF_PERSIST_STATE, PREF_PERSIST_STATE_DEFAULT);
-		store.setDefault(PREF_CHECKIN_COMMENT, PREF_CHECKIN_COMMENT_DEFAULT);
-		store.setDefault(PREF_CHECKOUT_COMMENT, PREF_CHECKOUT_COMMENT_DEFAULT);
-		store.setDefault(PREF_ADD_COMMENT, PREF_ADD_COMMENT_DEFAULT);
-		store.setDefault(PREF_CHECKOUT_ON_EDIT, PREF_CHECKOUT_ON_EDIT_DEFAULT);
-		store.setDefault(PREF_REFACTOR_ADDS_DIR, PREF_REFACTOR_ADDS_DIR_DEFAULT);
-		store.setDefault(PREF_TEXT_VERSION_DECORATION, PREF_TEXT_VERSION_DECORATION_DEFAULT);
-		store.setDefault(PREF_USE_CLEARTOOL, PREF_USE_CLEARTOOL_DEFAULT);
+		store.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
+		store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
+		store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
+		store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
+		store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
+		store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
+		store.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
+		store.setDefault(IPreferenceConstants.TEXT_DECORATIONS, false);
+		store.setDefault(IPreferenceConstants.DEEP_DECORATIONS, false);
+		store.setDefault(IPreferenceConstants.USE_CLEARTOOL, ! isWindows);
 	}
 	
 	public static boolean isReservedCheckouts()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_RESERVED_CHECKOUT);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.RESERVED_CHECKOUT);
 	}
 
 	public static boolean isPersistState()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_PERSIST_STATE);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.PERSIST_STATE);
 	}
 	
 	public static boolean isCheckinComment()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_CHECKIN_COMMENT);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKIN_COMMENT);
 	}
 	
 	public static boolean isCheckoutComment()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_CHECKOUT_COMMENT);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
 	}
 
 	public static boolean isAddComment()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_ADD_COMMENT);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.ADD_COMMENT);
 	}
 
 	public static boolean isCheckoutOnEdit()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_CHECKOUT_ON_EDIT);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_ON_EDIT);
 	}
 
 	public static boolean isRefactorAddsDir()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_REFACTOR_ADDS_DIR);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.REFACTOR_ADDS_DIR);
 	}
 
 	public static boolean isTextVersionDecoration()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_TEXT_VERSION_DECORATION);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.TEXT_DECORATIONS);
+	}
+	
+	public static boolean isDeepDecoration()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.DEEP_DECORATIONS);
 	}
 	
 	public static boolean isUseCleartool()
 	{
-		return getDefault().getPreferenceStore().getBoolean(PREF_USE_CLEARTOOL);
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.USE_CLEARTOOL);
 	}
 
 	/**

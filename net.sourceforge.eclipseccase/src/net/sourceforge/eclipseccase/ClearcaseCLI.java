@@ -24,6 +24,12 @@ public class ClearcaseCLI implements IClearcase
 	{
 	}
 
+	public void destroy()
+	{
+		if(isRunning())
+			cleartool.destroy();
+	}
+	
 	private boolean isRunning()
 	{
 		boolean running = false;
@@ -252,7 +258,7 @@ public class ClearcaseCLI implements IClearcase
 		if (isCheckedOut(file))
 		{
 			Status diffResult = execute("diff -pred " + quote(file));
-			if (! diffResult.message.startsWith("File are identical"))
+			if (! diffResult.message.startsWith("Files are identical"))
 				result = true;
 		}
 		return result;

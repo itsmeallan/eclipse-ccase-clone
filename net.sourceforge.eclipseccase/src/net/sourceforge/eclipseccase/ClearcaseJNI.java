@@ -9,6 +9,10 @@ public class ClearcaseJNI implements IClearcase
 	{
 	}
 
+	public void destroy()
+	{
+	}
+
 	/**
 	 * @see net.sourceforge.eclipseccase.IClearcase#add(String, String, boolean)
 	 */

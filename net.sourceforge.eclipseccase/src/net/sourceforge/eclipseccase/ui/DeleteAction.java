@@ -61,7 +61,7 @@ public class DeleteAction extends TeamAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null)
+			if (provider == null || provider.isUnknownState(resource))
 				return false;
 			if (! provider.hasRemote(resource))
 				return false;

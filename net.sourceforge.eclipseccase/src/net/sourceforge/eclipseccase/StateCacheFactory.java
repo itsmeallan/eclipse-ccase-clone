@@ -50,7 +50,7 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 		StateCache cache = (StateCache) cacheMap.get(osPath);
 		if (cache == null)
 		{
-			cache = new StateCache(osPath);
+			cache = new StateCache(resource);
 			cache.updateAsync();
 			cacheMap.put(osPath, cache);
 		}
@@ -62,6 +62,11 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 	{
 		String osPath = resource.getLocation().toOSString();
 		cacheMap.put(osPath, cache);
+	}
+	
+	public boolean isUpdatesPending()
+	{
+		return UpdateQueue.getInstance().isUpdatesPending();
 	}
 	
 	public synchronized void remove(IResource resource)

@@ -2,14 +2,12 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 
+import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -35,8 +33,6 @@ public class ClearcaseProvider
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
 	private static final Status OK_STATUS =
 		new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-
-	Boolean isSnapShot = null;
 
 	public ClearcaseProvider()
 	{
@@ -172,7 +168,7 @@ public class ClearcaseProvider
 				StateCache cache =
 					StateCacheFactory.getInstance().get(resource);
 				if (! cache.isUninitialized())
-					cache.updateAsync();
+					cache.updateAsync(true);
 				return result;
 			}
 		}, resources, depth, progress);
@@ -454,23 +450,16 @@ public class ClearcaseProvider
 		return StateCacheFactory.getInstance().get(resource).isCheckedOut();
 	}
 
-	/**
-	 * @see SimpleAccessOperations#isSnapShot(IResource)
-	 */
 	public boolean isSnapShot()
 	{
-		if (isSnapShot == null)
-		{
-			// no need to calculate this for each resource as all resources
-			// within a project must belong to the same view.
-			isSnapShot =
-				new Boolean(
-					ClearcasePlugin.getEngine().isSnapShot(
-						getProject().getLocation().toOSString()));
-		}
-		return isSnapShot.booleanValue();
+		return StateCacheFactory.getInstance().get(getProject()).isSnapShot();
 	}
 
+	public boolean isHijacked(IResource resource)
+	{
+		return StateCacheFactory.getInstance().get(resource).isHijacked();
+	}
+	
 	public boolean isUnknownState(IResource resource)
 	{
 		return StateCacheFactory.getInstance().get(resource).isUninitialized();
@@ -599,7 +588,7 @@ public class ClearcaseProvider
 		int depth,
 		IProgressMonitor monitor)
 	{
-		return execute(new IRecursiveOperation()
+		IStatus result =  execute(new IRecursiveOperation()
 		{
 			public IStatus visit(IResource resource, IProgressMonitor progress)
 			{
@@ -612,6 +601,8 @@ public class ClearcaseProvider
 				return result;
 			}
 		}, resource, depth, monitor);
+		ClearcaseDecorator.refresh();
+		return result;
 	}
 
 	/**

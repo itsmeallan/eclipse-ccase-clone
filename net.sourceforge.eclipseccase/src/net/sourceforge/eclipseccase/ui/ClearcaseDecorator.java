@@ -58,8 +58,14 @@ public class ClearcaseDecorator
 		IDecoratorManager manager = ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
 		if (manager.getEnabled(ID))
 		{
-			ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
-			activeDecorator.fireLabelProviderChanged(new LabelProviderChangedEvent(activeDecorator));
+			final ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					activeDecorator.fireLabelProviderChanged(new LabelProviderChangedEvent(activeDecorator));
+				}
+			});
 		}
 	}
 
@@ -120,8 +126,6 @@ public class ClearcaseDecorator
 		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		if (p == null)
 			return image;
-		if (!p.hasRemote(resource))
-			return image;
 
 		OverlayComposite result = new OverlayComposite(image.getImageData());
 
@@ -134,11 +138,21 @@ public class ClearcaseDecorator
 		}
 		else
 		{
+			if (!p.hasRemote(resource))
+				return image;
+
 			if (p.isCheckedOut(resource))
 			{
 				result.addForegroundImage(
 					ClearcaseImages
 						.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR)
+						.getImageData());
+			}
+			else if (p.isHijacked(resource))
+			{
+				result.addForegroundImage(
+					ClearcaseImages
+						.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR)
 						.getImageData());
 			}
 			else
@@ -166,6 +180,13 @@ public class ClearcaseDecorator
 	 */
 	private boolean isDirty(IResource resource)
 	{
+		// Since dirty == checkout/hijacked for files, redundant to show files as dirty
+		if (resource.getType() == IResource.FILE)
+			return false;
+			
+		if (! ClearcasePlugin.isDeepDecoration())
+			return false;
+
 		try
 		{
 			resource.accept(new IResourceVisitor()
@@ -179,7 +200,7 @@ public class ClearcaseDecorator
 					if (!p.hasRemote(resource))
 						return false;
 
-					if (p.isDirty(resource))
+					if (p.isCheckedOut(resource) || p.isHijacked(resource))
 						throw CORE_EXCEPTION;
 
 					return true;
@@ -280,20 +301,26 @@ public class ClearcaseDecorator
 		}
 	}
 	
-	public static void labelResource(final IResource resource)
+	public static void labelResource(IResource resource)
 	{
 		IDecoratorManager manager = ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
 		if (manager.getEnabled(ID))
 		{
-			final ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
-			Display.getDefault().asyncExec(new Runnable()
-			{
-				public void run()
-				{
-					activeDecorator.fireLabelProviderChanged(new LabelProviderChangedEvent(activeDecorator, resource));
-				}
-			});
+			ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getLabelDecorator(ID);
+			activeDecorator.postLabelResource(resource);
 		}
+	}
+	
+	public void postLabelResource(IResource resource)
+	{
+		final LinkedList events = new LinkedList();
+		events.add(new LabelProviderChangedEvent(this, resource));
+		for (IResource parent = resource.getParent(); parent != null; parent = parent.getParent())
+		{
+			events.add(new LabelProviderChangedEvent(this, parent));
+		}
+		postLabelEvents((LabelProviderChangedEvent[]) events.toArray(
+				new LabelProviderChangedEvent[events.size()]));
 	}
 
 

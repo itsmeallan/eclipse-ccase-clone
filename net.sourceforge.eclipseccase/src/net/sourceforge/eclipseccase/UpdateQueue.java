@@ -2,6 +2,7 @@ package net.sourceforge.eclipseccase;
 
 import java.util.LinkedList;
 
+import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
 import org.eclipse.core.runtime.IStatus;
 
 public class UpdateQueue
@@ -45,6 +46,11 @@ public class UpdateQueue
 		worker = null;
 	}
 
+	public boolean isUpdatesPending()
+	{
+		return (queue.size() > 0);
+	}
+	
 	public void addFirst(Runnable cmd)
 	{
 		synchronized (queue)
@@ -73,7 +79,10 @@ public class UpdateQueue
 				synchronized (queue)
 				{
 					if (queue.isEmpty())
+					{
+						ClearcaseDecorator.refresh();
 						queue.wait();
+					}
 					cmd = (Runnable) queue.removeFirst();
 				}
 				cmd.run();
