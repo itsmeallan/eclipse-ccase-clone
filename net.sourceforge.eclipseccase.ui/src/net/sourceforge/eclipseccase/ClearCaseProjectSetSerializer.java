@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -48,7 +47,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer
         for (int i = 0; i < providerProjects.length; i++)
         {
             IProject project = providerProjects[i];
-            ClearcaseProvider provider = ClearcaseProvider.getProvider((IResource) project);
+            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(project);
             if (provider != null)
             {
                 StringBuffer reference = new StringBuffer();

@@ -98,7 +98,7 @@ public class DissociateProjectAction extends ClearcaseAction
 		{
 			IResource resource = projects[i];
 			ClearcaseProvider provider =
-				ClearcaseProvider.getProvider(resource);
+				ClearcaseProvider.getClearcaseProvider(resource);
 			if (provider == null)
 				return false;
 		}

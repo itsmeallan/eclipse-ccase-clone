@@ -21,8 +21,6 @@ public class ElementPropertyPage extends PropertyPage
 
 	private Text predecessorVersionValue;
 
-	private static final int TEXT_FIELD_WIDTH = 50;
-
 	private Text versionLabelValue;
 	private Button checkedOutValue;
 	private Button hijackedValue;

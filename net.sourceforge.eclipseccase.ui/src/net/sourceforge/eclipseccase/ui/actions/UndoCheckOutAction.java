@@ -1,6 +1,5 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,12 +8,12 @@ import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 /**
  * @author conwaym
@@ -22,15 +21,14 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * To change this generated comment edit the template variable "typecomment":
  * Workbench>Preferences>Java>Templates.
  */
-public class UndoCheckOutAction extends ClearcaseAction
+public class UndoCheckOutAction extends ClearcaseWorkspaceAction
 {
 	public void run(IAction action)
 	{
-		run(new WorkspaceModifyOperation()
-		{
-			public void execute(IProgressMonitor monitor)
-				throws InterruptedException, InvocationTargetException
-			{
+        IWorkspaceRunnable runnable = new IWorkspaceRunnable()
+        {
+            public void run(IProgressMonitor monitor) throws CoreException
+            {
 				try
 				{
 					IResource[] resources = getSelectedResources();
@@ -45,23 +43,18 @@ public class UndoCheckOutAction extends ClearcaseAction
 					{
 						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						provider.uncheckout(new IResource[] {resource},
 										IResource.DEPTH_ZERO, subMonitor);
 					}
-				}
-				catch (TeamException e)
-				{
-					throw new InvocationTargetException(e);
 				}
 				finally
 				{
 					monitor.done();
 				}
 			}
-		}, "Undoing checkout", TeamAction.PROGRESS_DIALOG);
-
-		updateActionEnablement();
+        };
+        executeInBackground(runnable, "Undoing checkout");
 	}
 
 	protected boolean isEnabled() throws TeamException
@@ -72,7 +65,7 @@ public class UndoCheckOutAction extends ClearcaseAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
             if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
                 return false;
 			if (!provider.isCheckedOut(resource))

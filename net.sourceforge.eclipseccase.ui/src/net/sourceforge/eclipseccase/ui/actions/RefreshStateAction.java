@@ -1,29 +1,25 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.lang.reflect.InvocationTargetException;
-
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class RefreshStateAction extends ClearcaseAction
+public class RefreshStateAction extends ClearcaseWorkspaceAction
 {
 	/*
 	 * Method declared on IActionDelegate.
 	 */
 	public void run(IAction action)
 	{
-		run(new WorkspaceModifyOperation()
-		{
-			public void execute(IProgressMonitor monitor)
-				throws InterruptedException, InvocationTargetException
-			{
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable()
+        {
+            public void run(IProgressMonitor monitor) throws CoreException
+            {
 				try
 				{
 					IResource[] resources = getSelectedResources();
@@ -32,24 +28,20 @@ public class RefreshStateAction extends ClearcaseAction
 					{
 						IResource resource = resources[i];
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-						ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						provider.refresh(new IResource[] {resource},
 											IResource.DEPTH_INFINITE, subMonitor);
 						monitor.worked(1);
 					}
-				}
-				catch (TeamException e)
-				{
-					throw new InvocationTargetException(e);
 				}
 				finally
 				{
 					monitor.done();
 				}
 			}
-		}, "Refreshing state", TeamAction.PROGRESS_DIALOG);
-
-		updateActionEnablement();
+        };
+        
+        executeInBackground(runnable, "Refreshing state");
 	}
 
 	protected boolean isEnabled()
@@ -60,7 +52,7 @@ public class RefreshStateAction extends ClearcaseAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 			if (provider == null)
 				return false;
 		}

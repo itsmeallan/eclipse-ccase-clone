@@ -34,7 +34,7 @@ public class FindCheckOutsAction extends ClearcaseAction
             if (resource.getType() == IResource.FILE)
                 return false;
 
-            ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
             if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
                 return false;
         }

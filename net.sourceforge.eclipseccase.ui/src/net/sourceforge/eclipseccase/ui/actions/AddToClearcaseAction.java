@@ -1,20 +1,19 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.lang.reflect.InvocationTargetException;
-
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class AddToClearcaseAction extends ClearcaseAction
+public class AddToClearcaseAction extends ClearcaseWorkspaceAction
 {
     /*
      * Method declared on IActionDelegate.
@@ -36,10 +35,9 @@ public class AddToClearcaseAction extends ClearcaseAction
         final String comment = maybeComment;
         final int depth = maybeDepth;
 
-        run(new WorkspaceModifyOperation()
+        IWorkspaceRunnable runnable = new IWorkspaceRunnable()
         {
-            public void execute(IProgressMonitor monitor)
-                throws InterruptedException, InvocationTargetException
+            public void run(IProgressMonitor monitor) throws CoreException
             {
                 try
                 {
@@ -49,23 +47,19 @@ public class AddToClearcaseAction extends ClearcaseAction
                     {
                         IResource resource = resources[i];
                         IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1000);
-                        ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+                        ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
                         provider.setComment(comment);
                         provider.add(new IResource[] { resource }, depth, subMonitor);
                     }
-                }
-                catch (TeamException e)
-                {
-                    throw new InvocationTargetException(e);
                 }
                 finally
                 {
                     monitor.done();
                 }
             }
-        }, "Adding to clearcase", TeamAction.PROGRESS_DIALOG);
-
-        updateActionEnablement();
+        };
+        
+        executeInBackground(runnable, "Adding");
     }
 
     private static final String DEBUG_ID = "AddToClearCaseAction";
@@ -81,7 +75,7 @@ public class AddToClearcaseAction extends ClearcaseAction
         for (int i = 0; i < resources.length; i++)
         {
             IResource resource = resources[i];
-            ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
             if (provider == null
                 || provider.isUnknownState(resource)
                 || provider.isIgnored(resource))

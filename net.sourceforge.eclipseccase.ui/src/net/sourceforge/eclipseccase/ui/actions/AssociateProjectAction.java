@@ -94,7 +94,7 @@ public class AssociateProjectAction extends ClearcaseAction
         for (int i = 0; i < projects.length; i++)
         {
             IResource resource = projects[i];
-            ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
             if (provider != null)
                 return false;
         }

@@ -1,15 +1,19 @@
 package net.sourceforge.eclipseccase.ui;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.resource.ImageRegistry;
-
-import java.util.*;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * UI plugin for the Clearcase plugin.

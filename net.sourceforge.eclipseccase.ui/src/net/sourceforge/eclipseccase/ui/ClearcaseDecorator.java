@@ -96,7 +96,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                 || resource.getLocation() == null || !resource.exists())
                 return;
 
-        ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
+        ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
         if (p == null) return;
 
         if (p.isIgnored(resource)) return;
@@ -292,7 +292,7 @@ public class ClearcaseDecorator extends LabelProvider implements
                         throws CoreException
                 {
                     ClearcaseProvider p = ClearcaseProvider
-                            .getProvider(childResource);
+                            .getClearcaseProvider(childResource);
                     if (p == null) return false;
 
                     if (p.isIgnored(childResource)) return false;

@@ -9,11 +9,11 @@
  *     IBM Corporation - initial API and implementation
  *     Gunnar Wagenknecht - adaption for ClearCase plug-in
  *******************************************************************************/
+
 package net.sourceforge.eclipseccase.ui;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -38,12 +38,15 @@ public class CommentDialogArea extends DialogArea
 {
 
     private static final int WIDTH_HINT = 350;
+
     private static final int HEIGHT_HINT = 150;
 
     Text text;
+
     Combo previousCommentsCombo;
-    private IProject mainProject;
+
     String[] comments = new String[0];
+
     String comment = ""; //$NON-NLS-1$
 
     public static final String OK_REQUESTED = "OkRequested"; //$NON-NLS-1$
@@ -52,10 +55,12 @@ public class CommentDialogArea extends DialogArea
 
     /**
      * Constructor for CommentDialogArea.
+     * 
      * @param parentDialog
      * @param settings
      */
-    public CommentDialogArea(Dialog parentDialog, IDialogSettings settings, boolean multiLine)
+    public CommentDialogArea(Dialog parentDialog, IDialogSettings settings,
+            boolean multiLine)
     {
         super(parentDialog, settings);
         comments = ClearcasePlugin.getDefault().getPreviousComments();
@@ -75,7 +80,8 @@ public class CommentDialogArea extends DialogArea
 
         if (multiLine)
         {
-            text = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+            text = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL
+                    | SWT.V_SCROLL);
             data = new GridData(GridData.FILL_BOTH);
             data.widthHint = WIDTH_HINT;
             data.heightHint = HEIGHT_HINT;
@@ -84,7 +90,8 @@ public class CommentDialogArea extends DialogArea
         else
         {
             text = new Text(composite, SWT.SINGLE | SWT.BORDER);
-            data = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL);
+            data = new GridData(GridData.GRAB_HORIZONTAL
+                    | GridData.HORIZONTAL_ALIGN_FILL);
             data.widthHint = WIDTH_HINT;
             text.setLayoutData(data);
         }
@@ -93,7 +100,8 @@ public class CommentDialogArea extends DialogArea
         {
             public void keyTraversed(TraverseEvent e)
             {
-                if (e.detail == SWT.TRAVERSE_RETURN && (e.stateMask & SWT.CTRL) != 0)
+                if (e.detail == SWT.TRAVERSE_RETURN
+                        && (e.stateMask & SWT.CTRL) != 0)
                 {
                     e.doit = false;
                     CommentDialogArea.this.signalCtrlEnter();
@@ -128,7 +136,8 @@ public class CommentDialogArea extends DialogArea
             {
                 int index = previousCommentsCombo.getSelectionIndex();
                 if (index != -1)
-                    text.setText(multiLine ? comments[index] : flattenText(comments[index]));
+                        text.setText(multiLine ? comments[index]
+                                : flattenText(comments[index]));
             }
         });
 
@@ -154,6 +163,7 @@ public class CommentDialogArea extends DialogArea
 
     /**
      * Flatten the text in the multiline comment
+     * 
      * @param string
      * @return String
      */
@@ -166,8 +176,7 @@ public class CommentDialogArea extends DialogArea
             char c = string.charAt(i);
             if (c == '\r' || c == '\n')
             {
-                if (!skipAdjacentLineSeparator)
-                    buffer.append("/");
+                if (!skipAdjacentLineSeparator) buffer.append("/");
                 skipAdjacentLineSeparator = true;
             }
             else
@@ -190,7 +199,7 @@ public class CommentDialogArea extends DialogArea
     /**
      * Method clearCommitText.
      */
-    private void clearCommitText()
+    void clearCommitText()
     {
         text.setText(""); //$NON-NLS-1$
         previousCommentsCombo.deselectAll();
@@ -208,22 +217,13 @@ public class CommentDialogArea extends DialogArea
 
     /**
      * Returns the comment.
+     * 
      * @return String
      */
     public String getComment()
     {
-        if (comment != null && comment.length() > 0)
-            finished();
+        if (comment != null && comment.length() > 0) finished();
         return comment;
-    }
-
-    /**
-     * Method setProject.
-     * @param iProject
-     */
-    public void setProject(IProject iProject)
-    {
-        this.mainProject = iProject;
     }
 
     private void finished()
