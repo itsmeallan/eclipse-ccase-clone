@@ -1,3 +1,4 @@
+
 package net.sourceforge.eclipseccase;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ISavedState;
@@ -30,12 +32,15 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
 
-public class StateCacheFactory implements ISaveParticipant, IResourceChangeListener
+public class StateCacheFactory implements ISaveParticipant,
+        IResourceChangeListener
 {
     private static final String SAVE_FILE_NAME = "statecache";
 
     private static StateCacheFactory instance = new StateCacheFactory();
-    private HashMap cacheMap = new HashMap();
+
+    HashMap cacheMap = new HashMap();
+
     private List listeners = Collections.synchronizedList(new LinkedList());
 
     private StateCacheFactory()
@@ -68,8 +73,7 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
     public synchronized boolean isUnitialized(IResource resource)
     {
         StateCache cache = (StateCache) cacheMap.get(resource);
-        if (cache == null)
-            return true;
+        if (cache == null) return true;
         else
             return cache.isUninitialized();
     }
@@ -84,12 +88,13 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
             // sanity check for bogus cache (there is a bug with wrong states)
             if (cacheMap.containsValue(cache))
             {
-                String message =
-                    MessageFormat.format(
-                        "A state cache for resource \"{0}\" already exists but was not found in the map!",
-                        new Object[] { resource });
+                String message = MessageFormat
+                        .format(
+                                "A state cache for resource \"{0}\" already exists but was not found in the map!",
+                                new Object[]{resource});
                 IllegalStateException e = new IllegalStateException(message);
-                ClearcasePlugin.log(IStatus.ERROR, "Error while creating state cache!", e);
+                ClearcasePlugin.log(IStatus.ERROR,
+                        "Error while creating state cache!", e);
                 throw e;
             }
 
@@ -98,8 +103,10 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
         }
         else if (cache.isUninitialized())
         {
-            // do not update here, I found a threading issue where the same resource is updated
-            // again and again because the decorator thread started decoration which
+            // do not update here, I found a threading issue where the same
+            // resource is updated
+            // again and again because the decorator thread started decoration
+            // which
             // caused this methode to get called
             //cache.updateAsync();
         }
@@ -118,6 +125,30 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
 
     public synchronized void remove(IResource resource)
     {
+        try
+        {
+            resource.accept(new IResourceVisitor()
+            {
+                public boolean visit(IResource childResource) throws CoreException
+                {
+                    switch (childResource.getType())
+                    {
+                        case IResource.PROJECT:
+                        case IResource.FOLDER:
+                            cacheMap.remove(childResource);
+                            return true;
+
+                        default:
+                            cacheMap.remove(childResource);
+                            return false;
+                    }
+                }
+            });
+        }
+        catch (CoreException ex)
+        {
+            ex.printStackTrace();
+        }
         cacheMap.remove(resource);
     }
 
@@ -127,8 +158,10 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
     public void doneSaving(ISaveContext context)
     {
         int previousSaveNumber = context.getPreviousSaveNumber();
-        String oldFileName = SAVE_FILE_NAME + Integer.toString(previousSaveNumber);
-        File file = ClearcasePlugin.getDefault().getStateLocation().append(oldFileName).toFile();
+        String oldFileName = SAVE_FILE_NAME
+                + Integer.toString(previousSaveNumber);
+        File file = ClearcasePlugin.getDefault().getStateLocation().append(
+                oldFileName).toFile();
         file.delete();
     }
 
@@ -151,39 +184,37 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
     {
         switch (context.getKind())
         {
-            case ISaveContext.FULL_SAVE :
+            case ISaveContext.FULL_SAVE:
                 try
                 {
                     int saveNumber = context.getSaveNumber();
-                    String saveFileName = SAVE_FILE_NAME + Integer.toString(saveNumber);
-                    IPath statePath =
-                        ClearcasePlugin.getDefault().getStateLocation().append(saveFileName);
+                    String saveFileName = SAVE_FILE_NAME
+                            + Integer.toString(saveNumber);
+                    IPath statePath = ClearcasePlugin.getDefault()
+                            .getStateLocation().append(saveFileName);
                     if (ClearcasePlugin.isPersistState())
                     {
-                        ObjectOutputStream os =
-                            new ObjectOutputStream(new FileOutputStream(statePath.toFile()));
+                        ObjectOutputStream os = new ObjectOutputStream(
+                                new FileOutputStream(statePath.toFile()));
                         Collection serList = new LinkedList(cacheMap.values());
                         os.writeObject(serList);
                         os.flush();
                         os.close();
-                        context.map(new Path(SAVE_FILE_NAME), new Path(saveFileName));
+                        context.map(new Path(SAVE_FILE_NAME), new Path(
+                                saveFileName));
                         context.needSaveNumber();
                     }
                 }
                 catch (IOException ex)
                 {
-                    throw new CoreException(
-                        new Status(
-                            Status.WARNING,
-                            ClearcasePlugin.ID,
-                            TeamException.IO_FAILED,
-                            "Could not persist state cache",
-                            ex));
+                    throw new CoreException(new Status(Status.WARNING,
+                            ClearcasePlugin.ID, TeamException.IO_FAILED,
+                            "Could not persist state cache", ex));
                 }
                 break;
-            case ISaveContext.PROJECT_SAVE :
+            case ISaveContext.PROJECT_SAVE:
                 break;
-            case ISaveContext.SNAPSHOT :
+            case ISaveContext.SNAPSHOT:
                 break;
         }
     }
@@ -194,12 +225,14 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
         {
             if (context != null && ClearcasePlugin.isPersistState())
             {
-                String saveFileName = context.lookup(new Path(SAVE_FILE_NAME)).toString();
-                File stateFile =
-                    ClearcasePlugin.getDefault().getStateLocation().append(saveFileName).toFile();
+                String saveFileName = context.lookup(new Path(SAVE_FILE_NAME))
+                        .toString();
+                File stateFile = ClearcasePlugin.getDefault()
+                        .getStateLocation().append(saveFileName).toFile();
                 if (stateFile.exists())
                 {
-                    ObjectInputStream is = new ObjectInputStream(new FileInputStream(stateFile));
+                    ObjectInputStream is = new ObjectInputStream(
+                            new FileInputStream(stateFile));
                     Collection values = (Collection) is.readObject();
                     for (Iterator iter = values.iterator(); iter.hasNext();)
                     {
@@ -211,7 +244,9 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
                         }
                         //else
                         //{
-                        //	ClearcasePlugin.log(Status.WARNING, "Loaded an invalid cache entry from persistent state cache, ignoring...", null);
+                        //	ClearcasePlugin.log(Status.WARNING, "Loaded an
+                        // invalid cache entry from persistent state cache,
+                        // ignoring...", null);
                         //}
                     }
                     is.close();
@@ -220,15 +255,18 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
         }
         catch (Exception ex)
         {
-            ClearcasePlugin.log(
-                Status.WARNING,
-                "Could not load saved clearcase state cache, resetting cache",
-                ex);
+            ClearcasePlugin
+                    .log(
+                            Status.WARNING,
+                            "Could not load saved clearcase state cache, resetting cache",
+                            ex);
         }
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
      */
     public void resourceChanged(IResourceChangeEvent event)
@@ -244,19 +282,18 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
                     IResource resource = delta.getResource();
                     switch (delta.getKind())
                     {
-                        case IResourceDelta.REMOVED :
+                        case IResourceDelta.REMOVED:
                             remove(resource);
                             break;
 
-                        default :
-                            if (refresh)
-                                toRefresh.add(resource);
+                        default:
+                            if (refresh) toRefresh.add(resource);
                     }
 
                     switch (resource.getType())
                     {
-                        case IResource.PROJECT :
-                        case IResource.FOLDER :
+                        case IResource.PROJECT:
+                        case IResource.FOLDER:
                             return true;
                     }
                     return false;
@@ -265,17 +302,20 @@ public class StateCacheFactory implements ISaveParticipant, IResourceChangeListe
 
             if (refresh && !toRefresh.isEmpty())
             {
-                for (Iterator resources = toRefresh.iterator(); resources.hasNext();)
+                for (Iterator resources = toRefresh.iterator(); resources
+                        .hasNext();)
                 {
                     IResource resourceToRefresh = (IResource) resources.next();
-                    StateCache cache = StateCacheFactory.getInstance().get(resourceToRefresh);
+                    StateCache cache = StateCacheFactory.getInstance().get(
+                            resourceToRefresh);
                     cache.updateAsync(true, false);
                 }
             }
         }
         catch (CoreException e)
         {
-            ClearcasePlugin.log(IStatus.ERROR, "Unable to do a quick update of resource", null);
+            ClearcasePlugin.log(IStatus.ERROR,
+                    "Unable to do a quick update of resource", null);
         }
     }
 }

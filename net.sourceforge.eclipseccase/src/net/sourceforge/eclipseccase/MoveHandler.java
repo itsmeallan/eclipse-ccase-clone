@@ -28,7 +28,7 @@ public class MoveHandler implements IMoveDeleteHook
 		this.provider = provider;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#deleteFile(IResourceTree, IFile, int, IProgressMonitor)
 	 */
 	public boolean deleteFile(
@@ -139,7 +139,7 @@ public class MoveHandler implements IMoveDeleteHook
 		return true;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#deleteProject(IResourceTree, IProject, int, IProgressMonitor)
 	 */
 	public boolean deleteProject(
@@ -239,7 +239,7 @@ public class MoveHandler implements IMoveDeleteHook
 		return status;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#moveFile(IResourceTree, IFile, IFile, int, IProgressMonitor)
 	 */
 	public boolean moveFile(
@@ -287,7 +287,7 @@ public class MoveHandler implements IMoveDeleteHook
 		return true;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#moveFolder(IResourceTree, IFolder, IFolder, int, IProgressMonitor)
 	 */
 	public boolean moveFolder(
@@ -334,7 +334,7 @@ public class MoveHandler implements IMoveDeleteHook
 		return true;
 	}
 
-	/**
+	/*
 	 * @see IMoveDeleteHook#moveProject(IResourceTree, IProject, IProjectDescription, int, IProgressMonitor)
 	 */
 	public boolean moveProject(
@@ -344,42 +344,9 @@ public class MoveHandler implements IMoveDeleteHook
 		int updateFlags,
 		IProgressMonitor monitor)
 	{
-		IResource destination = source.getFolder(description.getLocation());
-
-        if (provider.isIgnored(source) || !provider.hasRemote(source))
-        {
-			tree.standardMoveProject(source, description, updateFlags, monitor);
-			return true;
-		}
-
-		IStatus status = validateDest(destination, monitor);
-
-		if ((IResource.FORCE & updateFlags) != 0 &&
-			!tree.isSynchronized(source, IResource.DEPTH_INFINITE))
-		{
-			status = new Status(IStatus.ERROR,
-								ClearcaseProvider.ID,
-								TeamException.UNABLE,
-								"Tree not synchronized",
-								null);
-		}
-		if (status.getCode() == IStatus.OK && (IResource.KEEP_HISTORY & updateFlags) != 0)
-		{
-			// Have to do this recursively for children?
-			//tree.addToLocalHistory(source);
-		}
-		if (status.getCode() == IStatus.OK)
-		{
-			status = provider.move(source, destination);
-		}
-
-		if (status.getCode() == IStatus.OK)
-			tree.movedProjectSubtree(source, description);
-		else
-			tree.failed(status);
-
-
-		return true;
+	    StateCacheFactory.getInstance().remove(source);
+	    // return false to handle a standard move
+	    return false;
 	}
 
 }
