@@ -46,45 +46,49 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
     public void fetchDeferredChildren(Object object,
             IElementCollector collector, IProgressMonitor monitor)
     {
-        // find projects
-        List projectsToSearch = null;
-        if(null != getWorkingSet())
-        {
-            IAdaptable[] adaptables = getWorkingSet().getElements();
-            projectsToSearch = new ArrayList(adaptables.length);
-            for (int i = 0; i < adaptables.length; i++)
-            {
-                IResource resource = (IResource) adaptables[i].getAdapter(IResource.class);
-                if(null != resource)
-                {
-                    IProject project = resource.getProject();
-                    if(null != project && !projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project))
-                    {
+        try {
+            // find projects
+            List projectsToSearch = null;
+            if (null != getWorkingSet()) {
+                IAdaptable[] adaptables = getWorkingSet().getElements();
+                projectsToSearch = new ArrayList(adaptables.length);
+                for (int i = 0; i < adaptables.length; i++) {
+                    IResource resource = (IResource) adaptables[i]
+                            .getAdapter(IResource.class);
+                    if (null != resource) {
+                        IProject project = resource.getProject();
+                        if (null != project
+                                && !projectsToSearch.contains(project)
+                                && null != ClearcaseProvider
+                                        .getClearcaseProvider(project)) {
+                            projectsToSearch.add(project);
+                        }
+                    }
+                }
+            } else {
+                // use all workspace projects
+                IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
+                        .getProjects();
+                projectsToSearch = new ArrayList(projects.length);
+                for (int i = 0; i < projects.length; i++) {
+                    IProject project = projects[i];
+                    if (!projectsToSearch.contains(project)
+                            && null != ClearcaseProvider
+                                    .getClearcaseProvider(project)) {
                         projectsToSearch.add(project);
                     }
                 }
             }
-        }
-        else
-        {
-            // use all workspace projects
-            IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-            projectsToSearch = new ArrayList(projects.length);
-            for (int i = 0; i < projects.length; i++)
-            {
-                IProject project = projects[i];
-                if(!projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project))
-                {
-                    projectsToSearch.add(project);
-                }
-            }
-        }
-        
-        if(null == projectsToSearch || projectsToSearch.isEmpty())
-            return;
 
-        // collect elements
-    	collectElements((IProject[]) projectsToSearch.toArray(new IProject[projectsToSearch.size()]), collector, monitor);
+            if (null == projectsToSearch || projectsToSearch.isEmpty()) return;
+
+            // collect elements
+            collectElements((IProject[]) projectsToSearch
+                    .toArray(new IProject[projectsToSearch.size()]), collector,
+                    monitor);
+        } finally {
+            collector.done();
+        }
     }
 
     /**
