@@ -2,6 +2,8 @@
 -----
 
 - Fixed problem with Adding of directories to ccase
+- Fixed performance problem with checkouts view
+- Fixed some problems with static views and compare (internal)
 
 0.9.6
 -----
