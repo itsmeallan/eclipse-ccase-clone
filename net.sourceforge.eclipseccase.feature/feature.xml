@@ -3,17 +3,12 @@
       id="net.sourceforge.eclipseccase"
       label="%featureName"
       version="1.0.0.RC1"
+      image="eclipse-ccase.jpg"
       provider-name="%providerName">
-
-   <install-handler/>
 
    <description>
       %description
    </description>
-
-   <copyright url="%copyrightURL">
-      %copyright
-   </copyright>
 
    <license url="%licenseURL">
       %license

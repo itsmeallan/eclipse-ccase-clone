@@ -3,6 +3,7 @@
 
 - applied patch 1024155 (fix for preference setting)
 - checkins are now also performed in the background
+- fixed the About dialog content
 
 
 1.0.0.M3
