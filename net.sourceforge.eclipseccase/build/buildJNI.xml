@@ -13,7 +13,7 @@
 	
 	<target name="clean">
 		<delete dir="${jni.build}" quiet="true"/>
-		<delete file="${dll.name}" quiet="true"/>
+		<delete file="${projectdir}/${dll.name}" quiet="true"/>
 		<echo message="Clean complete"/>		
 	</target>
 
