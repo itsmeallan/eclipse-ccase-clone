@@ -2,3 +2,4 @@ build.xml
 login.properties
 staging
 export
+*.jar
