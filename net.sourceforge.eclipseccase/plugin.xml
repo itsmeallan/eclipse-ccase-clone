@@ -19,6 +19,7 @@
       <import plugin="org.eclipse.swt"/>
       <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.team.ui"/>
+      <import plugin="org.eclipse.compare"/>
    </requires>
 
 
@@ -160,6 +161,12 @@
                class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.comparepredecessor">
+         </action>
+         <action
+               label="Predecessor"
+               class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorInternalAction"
+               menubarPath="compareWithMenu/compareWithGroup"
+               id="net.sourceforge.eclipseccase.popups.internalcomparepredecessor">
          </action>
          <action
                label="Find checkouts"

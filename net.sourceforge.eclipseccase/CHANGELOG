@@ -1,3 +1,13 @@
+0.9.4
+-----
+
+- Added double click for open in Checkouts view
+- Added "Compare With->Predecessor" in standard resource popups - this opens builtin eclipse
+  compare tool
+- Now performs a quick update on resource change so that changes discovered by the auto
+  refresh plugin show up in workspace (i.e if you chcout a file manually using native
+  clearcase tools)
+
 0.9.3
 -----
 
