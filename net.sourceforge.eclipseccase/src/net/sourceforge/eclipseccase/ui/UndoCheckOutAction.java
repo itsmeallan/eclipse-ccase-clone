@@ -1,19 +1,22 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.Policy;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.sourceforge.eclipseccase.StateCache;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
+import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import sun.security.krb5.internal.i;
+import sun.security.krb5.internal.crypto.e;
 
 /**
  * @author conwaym
@@ -21,7 +24,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * To change this generated comment edit the template variable "typecomment":
  * Workbench>Preferences>Java>Templates.
  */
-public class UndoCheckOutAction extends org.eclipse.team.ui.actions.UndoCheckOutAction
+public class UndoCheckOutAction extends TeamAction
 {
 	public void run(IAction action)
 	{
@@ -59,6 +62,23 @@ public class UndoCheckOutAction extends org.eclipse.team.ui.actions.UndoCheckOut
 				}
 			}
 		}, "Undoing checkout", this.PROGRESS_DIALOG);
+	}
+
+	protected boolean isEnabled() throws TeamException
+	{
+		IResource[] resources = getSelectedResources();
+		if (resources.length == 0)
+			return false;
+		for (int i = 0; i < resources.length; i++)
+		{
+			IResource resource = resources[i];
+			StateCache cache = StateCache.getState(resource);
+			if (!cache.hasRemote())
+				return false;
+			if (!cache.isCheckedOut())
+				return false;
+		}
+		return true;
 	}
 
 }

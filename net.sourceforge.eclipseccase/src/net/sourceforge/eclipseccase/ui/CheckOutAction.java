@@ -1,21 +1,22 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.Policy;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.sourceforge.eclipseccase.StateCache;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import sun.security.krb5.internal.i;
+import sun.security.krb5.internal.crypto.e;
 
 public class CheckOutAction extends TeamAction
 {
@@ -70,14 +71,10 @@ public class CheckOutAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			RepositoryProvider provider =
-				RepositoryProvider.getProvider(resource.getProject());
-			SimpleAccessOperations ops = provider.getSimpleAccess();
-			if (provider == null || ops == null)
+			StateCache cache = StateCache.getState(resource);
+			if (!cache.hasRemote())
 				return false;
-			if (!ops.hasRemote(resource))
-				return false;
-			if (ops.isCheckedOut(resource))
+			if (cache.isCheckedOut())
 				return false;
 		}
 		return true;

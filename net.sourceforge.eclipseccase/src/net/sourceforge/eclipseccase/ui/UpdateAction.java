@@ -1,6 +1,7 @@
 package net.sourceforge.eclipseccase.ui;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.StateCache;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
@@ -19,13 +20,10 @@ public class UpdateAction extends org.eclipse.team.ui.actions.GetAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
-			ClearcaseProvider provider =
-				(ClearcaseProvider) RepositoryProvider.getProvider(resource.getProject());
-			if (provider == null)
+			StateCache cache = StateCache.getState(resource);
+			if (!cache.hasRemote())
 				return false;
-			if (!provider.hasRemote(resource))
-				return false;
-			if (!provider.isSnapShot(resource))
+			if (!cache.isSnapShot())
 				return false;
 		}
 		return true;

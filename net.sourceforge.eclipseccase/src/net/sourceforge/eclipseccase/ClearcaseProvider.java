@@ -34,6 +34,7 @@ public class ClearcaseProvider
 	private IFileModificationValidator modificationValidator =
 		new ModificationHandler(this);
 	private String comment = "";
+	private boolean isSnapShot = false;
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
@@ -45,6 +46,9 @@ public class ClearcaseProvider
 	 */
 	public void configureProject() throws CoreException
 	{
+		// no need to calculate this for each resource as all resources
+		// within a project must belong to the same view
+		isSnapShot = Clearcase.isSnapShot(getProject().getLocation().toOSString());
 	}
 
 	/**
@@ -62,6 +66,11 @@ public class ClearcaseProvider
 	{
 	}
 
+	public static ClearcaseProvider getProvider(IResource resource)
+	{
+		return (ClearcaseProvider) RepositoryProvider.getProvider(resource.getProject());
+	}
+	
 	/**
 	 * @see SimpleAccessOperations#get(IResource[], int, IProgressMonitor)
 	 */
@@ -351,10 +360,9 @@ public class ClearcaseProvider
 	/**
 	 * @see SimpleAccessOperations#isSnapShot(IResource)
 	 */
-	public boolean isSnapShot(IResource resource)
+	public boolean isSnapShot()
 	{
-		boolean result = Clearcase.isSnapShot(resource.getLocation().toOSString());
-		return result;
+		return isSnapShot;
 	}
 
 	/**
@@ -458,6 +466,10 @@ public class ClearcaseProvider
 			}
 			marker.setAttribute("statechanged", true);
 			resource.refreshLocal(depth, monitor);
+			// probably overkill/expensive to do it here - should do it on a
+			// case by case basis for eac method that actually changes state
+			StateCache cache = StateCache.getState(resource);
+			cache.update(resource);
 		}
 		catch (CoreException ex)
 		{

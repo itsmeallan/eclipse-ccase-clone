@@ -9,14 +9,14 @@ package net.sourceforge.eclipseccase.ui;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.StateCache;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import sun.security.krb5.internal.i;
 
 /**
  *  Pulls up the clearcase version tree for the element
@@ -38,12 +38,8 @@ public class FindCheckOutsAction extends TeamAction
 			if (resource.getType() == IResource.FILE)
 				return false;
 
-			RepositoryProvider provider =
-				RepositoryProvider.getProvider(resource.getProject());
-			SimpleAccessOperations ops = provider.getSimpleAccess();
-			if (provider == null || ops == null)
-				return false;
-			if (!ops.hasRemote(resource))
+			StateCache cache = StateCache.getState(resource);
+			if (!cache.hasRemote())
 				return false;
 		}
 		return true;

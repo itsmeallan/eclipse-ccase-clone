@@ -54,8 +54,8 @@ public class AssociateProjectAction extends TeamAction
 		for (int i = 0; i < projects.length; i++)
 		{
 			IResource resource = projects[i];
-			RepositoryProvider provider =
-				RepositoryProvider.getProvider(resource.getProject());
+			ClearcaseProvider provider =
+				ClearcaseProvider.getProvider(resource);
 			if (provider != null)
 				return false;
 		}
