@@ -2,6 +2,8 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 
+import javax.swing.ProgressMonitor;
+
 import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
@@ -66,7 +68,31 @@ public class ClearcaseProvider
 	public void get(IResource[] resources, int depth, IProgressMonitor progress)
 		throws TeamException
 	{
-	}
+		execute(new IIterativeOperation()
+		{
+			public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+			{
+				IStatus result = new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+				String filename = resource.getLocation().toOSString();
+				if (Clearcase.isSnapShot(filename))
+				{
+					Clearcase.Status status =
+						Clearcase.cleartool("update -ptime " + filename);
+					changeState(resource, IResource.DEPTH_INFINITE, progress);
+					if (!status.status)
+					{
+						result =
+							new Status(
+								IStatus.ERROR,
+								TeamPlugin.ID,
+								TeamException.UNABLE,
+								"Update failed: " + status.message,
+								null);
+					}
+				}
+				return result;
+			}
+		}, resources, IResource.DEPTH_INFINITE, progress);	}
 
 	/**
 	 * @see SimpleAccessOperations#checkout(IResource[], int, IProgressMonitor)
@@ -85,7 +111,7 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkout(resource.getLocation().toOSString(), "", false, true);
-				changeState(resource);
+				changeState(resource, IResource.DEPTH_ZERO, progress);
 				if (!status.status)
 				{
 					result =
@@ -118,7 +144,7 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
-				changeState(resource);
+				changeState(resource, IResource.DEPTH_ZERO, progress);
 				if (!status.status)
 				{
 					result =
@@ -151,7 +177,7 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
-				changeState(resource);
+				changeState(resource, IResource.DEPTH_ZERO, progress);
 				if (!status.status)
 				{
 					result =
@@ -248,17 +274,16 @@ public class ClearcaseProvider
 								Clearcase.add(folder.getLocation().toOSString(), "", true);
 							if (status.status)
 							{
-								folder.refreshLocal(IResource.DEPTH_ZERO, null);
-								changeState(folder);
+								changeState(folder.getParent(), IResource.DEPTH_ONE, progress);
 								IResource[] members =
 									mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
 								for (int i = 0; i < members.length; i++)
 								{
 									IResource member = members[i];
 									IPath newPath = folder.getFullPath().append(member.getName());
-									member.move(newPath, true, null);
+									member.move(newPath, true, progress);
 								}
-								mkelemFolder.delete(true, false, null);
+								mkelemFolder.delete(true, false, progress);
 							}
 							else
 							{
@@ -281,7 +306,7 @@ public class ClearcaseProvider
 					{
 						Clearcase.Status status =
 							Clearcase.add(resource.getLocation().toOSString(), "", false);
-						changeState(resource);
+						changeState(resource, IResource.DEPTH_ZERO, progress);
 						if (!status.status)
 						{
 							result =
@@ -323,6 +348,15 @@ public class ClearcaseProvider
 	}
 
 	/**
+	 * @see SimpleAccessOperations#isSnapShot(IResource)
+	 */
+	public boolean isSnapShot(IResource resource)
+	{
+		boolean result = Clearcase.isSnapShot(resource.getLocation().toOSString());
+		return result;
+	}
+
+	/**
 	 * @see SimpleAccessOperations#hasRemote(IResource)
 	 */
 	public boolean hasRemote(IResource resource)
@@ -355,8 +389,8 @@ public class ClearcaseProvider
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
-			changeState(source);
-			changeState(destination);
+			changeState(source, IResource.DEPTH_ZERO, null);
+			changeState(destination, IResource.DEPTH_ZERO, null);
 		}
 		return result;
 	}
@@ -380,7 +414,7 @@ public class ClearcaseProvider
 		{
 			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false, true);
 			// touch so decorator gets notified
-			changeState(resource);
+			changeState(resource, IResource.DEPTH_ZERO, null);
 			if (!ccStatus.status)
 			{
 				result =
@@ -396,7 +430,7 @@ public class ClearcaseProvider
 	}
 	
 	// Notifies decorator that state has changed for an element
-	private void changeState(IResource resource)
+	private void changeState(IResource resource, int depth, IProgressMonitor monitor)
 	{
 		try
 		{
@@ -414,6 +448,7 @@ public class ClearcaseProvider
 				marker = markers[0];
 			}
 			marker.setAttribute("statechanged", true);
+			resource.refreshLocal(depth, monitor);
 		}
 		catch (CoreException ex) {}
 	}

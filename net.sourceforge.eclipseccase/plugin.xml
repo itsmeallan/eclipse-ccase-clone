@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.3.1"
+   version="0.4.0"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -102,6 +102,12 @@
                id="net.sourceforge.eclipseccase.popups.checkout">
          </action>
          <action
+               label="Update"
+               class="net.sourceforge.eclipseccase.ui.UpdateAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.update">
+         </action>
+         <action
                label="Add"
                class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
                menubarPath="team.main/group1"
@@ -118,6 +124,12 @@
                class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.versiontree">
+         </action>
+         <action
+               label="Update (External)"
+               class="net.sourceforge.eclipseccase.ui.ExternalUpdateAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.externalupdate">
          </action>
          <action
                label="History"

@@ -399,6 +399,71 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isDif
 	return result;
 }
 
+/*
+ * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Method:    isSnapShot
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isSnapShot
+  (JNIEnv * env, jclass obj, jstring file)
+{
+	boolean result = false;
+	const char *filestr = env->GetStringUTFChars(file, 0);
+
+	try 
+	{ 
+		ICCVersionPtr ver = ccase->GetVersion(filestr);
+		ICCViewPtr view = ver->GetView();
+		result = view->GetIsSnapShot();
+	}
+	catch(_com_error& cerror) 
+	{ 
+		ostringstream os;
+		os << (const char *) cerror.Description(); 
+		os << "Error code: " << cerror.Error(); 
+		raiseJNIException(env, os.str().c_str());
+	}
+	catch(...)
+	{
+		raiseJNIException(env, "Unhandled Exception in Clearcase JNI layer");
+	}
+
+	env->ReleaseStringUTFChars(file, filestr);
+	return result;
+}
+
+/*
+ * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Method:    isHijacked
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isHijacked
+  (JNIEnv * env, jclass obj, jstring file)
+{
+	boolean result = false;
+	const char *filestr = env->GetStringUTFChars(file, 0);
+
+	try 
+	{ 
+		ICCVersionPtr ver = ccase->GetVersion(filestr);
+		result = ver->GetIsHijacked();
+	}
+	catch(_com_error& cerror) 
+	{ 
+		ostringstream os;
+		os << (const char *) cerror.Description(); 
+		os << "Error code: " << cerror.Error(); 
+		raiseJNIException(env, os.str().c_str());
+	}
+	catch(...)
+	{
+		raiseJNIException(env, "Unhandled Exception in Clearcase JNI layer");
+	}
+
+	env->ReleaseStringUTFChars(file, filestr);
+	return result;
+}
+
 #ifdef __cplusplus
 }
 #endif

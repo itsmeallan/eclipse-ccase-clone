@@ -77,6 +77,16 @@ public class Clearcase
 	 */
 	public static native boolean isDifferent(String file);
 
+	/**
+	 Returns true if the file is under version control and part of a snapshot view
+	 */
+	public static native boolean isSnapShot(String file);
+
+	/**
+	 Returns true if the file is under version control and hijacked from a snapshot view
+	 */
+	public static native boolean isHijacked(String file);
+
 	/** For testing puposes only */
 	public static void main(String[] args)
 	{
