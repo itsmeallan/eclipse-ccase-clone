@@ -3,6 +3,7 @@ package net.sourceforge.eclipseccase;
 import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
@@ -281,7 +282,16 @@ public class ClearcaseProvider
 	{
 		IStatus result =
 			new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
-		String parent = resource.getParent().getLocation().toOSString();
+		String parent = null;
+		// IProject's parent is the workspace directory, we want the filesystem parent
+		if (resource instanceof IProject)
+		{
+			parent = resource.getLocation().toFile().getParent().toString();
+		}
+		else
+		{
+			parent = resource.getParent().getLocation().toOSString();
+		}
 		if (!Clearcase.isCheckedOut(parent))
 		{
 			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false);
