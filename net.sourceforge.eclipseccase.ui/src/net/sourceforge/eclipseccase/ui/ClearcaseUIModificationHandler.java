@@ -79,14 +79,23 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
      *      java.lang.Object)
      */
     public IStatus validateEdit(IFile[] files, Object context) {
-        Shell shell = getShell(context);
+        final Shell shell = getShell(context);
         if (null == shell) return super.validateEdit(files, context);
 
         try {
             validateEditLock.acquire();
-            IFile[] readOnlyFiles = getFilesToCheckout(files);
+            final IFile[] readOnlyFiles = getFilesToCheckout(files);
             if (readOnlyFiles.length == 0) return OK;
-            return checkout(readOnlyFiles, shell);
+            final IStatus[] status = new IStatus[1];
+            PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+
+                public void run() {
+                    status[0] = checkout(readOnlyFiles, shell);
+                }
+            });
+            if(null == status[0])
+                return CANCEL;
+            return status[0];
         } finally {
             validateEditLock.release();
         }

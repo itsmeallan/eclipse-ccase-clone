@@ -456,14 +456,22 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
     // Notifies decorator that state has changed for an element
     void updateState(IResource resource, int depth, IProgressMonitor monitor) {
-        if (!refreshResources) {
-            StateCacheFactory.getInstance().removeSingle(resource);
-            return;
-        }
         try {
             monitor.beginTask("Refreshing " + resource.getFullPath(), 20);
-            resource.refreshLocal(depth, new SubProgressMonitor(monitor, 10));
-            doUpdateState(resource, depth, new SubProgressMonitor(monitor, 10));
+            if (!refreshResources) {
+                StateCacheFactory.getInstance().removeSingle(resource);
+                monitor.worked(10);
+            } else {
+                resource.refreshLocal(depth,
+                        new SubProgressMonitor(monitor, 10));
+            }
+            
+            if(resource.exists()) {
+                doUpdateState(resource, depth, new SubProgressMonitor(monitor, 10));
+            }
+            else {
+                StateCacheFactory.getInstance().refreshStateAsyncHighPriority(new IResource[] {resource});
+            }
         } catch (CoreException ex) {
             ClearcasePlugin.log(IStatus.ERROR,
                     "Error refreshing ClearCase state: " + ex.getMessage(), ex);
@@ -1097,7 +1105,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
         // never ignore handled resources
         if (hasRemote(resource)) return false;
-        
+
         // never ignore workspace root
         IResource parent = resource.getParent();
         if (null == parent) return false;
@@ -1105,19 +1113,19 @@ public class ClearcaseProvider extends RepositoryProvider implements
         // check the global ignores from Team (includes derived resources)
         if (Team.isIgnoredHint(resource)) {
             if (ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES)
-                ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
-                        "ignore hint from team plug-in: " + resource); //$NON-NLS-1$
+                    ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
+                            "ignore hint from team plug-in: " + resource); //$NON-NLS-1$
             return true;
         }
 
         // never ignore uninitialized resources
         if (isUnknownState(resource)) return false;
-        
+
         // ignore resources outside view
         if (!isInsideView(resource)) {
             if (ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES)
-                ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
-                        "outside view: " + resource); //$NON-NLS-1$
+                    ClearcasePlugin.trace(TRACE_ID_IS_IGNORED,
+                            "outside view: " + resource); //$NON-NLS-1$
             return true;
         }
 
