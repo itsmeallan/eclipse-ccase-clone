@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ISaveContext;
@@ -27,6 +28,7 @@ public class StateCacheFactory implements ISaveParticipant
 
 	private static StateCacheFactory instance = new StateCacheFactory();
 	private HashMap cacheMap = new HashMap();
+	private List listeners = new LinkedList();
 	
 	private StateCacheFactory()
 	{
@@ -37,6 +39,24 @@ public class StateCacheFactory implements ISaveParticipant
 		return instance;
 	}
 	
+	public synchronized void addStateChangeListerer(StateChangeListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	public synchronized boolean removeStateChangeListerer(StateChangeListener listener)
+	{
+		return listeners.remove(listener);
+	}
+	
+	public synchronized void fireStateChanged(StateCache stateCache)
+	{
+		for (Iterator iter = listeners.iterator(); iter.hasNext();)
+		{
+			StateChangeListener listener = (StateChangeListener) iter.next();
+			listener.stateChanged(stateCache);
+		}
+	}
 	
 	public synchronized boolean isUnitialized(IResource resource)
 	{

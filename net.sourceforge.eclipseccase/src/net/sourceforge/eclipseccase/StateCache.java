@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
-import net.sourceforge.eclipseccase.ui.MarkerManager;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
@@ -71,16 +70,38 @@ public class StateCache implements Serializable
 
 	public synchronized void update()
 	{
-		hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
-		isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
-		isDirty = isCheckedOut && ClearcasePlugin.getEngine().isDifferent(osPath);
-		isSnapShot = hasRemote && ClearcasePlugin.getEngine().isSnapShot(osPath);
-		isHijacked = isSnapShot && ClearcasePlugin.getEngine().isHijacked(osPath);
+		boolean changed = false;
+		
+		boolean hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
+		changed = hasRemote != this.hasRemote;
+		this.hasRemote = hasRemote;
+		
+		boolean isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
+		changed = isCheckedOut != this.isCheckedOut;
+		this.hasRemote = hasRemote;
+		
+		boolean isDirty = isCheckedOut && ClearcasePlugin.getEngine().isDifferent(osPath);
+		changed = isDirty != this.isDirty;
+		this.isCheckedOut = isCheckedOut;
+		
+		boolean isSnapShot = hasRemote && ClearcasePlugin.getEngine().isSnapShot(osPath);
+		changed = isSnapShot != this.isSnapShot;
+		this.isSnapShot = isSnapShot;
+		
+		boolean isHijacked = isSnapShot && ClearcasePlugin.getEngine().isHijacked(osPath);
+		changed = isHijacked != this.isHijacked;
+		this.isHijacked = isHijacked;
+		
 		if (hasRemote)
-			version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
+		{
+			String version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
+			changed = ! version.equals(this.version);
+			this.version = version;
+		}
+		
 		uninitialized = false;
-		ClearcaseDecorator.labelResource(resource);
-		MarkerManager.getInstance().stateChanged(this);
+		if (changed)
+			StateCacheFactory.getInstance().fireStateChanged(this);
 	}
 	
 	/**
