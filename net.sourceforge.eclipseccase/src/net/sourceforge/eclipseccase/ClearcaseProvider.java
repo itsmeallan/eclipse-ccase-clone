@@ -1,4 +1,15 @@
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
 import java.io.File;
@@ -28,6 +39,9 @@ import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
+/**
+ * The ClearCase repository provider.
+ */
 public class ClearcaseProvider extends RepositoryProvider implements
         SimpleAccessOperations
 {
@@ -53,8 +67,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
     public static final Status OK_STATUS = new Status(IStatus.OK, ID,
             TeamException.OK, "OK", null);
 
-    public ClearcaseProvider()
-    {
+    public ClearcaseProvider() {
         super();
     }
 
@@ -373,11 +386,11 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 StateCacheFactory.getInstance().remove(source);
 
                 updateState(source.getParent(), IResource.DEPTH_ZERO,
-                            new SubProgressMonitor(monitor, 10));
-                    updateState(destination.getParent(), IResource.DEPTH_ZERO,
-                            new SubProgressMonitor(monitor, 10));
-                    updateState(destination, IResource.DEPTH_INFINITE,
-                            new SubProgressMonitor(monitor, 10));
+                        new SubProgressMonitor(monitor, 10));
+                updateState(destination.getParent(), IResource.DEPTH_ZERO,
+                        new SubProgressMonitor(monitor, 10));
+                updateState(destination, IResource.DEPTH_INFINITE,
+                        new SubProgressMonitor(monitor, 10));
 
                 if (!ccStatus.status)
                 {
@@ -438,7 +451,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
                 if (!flag)
                         updateState(resource.getParent(), IResource.DEPTH_ZERO,
-                                new SubProgressMonitor(monitor,10));
+                                new SubProgressMonitor(monitor, 10));
                 if (!ccStatus.status)
                 {
                     result = new Status(IStatus.ERROR, ID,
@@ -454,18 +467,18 @@ public class ClearcaseProvider extends RepositoryProvider implements
             monitor.done();
         }
     }
-    
+
     boolean refreshResources = true;
 
     // Notifies decorator that state has changed for an element
     void updateState(IResource resource, int depth, IProgressMonitor monitor)
     {
-        if(!refreshResources)
+        if (!refreshResources)
         {
             StateCacheFactory.getInstance().removeSingle(resource);
             return;
         }
-        
+
         try
         {
             monitor.beginTask("Refreshing " + resource.getFullPath(), 20);
@@ -549,15 +562,15 @@ public class ClearcaseProvider extends RepositoryProvider implements
         {
             try
             {
-                monitor.beginTask("Refreshing State "
-                        + resource.getFullPath(), 10);
+                monitor.beginTask("Refreshing State " + resource.getFullPath(),
+                        10);
                 // probably overkill/expensive to do it here - should do it
                 // on a
                 // case by case basis for eac method that actually changes
                 // state
-                StateCache cache = StateCacheFactory.getInstance().get(
-                        resource);
-                
+                StateCache cache = StateCacheFactory.getInstance()
+                        .get(resource);
+
                 // force update immediately
                 cache.doUpdate();
 
@@ -1258,4 +1271,52 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 .getSymbolicLinkTarget();
     }
 
+    /**
+     * Indicates if the specified resource is edited (checked out) by someone
+     * else.
+     * 
+     * @param childResource
+     * @return <code>true</code> if the specified resource is edited (checked
+     *         out) by someone else, <code>false</code> otherwise
+     */
+    public boolean isEdited(IResource resource)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /**
+     * Indicates if the specified resource is a view root directory containing
+     * vobs.
+     * 
+     * @param resource
+     * @return <code>true</code> if the specified resource is a view root
+     *         directory
+     */
+    public boolean isViewRoot(IResource resource)
+    {
+        /*
+         * todo: we need a better check for the view root; this only supports
+         * structures where a project is the view directory containing the vobs
+         */
+        return null != resource && resource.getType() == IResource.PROJECT
+                && !hasRemote(resource);
+    }
+
+    /**
+     * Indicates if the specified resource is a vob root directory.
+     * 
+     * @param resource
+     * @return <code>true</code> if the specified resource is a vob root
+     *         directory
+     */
+    public boolean isVobRoot(IResource resource)
+    {
+        /*
+         * todo: we need a better check for the vob root; this only supports
+         * structures where a project is the view directory containing the vobs
+         */
+        return resource.getType() == IResource.FOLDER && !resource.isLinked()
+                && isViewRoot(resource.getParent());
+    }
 }

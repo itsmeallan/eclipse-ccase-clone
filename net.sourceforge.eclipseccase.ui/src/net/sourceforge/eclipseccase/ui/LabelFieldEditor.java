@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Label;
 /**
  * A field editor for displaying labels not associated with other widgets.
  */
-class LabelFieldEditor extends FieldEditor
+public class LabelFieldEditor extends FieldEditor
 {
 
 	private Label label;

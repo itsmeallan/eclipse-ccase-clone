@@ -1,4 +1,15 @@
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
 import java.util.ArrayList;
@@ -29,6 +40,8 @@ public class ClearcaseUI extends AbstractUIPlugin
 {
 
     //The shared instance.
+    private static final String NO_PREFIX = "";
+
     private static ClearcaseUI plugin;
 
     //Resource bundle.
@@ -41,14 +54,12 @@ public class ClearcaseUI extends AbstractUIPlugin
      * 
      * @param descriptor
      */
-    public ClearcaseUI()
-    {
+    public ClearcaseUI() {
         super();
         plugin = this;
         try
         {
-            resourceBundle = ResourceBundle
-                    .getBundle("net.sourceforge.eclipseccase.ui.ClearcaseUIResources");
+            resourceBundle = ResourceBundle.getBundle(PLUGIN_ID + ".messages");
         }
         catch (MissingResourceException x)
         {
@@ -140,34 +151,136 @@ public class ClearcaseUI extends AbstractUIPlugin
         return (IEditorPart[]) result.toArray(new IEditorPart[result.size()]);
     }
 
+    /**
+     * Returns the preference value for <code>DEEP_DECORATIONS</code>.
+     * 
+     * @return the preference value
+     */
     public static boolean isDeepDecoration()
     {
         return getInstance().getPluginPreferences().getBoolean(
                 IClearcaseUIPreferenceConstants.DEEP_DECORATIONS);
     }
 
-    public static boolean isTextDirtyDecoration()
-    {
-        return getInstance().getPluginPreferences().getBoolean(
-                IClearcaseUIPreferenceConstants.TEXT_DIRTY_DECORATION);
-    }
-
-    public static boolean isTextNewDecoration()
-    {
-        return getInstance().getPluginPreferences().getBoolean(
-                IClearcaseUIPreferenceConstants.TEXT_NEW_DECORATION);
-    }
-
+    /**
+     * Returns the preference value for <code>TEXT_VERSION_DECORATION</code>.
+     * 
+     * @return the preference value
+     */
     public static boolean isTextVersionDecoration()
     {
         return getInstance().getPluginPreferences().getBoolean(
                 IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION);
     }
 
+    /**
+     * Returns the preference value for <code>TEXT_VIEW_DECORATION</code>.
+     * 
+     * @return the preference value
+     */
     public static boolean isTextViewDecoration()
     {
         return getInstance().getPluginPreferences().getBoolean(
                 IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION);
+    }
+
+    /**
+     * Returns the preference value for <code>ICON_DECORATE_NEW</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isIconNewDecoration()
+    {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcaseUIPreferenceConstants.ICON_DECORATE_NEW);
+    }
+
+    /**
+     * Returns the preference value for <code>ICON_DECORATE_EDITED</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isIconEditedDecoration()
+    {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcaseUIPreferenceConstants.ICON_DECORATE_EDITED);
+    }
+
+    /**
+     * Returns the preference value for <code>ICON_DECORATE_UNKNOWN</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isIconUnknownDecoration()
+    {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcaseUIPreferenceConstants.ICON_DECORATE_UNKNOWN);
+    }
+
+    /**
+     * Returns the preference value for <code>ICON_DECORATE_HIJACKED</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isIconHijackedDecoration()
+    {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcaseUIPreferenceConstants.ICON_DECORATE_HIJACKED);
+    }
+
+    /**
+     * Returns the preference value for <code>TEXT_PREFIX_NEW</code>.
+     * 
+     * @return the preference value
+     */
+    public static String getTextPrefixNew()
+    {
+        return getInstance().getPluginPreferences().getString(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_NEW);
+    }
+
+    /**
+     * Returns the preference value for <code>TEXT_PREFIX_DIRTY</code>.
+     * 
+     * @return the preference value
+     */
+    public static String getTextPrefixDirty()
+    {
+        return getInstance().getPluginPreferences().getString(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_DIRTY);
+    }
+
+    /**
+     * Returns the preference value for <code>TEXT_PREFIX_UNKNOWN</code>.
+     * 
+     * @return the preference value
+     */
+    public static String getTextPrefixUnknown()
+    {
+        return getInstance().getPluginPreferences().getString(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_UNKNOWN);
+    }
+
+    /**
+     * Returns the preference value for <code>TEXT_PREFIX_HIJACKED</code>.
+     * 
+     * @return the preference value
+     */
+    public static String getTextPrefixHijacked()
+    {
+        return getInstance().getPluginPreferences().getString(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_HIJACKED);
+    }
+
+    /**
+     * Returns the preference value for <code>TEXT_PREFIX_EDITED</code>.
+     * 
+     * @return the preference value
+     */
+    public static String getTextPrefixEdited()
+    {
+        return getInstance().getPluginPreferences().getString(
+                IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED);
     }
 
     /*
@@ -180,17 +293,37 @@ public class ClearcaseUI extends AbstractUIPlugin
         super.initializeDefaultPreferences(store);
 
         // Decorator preferences
+        store
+                .setDefault(IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
+                        true);
+
+        // default text decorations
         store.setDefault(IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
                 true);
         store.setDefault(
                 IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION, false);
-        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_DIRTY_DECORATION,
+
+        // default prefixes
+        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_DIRTY,
+                NO_PREFIX);
+        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_NEW,
+                NO_PREFIX);
+        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_UNKNOWN,
+                NO_PREFIX);
+        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED,
+                NO_PREFIX);
+        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_HIJACKED,
+                NO_PREFIX);
+
+        // default icon decorations
+        store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_NEW,
                 false);
-        store.setDefault(IClearcaseUIPreferenceConstants.TEXT_NEW_DECORATION,
-                false);
-        store
-                .setDefault(IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
-                        true);
+        store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_EDITED,
+                true);
+        store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_UNKNOWN,
+                true);
+        store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_HIJACKED,
+                true);
     }
 
     /*
@@ -232,7 +365,8 @@ public class ClearcaseUI extends AbstractUIPlugin
         {
             public void run()
             {
-                imageRegistries[0] = new ImageRegistry(getWorkbench().getDisplay());
+                imageRegistries[0] = new ImageRegistry(getWorkbench()
+                        .getDisplay());
             }
         });
         return imageRegistries[0];
