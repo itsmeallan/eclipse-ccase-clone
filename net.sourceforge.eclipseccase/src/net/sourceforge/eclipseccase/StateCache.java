@@ -65,34 +65,6 @@ public class StateCache implements Serializable
 		version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
 		uninitialized = false;
 		ClearcaseDecorator.labelResource(resource);
-		/*
-		try
-		{
-			// This is a hack until I get around to creating my own state change mechanism for decorators
-			// create a marker and set attribute so decorator gets notified without the resource actually
-			// changing (so refactoring doesn't fail).  Should we delete the marker?
-			IMarker[] markers =
-				resource.findMarkers(
-					STATE_CHANGE_MARKER_TYPE,
-					false,
-					IResource.DEPTH_ZERO);
-			IMarker marker = null;
-			if (markers.length == 0)
-			{
-				marker =
-					resource.createMarker(STATE_CHANGE_MARKER_TYPE);
-			}
-			else
-			{
-				marker = markers[0];
-			}
-			marker.setAttribute("statechanged", true);
-		}
-		catch (CoreException e)
-		{
-			ClearcasePlugin.log(IStatus.ERROR, "Unable to refresh the clearcase state for the resource: " + resource.toString(), e);
-		}
-		*/
 	}
 
 	/**
