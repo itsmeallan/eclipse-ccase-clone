@@ -255,6 +255,7 @@ public class ClearcaseProvider
 				{
 					Clearcase.Status status =
 						Clearcase.delete(resource.getLocation().toOSString(), "");
+					StateCacheFactory.getInstance().remove(resource);
 					changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
 					if (!status.status)
 					{
@@ -455,6 +456,7 @@ public class ClearcaseProvider
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
+			StateCacheFactory.getInstance().remove(source);
 			changeState(source.getParent(), IResource.DEPTH_ZERO, null);
 			changeState(destination.getParent(), IResource.DEPTH_ZERO, null);
 		}
