@@ -1,19 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 
-import org.apache.tools.ant.taskdefs.Execute;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
 import org.eclipse.team.core.TeamException;
