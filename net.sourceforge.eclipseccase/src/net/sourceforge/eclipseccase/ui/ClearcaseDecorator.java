@@ -42,6 +42,7 @@ public class ClearcaseDecorator
 	private final int DIRTY_STATE = 1;
 	private final int UNKNOWN_STATE = 2;
 
+	private Timer parentUpdateTimer;
 	private boolean decorationInProcess = false;
 	private List parentQueue = new LinkedList();
 
@@ -56,8 +57,8 @@ public class ClearcaseDecorator
 		addListener(manager);
 		StateCacheFactory.getInstance().addStateChangeListerer(this);
 		
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask()
+		parentUpdateTimer = new Timer();
+		parentUpdateTimer.schedule(new TimerTask()
 		{
 			public void run()
 			{
@@ -80,6 +81,11 @@ public class ClearcaseDecorator
 		}, 0, 250);
 	}
 
+	public void dispose()
+	{
+		parentUpdateTimer.cancel();
+	}
+	
 	/**
 	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
 	 */
