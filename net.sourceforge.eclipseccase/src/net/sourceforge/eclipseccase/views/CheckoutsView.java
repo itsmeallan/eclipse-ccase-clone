@@ -1,25 +1,37 @@
 package net.sourceforge.eclipseccase.views;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.IClearcase;
 import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.StateChangeListener;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -42,7 +54,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.team.internal.core.InfiniteSubProgressMonitor;
 import org.eclipse.team.internal.ui.UIConstants;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
@@ -68,13 +79,54 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	private static final CoreException INTERRUPTED_EXCEPTION =
 		new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
 
+	private final IResourceChangeListener updateListener =
+		new IResourceChangeListener()
+	{
+		public void resourceChanged(IResourceChangeEvent event)
+		{
+			if (event.getType() == IResourceChangeEvent.POST_CHANGE)
+			{
+				try
+				{
+					event.getDelta().accept(new IResourceDeltaVisitor()
+					{
+						public boolean visit(IResourceDelta delta)
+							throws CoreException
+						{
+							IResource resource = delta.getResource();
+							switch (resource.getType())
+							{
+								case IResource.ROOT :
+									return true;
+								case IResource.PROJECT :
+									IProject project = (IProject) resource;
+									findCheckouts(new NullProgressMonitor());
+									return false;
+								default :
+									return false;
+							}
+						}
+					});
+				}
+				catch (CoreException e)
+				{
+					ClearcasePlugin.log(
+						IStatus.ERROR,
+						"Unable to do a quick update of resource",
+						null);
+				}
+			}
+		}
+	};
+
 	private final class DoubleClickListener implements IDoubleClickListener
 	{
 		public void doubleClick(DoubleClickEvent event)
 		{
 			if (event.getSelection() instanceof IStructuredSelection)
 			{
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				IStructuredSelection selection =
+					(IStructuredSelection) event.getSelection();
 				for (Iterator iter = selection.iterator(); iter.hasNext();)
 				{
 					IResource element = (IResource) iter.next();
@@ -82,10 +134,12 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 					{
 						try
 						{
-							PlatformUI.getWorkbench()
+							PlatformUI
+								.getWorkbench()
 								.getActiveWorkbenchWindow()
 								.getActivePage()
-								.openEditor((IFile) element);
+								.openEditor(
+								(IFile) element);
 						}
 						catch (PartInitException e)
 						{
@@ -95,13 +149,14 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 								e);
 						}
 					}
-			
+
 				}
 			}
 		}
 	}
 
-	private final class ViewContentProvider implements IStructuredContentProvider
+	private final class ViewContentProvider
+		implements IStructuredContentProvider
 	{
 		public void inputChanged(Viewer v, Object oldInput, Object newInput)
 		{
@@ -132,25 +187,33 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		{
 			Image image = null;
 			IResource resource = (IResource) obj;
-			switch(resource.getType())
+			switch (resource.getType())
 			{
 				case IResource.FILE :
-					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
+					image =
+						PlatformUI.getWorkbench().getSharedImages().getImage(
+							ISharedImages.IMG_OBJ_FILE);
 					break;
 				case IResource.FOLDER :
-					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+					image =
+						PlatformUI.getWorkbench().getSharedImages().getImage(
+							ISharedImages.IMG_OBJ_FOLDER);
 					break;
 				case IResource.PROJECT :
-					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
-					break;					
+					image =
+						PlatformUI.getWorkbench().getSharedImages().getImage(
+							ISharedImages.IMG_OBJ_PROJECT);
+					break;
 				default :
-					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-					break;					
+					image =
+						PlatformUI.getWorkbench().getSharedImages().getImage(
+							ISharedImages.IMG_OBJ_ELEMENT);
+					break;
 			}
 			return image;
 		}
 	}
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -165,6 +228,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	public void dispose()
 	{
 		StateCacheFactory.getInstance().removeStateChangeListerer(this);
+		ClearcasePlugin.getWorkspace().removeResourceChangeListener(updateListener);
 		super.dispose();
 	}
 
@@ -183,13 +247,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
-		try
-		{
-			findCheckouts(new NullProgressMonitor(), false);
-		}
-		catch (InterruptedException e)
-		{
-		}
+
+		findCheckouts(new NullProgressMonitor());
+		ClearcasePlugin.getWorkspace().addResourceChangeListener(updateListener, IResourceChangeEvent.POST_CHANGE);
+
 	}
 
 	private void hookContextMenu()
@@ -233,16 +294,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 						public void run(IProgressMonitor monitor)
 							throws InvocationTargetException, InterruptedException
 						{
-							monitor.beginTask("Finding checkouts", 10);
-							IProgressMonitor subMonitor =
-								new InfiniteSubProgressMonitor(monitor, 10);
-							subMonitor.beginTask("", 5000);
-							findCheckouts(subMonitor, true);
-							subMonitor.done();
-							monitor.done();
+							findCheckouts(monitor);
 						}
 					};
-					
+
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(
 						true,
 						true,
@@ -286,55 +341,6 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	public void setFocus()
 	{
 		viewer.getControl().setFocus();
-	}
-
-	private void findCheckouts(final IProgressMonitor monitor, final boolean refreshState)
-		throws InterruptedException
-	{
-		checkouts.clear();
-		try
-		{
-			ClearcasePlugin
-				.getWorkspace()
-				.getRoot()
-				.accept(new IResourceVisitor()
-			{
-				public boolean visit(IResource resource) throws CoreException
-				{
-					if (monitor.isCanceled())
-						throw INTERRUPTED_EXCEPTION;
-					monitor.worked(1);
-
-					if (resource.getType() == IResource.ROOT)
-						return true;
-
-					if (StateCacheFactory
-						.getInstance()
-						.isUnitialized(resource))
-						return false;
-
-					StateCache cache =
-						StateCacheFactory.getInstance().get(resource);
-					if (refreshState)
-						cache.update(true);
-					if (cache.hasRemote())
-					{
-						updateCheckout(cache);
-					}
-					return true;
-				}
-			});
-		}
-		catch (CoreException e)
-		{
-			if (e == INTERRUPTED_EXCEPTION)
-				throw new InterruptedException("Find checkouts cancelled");
-			showError("Unable to find checkouts: " + e.toString());
-		}
-		finally
-		{
-			asyncRefresh();
-		}
 	}
 
 	private void asyncRefresh()
@@ -382,4 +388,149 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		}
 		return actionPerformed;
 	}
+
+	private void findCheckouts(IProgressMonitor monitor)
+	{
+		checkouts.clear();
+		IProject[] projects =
+			ClearcasePlugin.getWorkspace().getRoot().getProjects();
+		monitor.beginTask("Finding checkouts", projects.length);
+
+		for (int i = 0; i < projects.length; i++)
+		{
+			IProject project = projects[i];
+			// Only find checkouts for each project if the project is open and associated with ccase
+			if (project.isOpen() && ClearcaseProvider.getProvider((IResource) project) != null)
+			{
+				List checkouts = findCheckouts(project);
+
+				// Iterate over all checkouts and add them to the checkouts view
+				for (Iterator iter = checkouts.iterator(); iter.hasNext();)
+				{
+					String checkout = (String) iter.next();
+					IResource resource =
+						ClearcasePlugin
+							.getWorkspace()
+							.getRoot()
+							.getFileForLocation(
+							new Path(checkout));
+					if (resource != null)
+					{
+						StateCache cache =
+							StateCacheFactory.getInstance().get(resource);
+						cache.update(true);
+						updateCheckout(cache);
+					}
+				}
+			}
+			monitor.worked(1);
+		}
+
+		CheckoutsView.this.asyncRefresh();
+		monitor.done();
+	}
+
+	private static List findCheckouts(IProject project)
+	{
+		List checkouts = new LinkedList();
+
+		// The collection of resources each of which we find checkouts for the subtree
+		Collection findResources = new LinkedList();
+
+		// Want to find checkouts for project if it is an element.
+		if (StateCacheFactory.getInstance().get(project).hasRemote())
+		{
+			findResources.add(project);
+		}
+
+		// Even if project is/isn't an element, we still need to scan the links
+		// and find checkouts for any links which are elements
+		try
+		{
+			IResource[] members = project.members();
+			for (int j = 0; j < members.length; j++)
+			{
+				IResource child = members[j];
+				if (child.isLinked()
+					&& StateCacheFactory.getInstance().get(child).hasRemote())
+				{
+					findResources.add(child);
+				}
+			}
+		}
+		catch (CoreException e)
+		{
+			ClearcasePlugin.log(
+				IStatus.ERROR,
+				"Could not determine children of project for finding checkouts: "
+					+ project,
+				e);
+		}
+
+		// Find checkouts for all the important resources
+		for (Iterator iter = findResources.iterator(); iter.hasNext();)
+		{
+			IResource each = (IResource) iter.next();
+			checkouts.addAll(findCheckouts(each.getLocation().toOSString()));
+		}
+		return checkouts;
+	}
+
+	private static List findCheckouts(String path)
+	{
+		// Faster to find all checkouts, and filter on path of interest, than it is to find checkouts for subtree.
+		List resultList = new ArrayList();
+
+		try
+		{
+			File prefixFile = new File(path);
+			String prefix = prefixFile.getCanonicalPath();
+			int slashIdx = prefix.indexOf(File.separator);
+			String prefixNoDrive = prefix.substring(slashIdx);
+			String drive = prefix.substring(0, slashIdx);
+
+			IClearcase.Status viewNameStatus =
+				ClearcasePlugin.getEngine().getViewName(prefix);
+			if (!viewNameStatus.status)
+				throw new Exception(viewNameStatus.message);
+			String viewName = viewNameStatus.message.trim();
+
+			IClearcase.Status result =
+				ClearcasePlugin.getEngine().cleartool(
+					"lsco -me -cview -short -all " + prefix);
+			if (!result.status)
+				throw new Exception(result.message);
+
+			StringTokenizer st = new StringTokenizer(result.message, "\r\n");
+			while (st.hasMoreTokens())
+			{
+				String entry = st.nextToken();
+				int idx = entry.indexOf(viewName);
+				String cleanEntry;
+				if (idx == -1)
+				{
+					cleanEntry = entry;
+				}
+				else
+				{
+					idx += viewName.length();
+					cleanEntry = entry.substring(idx);
+				}
+				if (cleanEntry.startsWith(prefixNoDrive))
+					resultList.add(drive + cleanEntry);
+			}
+
+			Collections.sort(resultList);
+		}
+		catch (Exception e)
+		{
+			ClearcasePlugin.log(
+				IStatus.ERROR,
+				"Could not find checkouts for path: " + path,
+				e);
+		}
+
+		return resultList;
+	}
+
 }
