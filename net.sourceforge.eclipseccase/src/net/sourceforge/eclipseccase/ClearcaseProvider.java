@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
@@ -26,6 +27,10 @@ import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
 
 public class ClearcaseProvider extends RepositoryProvider implements SimpleAccessOperations
 {
+    UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
+    CheckInOperation CHECK_IN = new CheckInOperation();
+    CheckOutOperation CHECKOUT = new CheckOutOperation();
+    AddOperation ADD = new AddOperation();
 
     private IMoveDeleteHook moveHandler = new MoveHandler(this);
     private IFileModificationValidator modificationValidator = new ModificationHandler(this);
@@ -33,13 +38,15 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     private String comment = "";
 
     public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider";
-
-    static final Status OK_STATUS = new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
+    public static final Status OK_STATUS = new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 
     public ClearcaseProvider()
     {
         super();
     }
+
+    UpdateOperation UPDATE = new UpdateOperation();
+    DeleteOperation DELETE = new DeleteOperation();
 
     /**
      * @see RepositoryProvider#configureProject()
@@ -70,51 +77,16 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
             return null;
     }
 
-    /**
+    /*
      * @see SimpleAccessOperations#get(IResource[], int, IProgressMonitor)
      */
     public void get(IResource[] resources, int depth, IProgressMonitor progress)
         throws TeamException
     {
-        execute(new IIterativeOperation()
-        {
-            public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
-            {
-                // Sanity check - can't delete something that is not part of clearcase
-                if (!hasRemote(resource))
-                {
-                    return new Status(
-                        IStatus.ERROR,
-                        ID,
-                        TeamException.NO_REMOTE_RESOURCE,
-                        MessageFormat.format(
-                            "Resource \"{0}\" is not a ClearCase element!",
-                            new Object[] { resource.getFullPath().toString()}),
-                        null);
-                }
-
-                IStatus result = OK_STATUS;
-                String filename = resource.getLocation().toOSString();
-                IClearcase.Status status =
-                    ClearcasePlugin.getEngine().cleartool(
-                        "update -log NUL -force -ptime " + ClearcaseUtil.quote(filename));
-                changeState(resource, IResource.DEPTH_INFINITE, progress);
-                if (!status.status)
-                {
-                    result =
-                        new Status(
-                            IStatus.ERROR,
-                            ID,
-                            TeamException.UNABLE,
-                            "Update failed: " + status.message,
-                            null);
-                }
-                return result;
-            }
-        }, resources, IResource.DEPTH_INFINITE, progress);
+        execute(UPDATE, resources, IResource.DEPTH_INFINITE, progress);
     }
 
-    /**
+    /*
      * @see SimpleAccessOperations#checkout(IResource[], int, IProgressMonitor)
      */
     public void checkout(IResource[] resources, int depth, IProgressMonitor progress)
@@ -122,58 +94,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         try
         {
-            execute(new IRecursiveOperation()
-            {
-                public IStatus visit(IResource resource, IProgressMonitor progress)
-                {
-                    // Sanity check - can't delete something that is not part of clearcase
-                    if (!hasRemote(resource))
-                    {
-                        return new Status(
-                            IStatus.WARNING,
-                            ID,
-                            TeamException.NO_REMOTE_RESOURCE,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is not a ClearCase element!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    // Sanity check - can't checkout something that is already checked out
-                    if (isCheckedOut(resource))
-                    {
-                        return new Status(
-                            IStatus.WARNING,
-                            ID,
-                            TeamException.NOT_CHECKED_IN,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is already checked out!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    IStatus result = OK_STATUS;
-                    boolean reserved = ClearcasePlugin.isReservedCheckouts();
-                    IClearcase.Status status =
-                        ClearcasePlugin.getEngine().checkout(
-                            resource.getLocation().toOSString(),
-                            getComment(),
-                            reserved,
-                            true);
-                    changeState(resource, IResource.DEPTH_ZERO, progress);
-                    if (!status.status)
-                    {
-                        result =
-                            new Status(
-                                IStatus.ERROR,
-                                ID,
-                                TeamException.UNABLE,
-                                "Checkout failed: " + status.message,
-                                null);
-                    }
-                    return result;
-                }
-            }, resources, depth, progress);
+            execute(CHECKOUT, resources, depth, progress);
         }
         finally
         {
@@ -208,67 +129,19 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 cache.updateAsync(true, true);
                 return result;
             }
+
         }, resources, depth, progress);
     }
 
-    /**
+    /*
      * @see SimpleAccessOperations#checkin(IResource[], int, IProgressMonitor)
      */
-    public void checkin(IResource[] resources, int depth, IProgressMonitor progress)
+    public void checkin(IResource[] resources, int depth, IProgressMonitor progressMonitor)
         throws TeamException
     {
         try
         {
-            execute(new IRecursiveOperation()
-            {
-                public IStatus visit(IResource resource, IProgressMonitor progress)
-                {
-                    // Sanity check - can't delete something that is not part of clearcase
-                    if (!hasRemote(resource))
-                    {
-                        return new Status(
-                            IStatus.WARNING,
-                            ID,
-                            TeamException.NO_REMOTE_RESOURCE,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is not a ClearCase element!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    // Sanity check - can't checkin something that is not checked out
-                    if (!isCheckedOut(resource))
-                    {
-                        return new Status(
-                            IStatus.WARNING,
-                            ID,
-                            TeamException.NOT_CHECKED_OUT,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is not checked out!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    IStatus result = OK_STATUS;
-                    IClearcase.Status status =
-                        ClearcasePlugin.getEngine().checkin(
-                            resource.getLocation().toOSString(),
-                            getComment(),
-                            ClearcasePlugin.isCheckinPreserveTime());
-                    changeState(resource, IResource.DEPTH_ZERO, progress);
-                    if (!status.status)
-                    {
-                        result =
-                            new Status(
-                                IStatus.ERROR,
-                                ID,
-                                TeamException.UNABLE,
-                                "Checkin failed: " + status.message,
-                                null);
-                    }
-                    return result;
-                }
-            }, resources, depth, progress);
+            execute(CHECK_IN, resources, depth, progressMonitor);
         }
         finally
         {
@@ -282,42 +155,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     public void uncheckout(IResource[] resources, int depth, IProgressMonitor progress)
         throws TeamException
     {
-        execute(new IRecursiveOperation()
-        {
-            public IStatus visit(IResource resource, IProgressMonitor progress)
-            {
-                // Sanity check - can't uncheckout something that is not checked out
-                if (!isCheckedOut(resource))
-                {
-                    return new Status(
-                        IStatus.WARNING,
-                        ID,
-                        TeamException.NOT_CHECKED_OUT,
-                        MessageFormat.format(
-                            "Resource \"{0}\" is not checked out!",
-                            new Object[] { resource.getFullPath().toString()}),
-                        null);
-                }
-
-                IStatus result = OK_STATUS;
-                IClearcase.Status status =
-                    ClearcasePlugin.getEngine().uncheckout(
-                        resource.getLocation().toOSString(),
-                        false);
-                changeState(resource, IResource.DEPTH_ONE, progress);
-                if (!status.status)
-                {
-                    result =
-                        new Status(
-                            IStatus.ERROR,
-                            ID,
-                            TeamException.UNABLE,
-                            "Uncheckout failed: " + status.message,
-                            null);
-                }
-                return result;
-            }
-        }, resources, depth, progress);
+        execute(UNCHECK_OUT, resources, depth, progress);
     }
 
     /**
@@ -327,46 +165,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         try
         {
-            execute(new IIterativeOperation()
-            {
-                public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
-                {
-                    // Sanity check - can't delete something that is not part of clearcase
-                    if (!hasRemote(resource))
-                    {
-                        return new Status(
-                            IStatus.ERROR,
-                            ID,
-                            TeamException.NO_REMOTE_RESOURCE,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is not a ClearCase element!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    IStatus result = checkoutParent(resource);
-                    if (result.isOK())
-                    {
-                        IClearcase.Status status =
-                            ClearcasePlugin.getEngine().delete(
-                                resource.getLocation().toOSString(),
-                                getComment());
-                        StateCacheFactory.getInstance().remove(resource);
-                        changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
-                        if (!status.status)
-                        {
-                            result =
-                                new Status(
-                                    IStatus.ERROR,
-                                    ID,
-                                    TeamException.UNABLE,
-                                    "Delete failed: " + status.message,
-                                    null);
-                        }
-                    }
-                    return result;
-                }
-            }, resources, IResource.DEPTH_INFINITE, progress);
+            execute(DELETE, resources, IResource.DEPTH_INFINITE, progress);
         }
         finally
         {
@@ -379,117 +178,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
     {
         try
         {
-            execute(new IRecursiveOperation()
-            {
-                public IStatus visit(IResource resource, IProgressMonitor progress)
-                {
-                    IStatus result;
-
-                    // Sanity check - can't add something that already is under VC
-                    if (hasRemote(resource))
-                    {
-                        return new Status(
-                            IStatus.WARNING,
-                            ID,
-                            TeamException.UNABLE,
-                            MessageFormat.format(
-                                "Resource \"{0}\" is already under source control!",
-                                new Object[] { resource.getFullPath().toString()}),
-                            null);
-                    }
-
-                    // Walk up parent heirarchy, find first ccase
-                    // element that is a parent, and walk back down, adding each to ccase
-                    IResource parent = resource.getParent();
-
-                    // When resource is a project, try checkout its parent, and if that fails,
-                    // then neither project nor workspace is in clearcase.
-                    if (resource instanceof IProject || hasRemote(parent))
-                    {
-                        result = checkoutParent(resource);
-                    }
-                    else
-                    {
-                        result = visit(parent, progress);
-                    }
-
-                    if (result.isOK())
-                    {
-                        if (resource instanceof IFolder)
-                        {
-                            try
-                            {
-                                String path = resource.getLocation().toOSString();
-                                File origfolder = new File(path);
-                                File mkelemfolder = new File(path + ".mkelem");
-                                origfolder.renameTo(mkelemfolder);
-                                IClearcase.Status status =
-                                    ClearcasePlugin.getEngine().add(path, getComment(), true);
-                                if (status.status)
-                                {
-                                    File[] members = mkelemfolder.listFiles();
-                                    for (int i = 0; i < members.length; i++)
-                                    {
-                                        File member = members[i];
-                                        File newMember =
-                                            new File(origfolder.getPath(), member.getName());
-                                        member.renameTo(newMember);
-                                    }
-                                    mkelemfolder.delete();
-                                    changeState(
-                                        resource.getParent(),
-                                        IResource.DEPTH_ONE,
-                                        progress);
-                                }
-                                else
-                                {
-                                    result =
-                                        new Status(
-                                            IStatus.ERROR,
-                                            ID,
-                                            TeamException.UNABLE,
-                                            "Add failed: " + status.message,
-                                            null);
-                                }
-
-                            }
-                            catch (Exception ex)
-                            {
-                                result =
-                                    new Status(
-                                        IStatus.ERROR,
-                                        ID,
-                                        TeamException.UNABLE,
-                                        "Add failed: " + ex.getMessage(),
-                                        ex);
-
-                            }
-                        }
-                        else
-                        {
-                            IClearcase.Status status =
-                                ClearcasePlugin.getEngine().add(
-                                    resource.getLocation().toOSString(),
-                                    getComment(),
-                                    false);
-                            changeState(resource, IResource.DEPTH_ZERO, progress);
-                            if (!status.status)
-                            {
-                                result =
-                                    new Status(
-                                        IStatus.ERROR,
-                                        ID,
-                                        TeamException.UNABLE,
-                                        "Add failed: " + status.message,
-                                        null);
-                            }
-                        }
-
-                    }
-
-                    return result;
-                }
-            }, resources, depth, progress);
+            execute(ADD, resources, depth, progress);
         }
         finally
         {
@@ -768,6 +457,7 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
                 cache.update(false);
                 return result;
             }
+
         }, resource, depth, monitor);
         return result;
     }
@@ -820,6 +510,370 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
 
     // Out of sheer laziness, I appropriated the following code from the team provider example =)
 
+    private final class AddOperation implements IRecursiveOperation
+    {
+        public IStatus visit(IResource resource, IProgressMonitor progress)
+        {
+            try
+            {
+                IStatus result;
+
+                // Sanity check - can't add something that already is under VC
+                if (hasRemote(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.UNABLE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is already under source control!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                // Walk up parent heirarchy, find first ccase
+                // element that is a parent, and walk back down, adding each to ccase
+                IResource parent = resource.getParent();
+
+                // When resource is a project, try checkout its parent, and if that fails,
+                // then neither project nor workspace is in clearcase.
+                if (resource instanceof IProject || hasRemote(parent))
+                {
+                    result = checkoutParent(resource);
+                }
+                else
+                {
+                    result = visit(parent, progress);
+                }
+
+                if (result.isOK())
+                {
+                    if (resource instanceof IFolder)
+                    {
+                        try
+                        {
+                            String path = resource.getLocation().toOSString();
+                            File origfolder = new File(path);
+                            File mkelemfolder = new File(path + ".mkelem");
+                            origfolder.renameTo(mkelemfolder);
+                            IClearcase.Status status =
+                                ClearcasePlugin.getEngine().add(path, getComment(), true);
+                            if (status.status)
+                            {
+                                File[] members = mkelemfolder.listFiles();
+                                for (int i = 0; i < members.length; i++)
+                                {
+                                    File member = members[i];
+                                    File newMember =
+                                        new File(origfolder.getPath(), member.getName());
+                                    member.renameTo(newMember);
+                                }
+                                mkelemfolder.delete();
+                                changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
+                            }
+                            else
+                            {
+                                result =
+                                    new Status(
+                                        IStatus.ERROR,
+                                        ID,
+                                        TeamException.UNABLE,
+                                        "Add failed: " + status.message,
+                                        null);
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            result =
+                                new Status(
+                                    IStatus.ERROR,
+                                    ID,
+                                    TeamException.UNABLE,
+                                    "Add failed: " + ex.getMessage(),
+                                    ex);
+
+                        }
+                    }
+                    else
+                    {
+                        IClearcase.Status status =
+                            ClearcasePlugin.getEngine().add(
+                                resource.getLocation().toOSString(),
+                                getComment(),
+                                false);
+                        changeState(resource, IResource.DEPTH_ZERO, progress);
+                        if (!status.status)
+                        {
+                            result =
+                                new Status(
+                                    IStatus.ERROR,
+                                    ID,
+                                    TeamException.UNABLE,
+                                    "Add failed: " + status.message,
+                                    null);
+                        }
+                    }
+
+                }
+
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
+    private final class UncheckOutOperation implements IRecursiveOperation
+    {
+        public IStatus visit(IResource resource, IProgressMonitor progress)
+        {
+            try
+            {
+                // Sanity check - can't uncheckout something that is not checked out
+                if (!isCheckedOut(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.NOT_CHECKED_OUT,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not checked out!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                IStatus result = OK_STATUS;
+                IClearcase.Status status =
+                    ClearcasePlugin.getEngine().uncheckout(
+                        resource.getLocation().toOSString(),
+                        false);
+                changeState(resource, IResource.DEPTH_ONE, progress);
+                if (!status.status)
+                {
+                    result =
+                        new Status(
+                            IStatus.ERROR,
+                            ID,
+                            TeamException.UNABLE,
+                            "Uncheckout failed: " + status.message,
+                            null);
+                }
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
+    private final class DeleteOperation implements IIterativeOperation
+    {
+        public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+        {
+            try
+            {
+                // Sanity check - can't delete something that is not part of clearcase
+                if (!hasRemote(resource))
+                {
+                    return new Status(
+                        IStatus.ERROR,
+                        ID,
+                        TeamException.NO_REMOTE_RESOURCE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not a ClearCase element!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                IStatus result = checkoutParent(resource);
+                if (result.isOK())
+                {
+                    IClearcase.Status status =
+                        ClearcasePlugin.getEngine().delete(
+                            resource.getLocation().toOSString(),
+                            getComment());
+                    StateCacheFactory.getInstance().remove(resource);
+                    changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
+                    if (!status.status)
+                    {
+                        result =
+                            new Status(
+                                IStatus.ERROR,
+                                ID,
+                                TeamException.UNABLE,
+                                "Delete failed: " + status.message,
+                                null);
+                    }
+                }
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
+    private final class CheckInOperation implements IRecursiveOperation
+    {
+        public IStatus visit(IResource resource, IProgressMonitor progress)
+        {
+            try
+            {
+                // Sanity check - can't delete something that is not part of clearcase
+                if (!hasRemote(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.NO_REMOTE_RESOURCE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not a ClearCase element!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                // Sanity check - can't checkin something that is not checked out
+                if (!isCheckedOut(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.NOT_CHECKED_OUT,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not checked out!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                IStatus result = OK_STATUS;
+                IClearcase.Status status =
+                    ClearcasePlugin.getEngine().checkin(
+                        resource.getLocation().toOSString(),
+                        getComment(),
+                        ClearcasePlugin.isCheckinPreserveTime());
+                changeState(resource, IResource.DEPTH_ZERO, progress);
+                if (!status.status)
+                {
+                    result =
+                        new Status(
+                            IStatus.ERROR,
+                            ID,
+                            TeamException.UNABLE,
+                            "Checkin failed: " + status.message,
+                            null);
+                }
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
+    private final class CheckOutOperation implements IRecursiveOperation
+    {
+        public IStatus visit(IResource resource, IProgressMonitor progress)
+        {
+            try
+            {
+                // Sanity check - can't checkout something that is not part of clearcase
+                if (!hasRemote(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.NO_REMOTE_RESOURCE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not a ClearCase element!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                // Sanity check - can't checkout something that is already checked out
+                if (isCheckedOut(resource))
+                {
+                    return new Status(
+                        IStatus.WARNING,
+                        ID,
+                        TeamException.NOT_CHECKED_IN,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is already checked out!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                IStatus result = OK_STATUS;
+                boolean reserved = ClearcasePlugin.isReservedCheckouts();
+                IClearcase.Status status =
+                    ClearcasePlugin.getEngine().checkout(
+                        resource.getLocation().toOSString(),
+                        getComment(),
+                        reserved,
+                        true);
+                changeState(resource, IResource.DEPTH_ZERO, progress);
+                if (!status.status)
+                {
+                    result =
+                        new Status(
+                            IStatus.ERROR,
+                            ID,
+                            TeamException.UNABLE,
+                            "Checkout failed: " + status.message,
+                            null);
+                }
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
+    private final class UpdateOperation implements IIterativeOperation
+    {
+        public IStatus visit(IResource resource, int depth, IProgressMonitor progress)
+        {
+            try
+            {
+                // Sanity check - can't delete something that is not part of clearcase
+                if (!hasRemote(resource))
+                {
+                    return new Status(
+                        IStatus.ERROR,
+                        ID,
+                        TeamException.NO_REMOTE_RESOURCE,
+                        MessageFormat.format(
+                            "Resource \"{0}\" is not a ClearCase element!",
+                            new Object[] { resource.getFullPath().toString()}),
+                        null);
+                }
+
+                IStatus result = OK_STATUS;
+                String filename = resource.getLocation().toOSString();
+                IClearcase.Status status =
+                    ClearcasePlugin.getEngine().cleartool(
+                        "update -log NUL -force -ptime " + ClearcaseUtil.quote(filename));
+                changeState(resource, IResource.DEPTH_INFINITE, progress);
+                if (!status.status)
+                {
+                    result =
+                        new Status(
+                            IStatus.ERROR,
+                            ID,
+                            TeamException.UNABLE,
+                            "Update failed: " + status.message,
+                            null);
+                }
+                return result;
+            }
+            finally
+            {
+                progress.done();
+            }
+        }
+    }
     /**
      * These interfaces are to operations that can be performed on the array of resources,
      * and on all resources identified by the depth parameter.
@@ -853,38 +907,64 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         MultiStatus multiStatus = new MultiStatus(getID(), TeamException.OK, "OK", null);
 
         // For each resource in the local resources array until we have errors.
-        for (int i = 0; i < resources.length && !multiStatus.matches(IStatus.ERROR); i++)
+        try
         {
-            if (!isIgnored(resources[i]))
+            progress.beginTask("processing", 1000 * resources.length);
+            for (int i = 0; i < resources.length && !multiStatus.matches(IStatus.ERROR); i++)
             {
-                if (operation instanceof IRecursiveOperation)
-                    multiStatus.merge(
-                        execute((IRecursiveOperation) operation, resources[i], depth, progress));
+                progress.subTask(resources[i].getName());
+                if (!isIgnored(resources[i]))
+                {
+                    if (operation instanceof IRecursiveOperation)
+                        multiStatus.merge(
+                            execute(
+                                (IRecursiveOperation) operation,
+                                resources[i],
+                                depth,
+                                new SubProgressMonitor(
+                                    progress,
+                                    1000,
+                                    SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK)));
+                    else
+                        multiStatus.merge(
+                            ((IIterativeOperation) operation).visit(
+                                resources[i],
+                                depth,
+                                new SubProgressMonitor(
+                                    progress,
+                                    1000,
+                                    SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK)));
+                }
                 else
-                    multiStatus.merge(
-                        ((IIterativeOperation) operation).visit(resources[i], depth, progress));
+                {
+                    progress.worked(1000);
+                }
             }
-        }
 
-        // Finally, if any problems occurred, throw the exeption with all the statuses,
-        // but if there were no problems exit silently.
-        if (!multiStatus.isOK())
+            // Finally, if any problems occurred, throw the exeption with all the statuses,
+            // but if there were no problems exit silently.
+            if (!multiStatus.isOK())
+            {
+                String message =
+                    multiStatus.matches(IStatus.ERROR)
+                        ? "There were errors that prevent the requested operation from finishing successfully."
+                        : "The requested operation finished with warnings.";
+                throw new TeamException(
+                    new MultiStatus(
+                        multiStatus.getPlugin(),
+                        multiStatus.getCode(),
+                        multiStatus.getChildren(),
+                        message,
+                        multiStatus.getException()));
+            }
+
+            // Cause all the resource changes to be broadcast to listeners.
+            //		TeamPlugin.getManager().broadcastResourceStateChanges(resources);
+        }
+        finally
         {
-            String message =
-                multiStatus.matches(IStatus.ERROR)
-                    ? "There were errors that prevent the requested operation from finishing successfully."
-                    : "The requested operation finished with warnings.";
-            throw new TeamException(
-                new MultiStatus(
-                    multiStatus.getPlugin(),
-                    multiStatus.getCode(),
-                    multiStatus.getChildren(),
-                    message,
-                    multiStatus.getException()));
+            progress.done();
         }
-
-        // Cause all the resource changes to be broadcast to listeners.
-        //		TeamPlugin.getManager().broadcastResourceStateChanges(resources);
     }
 
     /**
@@ -896,64 +976,87 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         int depth,
         IProgressMonitor progress)
     {
-        // Visit the given resource first.
-        IStatus status = operation.visit(resource, progress);
-
-        // If the resource is a file then the depth parameter is irrelevant.
-        if (resource.getType() == IResource.FILE)
-            return status;
-
-        // If we are not considering any members of the container then we are done.
-        if (depth == IResource.DEPTH_ZERO)
-            return status;
-
-        // If the operation was unsuccessful, do not attempt to go deep.
-        if (status.matches(IStatus.ERROR)) //if (!status.isOK())
-            return status;
-
-        // If the container has no children then we are done.
-        IResource[] members = getMembers(resource);
-        if (members.length == 0)
-            return status;
-
-        // There are children and we are going deep, the response will be a multi-status.
-        MultiStatus multiStatus =
-            new MultiStatus(
-                status.getPlugin(),
-                status.getCode(),
-                status.getMessage(),
-                status.getException());
-
-        // The next level will be one less than the current level...
-        int childDepth =
-            (depth == IResource.DEPTH_ONE) ? IResource.DEPTH_ZERO : IResource.DEPTH_INFINITE;
-
-        // Collect the responses in the multistatus (use merge to flatten the tree).
-        for (int i = 0; i < members.length && !multiStatus.matches(IStatus.ERROR); i++)
+        try
         {
-            if (!isIgnored(members[i]))
-                multiStatus.merge(execute(operation, members[i], childDepth, progress));
-        }
+            progress.beginTask("processing", 2000);
 
-        // correct the MultiStatus message
-        if (!multiStatus.isOK())
-        {
-            /* Remember: the multi status was created with "OK" as message!
-             * This is not meaningful anymore. We have to correct it.
-             */
-            String message =
-                multiStatus.matches(IStatus.ERROR)
-                    ? "There were errors that prevent the requested operation from finishing successfully."
-                    : "The requested operation finished with warnings.";
-            multiStatus =
+            // Visit the given resource first.
+            IStatus status =
+                operation.visit(
+                    resource,
+                    new SubProgressMonitor(
+                        progress,
+                        1000,
+                        SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+
+            // If the resource is a file then the depth parameter is irrelevant.
+            if (resource.getType() == IResource.FILE)
+                return status;
+
+            // If we are not considering any members of the container then we are done.
+            if (depth == IResource.DEPTH_ZERO)
+                return status;
+
+            // If the operation was unsuccessful, do not attempt to go deep.
+            if (status.matches(IStatus.ERROR)) //if (!status.isOK())
+                return status;
+
+            // If the container has no children then we are done.
+            IResource[] members = getMembers(resource);
+            if (members.length == 0)
+                return status;
+
+            // There are children and we are going deep, the response will be a multi-status.
+            MultiStatus multiStatus =
                 new MultiStatus(
-                    multiStatus.getPlugin(),
-                    multiStatus.getCode(),
-                    multiStatus.getChildren(),
-                    message,
-                    multiStatus.getException());
+                    status.getPlugin(),
+                    status.getCode(),
+                    status.getMessage(),
+                    status.getException());
+
+            // The next level will be one less than the current level...
+            int childDepth =
+                (depth == IResource.DEPTH_ONE) ? IResource.DEPTH_ZERO : IResource.DEPTH_INFINITE;
+
+            // Collect the responses in the multistatus (use merge to flatten the tree).
+            for (int i = 0; i < members.length && !multiStatus.matches(IStatus.ERROR); i++)
+            {
+                if (!isIgnored(members[i]))
+                    multiStatus.merge(
+                        execute(
+                            operation,
+                            members[i],
+                            childDepth,
+                            new SubProgressMonitor(
+                                progress,
+                                1000 / members.length,
+                                SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK)));
+            }
+
+            // correct the MultiStatus message
+            if (!multiStatus.isOK())
+            {
+                /* Remember: the multi status was created with "OK" as message!
+                 * This is not meaningful anymore. We have to correct it.
+                 */
+                String message =
+                    multiStatus.matches(IStatus.ERROR)
+                        ? "There were errors that prevent the requested operation from finishing successfully."
+                        : "The requested operation finished with warnings.";
+                multiStatus =
+                    new MultiStatus(
+                        multiStatus.getPlugin(),
+                        multiStatus.getCode(),
+                        multiStatus.getChildren(),
+                        message,
+                        multiStatus.getException());
+            }
+            return multiStatus;
         }
-        return multiStatus;
+        finally
+        {
+            progress.done();
+        }
     }
 
     protected IResource[] getMembers(IResource resource)
@@ -990,14 +1093,15 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
      */
     public boolean isIgnored(IResource resource)
     {
+        // see bug 904248: linked resources should NOT be ignored
         // always ignore eclipse linked resource
-        String linkedParentName = resource.getProjectRelativePath().segment(0);
-        if(null != linkedParentName)
-        {
-            IFolder linkedParent = resource.getProject().getFolder(linkedParentName);
-            if (linkedParent.isLinked())
-                return true;
-        }
+        //String linkedParentName = resource.getProjectRelativePath().segment(0);
+        //if (null != linkedParentName)
+        //{
+        //    IFolder linkedParent = resource.getProject().getFolder(linkedParentName);
+        //    if (linkedParent.isLinked())
+        //        return true;
+        //}
 
         // never ignore handled resources
         if (hasRemote(resource))
