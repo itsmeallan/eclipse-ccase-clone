@@ -1,10 +1,14 @@
 package net.sourceforge.eclipseccase.compare;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.StateCache;
+import net.sourceforge.eclipseccase.StateCacheFactory;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
@@ -34,11 +38,26 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 		InputStream contents = null;
 		try
 		{
-			contents = new FileInputStream(getVersionExtendedPath());
+			StateCache cache = StateCacheFactory.getInstance().get(file);
+			if (cache.isSnapShot())
+			{
+				File tempFile = File.createTempFile("eclipseccase", null);
+				tempFile.deleteOnExit();
+				ClearcasePlugin.getEngine().cleartool("get -to " + tempFile.getPath() + getVersionExtendedPath());
+				contents = new FileInputStream(tempFile.getPath());
+			}
+			else
+			{
+				contents = new FileInputStream(getVersionExtendedPath());
+			}
 		}
 		catch (FileNotFoundException e)
 		{
 			ClearcasePlugin.log(IStatus.ERROR, "Could not open file: " + getVersionExtendedPath(), e);
+		}
+		catch (IOException e)
+		{
+			ClearcasePlugin.log(IStatus.ERROR, "Could not create temp file for predecessor: " + getVersionExtendedPath(), e);
 		}
 		return contents;
 	}
