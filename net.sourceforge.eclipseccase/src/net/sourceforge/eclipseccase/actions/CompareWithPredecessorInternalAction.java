@@ -45,15 +45,20 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 		if (resource.getType() == IResource.FOLDER && provider.isSnapShot())
 			return false;
 
+		IResource current = null;
+		//Provide version informations in Tab of Compare Window
+		//Todo check if this works for dynamic views, and do the same for folders and projects
 		IResource predecessor = null;
 		String version = provider.getPredecessorVersion(resource);
-		if (version == null)
+		String currentversion = provider.getVersion(resource);
+		if (version == null || currentversion == null)
 			return false;
 
 		switch(resource.getType())
 		{
 			case IResource.FILE:
 				predecessor = new VersionExtendedFile((IFile) resource, version);
+				current = new VersionExtendedFile((IFile) resource, currentversion);
 				break;
 			case IResource.FOLDER:
 				predecessor = new VersionExtendedFolder((IFolder) resource, version);
@@ -65,7 +70,7 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 				return false;
 		}
 
-		IResource[] comparables = new IResource[] {resource, predecessor};
+		IResource[] comparables = new IResource[] {(current!=null?current:resource), predecessor};
 		return fInput.setResources(comparables);
 	}
 
