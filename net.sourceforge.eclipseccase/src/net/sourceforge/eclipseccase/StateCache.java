@@ -69,7 +69,14 @@ public class StateCache implements Serializable {
 	private synchronized void doUpdate() {
 		boolean changed = uninitialized;
 
-		osPath = resource.getLocation().toOSString();
+		IPath location = resource.getLocation();
+		if (location == null)
+		{
+			// resource has been invalidated in the workspace since request was
+			// queued, so ignore update request.
+			return;
+		}
+		osPath = location.toOSString();
 
 		boolean hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
 		changed = changed || hasRemote != this.hasRemote;
