@@ -475,7 +475,7 @@ public class ClearcaseProvider
 		}
 		if (!ClearcasePlugin.getEngine().isCheckedOut(parent))
 		{
-			IClearcase.Status ccStatus = ClearcasePlugin.getEngine().checkout(parent, "", false, true);
+			IClearcase.Status ccStatus = ClearcasePlugin.getEngine().checkout(parent, "", ClearcasePlugin.isReservedCheckouts(), true);
 			if (! flag)
 				changeState(resource.getParent(), IResource.DEPTH_ZERO, null);
 			if (!ccStatus.status)
