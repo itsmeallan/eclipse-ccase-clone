@@ -17,7 +17,10 @@ import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 import net.sourceforge.eclipseccase.ui.IClearcaseUIPreferenceConstants;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -26,143 +29,166 @@ import org.eclipse.ui.PlatformUI;
 /**
  * The preference page for the ClearCase label decorator.
  */
-public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCategories
-        implements IWorkbenchPreferencePage, IClearcaseUIPreferenceConstants
-{
-    private static final String TEXT = "Text";
+public class DecoratorPreferencePage
+		extends
+			FieldEditorPreferencePageWithCategories
+		implements
+			IWorkbenchPreferencePage,
+			IClearcaseUIPreferenceConstants {
+	private static final String TEXT = Messages.getString("Decorator.Category.Text"); //$NON-NLS-1$
 
-    private static final String IMAGES = "Images";
+	private static final String IMAGES = Messages.getString("Decorator.Category.Images"); //$NON-NLS-1$
 
-    private static final String GENERAL = "General";
+	private static final String GENERAL = Messages.getString("Decorator.Category.General"); //$NON-NLS-1$
 
-    private static final String[] CATEGORIES = new String[] { GENERAL,
-            IMAGES, TEXT};
+	private static final String[] CATEGORIES = new String[]{GENERAL, IMAGES,
+			TEXT};
 
+	MasterBooleanFieldEditor master;
+	/**
+	 * Creates a new instance.
+	 */
+	public DecoratorPreferencePage() {
+		super();
 
-    /**
-     * Creates a new instance.
-     */
-    public DecoratorPreferencePage() {
-        super();
+		// Set the preference store for the preference page.
+		setPreferenceStore(ClearcaseUI.getInstance().getPreferenceStore());
 
-        // Set the preference store for the preference page.
-        setPreferenceStore(ClearcaseUI.getInstance().getPreferenceStore());
+		setDescription(Messages.getString("Decorator.Description")); //$NON-NLS-1$
+	}
 
-        setDescription("Customize the ClearCase label decorator to suite your needs.");
-    }
+	/**
+	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
+	 */
+	protected void createFieldEditors() {
+		// general
 
-    /**
-     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
-     */
-    protected void createFieldEditors()
-    {
-        // general
+		addField(new BooleanFieldEditor(
+				IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
+				Messages.getString("Decorator.General.DeepDecorations"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
 
-        addField(new BooleanFieldEditor(
-                IClearcaseUIPreferenceConstants.DEEP_DECORATIONS,
-                "Compute deep dirty state for folders and projects",
-                getFieldEditorParent(GENERAL)));
+		// image decoration
 
-        // image decoration
+		addField(new BooleanFieldEditor(ICON_DECORATE_EDITED,
+				Messages.getString("Decorator.Images.DecorateEdited"), getFieldEditorParent(IMAGES))); //$NON-NLS-1$
 
-        addField(new BooleanFieldEditor(ICON_DECORATE_EDITED,
-                "Edited by someone else", getFieldEditorParent(IMAGES)));
+		addField(new BooleanFieldEditor(ICON_DECORATE_HIJACKED, Messages.getString("Decorator.Images.DecorateHijacked"), //$NON-NLS-1$
+				getFieldEditorParent(IMAGES)));
 
-        addField(new BooleanFieldEditor(ICON_DECORATE_HIJACKED, "Hijacked",
-                getFieldEditorParent(IMAGES)));
+		addField(new BooleanFieldEditor(ICON_DECORATE_NEW, Messages.getString("Decorator.Images.DecorateNew"), //$NON-NLS-1$
+				getFieldEditorParent(IMAGES)));
 
-        addField(new BooleanFieldEditor(ICON_DECORATE_NEW, "New",
-                getFieldEditorParent(IMAGES)));
+		addField(new BooleanFieldEditor(ICON_DECORATE_UNKNOWN, Messages.getString("Decorator.Images.DecorateUnknown"), //$NON-NLS-1$
+				getFieldEditorParent(IMAGES)));
 
-        addField(new BooleanFieldEditor(ICON_DECORATE_UNKNOWN, "Unknown state",
-                getFieldEditorParent(IMAGES)));
+		// text decorations
 
-        // text decorations
+		addField(new BooleanFieldEditor(
+				IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
+				Messages.getString("Decorator.Text.ViewDecoration"), //$NON-NLS-1$
+				getFieldEditorParent(TEXT)));
 
-        addField(new BooleanFieldEditor(
-                IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
-                "Add the name of the associated view to project names",
-                getFieldEditorParent(TEXT)));
+		addField(new BooleanFieldEditor(
+				IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION,
+				Messages.getString("Decorator.Text.VersionDecoration"), //$NON-NLS-1$
+				getFieldEditorParent(TEXT)));
 
-        addField(new BooleanFieldEditor(
-                IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION,
-                "Append version information to resource names",
-                getFieldEditorParent(TEXT)));
+		master = new MasterBooleanFieldEditor(
+				IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION,
+				Messages.getString("Decorator.Text.PrefixDecoration"), //$NON-NLS-1$
+				getFieldEditorParent(TEXT));
 
-        addField(new BooleanFieldEditor(
-                IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION,
-                "Prepend resource names with state information",
-                getFieldEditorParent(TEXT)));
+		addField(master);
 
-        addField(new StringFieldEditor(TEXT_PREFIX_DIRTY,
-                "Prefix for dirty resources:", 4, getFieldEditorParent(TEXT)));
+		FieldEditor slave = new StringFieldEditor(TEXT_PREFIX_DIRTY,
+				Messages.getString("Decorator.Text.PrefixDirty"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+		addField(slave);
+		master.addSlave(slave);
 
-        addField(new StringFieldEditor(TEXT_PREFIX_HIJACKED,
-                "Prefix for hijacked resources:", 4, getFieldEditorParent(TEXT)));
+		slave = new StringFieldEditor(TEXT_PREFIX_HIJACKED,
+				Messages.getString("Decorator.Text.PrefixHijacked"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+		addField(slave);
+		master.addSlave(slave);
 
-        addField(new StringFieldEditor(TEXT_PREFIX_NEW,
-                "Prefix for new resources:", 4, getFieldEditorParent(TEXT)));
+		slave = new StringFieldEditor(TEXT_PREFIX_NEW,
+				Messages.getString("Decorator.Text.PrefixNew"), 4, getFieldEditorParent(TEXT)); //$NON-NLS-1$
+		addField(slave);
+		master.addSlave(slave);
 
-        addField(new StringFieldEditor(TEXT_PREFIX_EDITED,
-                "Prefix for resources edited by someone else:", 4,
-                getFieldEditorParent(TEXT)));
+		slave = new StringFieldEditor(TEXT_PREFIX_EDITED,
+				Messages.getString("Decorator.Text.PrefixEdited"), 4, //$NON-NLS-1$
+				getFieldEditorParent(TEXT));
+		addField(slave);
+		master.addSlave(slave);
 
-        addField(new StringFieldEditor(TEXT_PREFIX_UNKNOWN,
-                "Prefix for resources with an unknown state:", 4,
-                getFieldEditorParent(TEXT)));
-}
+		slave = new StringFieldEditor(TEXT_PREFIX_UNKNOWN,
+				Messages.getString("Decorator.Text.PrefixUnknown"), 4, //$NON-NLS-1$
+				getFieldEditorParent(TEXT));
+		addField(slave);
+		master.addSlave(slave);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.preference.IPreferencePage#performOk()
-     */
-    public boolean performOk()
-    {
-        if (super.performOk())
-        {
-            // refresh the decorator
-            IDecoratorManager manager = PlatformUI.getWorkbench()
-                    .getDecoratorManager();
-            if (manager.getEnabled(ClearcaseDecorator.ID))
-            {
-                ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager
-                        .getBaseLabelProvider(ClearcaseDecorator.ID);
-                if (activeDecorator != null)
-                {
-                    activeDecorator.refresh();
-                }
-            }
-            return true;
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.IPreferencePage#performOk()
+	 */
+	public boolean performOk() {
+		if (super.performOk()) {
+			// refresh the decorator
+			IDecoratorManager manager = PlatformUI.getWorkbench()
+					.getDecoratorManager();
+			if (manager.getEnabled(ClearcaseDecorator.ID)) {
+				ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager
+						.getBaseLabelProvider(ClearcaseDecorator.ID);
+				if (activeDecorator != null) {
+					activeDecorator.refresh();
+				}
+			}
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public void init(IWorkbench workbench)
-    {
-    // nothing
-    }
+	public void init(IWorkbench workbench) {
+		// nothing
+	}
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipseccase.ui.preferences.FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
-     */
-    protected String getDescription(String category) {
-        if(GENERAL.equals(category))
-            return "General settings:";
-        if(IMAGES.equals(category))
-            return "Image decorations:";
-        if(TEXT.equals(category))
-            return "Text decorations:";
-        
-        return null;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#initialize()
+	 */
+	protected void initialize() {
+		super.initialize();
+		if (master != null)
+			master.listen();
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.ui.preferences.FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
+	 */
+	protected String getDescription(String category) {
+		if (GENERAL.equals(category))
+			return Messages.getString("Decorator.Description.Category.General"); //$NON-NLS-1$
+		if (IMAGES.equals(category))
+			return Messages.getString("Decorator.Description.Category.Images"); //$NON-NLS-1$
+		if (TEXT.equals(category))
+			return Messages.getString("Decorator.Description.Category.Text"); //$NON-NLS-1$
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipseccase.ui.preferences.FieldEditorPreferencePageWithCategories#getCategories()
-     */
-    protected String[] getCategories() {
-        return CATEGORIES;
-    }
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.ui.preferences.FieldEditorPreferencePageWithCategories#getCategories()
+	 */
+	protected String[] getCategories() {
+		return CATEGORIES;
+	}
 
 }
