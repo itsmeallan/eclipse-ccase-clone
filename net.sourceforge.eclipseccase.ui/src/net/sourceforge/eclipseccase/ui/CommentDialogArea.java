@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - initial API and implementation
- *     Gunnar Wagenknecht - adaption for ClearCase plug-in
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
  *******************************************************************************/
-
 package net.sourceforge.eclipseccase.ui;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -32,10 +32,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * This area provides the widgets for providing the CVS commit comment
+ * This area provides the widgets for providing the commit comment
  */
-public class CommentDialogArea extends DialogArea
-{
+public class CommentDialogArea extends DialogArea {
 
     private static final int WIDTH_HINT = 350;
 
@@ -51,24 +50,18 @@ public class CommentDialogArea extends DialogArea
 
     public static final String OK_REQUESTED = "OkRequested"; //$NON-NLS-1$
 
-    boolean multiLine = false;
-
     /**
      * Constructor for CommentDialogArea.
      * 
      * @param parentDialog
      * @param settings
      */
-    public CommentDialogArea(Dialog parentDialog, IDialogSettings settings,
-            boolean multiLine)
-    {
+    public CommentDialogArea(Dialog parentDialog, IDialogSettings settings) {
         super(parentDialog, settings);
-        comments = ClearcasePlugin.getDefault().getPreviousComments();
-        this.multiLine = multiLine;
+        comments = ClearcasePlugin.getInstance().getPreviousComments();
     }
 
-    public Control createArea(Composite parent)
-    {
+    public Control createArea(Composite parent) {
         Composite composite = createGrabbingComposite(parent, 1);
         initializeDialogUnits(composite);
 
@@ -78,40 +71,26 @@ public class CommentDialogArea extends DialogArea
 
         GridData data = null;
 
-        if (multiLine)
-        {
-            text = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL
-                    | SWT.V_SCROLL);
-            data = new GridData(GridData.FILL_BOTH);
-            data.widthHint = WIDTH_HINT;
-            data.heightHint = HEIGHT_HINT;
-            text.setLayoutData(data);
-        }
-        else
-        {
-            text = new Text(composite, SWT.SINGLE | SWT.BORDER);
-            data = new GridData(GridData.GRAB_HORIZONTAL
-                    | GridData.HORIZONTAL_ALIGN_FILL);
-            data.widthHint = WIDTH_HINT;
-            text.setLayoutData(data);
-        }
+        text = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL
+                | SWT.V_SCROLL);
+        data = new GridData(GridData.FILL_BOTH);
+        data.widthHint = WIDTH_HINT;
+        data.heightHint = HEIGHT_HINT;
+        text.setLayoutData(data);
         text.selectAll();
-        text.addTraverseListener(new TraverseListener()
-        {
-            public void keyTraversed(TraverseEvent e)
-            {
+        text.addTraverseListener(new TraverseListener() {
+
+            public void keyTraversed(TraverseEvent e) {
                 if (e.detail == SWT.TRAVERSE_RETURN
-                        && (e.stateMask & SWT.CTRL) != 0)
-                {
+                        && (e.stateMask & SWT.CTRL) != 0) {
                     e.doit = false;
                     CommentDialogArea.this.signalCtrlEnter();
                 }
             }
         });
-        text.addModifyListener(new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
+        text.addModifyListener(new ModifyListener() {
+
+            public void modifyText(ModifyEvent e) {
                 comment = text.getText();
             }
         });
@@ -130,14 +109,11 @@ public class CommentDialogArea extends DialogArea
         // (see bug 32078: http://bugs.eclipse.org/bugs/show_bug.cgi?id=32078)
         initializeValues();
 
-        previousCommentsCombo.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
+        previousCommentsCombo.addSelectionListener(new SelectionAdapter() {
+
+            public void widgetSelected(SelectionEvent e) {
                 int index = previousCommentsCombo.getSelectionIndex();
-                if (index != -1)
-                        text.setText(multiLine ? comments[index]
-                                : flattenText(comments[index]));
+                if (index != -1) text.setText(comments[index]);
             }
         });
 
@@ -147,12 +123,10 @@ public class CommentDialogArea extends DialogArea
     /**
      * Method initializeValues.
      */
-    private void initializeValues()
-    {
+    private void initializeValues() {
 
         // populate the previous comment list
-        for (int i = 0; i < comments.length; i++)
-        {
+        for (int i = 0; i < comments.length; i++) {
             previousCommentsCombo.add(flattenText(comments[i]));
         }
 
@@ -167,20 +141,15 @@ public class CommentDialogArea extends DialogArea
      * @param string
      * @return String
      */
-    String flattenText(String string)
-    {
+    String flattenText(String string) {
         StringBuffer buffer = new StringBuffer(string.length() + 20);
         boolean skipAdjacentLineSeparator = true;
-        for (int i = 0; i < string.length(); i++)
-        {
+        for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
-            if (c == '\r' || c == '\n')
-            {
+            if (c == '\r' || c == '\n') {
                 if (!skipAdjacentLineSeparator) buffer.append("/");
                 skipAdjacentLineSeparator = true;
-            }
-            else
-            {
+            } else {
                 buffer.append(c);
                 skipAdjacentLineSeparator = false;
             }
@@ -191,16 +160,14 @@ public class CommentDialogArea extends DialogArea
     /**
      * Method signalCtrlEnter.
      */
-    void signalCtrlEnter()
-    {
+    void signalCtrlEnter() {
         firePropertyChangeChange(OK_REQUESTED, null, null);
     }
 
     /**
      * Method clearCommitText.
      */
-    void clearCommitText()
-    {
+    void clearCommitText() {
         text.setText(""); //$NON-NLS-1$
         previousCommentsCombo.deselectAll();
     }
@@ -210,8 +177,7 @@ public class CommentDialogArea extends DialogArea
      * 
      * @return the comment
      */
-    public String[] getComments()
-    {
+    public String[] getComments() {
         return comments;
     }
 
@@ -220,18 +186,15 @@ public class CommentDialogArea extends DialogArea
      * 
      * @return String
      */
-    public String getComment()
-    {
+    public String getComment() {
         if (comment != null && comment.length() > 0) finished();
         return comment;
     }
 
-    private void finished()
-    {
+    private void finished() {
         // if there is a comment, remember it
-        if (comment.length() > 0)
-        {
-            ClearcasePlugin.getDefault().addComment(comment);
+        if (comment.length() > 0) {
+            ClearcasePlugin.getInstance().addComment(comment);
         }
     }
 }

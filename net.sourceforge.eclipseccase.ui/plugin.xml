@@ -629,13 +629,13 @@
       <page
             name="%clearcasePreferences.name"
             category="org.eclipse.team.ui.TeamPreferences"
-            class="net.sourceforge.eclipseccase.ClearcasePreferencePage"
+            class="net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferencePage"
             id="net.sourceforge.eclipseccase.preferences">
       </page>
       <page
             name="%clearcaseDecoratorPreferences.name"
             category="net.sourceforge.eclipseccase.preferences"
-            class="net.sourceforge.eclipseccase.DecoratorPreferencePage"
+            class="net.sourceforge.eclipseccase.ui.preferences.DecoratorPreferencePage"
             id="net.sourceforge.eclipseccase.preferences.decorator">
       </page>
    </extension>

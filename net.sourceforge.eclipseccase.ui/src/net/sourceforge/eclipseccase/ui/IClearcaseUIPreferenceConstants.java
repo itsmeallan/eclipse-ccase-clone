@@ -1,12 +1,20 @@
-/*
- * Copyright (c) 2004 Intershop (www.intershop.de) Created on Apr 13, 2004
- */
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
+
 /**
- * Interface with shared UI constants.
- * 
- * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
+ * Interface with shared UI preference constants.
  */
 public interface IClearcaseUIPreferenceConstants
 {

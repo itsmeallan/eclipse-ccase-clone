@@ -1,7 +1,5 @@
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -30,17 +28,9 @@ public class CommentDialog extends Dialog
     public CommentDialog(Shell parentShell, String dialogTitle)
     {
         super(parentShell);
-        /*
-         * don't allow multi line if disabled or
-         * "preserve time on checkin" is enabled while not using cleartool 
-         * executable
-         */
         commentDialogArea = new CommentDialogArea(
                 this,
-                null,
-                ClearcasePlugin.isMultiLineComments()
-                        && !(ClearcasePlugin.isCheckinPreserveTime() && !ClearcasePlugin
-                                .isUseCleartool()));
+                null);
         this.title = dialogTitle;
     }
 

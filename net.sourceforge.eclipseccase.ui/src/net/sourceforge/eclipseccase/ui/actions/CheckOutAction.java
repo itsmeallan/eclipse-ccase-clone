@@ -24,7 +24,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction
         String maybeComment = "";
         int maybeDepth = IResource.DEPTH_ZERO;
 
-        if (ClearcasePlugin.isCheckoutComment())
+        if (ClearcasePlugin.isCommentCheckout())
         {
             CommentDialog dlg = new CommentDialog(getShell(),
                     "Checkout comment");

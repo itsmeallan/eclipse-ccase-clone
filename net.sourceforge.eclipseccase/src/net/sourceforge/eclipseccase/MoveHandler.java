@@ -225,7 +225,7 @@ public class MoveHandler implements IMoveDeleteHook
         IContainer destParent = destination.getParent();
         if (!provider.hasRemote(destParent))
         {
-            if (ClearcasePlugin.isRefactorAddsDir())
+            if (ClearcasePlugin.isAddAuto())
             {
                 try
                 {

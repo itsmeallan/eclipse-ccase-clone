@@ -26,7 +26,7 @@ public class CheckInAction extends ClearcaseWorkspaceAction
         String maybeComment = "";
         int maybeDepth = IResource.DEPTH_ZERO;
 
-        if (ClearcasePlugin.isCheckinComment())
+        if (ClearcasePlugin.isCommentCheckin())
         {
             CommentDialog dlg = new CommentDialog(getShell(), "Checkin comment");
             if (dlg.open() == CommentDialog.CANCEL) return;

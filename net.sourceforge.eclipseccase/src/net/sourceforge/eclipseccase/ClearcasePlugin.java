@@ -1,4 +1,15 @@
-
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     Matthew Conway - initial API and implementation
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
 import java.io.BufferedInputStream;
@@ -35,6 +46,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.service.environment.Constants;
 import org.eclipse.team.core.TeamException;
 
 import org.osgi.framework.BundleContext;
@@ -50,34 +62,341 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
-{
+public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
-    //The shared instance.
-    public static final String UTF_8 = "UTF-8";
+    private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
 
+    private static final BASE64Encoder BASE64_ENCODER = new BASE64Encoder();
+
+    /** file name fo the history file */
+    private static final String COMMENT_HIST_FILE = "commentHistory.xml"; //$NON-NLS-1$
+
+    private static IPath debug = null;
+
+    /** xml element name */
+    static final String ELEMENT_COMMENT = "comment"; //$NON-NLS-1$
+
+    /** xml element name */
+    static final String ELEMENT_COMMENT_HISTORY = "comments"; //$NON-NLS-1$
+
+    /** maximum comments to remember */
+    static final int MAX_COMMENTS = 10;
+
+    /** the shared instance */
     private static ClearcasePlugin plugin;
 
+    /** the plugin id */
     public static final String PLUGIN_ID = "net.sourceforge.eclipseccase";
 
-    static final boolean isWindows = System.getProperty("os.name")
-            .toLowerCase().indexOf("windows") != -1;
+    /** The previously remembered comment */
+    static LinkedList previousComments = new LinkedList();
+
+    /** constant (value <code>UTF-8</code>) */
+    public static final String UTF_8 = "UTF-8";
+
+    /**
+     * Prints out a debug string.
+     * 
+     * @param id
+     * @param message
+     */
+    public static void debug(String id, String message) {
+        if (!isDebug()) return;
+
+        BufferedWriter debugWriter = null;
+        FileWriter debugFileWriter = null;
+        try {
+
+            File debugFile = debug.toFile();
+            debugFile.createNewFile();
+            debugFileWriter = new FileWriter(debugFile, true);
+            debugWriter = new BufferedWriter(debugFileWriter);
+        } catch (Exception e) {
+            if (null != debugFileWriter) {
+                try {
+                    debugFileWriter.close();
+                } catch (IOException e1) {
+                }
+            }
+            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            debug = null;
+            return;
+        }
+
+        try {
+            debugWriter.write(id + "\t" + message + "\n");
+            debugWriter.flush();
+            debugWriter.close();
+        } catch (Exception e) {
+            if (null != debugWriter) {
+                try {
+                    debugWriter.close();
+                } catch (IOException e1) {
+                }
+            }
+            log(IStatus.ERROR, "Could not debug to file " + debug, e);
+            debug = null;
+        }
+    }
+
+    /**
+     * Returns the ClearCase engine for performing ClearCase operations.
+     * <p>
+     * If no engine is available <code>null</code> is returned.
+     * </p>
+     * 
+     * @return the ClearCase engine (maybe <code>null</code>)
+     */
+    public static IClearcase getEngine() {
+        IClearcase impl = null;
+        try {
+            impl = ClearcasePlugin.getInstance().getClearcase();
+
+            if (isDebug()) impl.setDebugger(plugin);
+        } catch (CoreException e) {
+            log(IStatus.ERROR, "Could not get a clearcase engine", e);
+        }
+        return impl;
+    }
+
+    /**
+     * Returns the shared instance.
+     * 
+     * @return the shared instance
+     */
+    public static ClearcasePlugin getInstance() {
+        return plugin;
+    }
+
+    /**
+     * Returns the workspace.
+     * 
+     * @return the workspace
+     */
+    public static IWorkspace getWorkspace() {
+        return ResourcesPlugin.getWorkspace();
+    }
+
+    /**
+     * Returns the preference value for <code>ADD_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isAddAuto() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.ADD_AUTO);
+    }
+
+    /**
+     * Returns the preference value for <code>ADD_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isAddWithCheckin() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.ADD_WITH_CHECKIN);
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCheckoutAuto() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.CHECKOUT_AUTO);
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_LATEST</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCheckoutLatest() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.CHECKOUT_LATEST);
+    }
+
+    /**
+     * Returns the preference value for <code>COMMENT_ADD</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentAdd() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_ADD);
+    }
+
+    /**
+     * Returns the preference value for <code>COMMENT_ADD_NEVER_ON_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentAddNeverOnAuto() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO);
+    }
+
+    /**
+     * Returns the preference value for <code>COMMENT_CHECKIN</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentCheckin() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_CHECKIN);
+    }
+
+    /**
+     * Returns the preference value for <code>COMMENT_CHECKOUT</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentCheckout() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_CHECKOUT);
+    }
+
+    /**
+     * Returns the preference value for
+     * <code>COMMENT_CHECKOUT_NEVER_ON_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentCheckoutNeverOnAuto() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO);
+    }
+
+    /**
+     * Indicates if debug output is enabled.
+     * 
+     * @return <code>true</code> if debug mode is enabled
+     */
+    public static boolean isDebug() {
+        return null != debug;
+    }
+
+    /**
+     * Returns the preference value for <code>COMMENT_ESCAPE</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCommentEscape() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.COMMENT_ESCAPE);
+    }
+
+    /**
+     * Returns the preference value for <code>IGNORE_NEW</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isIgnoreNew() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.IGNORE_NEW);
+    }
+
+    /**
+     * Returns the preference value for <code>PRESERVE_TIMES</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isPreserveTimes() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.PRESERVE_TIMES);
+    }
+
+    /**
+     * Returns the preference value for <code>RECURSIVE</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isRecursive() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.RECURSIVE);
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_RESERVED</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isReservedCheckoutsForce() {
+        return IClearcasePreferenceConstants.VALUE_FORCE.equals(getInstance()
+                .getPluginPreferences().getString(
+                        IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_RESERVED</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isReservedCheckoutsIfPossible() {
+        return IClearcasePreferenceConstants.VALUE_IF_POSSIBLE
+                .equals(getInstance().getPluginPreferences().getString(
+                        IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_RESERVED</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isReservedCheckoutsNever() {
+        return IClearcasePreferenceConstants.VALUE_NEVER.equals(getInstance()
+                .getPluginPreferences().getString(
+                        IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+    }
+
+    /**
+     * Returns the preference value for <code>USE_CLEARTOOL</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isUseCleartool() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.USE_CLEARTOOL);
+    }
+
+    /**
+     * Logs an exception with the specified severity an message.
+     * 
+     * @param severity
+     * @param message
+     * @param ex
+     *            (maybe <code>null</code>)
+     */
+    public static void log(int severity, String message, Throwable ex) {
+        ILog log = ClearcasePlugin.getInstance().getLog();
+        log.log(new Status(severity, ClearcasePlugin.PLUGIN_ID, severity,
+                message, ex));
+    }
+
+    /**
+     * Logs an error message with the specified exception.
+     * 
+     * @param message
+     * @param ex
+     *            (maybe <code>null</code>)
+     */
+    public static void log(String message, Throwable ex) {
+        log(IStatus.ERROR, message, ex);
+    }
 
     private IClearcase clearcaseImpl;
 
     /**
      * The constructor.
      */
-    public ClearcasePlugin()
-    {
+    public ClearcasePlugin() {
         super();
         plugin = this;
 
         String[] args = Platform.getCommandLineArgs();
-        for (int i = 0; i < args.length; i++)
-        {
-            if ("-debugClearCase".equalsIgnoreCase(args[i].trim()))
-            {
+        for (int i = 0; i < args.length; i++) {
+            if ("-debugClearCase".equalsIgnoreCase(args[i].trim())) {
                 debug = Platform.getLocation().append("clearcase.debug.log");
                 break;
             }
@@ -85,125 +404,89 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
     }
 
     /**
-     * Returns the shared instance.
+     * Method addComment.
+     * 
+     * @param string
      */
-    public static ClearcasePlugin getDefault()
-    {
-        return plugin;
+    public void addComment(String comment) {
+        synchronized (previousComments) {
+            // ensure the comment is UTF-8 encoded
+            try {
+                comment = new String(comment.getBytes(UTF_8));
+            } catch (UnsupportedEncodingException ex) {
+                return;
+            }
+
+            // remove existing comment (avoid duplicates)
+            if (previousComments.contains(comment))
+                    previousComments.remove(comment);
+
+            // insert the comment as the first element
+            previousComments.addFirst(comment);
+
+            // check length
+            while (previousComments.size() > MAX_COMMENTS) {
+                previousComments.removeLast();
+            }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.clearcase.simple.IClearcaseDebugger#debugClearcase(java.lang.String,
+     *      java.lang.String)
+     */
+    public void debugClearcase(String id, String message) {
+        debug(id, message);
     }
 
     /**
-     * Returns the workspace instance.
+     * Returns the current ClearCase engine that can be used for performing
+     * ClearCase operations.
+     * 
+     * <p>
+     * The engine type depends on the current platform and on preference
+     * settings. It is cached internally. After changing the preferences you
+     * have to do a reset (see {@link #resetClearcase()}.
+     * </p>
+     * 
+     * @return the ClearCase engine
+     * @throws CoreException
+     *             if no engine is available
      */
-    public static IWorkspace getWorkspace()
-    {
-        return ResourcesPlugin.getWorkspace();
-    }
-
-    public static void log(int severity, String message, Throwable ex)
-    {
-        ILog log = ClearcasePlugin.getDefault().getLog();
-        log
-                .log(new Status(severity, ClearcasePlugin.PLUGIN_ID, severity,
-                        message, ex));
-    }
-
-    public static void debug(String id, String message)
-    {
-        if (!isDebug()) return;
-
-        BufferedWriter debugWriter = null;
-        FileWriter debugFileWriter = null;
-        try
-        {
-
-            File debugFile = debug.toFile();
-            debugFile.createNewFile();
-            debugFileWriter = new FileWriter(debugFile, true);
-            debugWriter = new BufferedWriter(debugFileWriter);
-        }
-        catch (Exception e)
-        {
-            if (null != debugFileWriter)
-            {
-                try
-                {
-                    debugFileWriter.close();
-                }
-                catch (IOException e1)
-                {}
-            }
-            log(IStatus.ERROR, "Could not debug to file " + debug, e);
-            debug = null;
-            return;
-        }
-
-        try
-        {
-            debugWriter.write(id + "\t" + message + "\n");
-            debugWriter.flush();
-            debugWriter.close();
-        }
-        catch (Exception e)
-        {
-            if (null != debugWriter)
-            {
-                try
-                {
-                    debugWriter.close();
-                }
-                catch (IOException e1)
-                {}
-            }
-            log(IStatus.ERROR, "Could not debug to file " + debug, e);
-            debug = null;
-        }
-    }
-
-    public static IClearcase getEngine()
-    {
-        IClearcase impl = null;
-        try
-        {
-            impl = ClearcasePlugin.getDefault().getClearcase();
-
-            if (isDebug()) impl.setDebugger(plugin);
-        }
-        catch (CoreException e)
-        {
-            log(IStatus.ERROR, "Could not get a clearcase engine", e);
-        }
-        return impl;
-    }
-
-    public IClearcase getClearcase() throws CoreException
-    {
-        try
-        {
-            if (clearcaseImpl == null)
-            {
-                if (isUseCleartool()) clearcaseImpl = ClearcaseFactory
-                        .getInstance().createInstance(ClearcaseFactory.CLI);
+    public IClearcase getClearcase() throws CoreException {
+        try {
+            if (clearcaseImpl == null) {
+                if (isUseCleartool())
+                    clearcaseImpl = ClearcaseFactory.getInstance()
+                            .createInstance(ClearcaseFactory.CLI);
                 else
                     clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
             }
             return clearcaseImpl;
-        }
-        catch (ClearcaseException e)
-        {
+        } catch (ClearcaseException e) {
             throw new CoreException(new Status(IStatus.ERROR,
                     ClearcasePlugin.PLUGIN_ID, TeamException.UNABLE,
                     "Could not retrieve a valid clearcase engine", e));
         }
     }
 
-    public void resetClearcase()
-    {
-        if (clearcaseImpl != null)
-        {
-            clearcaseImpl.destroy();
-            clearcaseImpl = null;
+    /**
+     * Answer the list of comments that were previously used when committing.
+     * 
+     * @return String[]
+     */
+    public String[] getPreviousComments() {
+        String[] comments = (String[]) previousComments
+                .toArray(new String[previousComments.size()]);
+
+        // encode all strings to the platform default encoding
+        for (int i = 0; i < comments.length; i++) {
+            comments[i] = new String(comments[i].getBytes());
         }
+
+        return comments;
     }
 
     /*
@@ -211,98 +494,168 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      * 
      * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
      */
-    protected void initializeDefaultPluginPreferences()
-    {
+    protected void initializeDefaultPluginPreferences() {
         Preferences pref = getPluginPreferences();
 
         // General preferences
-        pref.setDefault(IPreferenceConstants.RESERVED_CHECKOUT, false);
-        pref.setDefault(IPreferenceConstants.PERSIST_STATE, true);
-        pref.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
-        pref.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
+        pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
+                !isWindows());
+        pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
+        pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
+        pref.setDefault(IClearcasePreferenceConstants.RECURSIVE, true);
+        pref.setDefault(IClearcasePreferenceConstants.SAVE_DIRTY_EDITORS,
+                IClearcasePreferenceConstants.VALUE_ASK);
 
-        pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, false);
-        //pref.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
+        // source management
+        pref.setDefault(IClearcasePreferenceConstants.ADD_AUTO, true);
+        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO, true);
+        pref.setDefault(IClearcasePreferenceConstants.ADD_WITH_CHECKIN, false);
+        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_RESERVED,
+                IClearcasePreferenceConstants.VALUE_NEVER);
+        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_LATEST, true);
 
-        pref.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
-        pref.setDefault(IPreferenceConstants.ADD_COMMENT, true);
-        pref.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
-        pref.setDefault(IPreferenceConstants.REFACTOR_ADDS_DIR, true);
-        pref.setDefault(IPreferenceConstants.USE_CLEARTOOL, !isWindows);
-        pref.setDefault(IPreferenceConstants.ESCAPE_COMMENTS, false);
-        pref.setDefault(IPreferenceConstants.MULTILINE_COMMENTS, true);
+        // comments
+        pref.setDefault(IClearcasePreferenceConstants.COMMENT_ADD, true);
+        pref.setDefault(
+                IClearcasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO, true);
+        pref.setDefault(IClearcasePreferenceConstants.COMMENT_CHECKIN, true);
+        pref.setDefault(IClearcasePreferenceConstants.COMMENT_CHECKOUT, false);
+        pref.setDefault(
+                IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
+                true);
+        pref.setDefault(IClearcasePreferenceConstants.COMMENT_ESCAPE, false);
     }
 
-    public static boolean isReservedCheckouts()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.RESERVED_CHECKOUT);
+    /**
+     * Indicates if this plugin runs on a Microsoft Windows operating system.
+     * 
+     * @return <code>true</code> if this is a Windows operating system,
+     *         <code>false</code> otherwise
+     */
+    public static boolean isWindows() {
+        return Constants.OS_WIN32.equals(Platform.getOS());
     }
 
-    public static boolean isPersistState()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.PERSIST_STATE);
+    /**
+     * Loads the comment history.
+     */
+    private void loadCommentHistory() {
+        IPath pluginStateLocation = getStateLocation()
+                .append(COMMENT_HIST_FILE);
+        File file = pluginStateLocation.toFile();
+        if (!file.exists()) return;
+        try {
+            BufferedInputStream is = new BufferedInputStream(
+                    new FileInputStream(file));
+            try {
+                readCommentHistory(is);
+            } finally {
+                is.close();
+            }
+        } catch (IOException e) {
+            getLog().log(
+                    new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
+                            "Error while reading config file: "
+                                    + e.getLocalizedMessage(), e));
+        } catch (CoreException e) {
+            getLog().log(e.getStatus());
+        }
     }
 
-    public static boolean isRefreshOnChange()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.REFRESH_ON_CHANGE);
+    /**
+     * Builds (reads) the comment history from the specified input stream.
+     * 
+     * @param stream
+     * @throws CoreException
+     */
+    private void readCommentHistory(InputStream stream) throws CoreException {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory
+                    .newInstance();
+            DocumentBuilder parser = factory.newDocumentBuilder();
+            InputSource source = new InputSource(stream);
+            Document document = parser.parse(source);
+            NodeList list = document.getChildNodes();
+            for (int i = 0; i < list.getLength(); i++) {
+                Node node = list.item(i);
+                if (node instanceof Element) {
+                    if (ELEMENT_COMMENT_HISTORY.equals(((Element) node)
+                            .getTagName())) {
+                        synchronized (previousComments) {
+                            previousComments.clear();
+                            NodeList commentNodes = ((Element) node)
+                                    .getElementsByTagName(ELEMENT_COMMENT);
+                            for (int j = 0; j < commentNodes.getLength()
+                                    && j < MAX_COMMENTS; j++) {
+                                Node commentNode = commentNodes.item(j);
+                                if (commentNode instanceof Element
+                                        && commentNode.hasChildNodes()) {
+                                    // the first child is expected to be a text
+                                    // node with our comment
+                                    String comment = commentNode
+                                            .getFirstChild().getNodeValue();
+                                    if (null != comment) {
+                                        comment = new String(BASE64_DECODER
+                                                .decodeBuffer(comment), UTF_8);
+                                        if (!previousComments.contains(comment))
+                                                previousComments
+                                                        .addLast(comment);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
+                    TeamException.UNABLE, "Error reading config file!", e));
+        }
     }
 
-    public static boolean isCheckinComment()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.CHECKIN_COMMENT);
+    /**
+     * Resets this plugin so that a new ClearCase engine will be created next
+     * time it is requested.
+     */
+    public void resetClearcase() {
+        if (clearcaseImpl != null) {
+            clearcaseImpl.destroy();
+            clearcaseImpl = null;
+        }
     }
 
-    public static boolean isCheckinPreserveTime()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.CHECKIN_PRESERVE_TIME);
-    }
-
-    public static boolean isCheckoutComment()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.CHECKOUT_COMMENT);
-    }
-
-    public static boolean isAddComment()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.ADD_COMMENT);
-    }
-
-    public static boolean isCheckoutOnEdit()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.CHECKOUT_ON_EDIT);
-    }
-
-    public static boolean isRefactorAddsDir()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.REFACTOR_ADDS_DIR);
-    }
-
-    public static boolean isUseCleartool()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.USE_CLEARTOOL);
-    }
-
-    public static boolean isEscapeComments()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.ESCAPE_COMMENTS);
-    }
-
-    public static boolean isMultiLineComments()
-    {
-        return getDefault().getPluginPreferences().getBoolean(
-                IPreferenceConstants.MULTILINE_COMMENTS);
+    /**
+     * Saves the comment history.
+     * 
+     * @throws CoreException
+     */
+    private void saveCommentHistory() throws CoreException {
+        IPath pluginStateLocation = getStateLocation();
+        File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp")
+                .toFile(); //$NON-NLS-1$
+        File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
+        try {
+            XMLWriter writer = new XMLWriter(new BufferedOutputStream(
+                    new FileOutputStream(tempFile)));
+            try {
+                writeCommentHistory(writer);
+            } finally {
+                writer.close();
+            }
+            if (histFile.exists()) {
+                histFile.delete();
+            }
+            boolean renamed = tempFile.renameTo(histFile);
+            if (!renamed) { throw new CoreException(new Status(Status.ERROR,
+                    PLUGIN_ID, TeamException.UNABLE, MessageFormat.format(
+                            "Could not rename file '{0}'!",
+                            new Object[] { tempFile.getAbsolutePath()}), null)); }
+        } catch (IOException e) {
+            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
+                    TeamException.UNABLE, MessageFormat.format(
+                            "Could not save file '{0}'!",
+                            new Object[] { histFile.getAbsolutePath()}), e));
+        }
     }
 
     /*
@@ -310,8 +663,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      * 
      * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
      */
-    public void start(BundleContext context) throws Exception
-    {
+    public void start(BundleContext context) throws Exception {
         super.start(context);
 
         // Disables plugin if clearcase is not available (throws CoreEx)
@@ -322,8 +674,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                 IResourceChangeEvent.POST_CHANGE);
         ISavedState lastState = ResourcesPlugin.getWorkspace()
                 .addSaveParticipant(this, cacheFactory);
-        if (null != lastState)
-        {
+        if (null != lastState) {
             cacheFactory.load(lastState);
             lastState.processResourceChangeEvents(cacheFactory);
         }
@@ -336,8 +687,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
      * 
      * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
      */
-    public void stop(BundleContext context) throws Exception
-    {
+    public void stop(BundleContext context) throws Exception {
         super.stop(context);
 
         getWorkspace().removeResourceChangeListener(
@@ -351,125 +701,14 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
 
     }
 
-    /** The previously remembered comment */
-    static LinkedList previousComments = new LinkedList();
-
-    /** maximum comments to remember */
-    static final int MAX_COMMENTS = 10;
-
-    /** file name fo the history file */
-    private static final String COMMENT_HIST_FILE = "commentHistory.xml"; //$NON-NLS-1$
-
-    /** xml element name */
-    static final String ELEMENT_COMMENT = "comment"; //$NON-NLS-1$
-
-    /** xml element name */
-    static final String ELEMENT_COMMENT_HISTORY = "comments"; //$NON-NLS-1$
-
     /**
-     * Method addComment.
+     * Writes the comment history to the specified writer.
      * 
-     * @param string
+     * @param writer
+     * @throws IOException
      */
-    public void addComment(String comment)
-    {
-        synchronized (previousComments)
-        {
-            // ensure the comment is UTF-8 encoded
-            try
-            {
-                comment = new String(comment.getBytes(UTF_8));
-            }
-            catch (UnsupportedEncodingException ex)
-            {
-                return;
-            }
-
-            // remove existing comment (avoid duplicates)
-            if (previousComments.contains(comment))
-                    previousComments.remove(comment);
-
-            // insert the comment as the first element
-            previousComments.addFirst(comment);
-
-            // check length
-            while (previousComments.size() > MAX_COMMENTS)
-            {
-                previousComments.removeLast();
-            }
-        }
-    }
-
-    /**
-     * Answer the list of comments that were previously used when committing.
-     * 
-     * @return String[]
-     */
-    public String[] getPreviousComments()
-    {
-        String[] comments = (String[]) previousComments
-                .toArray(new String[previousComments.size()]);
-
-        // encode all strings to the platform default encoding
-        for (int i = 0; i < comments.length; i++)
-        {
-            comments[i] = new String(comments[i].getBytes());
-        }
-
-        return comments;
-    }
-
-    private void saveCommentHistory() throws CoreException
-    {
-        IPath pluginStateLocation = getStateLocation();
-        File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp")
-                .toFile(); //$NON-NLS-1$
-        File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
-        try
-        {
-            XMLWriter writer = new XMLWriter(new BufferedOutputStream(
-                    new FileOutputStream(tempFile)));
-            try
-            {
-                writeCommentHistory(writer);
-            }
-            finally
-            {
-                writer.close();
-            }
-            if (histFile.exists())
-            {
-                histFile.delete();
-            }
-            boolean renamed = tempFile.renameTo(histFile);
-            if (!renamed)
-            {
-                throw new CoreException(
-                        new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
-                                MessageFormat
-                                        .format("Could not rename file '{0}'!",
-                                                new Object[]{tempFile
-                                                        .getAbsolutePath()}),
-                                null));
-            }
-        }
-        catch (IOException e)
-        {
-            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
-                    TeamException.UNABLE, MessageFormat.format(
-                            "Could not save file '{0}'!", new Object[]{histFile
-                                    .getAbsolutePath()}), e));
-        }
-    }
-
-    private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
-
-    private static final BASE64Encoder BASE64_ENCODER = new BASE64Encoder();
-
-    private void writeCommentHistory(XMLWriter writer) throws IOException
-    {
-        synchronized (previousComments)
-        {
+    private void writeCommentHistory(XMLWriter writer) throws IOException {
+        synchronized (previousComments) {
             writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
             for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++)
                 writer.printSimpleTag(ELEMENT_COMMENT, BASE64_ENCODER
@@ -477,112 +716,6 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
                                 .getBytes(UTF_8)));
             writer.endTag(ELEMENT_COMMENT_HISTORY);
         }
-    }
-
-    private void loadCommentHistory()
-    {
-        IPath pluginStateLocation = getStateLocation()
-                .append(COMMENT_HIST_FILE);
-        File file = pluginStateLocation.toFile();
-        if (!file.exists()) return;
-        try
-        {
-            BufferedInputStream is = new BufferedInputStream(
-                    new FileInputStream(file));
-            try
-            {
-                readCommentHistory(is);
-            }
-            finally
-            {
-                is.close();
-            }
-        }
-        catch (IOException e)
-        {
-            getLog().log(
-                    new Status(Status.ERROR, PLUGIN_ID, TeamException.UNABLE,
-                            "Error while reading config file: "
-                                    + e.getLocalizedMessage(), e));
-        }
-        catch (CoreException e)
-        {
-            getLog().log(e.getStatus());
-        }
-    }
-
-    private void readCommentHistory(InputStream stream) throws CoreException
-    {
-        try
-        {
-            DocumentBuilderFactory factory = DocumentBuilderFactory
-                    .newInstance();
-            DocumentBuilder parser = factory.newDocumentBuilder();
-            InputSource source = new InputSource(stream);
-            Document document = parser.parse(source);
-            NodeList list = document.getChildNodes();
-            for (int i = 0; i < list.getLength(); i++)
-            {
-                Node node = list.item(i);
-                if (node instanceof Element)
-                {
-                    if (ELEMENT_COMMENT_HISTORY.equals(((Element) node)
-                            .getTagName()))
-                    {
-                        synchronized (previousComments)
-                        {
-                            previousComments.clear();
-                            NodeList commentNodes = ((Element) node)
-                                    .getElementsByTagName(ELEMENT_COMMENT);
-                            for (int j = 0; j < commentNodes.getLength()
-                                    && j < MAX_COMMENTS; j++)
-                            {
-                                Node commentNode = commentNodes.item(j);
-                                if (commentNode instanceof Element
-                                        && commentNode.hasChildNodes())
-                                {
-                                    // the first child is expected to be a text
-                                    // node with our comment
-                                    String comment = commentNode
-                                            .getFirstChild().getNodeValue();
-                                    if (null != comment)
-                                    {
-                                        comment = new String(BASE64_DECODER
-                                                .decodeBuffer(comment), UTF_8);
-                                        if (!previousComments.contains(comment))
-                                                previousComments
-                                                        .addLast(comment);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            throw new CoreException(new Status(Status.ERROR, PLUGIN_ID,
-                    TeamException.UNABLE, "Error reading config file!", e));
-        }
-    }
-
-    private static IPath debug = null;
-
-    public static boolean isDebug()
-    {
-        return null != debug;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.clearcase.simple.IClearcaseDebugger#debugClearcase(java.lang.String,
-     *      java.lang.String)
-     */
-    public void debugClearcase(String id, String message)
-    {
-        debug(id, message);
     }
 
 }

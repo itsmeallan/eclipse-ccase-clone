@@ -22,7 +22,7 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction
         String maybeComment = "";
         int maybeDepth = IResource.DEPTH_ZERO;
 
-        if (ClearcasePlugin.isAddComment())
+        if (ClearcasePlugin.isCommentAdd())
         {
             CommentDialog dlg = new CommentDialog(shell,
                     "Add to clearcase comment");

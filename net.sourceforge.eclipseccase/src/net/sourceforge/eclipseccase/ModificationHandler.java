@@ -50,7 +50,7 @@ public class ModificationHandler implements IFileModificationValidator
         
         if(!needCheckout.isEmpty())
         {
-            if (!ClearcasePlugin.isCheckoutOnEdit())
+            if (!ClearcasePlugin.isCheckoutAuto())
             {
                 StringBuffer message = new StringBuffer("No auto checkout performed for the following resources:\n");
                 for (Iterator iter = needCheckout.iterator(); iter.hasNext();)

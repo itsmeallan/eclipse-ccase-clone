@@ -307,7 +307,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
         {
             IPath vobLocation = resourceLocation
                     .removeFirstSegments(viewLocation.segmentCount());
-            if (!ClearcasePlugin.isWindows && vobLocation.segmentCount() > 0)
+            if (!ClearcasePlugin.isWindows() && vobLocation.segmentCount() > 0)
             {
                 // on unix vobs are prefixed with directory named "/vobs"
                 vobLocation = vobLocation.removeFirstSegments(1);
@@ -335,7 +335,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
         {
             IPath vobLocation = resourceLocation
                     .removeFirstSegments(viewLocation.segmentCount());
-            if (!ClearcasePlugin.isWindows && vobLocation.segmentCount() > 0)
+            if (!ClearcasePlugin.isWindows() && vobLocation.segmentCount() > 0)
             {
                 // on unix vobs are prefixed with directory named "/vobs"
                 vobLocation = vobLocation.removeFirstSegments(1);
@@ -445,7 +445,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
             {
                 IClearcase.Status ccStatus = ClearcasePlugin.getEngine()
                         .checkout(parent, getComment(),
-                                ClearcasePlugin.isReservedCheckouts(), true);
+                                ClearcasePlugin.isReservedCheckoutsForce(), true);
 
                 monitor.worked(4);
 
@@ -547,7 +547,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
     public void setComment(String comment)
     {
         // escape comment if enabled
-        if (comment.trim().length() > 0 && ClearcasePlugin.isEscapeComments())
+        if (comment.trim().length() > 0 && ClearcasePlugin.isCommentEscape())
                 comment = ClearcaseUtil.getEscaped(comment);
 
         this.comment = comment;
@@ -897,7 +897,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 IStatus result = OK_STATUS;
                 IClearcase.Status status = ClearcasePlugin.getEngine().checkin(
                         resource.getLocation().toOSString(), getComment(),
-                        ClearcasePlugin.isCheckinPreserveTime());
+                        ClearcasePlugin.isPreserveTimes());
                 monitor.worked(40);
                 updateState(resource, IResource.DEPTH_ZERO,
                         new SubProgressMonitor(monitor, 10));
@@ -952,7 +952,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 }
 
                 IStatus result = OK_STATUS;
-                boolean reserved = ClearcasePlugin.isReservedCheckouts();
+                boolean reserved = ClearcasePlugin.isReservedCheckoutsForce();
                 IClearcase.Status status = ClearcasePlugin.getEngine()
                         .checkout(resource.getLocation().toOSString(),
                                 getComment(), reserved, true);
