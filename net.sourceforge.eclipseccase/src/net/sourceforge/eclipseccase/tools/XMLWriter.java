@@ -91,11 +91,11 @@ public class XMLWriter extends PrintWriter
         sb.append("<"); //$NON-NLS-1$
         sb.append(name);
         if (parameters != null)
-                for (Enumeration enum = Collections.enumeration(parameters
-                        .keySet()); enum.hasMoreElements();)
+                for (Enumeration enumeration = Collections.enumeration(parameters
+                        .keySet()); enumeration.hasMoreElements();)
                 {
                     sb.append(" "); //$NON-NLS-1$
-                    String key = (String) enum.nextElement();
+                    String key = (String) enumeration.nextElement();
                     sb.append(key);
                     sb.append("=\""); //$NON-NLS-1$
                     sb.append(getEscaped(String.valueOf(parameters.get(key))));

@@ -699,7 +699,7 @@ public class StateCacheFactory implements ISaveParticipant,
         if (rootDelta != null) {
             // use local exception to quickly escape from delta traversal
             class FoundRelevantDeltaException extends RuntimeException {
-                // empty
+                private static final long serialVersionUID = 7668919997423339239L;
             }
             try {
                 rootDelta.accept(new IResourceDeltaVisitor() {
