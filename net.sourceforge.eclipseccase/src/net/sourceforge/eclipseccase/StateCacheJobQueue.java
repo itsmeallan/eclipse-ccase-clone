@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
@@ -106,8 +107,8 @@ class StateCacheJobQueue extends Job {
                 }
 
                 // check if buffer was empty
-                if(null == job) break;
-                    
+                if (null == job) break;
+
                 // execute job
                 if (null != job.getStateCache().getResource()) {
                     monitor.subTask(Messages
@@ -182,7 +183,11 @@ class StateCacheJobQueue extends Job {
             wakeUp(DEFAULT_DELAY);
             break;
         case NONE:
-            setSystem(ClearcasePlugin.isHideRefreshActivity());
+            // lock job to avoid illegal state exceptions
+            synchronized (this) {
+                if (getState() == Job.NONE)
+                        setSystem(ClearcasePlugin.isHideRefreshActivity());
+            }
             schedule(DEFAULT_DELAY);
             break;
         case RUNNING:
@@ -190,7 +195,7 @@ class StateCacheJobQueue extends Job {
             break;
         }
     }
-
+    
     /*
      * (non-Javadoc)
      * 
