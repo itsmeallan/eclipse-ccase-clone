@@ -73,6 +73,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		{
 			IResource r1 = (IResource) o1;
 			IResource r2 = (IResource) o2;
+			/*
+			// Sorts by folder first - I don't like it - leave commented till I figure out how to sort by column
 			boolean isFolder1 = r1.getType() != IResource.FILE;
 			boolean isFolder2 = r2.getType() != IResource.FILE;
 			if (isFolder1 && ! isFolder2)
@@ -80,7 +82,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			else if (! isFolder1 && isFolder2)
 				return 1;
 			else
-				return r1.getFullPath().toString().compareTo(r2.getFullPath().toString());
+			*/
+			return r1.getFullPath().toString().compareTo(r2.getFullPath().toString());
 		}
 	}));
 
