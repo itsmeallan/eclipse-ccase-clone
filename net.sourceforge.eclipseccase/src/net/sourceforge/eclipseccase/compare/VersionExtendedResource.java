@@ -346,4 +346,14 @@ public abstract class VersionExtendedResource implements IResource
 		throw new UnsupportedOperationException();
 	}
 
+	public long getLocalTimeStamp()
+	{
+		return resource.getLocalTimeStamp();
+	}
+
+	public long setLocalTimeStamp(long value) throws CoreException
+	{
+		return resource.setLocalTimeStamp(value);
+	}
+
 }
