@@ -39,6 +39,8 @@ public class StateCache implements Serializable
 
     private boolean isHijacked = false;
 
+    private boolean isEdited = false;
+
     private String version = "";
 
     StateCache(IResource resource)
@@ -72,8 +74,13 @@ public class StateCache implements Serializable
     {
         if (!hidden)
         {
-            uninitialized = true;
-            ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this);
+            if(!uninitialized)
+            {
+                uninitialized = true;
+                ClearcasePlugin.debug(DEBUG_ID, "invalidating " + this);
+                // fireing state change (the update was forced)
+                StateCacheFactory.getInstance().fireStateChanged(this);
+            }
         }
         RefreshStateJob job = new RefreshStateJob(this, hidden);
         job.schedule();
@@ -121,15 +128,17 @@ public class StateCache implements Serializable
             changed = changed || newIsHijacked != this.isHijacked;
             this.isHijacked = newIsHijacked;
 
-            if (newHasRemote)
-            {
-                String newVersion = ClearcasePlugin.getEngine().cleartool(
-                        "describe -fmt " + ClearcaseUtil.quote("%Vn") + " "
-                                + ClearcaseUtil.quote(osPath)).message.trim()
-                        .replace('\\', '/');
-                changed = changed || !newVersion.equals(this.version);
-                this.version = newVersion;
-            }
+            boolean newIsEdited = newHasRemote && !newIsCheckedOut
+            && ClearcasePlugin.getEngine().isCheckedOutInAnotherView(osPath);
+            changed = changed || newIsEdited != this.isEdited;
+            this.isEdited = newIsEdited;
+
+            String newVersion = newHasRemote ? ClearcasePlugin.getEngine().cleartool(
+                    "describe -fmt " + ClearcaseUtil.quote("%Vn") + " "
+                            + ClearcaseUtil.quote(osPath)).message.trim()
+                    .replace('\\', '/') : "";
+            changed = changed || !newVersion.equals(this.version);
+            this.version = newVersion;
 
             if (newIsSymbolicLink)
             {
@@ -142,6 +151,11 @@ public class StateCache implements Serializable
                             || !newTarget.equals(this.symbolicLinkTarget);
                     this.symbolicLinkTarget = newTarget;
                 }
+            }
+            else if(!"".equals(this.symbolicLinkTarget))
+            {
+                this.symbolicLinkTarget = "";
+                changed = true;
             }
         }
         else
@@ -214,6 +228,16 @@ public class StateCache implements Serializable
                                     .getMessage() : ex.getMessage()), ex);
             return false;
         }
+    }
+
+    /**
+     * Indicates if the resource is edited by someone else.
+     * 
+     * @return Returns a boolean
+     */
+    public boolean isEdited()
+    {
+        return isEdited;
     }
 
     /**
@@ -445,7 +469,8 @@ public class StateCache implements Serializable
 
             if (isCheckedOut) toString.append(" [CHECKED OUT]");
 
-            if (isDirty()) toString.append(" [DIRTY]");
+            // maybe to expensive
+            //if (isDirty()) toString.append(" [DIRTY]");
 
             if (isHijacked) toString.append(" [HIJACKED]");
 

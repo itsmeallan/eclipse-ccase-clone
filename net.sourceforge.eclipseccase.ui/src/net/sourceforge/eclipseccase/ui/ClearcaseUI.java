@@ -27,6 +27,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import org.osgi.framework.BundleContext;
@@ -75,6 +76,18 @@ public class ClearcaseUI extends AbstractUIPlugin
     public void start(BundleContext context) throws Exception
     {
         super.start(context);
+        
+        PlatformUI.getWorkbench().addWindowListener(partListener);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+     */
+    public void stop(BundleContext context) throws Exception {
+        super.stop(context);
+
+        PlatformUI.getWorkbench().removeWindowListener(partListener);
     }
 
     /**
@@ -372,4 +385,7 @@ public class ClearcaseUI extends AbstractUIPlugin
         return imageRegistries[0];
     }
 
+    /** the listener for opened editors */
+    private PartListener partListener = new PartListener();
+    
 }

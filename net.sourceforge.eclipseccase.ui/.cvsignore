@@ -1,3 +1,4 @@
 bin
 *.jar
 build.xml
+temp.folder
