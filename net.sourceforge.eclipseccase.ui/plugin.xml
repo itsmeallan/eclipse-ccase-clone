@@ -188,6 +188,7 @@
             </enablement>
          </action>
          <action
+         	   
                label="Cancel pending refreshes"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
                class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
@@ -662,10 +663,16 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            description="Cancels all pendinig refresh state jobs"
+            description="Cancels all pending refresh state jobs"
             categoryId="net.sourceforge.eclipseccase.category"
             name="Cancel Pending Refreshes"
             id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"/>
+      <keyBinding
+            keySequence="Alt+C Alt+Z"
+            scope="org.eclipse.ui.globalScope"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
