@@ -1,8 +1,11 @@
 package net.sourceforge.eclipseccase.ui;
 
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IMarker;
@@ -36,6 +39,7 @@ public class ClearcaseDecorator
 	// Used to exit the isDirty resource visitor
 	private static final CoreException CORE_EXCEPTION =
 		new CoreException(new Status(IStatus.OK, "id", 1, "", null));
+	private Map iconCache = new HashMap();
 
 	public ClearcaseDecorator()
 	{
@@ -56,29 +60,39 @@ public class ClearcaseDecorator
 		if (p == null)
 			return text;
 		
+		if (! p.hasRemote(resource))
+			return text;
+			
+		StringBuffer buffer = new StringBuffer(text);
+
 		if (resource.getType() == IResource.PROJECT)
 		{
-			StringBuffer buffer = new StringBuffer(text);
 			buffer.append(" [view: ");
-			Clearcase.Status status = Clearcase.getViewName(resource.getLocation().toOSString());
-			if (status.status)
-			{
-				buffer.append(status.message.trim());
-			}
-			else
-			{
-				buffer.append("none");
-			}
+			buffer.append(p.getViewName(resource));
 			buffer.append("]");
-			return buffer.toString();
+		}
+
+		if (ClearcasePlugin.isTextVersionDecoration())
+		{
+			buffer.append(" [ver: ");
+			buffer.append(p.getVersion(resource));
+			buffer.append("]");
 		}
 		
-		return text;
+		return buffer.toString();
 	}
 
-	/*
-	 * @see ITeamDecorator#getImage(IResource)
-	 */
+	private Image getImage(OverlayComposite icon)
+	{
+		Image image = (Image) iconCache.get(icon);
+		if (image == null)
+		{
+			image = icon.createImage();
+			iconCache.put(icon, image);
+		}
+		return image;
+	}
+
 	public Image decorateImage(Image image, Object element)
 	{
 		IResource resource = getResource(element);
@@ -117,7 +131,7 @@ public class ClearcaseDecorator
 					.getImageData());
 		}
 */
-		return result.createImage();
+		return getImage(result);
 	}
 
 	/**
