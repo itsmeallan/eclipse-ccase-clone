@@ -126,7 +126,7 @@
          </action>
          <action
                label="Delete"
-               class="org.eclipse.team.ui.actions.DeleteAction"
+               class="net.sourceforge.eclipseccase.ui.DeleteAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.delete">
          </action>
