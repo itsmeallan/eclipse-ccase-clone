@@ -19,7 +19,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IEditorInput;
@@ -29,7 +28,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-
 import org.osgi.framework.BundleContext;
 
 /**
@@ -148,7 +146,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns the preference value for <code>DEEP_DECORATIONS</code>.
+	 * Returns the preference value for <code>GENERAL_DEEP_DECORATIONS</code>.
 	 * 
 	 * @return the preference value
 	 */
@@ -159,7 +157,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns the preference value for <code>DEEP_DECORATIONS</code>.
+	 * Returns the preference value for <code>GENERAL_DEEP_NEW</code>.
 	 * 
 	 * @return the preference value
 	 */
@@ -284,53 +282,6 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	public static String getTextPrefixEdited() {
 		return getInstance().getPluginPreferences().getString(
 				IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeDefaultPreferences(org.eclipse.jface.preference.IPreferenceStore)
-	 */
-	protected void initializeDefaultPreferences(IPreferenceStore store) 
-	{
-		// @deprecated // spec'ed to do nothing
-		//        super.initializeDefaultPreferences(store);
-
-		// Decorator preferences
-		store
-                .setDefault(IClearcaseUIPreferenceConstants.GENERAL_DEEP_DECORATIONS, 
-                        true);				
-		store.setDefault(
-				IClearcaseUIPreferenceConstants.GENERAL_DEEP_NEW, true);
-
-		// default text decorations
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_VIEW_DECORATION,
-				true);
-		store.setDefault(
-				IClearcaseUIPreferenceConstants.TEXT_VERSION_DECORATION, false);
-		store.setDefault(
-				IClearcaseUIPreferenceConstants.TEXT_PREFIX_DECORATION, false);
-		// default prefixes
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_DIRTY,
-				Messages.getString("ClearcaseUI.Default.Prefix.Dirty")); //$NON-NLS-1$
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_HIJACKED,
-				Messages.getString("ClearcaseUI.Default.Prefix.Hijacked")); //$NON-NLS-1$
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_NEW,
-				Messages.getString("ClearcaseUI.Default.Prefix.New")); //$NON-NLS-1$
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_EDITED,
-				Messages.getString("ClearcaseUI.Default.Prefix.Edited")); //$NON-NLS-1$
-		store.setDefault(IClearcaseUIPreferenceConstants.TEXT_PREFIX_UNKNOWN,
-				Messages.getString("ClearcaseUI.Default.Prefix.Unknown")); //$NON-NLS-1$
-
-		// default icon decorations
-		store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_NEW,
-				false);
-		store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_EDITED,
-				true);
-		store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_UNKNOWN,
-				true);
-		store.setDefault(IClearcaseUIPreferenceConstants.ICON_DECORATE_HIJACKED, 
-				true);
 	}
 
 	/*

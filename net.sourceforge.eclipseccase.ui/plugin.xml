@@ -711,5 +711,9 @@
             id="net.sourceforge.eclipseccase.ClearcaseProvider">
       </projectSets>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="net.sourceforge.eclipseccase.ui.ClearcaseUIPreferencesInitializer"/>
+   </extension>
 
 </plugin>
