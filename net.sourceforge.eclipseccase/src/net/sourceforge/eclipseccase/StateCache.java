@@ -79,6 +79,8 @@ public class StateCache implements Serializable
 	{
 		boolean changed = uninitialized;
 
+		osPath = resource.getLocation().toOSString();
+		
 		boolean hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
 		changed = changed || hasRemote != this.hasRemote;
 		this.hasRemote = hasRemote;
