@@ -82,6 +82,8 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkout(resource.getLocation().toOSString(), "", false);
+				// touch so decorator gets notified
+				try { resource.touch(progress); } catch (CoreException ex) {}
 				if (!status.status)
 				{
 					result =
@@ -114,6 +116,8 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.checkin(resource.getLocation().toOSString(), comment);
+				// touch so decorator gets notified
+				try { resource.touch(progress); } catch (CoreException ex) {}
 				if (!status.status)
 				{
 					result =
@@ -146,6 +150,21 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
+				try
+				{
+					resource.touch(progress);
+				}
+				catch (CoreException ex)
+				{
+					result =
+						new Status(
+							IStatus.ERROR,
+							TeamPlugin.ID,
+							TeamException.UNABLE,
+							"Resource status update failed: " + ex.getMessage(),
+							null);
+						
+				}
 				if (!status.status)
 				{
 					result =
@@ -274,6 +293,8 @@ public class ClearcaseProvider
 					{
 						Clearcase.Status status =
 							Clearcase.add(resource.getLocation().toOSString(), "", false);
+						// touch so decorator gets notified
+						try { resource.touch(progress); } catch (CoreException ex) {}
 						if (!status.status)
 						{
 							result =
@@ -329,7 +350,7 @@ public class ClearcaseProvider
 	public boolean isDirty(IResource resource)
 	{
 		String file = resource.getLocation().toOSString();
-		boolean result = Clearcase.isCheckedOut(file) && Clearcase.isDifferent(file);
+		boolean result = (! hasRemote(resource)) || Clearcase.isCheckedOut(file); // && Clearcase.isDifferent(file));
 		return result;
 	}
 
@@ -347,16 +368,8 @@ public class ClearcaseProvider
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
-			if (!ccStatus.status)
-			{
-				result =
-					new Status(
-						IStatus.ERROR,
-						TeamPlugin.ID,
-						TeamException.UNABLE,
-						ccStatus.message,
-						null);
-			}
+			// touch so decorator gets notified
+			try { source.touch(null); destination.touch(null); } catch (CoreException ex) {}
 		}
 		return result;
 	}
@@ -379,6 +392,8 @@ public class ClearcaseProvider
 		if (!Clearcase.isCheckedOut(parent))
 		{
 			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false);
+			// touch so decorator gets notified
+			try { resource.touch(null); } catch (CoreException ex) {}
 			if (!ccStatus.status)
 			{
 				result =

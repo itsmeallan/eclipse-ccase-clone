@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.2.0"
+   version="0.3.0"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -32,6 +32,17 @@
       <one-of-nature
             id="org.eclipse.team.repository-provider">
       </one-of-nature>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
+            label="Clearcase Decorator"
+            state="true"
+            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
+            id="net.sourceforge.eclipseccase.ui.decorator">
+      </decorator>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
