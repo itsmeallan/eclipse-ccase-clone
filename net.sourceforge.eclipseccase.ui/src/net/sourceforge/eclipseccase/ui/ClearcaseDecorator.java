@@ -59,7 +59,7 @@ public class ClearcaseDecorator extends LabelProvider implements
         ImageDescriptor descriptor;
 
         public CachedImageDescriptor(ImageDescriptor descriptor) {
-            assert null != descriptor;
+            if(null == descriptor) throw new IllegalArgumentException("Image descriptor must not be null");
             this.descriptor = descriptor;
         }
 
