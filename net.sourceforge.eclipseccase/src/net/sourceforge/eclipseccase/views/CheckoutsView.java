@@ -129,7 +129,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		contributeToActionBars();
 		try
 		{
-			findCheckouts(new NullProgressMonitor());
+			findCheckouts(new NullProgressMonitor(), false);
 		}
 		catch (InterruptedException e)
 		{
@@ -181,7 +181,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 							IProgressMonitor subMonitor =
 								new InfiniteSubProgressMonitor(monitor, 10);
 							subMonitor.beginTask("", 5000);
-							findCheckouts(subMonitor);
+							findCheckouts(subMonitor, true);
 							subMonitor.done();
 							monitor.done();
 						}
@@ -232,7 +232,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		viewer.getControl().setFocus();
 	}
 
-	private void findCheckouts(final IProgressMonitor monitor)
+	private void findCheckouts(final IProgressMonitor monitor, final boolean refreshState)
 		throws InterruptedException
 	{
 		checkouts.clear();
@@ -259,7 +259,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 
 					StateCache cache =
 						StateCacheFactory.getInstance().get(resource);
-					cache.update(true);
+					if (refreshState)
+						cache.update(true);
 					if (cache.hasRemote())
 					{
 						updateCheckout(cache);
