@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site-build
+      feature-location="features"
+      plugin-location="plugins"
+      autobuild="false"
+      scrub-output="false"
+      use-console="true">
+   <feature id="net.sourceforge.eclipseccase.feature" version="0.9.10"/>
+   <feature id="net.sourceforge.eclipseccase.feature.3" version="0.9.10"/>
+</site-build>
