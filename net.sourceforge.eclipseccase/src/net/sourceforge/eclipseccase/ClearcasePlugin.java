@@ -1,11 +1,16 @@
 package net.sourceforge.eclipseccase;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -20,7 +25,34 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	private static boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows") != -1;
 	
 	private IClearcase clearcaseImpl;
-	
+	private IResourceChangeListener updateListener = new IResourceChangeListener()
+	{
+		public void resourceChanged(IResourceChangeEvent event)
+		{
+			if (event.getType() == IResourceChangeEvent.POST_CHANGE)
+			{
+				try
+				{
+					event.getDelta().accept(new IResourceDeltaVisitor()
+					{
+						public boolean visit(IResourceDelta delta)
+							throws CoreException
+						{
+							StateCache cache =
+							   StateCacheFactory.getInstance().get(delta.getResource());
+							cache.updateAsync(true, false);
+							return true;
+						}
+					});
+				}
+				catch (CoreException e)
+				{
+					log(IStatus.ERROR, "Unable to do a quick update of resource", null);
+				}
+			}
+		}
+	};
+
 	/**
 	 * The constructor.
 	 */
@@ -170,12 +202,16 @@ public class ClearcasePlugin extends AbstractUIPlugin {
         ISavedState lastState =
             ResourcesPlugin.getWorkspace().addSaveParticipant(this, cacheFactory);
         cacheFactory.load(lastState);
+
+		getWorkspace().addResourceChangeListener(updateListener, IResourceChangeEvent.POST_CHANGE);
+
 	}
 
 	public void shutdown() throws CoreException
 	{
 		super.shutdown();
 		resetClearcase();
+		getWorkspace().removeResourceChangeListener(updateListener);
 	}
 
 }
