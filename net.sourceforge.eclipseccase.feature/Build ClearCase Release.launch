@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.ant.AntLaunchConfigurationType">
+<stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
+<booleanAttribute key="org.eclipse.ant.ui.DEFAULT_VM_INSTALL" value="false"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="D:\cc_share\EnfinityStudio_SnapshotView\rnd_beehive_source_eclipse_vob\features\net.sourceforge.eclipseccase-feature"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="clean,build.sources,zip.sources,gather.bin.parts,build.jars,gather.logs,zip.logs,build.update.jar,zip.distribution,"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="net.sourceforge.eclipseccase-feature"/>
+<mapAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_PROPERTIES">
+<mapEntry key="eclipse.running" value="true"/>
+<mapEntry key="javacFailOnError" value="false"/>
+<mapEntry key="baseos" value="win32"/>
+<mapEntry key="javacVerbose" value="false"/>
+<mapEntry key="javacDebugInfo" value="on"/>
+<mapEntry key="basenl" value="de_DE"/>
+<mapEntry key="basearch" value="x86"/>
+<mapEntry key="javacTarget" value="1.4"/>
+<mapEntry key="basews" value="win32"/>
+<mapEntry key="bootclasspath" value="C:\Program Files\Java\jre1.5.0_01\lib\rt.jar;C:\Program Files\Java\jre1.5.0_01\lib\jsse.jar;C:\Program Files\Java\jre1.5.0_01\lib\jce.jar;C:\Program Files\Java\jre1.5.0_01\lib\charsets.jar;C:\Program Files\Java\jre1.5.0_01\lib\ext\dnsns.jar;C:\Program Files\Java\jre1.5.0_01\lib\ext\localedata.jar;C:\Program Files\Java\jre1.5.0_01\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jre1.5.0_01\lib\ext\sunpkcs11.jar"/>
+<mapEntry key="javacSource" value="1.4"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${container}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/net.sourceforge.eclipseccase-feature/build.xml}"/>
+<booleanAttribute key="org.eclipse.debug.core.ATTR_REFRESH_RECURSIVE" value="false"/>
+</launchConfiguration>
