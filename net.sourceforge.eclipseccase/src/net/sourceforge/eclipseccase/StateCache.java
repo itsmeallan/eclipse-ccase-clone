@@ -61,7 +61,7 @@ public class StateCache
 					persistentCache = resource.getPersistentProperty(ID);
 				cache = new StateCache(resource, persistentCache);
 				resource.setSessionProperty(ID, cache);
-				if (ClearcasePlugin.isPersistState())
+				if (ClearcasePlugin.isPersistState() && persistentCache == null)
 					resource.setPersistentProperty(ID, cache.serialize());
 			}
 		}
