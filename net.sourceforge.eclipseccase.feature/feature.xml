@@ -25,20 +25,20 @@
 
    <plugin
          id="net.sourceforge.clearcase"
-         download-size="1000"
-         install-size="1000"
-         version="0.0.0"/>
+         download-size="232"
+         install-size="348"
+         version="1.0.2"/>
 
    <plugin
          id="net.sourceforge.eclipseccase"
-         download-size="1000"
-         install-size="1000"
-         version="0.0.0"/>
+         download-size="82"
+         install-size="132"
+         version="1.0.2"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.ui"
-         download-size="1000"
-         install-size="1000"
-         version="0.0.0"/>
+         download-size="136"
+         install-size="236"
+         version="1.0.2"/>
 
 </feature>
