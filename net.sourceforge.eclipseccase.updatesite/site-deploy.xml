@@ -53,10 +53,10 @@
 		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
 	</target>
 	
-	<target name="all" depends="init,deploy-site,deploy-sf-release">
+	<target name="all" depends="init,deploy-local-site,deploy-site,deploy-sf-release">
 	</target>
 
-	<target name="deploy-site" depends="init">
+	<target name="deploy-site" depends="init" unless="site.local">
 		<ssh	host="${site.deploy.host}"
 				username="${user}"
 				password="${password}"
@@ -77,7 +77,7 @@
 		</copy>
 	</target>
 	
-	<target name="deploy-sf-release" depends="init">
+	<target name="deploy-sf-release" depends="init" unless="site.local">
 		<sfpublish	releasename="${site.feature.version}"
 					packagename="eclipse-ccase"
 					packagehidden="no"
