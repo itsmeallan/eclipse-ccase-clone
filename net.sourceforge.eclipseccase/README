@@ -1,5 +1,6 @@
-The plugin is pretty simple right now, but works for me
-under Windows NT sp6a with clearcase version 4.2 and eclipse M5.
+The plugin is pretty simple right now, but works for me under Windows
+NT sp6a with clearcase version 4.2 and eclipse M5 -> F2 (Due to API
+changes, older versions of eclipse need older versions of the plugin)
 If you get the plugin working with a different configuration, feel
 free to post your setup to the sourceforge forums for this project
 
