@@ -6,6 +6,7 @@ import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -34,7 +35,9 @@ public class ClearcaseProvider
 
 	public static final String ID =
 		"net.sourceforge.eclipseccase.ClearcaseProvider";
-
+	public static final String STATE_CHANGE_MARKER_TYPE =
+		"net.sourceforge.eclipseccase.statechangedmarker";
+		
 	/**
 	 * @see RepositoryProvider#configureProject()
 	 */
@@ -81,9 +84,8 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
-					Clearcase.checkout(resource.getLocation().toOSString(), "", false);
-				// touch so decorator gets notified
-				try { resource.touch(progress); } catch (CoreException ex) {}
+					Clearcase.checkout(resource.getLocation().toOSString(), "", false, true);
+				changeState(resource);
 				if (!status.status)
 				{
 					result =
@@ -115,9 +117,8 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
-					Clearcase.checkin(resource.getLocation().toOSString(), comment);
-				// touch so decorator gets notified
-				try { resource.touch(progress); } catch (CoreException ex) {}
+					Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
+				changeState(resource);
 				if (!status.status)
 				{
 					result =
@@ -150,21 +151,7 @@ public class ClearcaseProvider
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
 					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
-				try
-				{
-					resource.touch(progress);
-				}
-				catch (CoreException ex)
-				{
-					result =
-						new Status(
-							IStatus.ERROR,
-							TeamPlugin.ID,
-							TeamException.UNABLE,
-							"Resource status update failed: " + ex.getMessage(),
-							null);
-						
-				}
+				changeState(resource);
 				if (!status.status)
 				{
 					result =
@@ -262,6 +249,7 @@ public class ClearcaseProvider
 							if (status.status)
 							{
 								folder.refreshLocal(IResource.DEPTH_ZERO, null);
+								changeState(folder);
 								IResource[] members =
 									mkelemFolder.members(IContainer.INCLUDE_TEAM_PRIVATE_MEMBERS);
 								for (int i = 0; i < members.length; i++)
@@ -293,8 +281,7 @@ public class ClearcaseProvider
 					{
 						Clearcase.Status status =
 							Clearcase.add(resource.getLocation().toOSString(), "", false);
-						// touch so decorator gets notified
-						try { resource.touch(progress); } catch (CoreException ex) {}
+						changeState(resource);
 						if (!status.status)
 						{
 							result =
@@ -368,8 +355,8 @@ public class ClearcaseProvider
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
-			// touch so decorator gets notified
-			try { source.touch(null); destination.touch(null); } catch (CoreException ex) {}
+			changeState(source);
+			changeState(destination);
 		}
 		return result;
 	}
@@ -391,9 +378,9 @@ public class ClearcaseProvider
 		}
 		if (!Clearcase.isCheckedOut(parent))
 		{
-			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false);
+			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false, true);
 			// touch so decorator gets notified
-			try { resource.touch(null); } catch (CoreException ex) {}
+			changeState(resource);
 			if (!ccStatus.status)
 			{
 				result =
@@ -406,6 +393,29 @@ public class ClearcaseProvider
 			}
 		}
 		return result;
+	}
+	
+	// Notifies decorator that state has changed for an element
+	private void changeState(IResource resource)
+	{
+		try
+		{
+			// This is a hack until I get around to creating my own state change mechanism for decorators
+			// create a marker and set attribute so decorator gets notified without the resource actually
+			// changing (so refactoring doesn't fail).  Should we delete the marker?
+			IMarker[] markers = resource.findMarkers(ClearcaseProvider.STATE_CHANGE_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			IMarker marker = null;
+			if (markers.length == 0)
+			{
+				marker = resource.createMarker(STATE_CHANGE_MARKER_TYPE);
+			}
+			else
+			{
+				marker = markers[0];
+			}
+			marker.setAttribute("statechanged", true);
+		}
+		catch (CoreException ex) {}
 	}
 
 	/**

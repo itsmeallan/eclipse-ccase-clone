@@ -21,7 +21,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class VersionTreeAction extends TeamAction
+public class FindCheckOutsAction extends TeamAction
 {
 
 	/**
@@ -35,6 +35,9 @@ public class VersionTreeAction extends TeamAction
 		for (int i = 0; i < resources.length; i++)
 		{
 			IResource resource = resources[i];
+			if (resource.getType() == IResource.FILE)
+				return false;
+
 			RepositoryProvider provider =
 				RepositoryProvider.getProvider(resource.getProject());
 			SimpleAccessOperations ops = provider.getSimpleAccess();
@@ -62,7 +65,8 @@ public class VersionTreeAction extends TeamAction
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						Runtime.getRuntime().exec("clearvtree " + resource.getLocation().toOSString());
+						Runtime.getRuntime().exec(
+							"clearfindco " + resource.getLocation().toOSString());
 					}
 				}
 				catch (IOException ex)
@@ -70,7 +74,7 @@ public class VersionTreeAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Version tree", this.PROGRESS_BUSYCURSOR);
+		}, "Find checkouts", this.PROGRESS_BUSYCURSOR);
 	}
-	
+
 }

@@ -21,7 +21,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 /**
  *  Pulls up the clearcase version tree for the element
  */
-public class VersionTreeAction extends TeamAction
+public class HistoryAction extends TeamAction
 {
 
 	/**
@@ -62,7 +62,7 @@ public class VersionTreeAction extends TeamAction
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						Runtime.getRuntime().exec("clearvtree " + resource.getLocation().toOSString());
+						Runtime.getRuntime().exec("clearhistory " + resource.getLocation().toOSString());
 					}
 				}
 				catch (IOException ex)
@@ -70,7 +70,7 @@ public class VersionTreeAction extends TeamAction
 					throw new InvocationTargetException(ex);
 				}
 			}
-		}, "Version tree", this.PROGRESS_BUSYCURSOR);
+		}, "History", this.PROGRESS_BUSYCURSOR);
 	}
 	
 }

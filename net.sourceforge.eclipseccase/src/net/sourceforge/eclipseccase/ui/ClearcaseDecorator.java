@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamPlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamUIPlugin;
 import org.eclipse.ui.internal.misc.OverlayComposite;
@@ -64,7 +66,25 @@ public class ClearcaseDecorator
 		if (resource.getType() == IResource.PROJECT)
 		{
 			StringBuffer buffer = new StringBuffer(text);
-			buffer.append(" [clearcase]");
+			buffer.append(" [view: ");
+			if (p.hasRemote(resource))
+			{
+				// Don't want multiple calls at once otherwise have a race condition
+				// between "cd" and "pwv".  Of course, this doesn't help if other code
+				// calls cd, but fixing that will require maintaining a separate cleartool
+				// instance for each resource
+				synchronized(this)
+				{
+					Clearcase.Status status = Clearcase.cleartool("cd " + resource.getLocation().toOSString());
+					status = Clearcase.cleartool("pwv -s");
+					buffer.append(status.message.trim());
+				}
+			}
+			else
+			{
+				buffer.append("none");
+			}
+			buffer.append("]");
 			return buffer.toString();
 		}
 		
@@ -189,10 +209,21 @@ public class ClearcaseDecorator
 					{
 						return false;
 					}
-					// chances are the team outgoing bit needs to be updated
-					// if any child has changed.
-					events.addFirst(
-						new LabelProviderChangedEvent(ClearcaseDecorator.this, resource));
+
+					// Only add an event if our state change marker is present
+					IMarker[] markers = resource.findMarkers(ClearcaseProvider.STATE_CHANGE_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+					if (markers.length > 0)
+					{
+						boolean changed = markers[0].getAttribute("statechanged", false);
+						if (changed)
+						{
+							// chances are the team outgoing bit needs to be updated
+							// if any child has changed.
+							events.addFirst(
+								new LabelProviderChangedEvent(ClearcaseDecorator.this, resource));
+							//markers[0].setAttribute("statechanged", false);
+						}
+					}
 					return true;
 				}
 			});

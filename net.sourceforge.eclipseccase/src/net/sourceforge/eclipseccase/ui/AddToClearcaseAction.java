@@ -59,7 +59,7 @@ public class AddToClearcaseAction extends TeamAction {
 					monitor.done();
 				}
 			}
-		}, "Adding to clearcase", this.PROGRESS_BUSYCURSOR);
+		}, "Adding to clearcase", this.PROGRESS_DIALOG);
 	}	
 	/**
 	 * @see TeamAction#isEnabled()

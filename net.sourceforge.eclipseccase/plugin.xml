@@ -2,7 +2,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="Clearcase Plugin"
-   version="0.3.0"
+   version="0.3.1"
    provider-name="Matt Conway"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -45,6 +45,15 @@
       </decorator>
    </extension>
    <extension
+      id="net.sourceforge.eclipseccase.statechangedmarker" 
+      point="org.eclipse.core.resources.markers" 
+      name="Clearcase state changed">
+      <super type="org.eclipse.core.resources.marker"/>
+      <persistent value="false"/>
+	  <attribute name="statechanged"/>
+   </extension>
+   
+   <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             objectClass="org.eclipse.core.resources.IProject"
@@ -53,7 +62,7 @@
          <action
                label="Associate with clearcase"
                class="net.sourceforge.eclipseccase.ui.AssociateProjectAction"
-               menubarPath="team.main/group1"
+               menubarPath="team.main/group3"
                id="net.sourceforge.eclipseccase.popups.associate">
          </action>
       </objectContribution>
@@ -71,50 +80,62 @@
          <action
                label="Dissociate from clearcase"
                class="net.sourceforge.eclipseccase.ui.DissociateProjectAction"
-               menubarPath="team.main/group1"
+               menubarPath="team.main/group3"
                id="net.sourceforge.eclipseccase.popups.dissociate">
          </action>
          <action
                label="Uncheckout"
-               tooltip="Uncheckout"
-               class="org.eclipse.team.ui.actions.UndoCheckOutAction"
+               class="net.sourceforge.eclipseccase.ui.UndoCheckOutAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.uncheckout">
          </action>
          <action
                label="Checkin"
-               tooltip="Checkin"
                class="net.sourceforge.eclipseccase.ui.CheckInAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkin">
          </action>
          <action
                label="Checkout"
-               tooltip="Checkout"
                class="net.sourceforge.eclipseccase.ui.CheckOutAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.checkout">
          </action>
          <action
                label="Add"
-               tooltip="Add"
                class="net.sourceforge.eclipseccase.ui.AddToClearcaseAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.add">
          </action>
          <action
                label="Delete"
-               tooltip="Delete"
                class="org.eclipse.team.ui.actions.DeleteAction"
                menubarPath="team.main/group1"
                id="net.sourceforge.eclipseccase.popups.delete">
          </action>
          <action
                label="Version Tree"
-               tooltip="Version Tree"
                class="net.sourceforge.eclipseccase.ui.VersionTreeAction"
-               menubarPath="team.main/group1"
+               menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.versiontree">
+         </action>
+         <action
+               label="History"
+               class="net.sourceforge.eclipseccase.ui.HistoryAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.history">
+         </action>
+         <action
+               label="Compare with predecessor"
+               class="net.sourceforge.eclipseccase.ui.CompareWithPredecessorAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor">
+         </action>
+         <action
+               label="Find checkouts"
+               class="net.sourceforge.eclipseccase.ui.FindCheckOutsAction"
+               menubarPath="team.main/group2"
+               id="net.sourceforge.eclipseccase.popups.findcheckouts">
          </action>
       </objectContribution>
    </extension>

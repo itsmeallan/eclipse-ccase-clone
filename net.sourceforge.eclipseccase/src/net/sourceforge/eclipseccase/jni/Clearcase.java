@@ -17,17 +17,19 @@ public class Clearcase
 	/**
 	 Does a clearcase checkout of the given file.  Comment can be
 	 empty string.  If reserved is true, does a reserved checkout.
+	 ptime preserves file timestamp
 	 */
 	public static native Status checkout(
 		String file,
 		String comment,
-		boolean reserved);
+		boolean reserved,
+		boolean ptime);
 
 	/**
 	 Does a clearcase checkin of the given file.  Comment can be
-	 empty string
+	 empty string.  ptime preserves file timestamp
 	 */
-	public static native Status checkin(String file, String comment);
+	public static native Status checkin(String file, String comment, boolean ptime);
 
 	/**
 	 Does a clearcase uncheckout of the given file.  If keep is true,
@@ -86,7 +88,7 @@ public class Clearcase
 		String file = args[0];
 		System.out.println("isElement: " + isElement(file));
 		System.out.println("isCheckedOut: " + isCheckedOut(file));
-		System.out.println("checkout: " + checkout(file, "", false).message);
+		System.out.println("checkout: " + checkout(file, "", false, true).message);
 		System.out.println("isCheckedOut: " + isCheckedOut(file));
 		System.out.println("uncheckout: " + uncheckout(file, false).message);
 		System.out.println("isCheckedOut: " + isCheckedOut(file));
@@ -97,7 +99,7 @@ public class Clearcase
 			System.out.println("isElement: " + isElement(newfile));
 			System.out.println("add: " + add(newfile, "", false).message);
 			System.out.println("isElement: " + isElement(newfile));
-			System.out.println("checkin: " + checkin(newfile, "").message);
+			System.out.println("checkin: " + checkin(newfile, "", true).message);
 			System.out.println("delete: " + delete(newfile, "").message);
 			System.out.println("isElement: " + isElement(newfile));
 		}

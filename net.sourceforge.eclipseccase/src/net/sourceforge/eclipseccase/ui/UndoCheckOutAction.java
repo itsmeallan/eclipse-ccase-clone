@@ -13,18 +13,16 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.core.internal.simpleAccess.SimpleAccessOperations;
-import org.eclipse.team.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-public class CheckOutAction extends TeamAction
+/**
+ * @author conwaym
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Workbench>Preferences>Java>Templates.
+ */
+public class UndoCheckOutAction extends org.eclipse.team.ui.actions.UndoCheckOutAction
 {
-
-	public CheckOutAction()
-	{
-		super();
-	}
-
 	public void run(IAction action)
 	{
 		run(new WorkspaceModifyOperation()
@@ -36,7 +34,7 @@ public class CheckOutAction extends TeamAction
 				{
 					Hashtable table = getProviderMapping();
 					Set keySet = table.keySet();
-					monitor.beginTask("Checking out...", keySet.size() * 1000);
+					monitor.beginTask("Undoing checkout...", keySet.size() * 1000);
 					Iterator iterator = keySet.iterator();
 					while (iterator.hasNext())
 					{
@@ -45,7 +43,7 @@ public class CheckOutAction extends TeamAction
 						List list = (List) table.get(provider);
 						IResource[] providerResources =
 							(IResource[]) list.toArray(new IResource[list.size()]);
-						provider.getSimpleAccess().checkout(
+						provider.getSimpleAccess().uncheckout(
 							providerResources,
 							IResource.DEPTH_ZERO,
 							subMonitor);
@@ -60,27 +58,7 @@ public class CheckOutAction extends TeamAction
 					monitor.done();
 				}
 			}
-		}, "Checking out", this.PROGRESS_DIALOG);
-	}
-	protected boolean isEnabled() throws TeamException
-	{
-		IResource[] resources = getSelectedResources();
-		if (resources.length == 0)
-			return false;
-		for (int i = 0; i < resources.length; i++)
-		{
-			IResource resource = resources[i];
-			RepositoryProvider provider =
-				RepositoryProvider.getProvider(resource.getProject());
-			SimpleAccessOperations ops = provider.getSimpleAccess();
-			if (provider == null || ops == null)
-				return false;
-			if (!ops.hasRemote(resource))
-				return false;
-			if (ops.isCheckedOut(resource))
-				return false;
-		}
-		return true;
+		}, "Undoing checkout", this.PROGRESS_DIALOG);
 	}
 
 }

@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_initializ
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checkout
-  (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean reserved)
+  (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean reserved, jboolean ptime)
 {
 	jobject result = NULL;
 	const char *filestr = env->GetStringUTFChars(file, 0);
@@ -78,9 +78,14 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checko
 	try 
 	{ 
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
+		boolean useHijacked = false;
+		boolean mustBeLatest = false;
 		ICCCheckedOutFilePtr cofile = ver->CheckOut(reserved ? ccReserved : ccUnreserved,
 																  commentstr,
-																  false, ccVersion_Default, false, false);
+																  useHijacked,
+																  ccVersion_Default,
+																  mustBeLatest,
+																  ptime);
 		result = createStatus(env, true, "Checkout Successful");
 	}
 	catch(_com_error& cerror) 
@@ -103,7 +108,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checko
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checkin
-  (JNIEnv * env, jclass obj, jstring file, jstring comment)
+  (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean ptime)
 {
 	jobject result = NULL;
 	const char *filestr = env->GetStringUTFChars(file, 0);
@@ -113,7 +118,7 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checki
 	{ 
 		ICCVersionPtr ver = ccase->GetVersion(filestr);
 		ICCCheckedOutFilePtr cofile = ccase->GetCheckedOutFile(filestr);
-		cofile->CheckIn(commentstr, false, "", ccRemove);
+		cofile->CheckIn(commentstr, ptime, "", ccRemove);
 		result = createStatus(env, true, "Checkin Successful");
 	}
 	catch(_com_error& cerror) 

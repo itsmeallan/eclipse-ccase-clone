@@ -1,9 +1,8 @@
 <project name="ccjni" default="all">
 
-	<property	name="version" value="0.3.0"/>
-	<property 	name="debug" value="true"/>
+	<property	file="build.properties"/>
+
 	<property	name="jdk.home" value="${java.home}/.."/>
-	
 	<property	name="java.build" value="${basedir}/bin"/>
 	<property	name="jar.name" value="clearcase.jar"/>
 	<property	name="srcjar.name" value="clearcasesrc.jar"/>
