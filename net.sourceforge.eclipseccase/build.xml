@@ -86,7 +86,7 @@
 	<target name="jni_headers" depends="init">
 		<echo message="Generating jni headers"/>
 		<javah	destdir="${jni.build}"
-				class="net.sourceforge.eclipseccase.jni.Clearcase"
+				class="net.sourceforge.eclipseccase.ClearcaseJNI"
 				classpath="${java.build}"
 				verbose="true"/>
 	</target>

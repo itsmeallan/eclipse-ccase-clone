@@ -1,19 +1,14 @@
 package net.sourceforge.eclipseccase;
 
-import java.io.File;
-
-import javax.swing.ProgressMonitor;
-
-import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
-import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.ISavedState;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
-
-import net.sourceforge.eclipseccase.jni.Clearcase;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.resources.team.IMoveDeleteHook;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -22,7 +17,8 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	//The shared instance.
 	private static ClearcasePlugin plugin;
 	public static final String ID = "net.sourceforge.eclipseccase.ClearcasePlugin";
-
+	private static boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("windows") != -1;
+	
 	public static final String PREF_RESERVED_CHECKOUT = "net.sourceforge.eclipseccase.reserved_checkouts";
 	public static final String PREF_RESERVED_CHECKOUT_DEFAULT = "false";
 	public static final String PREF_PERSIST_STATE = "net.sourceforge.eclipseccase.persist_state";
@@ -39,6 +35,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static final String PREF_REFACTOR_ADDS_DIR_DEFAULT = "true";
 	public static final String PREF_TEXT_VERSION_DECORATION = "net.sourceforge.eclipseccase.text_decoration";
 	public static final String PREF_TEXT_VERSION_DECORATION_DEFAULT = "false";
+	public static final String PREF_USE_CLEARTOOL = "net.sourceforge.eclipseccase.use_cleartool";
+	public static final String PREF_USE_CLEARTOOL_DEFAULT = Boolean.toString(! isWindows);
+	
+	private IClearcase clearcaseImpl;
 	
 	/**
 	 * The constructor.
@@ -67,8 +67,29 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 			ILog log = ClearcasePlugin.getDefault().getLog();
 			log.log(new Status(severity, ClearcasePlugin.ID, severity, message ,ex));
 	}
-	
 
+	public static IClearcase getEngine()
+	{
+		return ClearcasePlugin.getDefault().getClearcase();
+	}
+	
+	public IClearcase getClearcase()
+	{
+		if (clearcaseImpl == null)
+		{
+			if (isUseCleartool())
+				clearcaseImpl = new ClearcaseCommand();
+			else
+				clearcaseImpl = new ClearcaseJNI(); 
+		}
+		return clearcaseImpl;
+	}
+	
+	public void resetClearcase()
+	{
+			clearcaseImpl = null;
+	}
+	
 	/**
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeDefaultPreferences(IPreferenceStore)
 	 */
@@ -81,6 +102,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(PREF_CHECKOUT_ON_EDIT, PREF_CHECKOUT_ON_EDIT_DEFAULT);
 		store.setDefault(PREF_REFACTOR_ADDS_DIR, PREF_REFACTOR_ADDS_DIR_DEFAULT);
 		store.setDefault(PREF_TEXT_VERSION_DECORATION, PREF_TEXT_VERSION_DECORATION_DEFAULT);
+		store.setDefault(PREF_USE_CLEARTOOL, PREF_USE_CLEARTOOL_DEFAULT);
 	}
 	
 	public static boolean isReservedCheckouts()
@@ -121,6 +143,11 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static boolean isTextVersionDecoration()
 	{
 		return getDefault().getPreferenceStore().getBoolean(PREF_TEXT_VERSION_DECORATION);
+	}
+	
+	public static boolean isUseCleartool()
+	{
+		return getDefault().getPreferenceStore().getBoolean(PREF_USE_CLEARTOOL);
 	}
 
 	/**

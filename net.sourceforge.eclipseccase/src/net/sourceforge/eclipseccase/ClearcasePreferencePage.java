@@ -23,6 +23,7 @@ public class ClearcasePreferencePage extends PreferencePage
 	private Button checkoutOnEditButton;
 	private Button refactorAddsDirButton;
 	private Button textVersionDecorationButton;
+	private Button useCleartoolButton;
 	
 	/**
 	 * Constructor for ClearcasePreferencePage.
@@ -69,6 +70,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkoutOnEditButton = createCheckBox(composite, "Automatically checkout file when edited");
 		refactorAddsDirButton = createCheckBox(composite, "Automatically add dest dir to clearcase when refactoring");
 		textVersionDecorationButton = createCheckBox(composite, "Add text labels for element versions when decorating");
+		useCleartoolButton = createCheckBox(composite, "Use the cleartool executable for clearcase operations");
 		persistStateButton = createCheckBox(composite, "Persist element state cache across sessions");
 
 		initializeValues();
@@ -90,6 +92,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkoutOnEditButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
 		refactorAddsDirButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
 		textVersionDecorationButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION));
+		useCleartoolButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_USE_CLEARTOOL));
 	}
 
 	/**
@@ -118,6 +121,8 @@ public class ClearcasePreferencePage extends PreferencePage
 	public boolean performOk()
 	{
 		boolean lastTextVersionValue = ClearcasePlugin.isTextVersionDecoration();
+		boolean lastUseCleartoolValue = ClearcasePlugin.isUseCleartool();
+
 		IPreferenceStore store = getPreferenceStore();
 		store.setValue(ClearcasePlugin.PREF_RESERVED_CHECKOUT,
 					   reservedCheckoutButton.getSelection());
@@ -135,8 +140,14 @@ public class ClearcasePreferencePage extends PreferencePage
 					   refactorAddsDirButton.getSelection());
 		store.setValue(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION,
 					   textVersionDecorationButton.getSelection());
+		store.setValue(ClearcasePlugin.PREF_USE_CLEARTOOL,
+					   useCleartoolButton.getSelection());
+					   
 		if (textVersionDecorationButton.getSelection() != lastTextVersionValue)
 			ClearcaseDecorator.refresh();
+		if (useCleartoolButton.getSelection() != lastUseCleartoolValue)
+			ClearcasePlugin.getDefault().resetClearcase();
+			
 		savePreferenceStore();
 		return true;
 	}
@@ -153,6 +164,7 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkoutOnEditButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
 		refactorAddsDirButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
 		textVersionDecorationButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_TEXT_VERSION_DECORATION));
+		useCleartoolButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_USE_CLEARTOOL));
 	}
 
 	public IPreferenceStore getPreferenceStore()

@@ -2,8 +2,6 @@ package net.sourceforge.eclipseccase;
 
 import java.io.Serializable;
 
-import net.sourceforge.eclipseccase.jni.Clearcase;
-
 public class StateCache implements Serializable
 {
 	private String osPath;
@@ -20,10 +18,10 @@ public class StateCache implements Serializable
 	
 	public void update()
 	{
-		hasRemote = Clearcase.isElement(osPath);
-		isCheckedOut = hasRemote && Clearcase.isCheckedOut(osPath);
+		hasRemote = ClearcasePlugin.getEngine().isElement(osPath);
+		isCheckedOut = hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
 		isDirty = (!hasRemote) || isCheckedOut;
-		version = Clearcase.cleartool("describe -fmt \"%Vn\" " + osPath).message.trim().replace('\\', '/');
+		version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" " + osPath).message.trim().replace('\\', '/');
 	}
 
 	/**

@@ -1,10 +1,5 @@
 package net.sourceforge.eclipseccase;
 
-import java.io.File;
-
-import javax.swing.ProgressMonitor;
-
-import net.sourceforge.eclipseccase.jni.Clearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IFolder;
@@ -15,7 +10,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -91,7 +85,7 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 				String filename = resource.getLocation().toOSString();
-				Clearcase.Status status = Clearcase.cleartool("update -ptime " + filename);
+				IClearcase.Status status = ClearcasePlugin.getEngine().cleartool("update -ptime " + filename);
 				changeState(resource, IResource.DEPTH_INFINITE, progress);
 				if (!status.status)
 				{
@@ -126,8 +120,8 @@ public class ClearcaseProvider
 					IStatus result =
 						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
 					boolean reserved = ClearcasePlugin.isReservedCheckouts();
-					Clearcase.Status status =
-						Clearcase.checkout(resource.getLocation().toOSString(), "", reserved, true);
+					IClearcase.Status status =
+						ClearcasePlugin.getEngine().checkout(resource.getLocation().toOSString(), "", reserved, true);
 					changeState(resource, IResource.DEPTH_ZERO, progress);
 					if (!status.status)
 					{
@@ -184,8 +178,8 @@ public class ClearcaseProvider
 				{
 					IStatus result =
 						new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-					Clearcase.Status status =
-						Clearcase.checkin(resource.getLocation().toOSString(), comment, true);
+					IClearcase.Status status =
+						ClearcasePlugin.getEngine().checkin(resource.getLocation().toOSString(), comment, true);
 					changeState(resource, IResource.DEPTH_ZERO, progress);
 					if (!status.status)
 					{
@@ -222,8 +216,8 @@ public class ClearcaseProvider
 			{
 				IStatus result =
 					new Status(IStatus.OK, ID, TeamException.OK, "OK", null);
-				Clearcase.Status status =
-					Clearcase.uncheckout(resource.getLocation().toOSString(), false);
+				IClearcase.Status status =
+					ClearcasePlugin.getEngine().uncheckout(resource.getLocation().toOSString(), false);
 				changeState(resource, IResource.DEPTH_ONE, progress);
 				if (!status.status)
 				{
@@ -253,8 +247,8 @@ public class ClearcaseProvider
 				IStatus result = checkoutParent(resource);
 				if (result.isOK())
 				{
-					Clearcase.Status status =
-						Clearcase.delete(resource.getLocation().toOSString(), "");
+					IClearcase.Status status =
+						ClearcasePlugin.getEngine().delete(resource.getLocation().toOSString(), "");
 					StateCacheFactory.getInstance().remove(resource);
 					changeState(resource.getParent(), IResource.DEPTH_ONE, progress);
 					if (!status.status)
@@ -321,8 +315,8 @@ public class ClearcaseProvider
 								folder.move(mkelemPath, true, false, null);
 								IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 								IFolder mkelemFolder = root.getFolder(mkelemPath);
-								Clearcase.Status status =
-									Clearcase.add(folder.getLocation().toOSString(), "", true);
+								IClearcase.Status status =
+									ClearcasePlugin.getEngine().add(folder.getLocation().toOSString(), "", true);
 								if (status.status)
 								{
 									changeState(folder.getParent(), IResource.DEPTH_ONE, progress);
@@ -355,8 +349,8 @@ public class ClearcaseProvider
 						}
 						else
 						{
-							Clearcase.Status status =
-								Clearcase.add(resource.getLocation().toOSString(), "", false);
+							IClearcase.Status status =
+								ClearcasePlugin.getEngine().add(resource.getLocation().toOSString(), "", false);
 							changeState(resource, IResource.DEPTH_ZERO, progress);
 							if (!status.status)
 							{
@@ -407,7 +401,7 @@ public class ClearcaseProvider
 		{
 			// no need to calculate this for each resource as all resources
 			// within a project must belong to the same view.
-			isSnapShot = new Boolean(Clearcase.isSnapShot(getProject().getLocation().toOSString()));
+			isSnapShot = new Boolean(ClearcasePlugin.getEngine().isSnapShot(getProject().getLocation().toOSString()));
 		}
 		return isSnapShot.booleanValue();
 	}
@@ -435,7 +429,7 @@ public class ClearcaseProvider
 	
 	public String getViewName(IResource resource)
 	{
-		Clearcase.Status status = Clearcase.getViewName(resource.getLocation().toOSString());
+		IClearcase.Status status = ClearcasePlugin.getEngine().getViewName(resource.getLocation().toOSString());
 		if (status.status)
 			return status.message.trim();
 		else
@@ -451,8 +445,8 @@ public class ClearcaseProvider
 
 		if (result.isOK())
 		{
-			Clearcase.Status ccStatus =
-				Clearcase.move(
+			IClearcase.Status ccStatus =
+				ClearcasePlugin.getEngine().move(
 					source.getLocation().toOSString(),
 					destination.getLocation().toOSString(),
 					"");
@@ -479,9 +473,9 @@ public class ClearcaseProvider
 		{
 			parent = resource.getParent().getLocation().toOSString();
 		}
-		if (!Clearcase.isCheckedOut(parent))
+		if (!ClearcasePlugin.getEngine().isCheckedOut(parent))
 		{
-			Clearcase.Status ccStatus = Clearcase.checkout(parent, "", false, true);
+			IClearcase.Status ccStatus = ClearcasePlugin.getEngine().checkout(parent, "", false, true);
 			if (! flag)
 				changeState(resource.getParent(), IResource.DEPTH_ZERO, null);
 			if (!ccStatus.status)

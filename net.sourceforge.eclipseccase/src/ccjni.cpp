@@ -1,4 +1,4 @@
-#include "net_sourceforge_eclipseccase_jni_Clearcase.h"
+#include "net_sourceforge_eclipseccase_ClearcaseJNI.h"
 #include <iostream>
 #include <sstream>
 using namespace std;
@@ -22,7 +22,7 @@ void raiseJNIException(JNIEnv * env, const char * msg)
 
 jobject createStatus(JNIEnv * env, boolean status, const char * message)
 {
-	jclass statusClass = env->FindClass("net/sourceforge/eclipseccase/jni/Clearcase$Status");
+	jclass statusClass = env->FindClass("net/sourceforge/eclipseccase/IClearcase$Status");
 	jmethodID statusCtor = NULL;
 	if (statusClass)
 		statusCtor = env->GetMethodID(statusClass, "<init>", "(ZLjava/lang/String;)V");
@@ -36,11 +36,11 @@ jobject createStatus(JNIEnv * env, boolean status, const char * message)
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    initialize
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_initialize
+JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_initialize
   (JNIEnv * env, jclass obj)
 {
 	try 
@@ -65,11 +65,11 @@ JNIEXPORT void JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_initializ
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    checkout
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checkout
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnicheckout
   (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean reserved, jboolean ptime)
 {
 	jobject result = NULL;
@@ -103,11 +103,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checko
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    checkin
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checkin
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnicheckin
   (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean ptime)
 {
 	jobject result = NULL;
@@ -136,11 +136,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_checki
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    uncheckout
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_uncheckout
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniuncheckout
   (JNIEnv * env, jclass obj, jstring file, jboolean keep)
 {
 	jobject result = NULL;
@@ -167,11 +167,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_unchec
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    delete
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_delete
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnidelete
   (JNIEnv * env, jclass obj, jstring file, jstring comment)
 {
 	jobject result = NULL;
@@ -200,11 +200,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_delete
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    add
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_add
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniadd
   (JNIEnv * env, jclass obj, jstring file, jstring comment, jboolean isdirectory)
 {
 	jobject result = NULL;
@@ -235,11 +235,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_add
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    rename
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/eclipse/team/clearcase/jni/Clearcase$Status;
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_move
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnimove
   (JNIEnv * env, jclass obj, jstring file, jstring newfile, jstring comment)
 {
 	jobject result = NULL;
@@ -278,11 +278,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_move
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    getViewName
  * Signature: (Ljava/lang/String;)Lorg/eclipse/team/clearcase/jni/Clearcase$Status;
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_getViewName
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnigetViewName
   (JNIEnv * env, jclass obj, jstring file)
 {
 	jobject result = NULL;
@@ -307,11 +307,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_getVie
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    cleartool
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_cleartool
+JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jnicleartool
   (JNIEnv * env, jclass obj, jstring cmd)
 {
 	jobject result = NULL;
@@ -337,11 +337,11 @@ JNIEXPORT jobject JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_cleart
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    isCheckedOut
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isCheckedOut
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisCheckedOut
   (JNIEnv * env, jclass obj, jstring file)
 {
 	boolean result = false;
@@ -369,11 +369,11 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isChe
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    isElement
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isElement
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisElement
   (JNIEnv * env, jclass obj, jstring file)
 {
 	boolean result = false;
@@ -397,11 +397,11 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isEle
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    isDifferent
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isDifferent
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisDifferent
   (JNIEnv * env, jclass obj, jstring file)
 {
 	boolean result = false;
@@ -429,11 +429,11 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isDif
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    isSnapShot
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isSnapShot
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisSnapShot
   (JNIEnv * env, jclass obj, jstring file)
 {
 	boolean result = false;
@@ -461,11 +461,11 @@ JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isSna
 }
 
 /*
- * Class:     net_sourceforge_eclipseccase_jni_Clearcase
+ * Class:     net_sourceforge_eclipseccase_ClearcaseJNI
  * Method:    isHijacked
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_jni_Clearcase_isHijacked
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_eclipseccase_ClearcaseJNI_jniisHijacked
   (JNIEnv * env, jclass obj, jstring file)
 {
 	boolean result = false;
