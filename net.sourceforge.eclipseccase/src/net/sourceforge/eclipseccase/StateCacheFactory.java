@@ -45,7 +45,7 @@ import org.eclipse.team.core.TeamException;
 public class StateCacheFactory implements ISaveParticipant,
         IResourceChangeListener {
 
-    private static final String SAVE_FILE_NAME = "statecache";
+    private static final String SAVE_FILE_NAME = "statecache"; //$NON-NLS-1$
 
     /** the singleton instance */
     private static StateCacheFactory instance = new StateCacheFactory();
@@ -325,7 +325,7 @@ public class StateCacheFactory implements ISaveParticipant,
             } catch (IOException ex) {
                 throw new CoreException(new Status(IStatus.WARNING,
                         ClearcasePlugin.PLUGIN_ID, TeamException.IO_FAILED,
-                        "Could not persist state cache", ex));
+                        "Could not persist state cache", ex)); //$NON-NLS-1$
             }
             break;
 
@@ -371,7 +371,7 @@ public class StateCacheFactory implements ISaveParticipant,
             ClearcasePlugin
                     .log(
                             IStatus.WARNING,
-                            "Could not load saved clearcase state cache, resetting cache",
+                            "Could not load saved clearcase state cache, resetting cache", //$NON-NLS-1$
                             ex);
         }
     }
@@ -430,7 +430,7 @@ public class StateCacheFactory implements ISaveParticipant,
             }
         } catch (CoreException e) {
             ClearcasePlugin.log(IStatus.ERROR,
-                    "Unable to do a quick update of resource", e);
+                    "Unable to do a quick update of resource", e); //$NON-NLS-1$
         }
     }
 

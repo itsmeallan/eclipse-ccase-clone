@@ -15,6 +15,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -23,7 +24,12 @@ import net.sourceforge.eclipseccase.StateCacheFactory;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
@@ -38,13 +44,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.internal.ui.TeamUIPlugin;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.decorators.DecoratorManager;
 
 /**
  * The ClearCase label decorator.
  */
 public class ClearcaseDecorator extends LabelProvider implements
-        ILightweightLabelDecorator, IResourceStateListener {
+        ILightweightLabelDecorator, IResourceStateListener,
+        IResourceChangeListener {
 
     /*
      * Define a cached image descriptor which only creates the image data once
@@ -361,10 +367,8 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     public ClearcaseDecorator() {
         super();
-        DecoratorManager manager = (DecoratorManager) ClearcaseUI.getInstance()
-                .getWorkbench().getDecoratorManager();
-        addListener(manager);
         StateCacheFactory.getInstance().addStateChangeListerer(this);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
 
     /**
@@ -470,6 +474,7 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     public void dispose() {
         StateCacheFactory.getInstance().removeStateChangeListerer(this);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         super.dispose();
     }
 
@@ -586,6 +591,54 @@ public class ClearcaseDecorator extends LabelProvider implements
      */
     public void resourceStateChanged(IResource resource) {
         refresh(new IResource[] { resource });
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
+     */
+    public void resourceChanged(IResourceChangeEvent event) {
+
+        // get the delta
+        IResourceDelta rootDelta = event.getDelta();
+
+        // process delta
+        if (null != rootDelta) {
+
+            final Set resources = new HashSet();
+
+            try {
+                // recursive
+                rootDelta.accept(new IResourceDeltaVisitor() {
+
+                    public boolean visit(IResourceDelta delta)
+                            throws CoreException {
+                        switch (delta.getKind()) {
+                        
+                        case IResourceDelta.ADDED:
+                        case IResourceDelta.REMOVED:
+                            // if resource was added or removed
+                            if (ClearcaseUI.isDeepDecoration()) {
+                                // refresh parent if deep decoration is enabled
+                                resources.add(delta.getResource().getParent());
+                            }
+                            return false;
+                            
+                        }
+                        return true;
+                    }
+                });
+
+            } catch (CoreException e) {
+                // ignore
+            }
+
+            if (!resources.isEmpty()) {
+                refresh((IResource[]) resources.toArray(new IResource[resources
+                        .size()]));
+            }
+        }
     }
 
     /**

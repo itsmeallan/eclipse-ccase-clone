@@ -13,6 +13,8 @@
 package net.sourceforge.eclipseccase.views;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -27,6 +29,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -76,6 +79,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
     protected void initContentProvider(TreeViewer viewer) {
         viewer.setContentProvider(getContentProvider());
         StateCacheFactory.getInstance().addStateChangeListerer(this);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
 
     /*
@@ -339,6 +343,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      */
     public void dispose() {
         StateCacheFactory.getInstance().removeStateChangeListerer(this);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         super.dispose();
     }
 
@@ -395,15 +400,24 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
     public void resourceChanged(IResourceChangeEvent event) {
         IResourceDelta rootDelta = event.getDelta();
         if (null != rootDelta) {
+            
+            final Set toRemove = new HashSet();
+            
             try {
                 rootDelta.accept(new IResourceDeltaVisitor() {
 
                     public boolean visit(IResourceDelta delta)
                             throws CoreException {
+                        
                         switch (delta.getKind()) {
+                        
                         case IResourceDelta.ADDED:
+                            // do nothing
+                            return false;
+                        
                         case IResourceDelta.REMOVED:
-                            throw IS_AFFECTED_EX;
+                            toRemove.add(delta.getResource());
+                            return true;
 
                         default:
                             IResource resource = delta.getResource();
@@ -413,7 +427,6 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
                                         return null != ClearcaseProvider
                                                 .getClearcaseProvider(delta
                                                         .getResource());
-
                                 return true;
                             }
                             return false;
@@ -423,6 +436,20 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             } catch (CoreException ex) {
                 // refresh on exception
                 if (IS_AFFECTED_EX == ex) refresh();
+            }
+
+            if (null != getViewer() && null != getViewer().getControl()
+                    && !getViewer().getControl().isDisposed()) {
+                getViewer().getControl().getDisplay().syncExec(new Runnable() {
+
+                    public void run() {
+                        if (null != getViewer() && null != getViewer().getControl()
+                                && !getViewer().getControl().isDisposed()) {
+                            // remove resources
+                            getViewer().remove(toRemove.toArray());
+                        }
+                    }
+                });
             }
         }
     }
