@@ -2,7 +2,9 @@
 -----
 
 - improved loading of state caches on startup
-
+- removed Caching of Clearcase calls (fix for bug  1069529)
+- stopped refreshing for children of directories that are NOT even in clearcase. 
+		(Can be disabled through the first setting in the GENERAL tab)
 
 1.0.0
 -----
