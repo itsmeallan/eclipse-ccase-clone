@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.TeamException;
@@ -36,7 +37,7 @@ public class ClearcaseModificationHandler implements IFileModificationValidator 
 
     /** constant for CANCEL status */
     protected static final IStatus CANCEL = ClearcaseProvider.CANCEL_STATUS;
-    
+
     /**
      * Constructor for ClearcaseModificationHandler.
      * 
@@ -107,16 +108,31 @@ public class ClearcaseModificationHandler implements IFileModificationValidator 
     }
 
     /**
+     * Enables or disables refreshing in the ClearCase provider.
+     * 
+     * @param provider
+     * @param refreshResource
+     * 
+     * @return the old value
+     */
+    protected boolean setResourceRefreshing(ClearcaseProvider provider,
+            boolean refreshResource) {
+        boolean old = provider.refreshResources;
+        provider.refreshResources = refreshResource;
+        return old;
+    }
+
+    /**
      * Checks out the specified files.
      * 
      * @param files
      * @return a status describing the result
      */
     private IStatus checkout(final IFile[] files) {
-        
+
         // don't fail and don't do anything if auto checkout is NEVER
-        if(ClearcasePlugin.isCheckoutAutoNever()) return OK;
-        
+        if (ClearcasePlugin.isCheckoutAutoNever()) return OK;
+
         // fail if not set to always
         if (!ClearcasePlugin.isCheckoutAutoAlways()) {
             StringBuffer message = new StringBuffer(
@@ -139,8 +155,22 @@ public class ClearcaseModificationHandler implements IFileModificationValidator 
 
         // checkout
         try {
-            provider.checkout(files, IResource.DEPTH_ZERO, null);
-        } catch (TeamException ex) {
+            synchronized (provider) {
+                boolean refreshing = setResourceRefreshing(provider, false);
+                try {
+                    for (int i = 0; i < files.length; i++) {
+                        IFile file = files[i];
+                        provider.checkout(
+                                new IFile[] { file },
+                                IResource.DEPTH_ZERO, null);
+                        file.refreshLocal(
+                                IResource.DEPTH_ZERO, null);
+                    }
+                } finally {
+                    setResourceRefreshing(provider, refreshing);
+                }
+            }
+        } catch (CoreException ex) {
             return ex.getStatus();
         }
         return OK;
@@ -164,7 +194,7 @@ public class ClearcaseModificationHandler implements IFileModificationValidator 
      * @see org.eclipse.core.resources.IFileModificationValidator#validateSave(org.eclipse.core.resources.IFile)
      */
     public IStatus validateSave(IFile file) {
-        if(!needsCheckout(file)) return OK;
-        return checkout(new IFile[] {file});
+        if (!needsCheckout(file)) return OK;
+        return checkout(new IFile[] { file });
     }
 }
