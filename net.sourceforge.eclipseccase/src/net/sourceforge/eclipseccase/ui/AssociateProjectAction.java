@@ -2,7 +2,6 @@ package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
 import org.eclipse.core.resources.IProject;
@@ -43,11 +42,6 @@ public class AssociateProjectAction extends TeamAction
 					{
 						IProject project = projects[i];
 						String projectPath = project.getLocation().toOSString();
-						if (!ClearcasePlugin
-							.getEngine()
-							.getViewName(projectPath)
-							.status)
-							throw new TeamException("The Project directory must exist within a clearcase view");
 						RepositoryProvider.map(project, ClearcaseProvider.ID);
 						if (i > 0)
 							message.append(", ");

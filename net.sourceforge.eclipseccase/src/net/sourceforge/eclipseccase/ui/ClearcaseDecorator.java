@@ -101,7 +101,7 @@ public class ClearcaseDecorator
 		}
 		else
 		{
-			if (!p.hasRemote(resource))
+			if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource))
 				return;
 
 			int dirty = isDirty(resource);
@@ -130,7 +130,7 @@ public class ClearcaseDecorator
 					ClearcaseImages.getImageDescriptor(
 						ClearcaseImages.IMG_HIJACKED_OVR));
 			}
-			else
+			else if (p.hasRemote(resource))
 			{
 				decoration.addOverlay(
 					ClearcaseImages.getImageDescriptor(

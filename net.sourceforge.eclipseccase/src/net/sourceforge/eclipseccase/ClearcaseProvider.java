@@ -562,6 +562,19 @@ public class ClearcaseProvider
 		{
 			parent = resource.getParent().getLocation().toOSString();
 		}
+
+		if (!ClearcasePlugin.getEngine().isElement(parent))
+		{
+			result =
+				new Status(
+					IStatus.ERROR,
+					ID,
+					TeamException.UNABLE,
+					"Could not find a parent that is a clearcase element",
+					null);
+			return result;
+		}
+
 		if (!ClearcasePlugin.getEngine().isCheckedOut(parent))
 		{
 			IClearcase.Status ccStatus =
