@@ -60,6 +60,11 @@ public class UpdateQueue
 		}
 	}
 
+	public boolean contains(Runnable cmd)
+	{
+		return queue.contains(cmd);
+	}
+	
 	public void add(Runnable cmd)
 	{
 		synchronized (queue)

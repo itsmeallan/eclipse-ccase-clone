@@ -57,6 +57,10 @@ public class StateCacheFactory implements Serializable, ISaveParticipant
 			cache.updateAsync();
 			cacheMap.put(resource, cache);
 		}
+		else if (cache.isUninitialized())
+		{
+			cache.updateAsync();
+		}
 		return cache;
 	}
 	

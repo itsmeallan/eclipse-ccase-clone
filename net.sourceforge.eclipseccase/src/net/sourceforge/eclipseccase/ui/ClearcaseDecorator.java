@@ -214,7 +214,7 @@ public class ClearcaseDecorator
 		}
 	}
 	
-	public String generateText(IResource resource, String text)
+	private String generateText(IResource resource, String text)
 	{
 		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		if (!p.hasRemote(resource))
@@ -345,7 +345,7 @@ public class ClearcaseDecorator
 		}
 	}
 	
-	public Image generateImage(IResource resource, Image image)
+	private Image generateImage(IResource resource, Image image)
 	{
 		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
 		HashableComposite result = new HashableComposite(image);

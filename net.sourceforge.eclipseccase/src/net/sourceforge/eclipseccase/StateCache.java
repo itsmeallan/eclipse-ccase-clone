@@ -65,7 +65,8 @@ public class StateCache implements Serializable
 		}
 		else
 		{
-			UpdateQueue.getInstance().add(cmd);
+			if (! UpdateQueue.getInstance().contains(cmd))
+				UpdateQueue.getInstance().add(cmd);
 		}
 	}
 
