@@ -100,17 +100,17 @@ public interface IClearcasePreferenceConstants
     String CLEARCASE_CLEARDLG = "compatible_cleardlg"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_ASK = "ask"; //$NON-NLS-1$
+    String IF_POSSIBLE = "ifPossible"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_FORCE = "force"; //$NON-NLS-1$
+    String ALWAYS = "always"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_IF_POSSIBLE = "ifPossible"; //$NON-NLS-1$
+    String NEVER = "never"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_NEVER = "never"; //$NON-NLS-1$
-
+    String PROMPT = "prompt"; //$NON-NLS-1$
+    
     /** ClearCase preference */
     String HIDE_REFRESH_STATE_ACTIVITY = ClearcasePlugin.PLUGIN_ID
             + ".refreshState.hide"; //$NON-NLS-1$

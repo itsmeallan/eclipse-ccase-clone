@@ -558,4 +558,13 @@ public class StateCacheFactory implements ISaveParticipant,
         return jobQueue;
     }
 
+    /**
+     * Ensures the state cache for the specified resource is initialized.
+     * 
+     * @param resource
+     */
+    void ensureInitialized(IResource resource) {
+        StateCache cache = get(resource);
+        if (cache.isUninitialized()) cache.doUpdate();
+    }
 }

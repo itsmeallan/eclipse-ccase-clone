@@ -101,13 +101,16 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     private static ClearcasePlugin plugin;
 
     /** the plugin id */
-    public static final String PLUGIN_ID = "net.sourceforge.eclipseccase";
+    public static final String PLUGIN_ID = "net.sourceforge.eclipseccase"; //$NON-NLS-1$
 
     /** The previously remembered comment */
     static LinkedList previousComments = new LinkedList();
 
     /** constant (value <code>UTF-8</code>) */
-    public static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = "UTF-8"; //$NON-NLS-1$
+
+    /** the file modification validator */
+    private ClearcaseModificationHandler clearcaseModificationHandler = new ClearcaseModificationHandler();
 
     /**
      * Prints out a debug string.
@@ -219,9 +222,21 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * 
      * @return the preference value
      */
-    public static boolean isCheckoutAuto() {
-        return getInstance().getPluginPreferences().getBoolean(
-                IClearcasePreferenceConstants.CHECKOUT_AUTO);
+    public static boolean isCheckoutAutoAlways() {
+        return IClearcasePreferenceConstants.ALWAYS.equals(getInstance()
+                .getPluginPreferences().getString(
+                        IClearcasePreferenceConstants.CHECKOUT_AUTO));
+    }
+
+    /**
+     * Returns the preference value for <code>CHECKOUT_AUTO</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isCheckoutAutoNever() {
+        return IClearcasePreferenceConstants.NEVER.equals(getInstance()
+                .getPluginPreferences().getString(
+                        IClearcasePreferenceConstants.CHECKOUT_AUTO));
     }
 
     /**
@@ -339,8 +354,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * 
      * @return the preference value
      */
-    public static boolean isReservedCheckoutsForce() {
-        return IClearcasePreferenceConstants.VALUE_FORCE.equals(getInstance()
+    public static boolean isReservedCheckoutsAlways() {
+        return IClearcasePreferenceConstants.ALWAYS.equals(getInstance()
                 .getPluginPreferences().getString(
                         IClearcasePreferenceConstants.CHECKOUT_RESERVED));
     }
@@ -351,8 +366,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * @return the preference value
      */
     public static boolean isReservedCheckoutsIfPossible() {
-        return IClearcasePreferenceConstants.VALUE_IF_POSSIBLE
-                .equals(getInstance().getPluginPreferences().getString(
+        return IClearcasePreferenceConstants.IF_POSSIBLE.equals(getInstance()
+                .getPluginPreferences().getString(
                         IClearcasePreferenceConstants.CHECKOUT_RESERVED));
     }
 
@@ -362,7 +377,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * @return the preference value
      */
     public static boolean isReservedCheckoutsNever() {
-        return IClearcasePreferenceConstants.VALUE_NEVER.equals(getInstance()
+        return IClearcasePreferenceConstants.NEVER.equals(getInstance()
                 .getPluginPreferences().getString(
                         IClearcasePreferenceConstants.CHECKOUT_RESERVED));
     }
@@ -542,7 +557,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
         pref.setDefault(IClearcasePreferenceConstants.RECURSIVE, true);
         pref.setDefault(IClearcasePreferenceConstants.SAVE_DIRTY_EDITORS,
-                IClearcasePreferenceConstants.VALUE_ASK);
+                IClearcasePreferenceConstants.PROMPT);
         pref
                 .setDefault(
                         IClearcasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY,
@@ -550,10 +565,10 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         // source management
         pref.setDefault(IClearcasePreferenceConstants.ADD_AUTO, true);
-        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO, true);
+        pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO, IClearcasePreferenceConstants.PROMPT);
         pref.setDefault(IClearcasePreferenceConstants.ADD_WITH_CHECKIN, false);
         pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_RESERVED,
-                IClearcasePreferenceConstants.VALUE_NEVER);
+                IClearcasePreferenceConstants.NEVER);
         pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_LATEST, true);
 
         // comments
@@ -672,21 +687,20 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
     /**
      * Indicates if there are state refreshes pending.
+     * 
      * @return <code>true</code> if there are state refreshes pending
      */
-    public boolean hasPendingRefreshes()
-    {
+    public boolean hasPendingRefreshes() {
         return !StateCacheFactory.getInstance().getJobQueue().isEmpty();
     }
-    
+
     /**
      * Cancels all pending state refreshes.
      */
-    public void cancelPendingRefreshes()
-    {
+    public void cancelPendingRefreshes() {
         StateCacheFactory.getInstance().getJobQueue().cancel(true);
     }
-    
+
     /**
      * Saves the comment history.
      * 
@@ -781,5 +795,33 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
                                 .getBytes(UTF_8)));
             writer.endTag(ELEMENT_COMMENT_HISTORY);
         }
+    }
+
+    /**
+     * Returns the ClearCase modification handler.
+     * <p>
+     * Allthough this method is exposed in API it is not inteded to be called by
+     * clients.
+     * </p>
+     * 
+     * @return returns the ClearCase modification handler
+     */
+    ClearcaseModificationHandler getClearcaseModificationHandler() {
+        return clearcaseModificationHandler;
+    }
+
+    /**
+     * Sets the ClearCase modification handler.
+     * <p>
+     * Allthough this method is exposed in API it is not inteded to be called by
+     * clients.
+     * </p>
+     * 
+     * @param clearcaseModificationHandler
+     *            the ClearCase modification handler to set
+     */
+    public void setClearcaseModificationHandler(
+            ClearcaseModificationHandler clearcaseModificationHandler) {
+        this.clearcaseModificationHandler = clearcaseModificationHandler;
     }
 }

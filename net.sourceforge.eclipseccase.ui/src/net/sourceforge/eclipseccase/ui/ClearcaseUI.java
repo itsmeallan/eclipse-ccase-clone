@@ -19,6 +19,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Display;
@@ -68,7 +70,8 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-
+		
+        ClearcasePlugin.getInstance().setClearcaseModificationHandler(new ClearcaseUIModificationHandler());
 		PlatformUI.getWorkbench().addWindowListener(partListener);
 	}
 

@@ -23,7 +23,6 @@ import net.sourceforge.clearcase.simple.IClearcase;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -61,15 +60,12 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
     private IMoveDeleteHook moveHandler = new MoveHandler(this);
 
-    private IFileModificationValidator modificationValidator = new ModificationHandler(
-            this);
+    private String comment = ""; //$NON-NLS-1$
 
-    private String comment = "";
-
-    public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider";
+    public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider"; //$NON-NLS-1$
 
     public static final Status OK_STATUS = new Status(IStatus.OK, ID,
-            TeamException.OK, "OK", null);
+            TeamException.OK, "OK", null); //$NON-NLS-1$
 
     public static final IStatus CANCEL_STATUS = Status.CANCEL_STATUS;
 
@@ -81,22 +77,22 @@ public class ClearcaseProvider extends RepositoryProvider implements
 
     DeleteOperation DELETE = new DeleteOperation();
 
-    /**
-     * @see RepositoryProvider#configureProject()
+    /* (non-Javadoc)
+     * @see org.eclipse.team.core.RepositoryProvider#configureProject()
      */
     public void configureProject() throws CoreException {
         // configureProject
     }
 
-    /**
-     * @see RepositoryProvider#getID()
+    /* (non-Javadoc)
+     * @see org.eclipse.team.core.RepositoryProvider#getID()
      */
     public String getID() {
         return ID;
     }
 
-    /**
-     * @see IProjectNature#deconfigure()
+    /* (non-Javadoc)
+     * @see org.eclipse.core.resources.IProjectNature#deconfigure()
      */
     public void deconfigure() throws CoreException {
         // deconfigure
@@ -428,7 +424,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
             if (!ClearcasePlugin.getEngine().isCheckedOut(parent)) {
                 IClearcase.Status ccStatus = ClearcasePlugin.getEngine()
                         .checkout(parent, getComment(),
-                                ClearcasePlugin.isReservedCheckoutsForce(),
+                                ClearcasePlugin.isReservedCheckoutsAlways(),
                                 true);
                 monitor.worked(4);
                 if (!flag)
@@ -492,7 +488,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @see RepositoryProvider#getFileModificationValidator()
      */
     public IFileModificationValidator getFileModificationValidator() {
-        return modificationValidator;
+        return ClearcasePlugin.getInstance().getClearcaseModificationHandler();
     }
 
     /**
@@ -844,7 +840,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                 if (result == OK_STATUS) {
                     monitor.subTask("Checking out " + resource.getName());
                     boolean reserved = ClearcasePlugin
-                            .isReservedCheckoutsForce()
+                            .isReservedCheckoutsAlways()
                             || ClearcasePlugin.isReservedCheckoutsIfPossible();
                     IClearcase.Status status = ClearcasePlugin.getEngine()
                             .checkout(resource.getLocation().toOSString(),
@@ -1183,12 +1179,16 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @param resource
      * @return <code>true</code> if the specified resource is a view directory
      */
-    public static boolean isInsideView(IResource resource) {
-        IClearcase.Status status = ClearcasePlugin.getEngine().getViewRoot(
-                resource.getLocation().toOSString());
+    public boolean isInsideView(IResource resource) {
+        return StateCacheFactory.getInstance().get(resource).isInsideView();
+    }
 
-        if (status.status) return true;
-
-        return false;
+    /**
+     * Ensures the specified resource is initialized.
+     * 
+     * @param resource
+     */
+    public void ensureInitialized(IResource resource) {
+        StateCacheFactory.getInstance().ensureInitialized(resource);
     }
 }

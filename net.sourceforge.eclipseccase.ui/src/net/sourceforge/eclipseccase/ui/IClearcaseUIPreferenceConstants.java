@@ -12,7 +12,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-
 /**
  * Interface with shared UI preference constants.
  */

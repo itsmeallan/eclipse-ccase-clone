@@ -175,7 +175,7 @@ class StateCacheJobQueue extends Job {
     /**
      * Schedules this queue job.
      */
-    synchronized void scheduleQueueRun() {
+    void scheduleQueueRun() {
         int state = getState();
         switch (state) {
         case Job.SLEEPING:
@@ -183,6 +183,9 @@ class StateCacheJobQueue extends Job {
             break;
         case NONE:
             setSystem(ClearcasePlugin.isHideRefreshActivity());
+            schedule(DEFAULT_DELAY);
+            break;
+        case RUNNING:
             schedule(DEFAULT_DELAY);
             break;
         }

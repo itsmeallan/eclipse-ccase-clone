@@ -67,6 +67,8 @@ public class StateCache implements Serializable {
 
     private static final int SYM_LINK_TARGET_VALID = 0x40;
 
+    private static final int INSIDE_VIEW = 0x80;
+
     /**
      * Schedules a state update.
      * 
@@ -152,6 +154,10 @@ public class StateCache implements Serializable {
                         osPath);
                 changed = changed || newHasRemote != this.hasRemote();
                 setFlag(HAS_REMOTE, newHasRemote);
+
+                boolean newInsideView = checkInsideView(osPath);
+                changed = changed || newInsideView != this.isInsideView();
+                setFlag(INSIDE_VIEW, newInsideView);
 
                 boolean newIsSymbolicLink = newHasRemote
                         && ClearcasePlugin.getEngine().isSymbolicLink(osPath);
@@ -507,6 +513,25 @@ public class StateCache implements Serializable {
         return getFlag(SYM_LINK_TARGET_VALID);
     }
 
+    /**
+     * Indicates if the specified file is inside a view directory.
+     * 
+     * @param file
+     * @return <code>true</code> if the specified resource is a view directory
+     */
+    static boolean checkInsideView(String file) {
+        IClearcase.Status status = ClearcasePlugin.getEngine().getViewRoot(file);
+        return null != status && status.status;
+    }
+    
+    /**
+     * Indicates if the resource is within a ClearCase view.
+     * @return
+     */
+    public boolean isInsideView() {
+        return getFlag(INSIDE_VIEW);
+    }
+    
     /**
      * Returns <code>true</code> if the specified flag is set.
      * 
