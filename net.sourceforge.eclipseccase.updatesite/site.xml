@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-
-   <description url="http://eclipse-ccase.sourceforge.net/update/">
-      Eclipse ClearCase Integration Updates
-   </description>
-   <feature url="features/net.sourceforge.eclipseccase.feature_0.9.10.jar" id="net.sourceforge.eclipseccase.feature" version="0.9.10">
-      <category name="eclipse-ccase"/>
-   </feature>
-   <feature url="features/net.sourceforge.eclipseccase.feature.3_0.9.10.jar" id="net.sourceforge.eclipseccase.feature.3" version="0.9.10">
-      <category name="eclipse-ccase"/>
-   </feature>
    <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration">
       <description>
          The free and open source Eclipse ClearCase integration.
