@@ -28,8 +28,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction
 						IResource resource = resources[i];
                         checkCanceled(monitor);
 						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-						provider.refresh(new IResource[] {resource},
-											IResource.DEPTH_INFINITE, subMonitor(monitor));
+						provider.refreshRecursive(resource, subMonitor(monitor));
 					}
 				}
 				finally

@@ -67,10 +67,10 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
 
     private static final BASE64Encoder BASE64_ENCODER = new BASE64Encoder();
-    
+
     /** job family for all clearcase operations */
     public static final Object FAMILY_CLEARCASE_OPERATION = new Object();
-    
+
     /** the scheduling rule for the whole clearcase engine */
     public static final ISchedulingRule RULE_CLEARCASE_ENGING = new ISchedulingRule() {
 
@@ -82,7 +82,6 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             return RULE_CLEARCASE_ENGING == rule;
         }
     };
-    
 
     /** file name fo the history file */
     private static final String COMMENT_HIST_FILE = "commentHistory.xml"; //$NON-NLS-1$
@@ -379,6 +378,16 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     }
 
     /**
+     * Returns the preference value for <code>HIDE_REFRESH_STATE_ACTIVITY</code>.
+     * 
+     * @return the preference value
+     */
+    public static boolean isHideRefreshActivity() {
+        return getInstance().getPluginPreferences().getBoolean(
+                IClearcasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY);
+    }
+
+    /**
      * Returns the preference value for <code>USE_CLEARDLG</code>.
      * 
      * @return the preference value
@@ -424,8 +433,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         String[] args = Platform.getCommandLineArgs();
         for (int i = 0; i < args.length; i++) {
-            if ("-debugClearCase".equalsIgnoreCase(args[i].trim())) {
-                debug = Platform.getLocation().append("clearcase.debug.log");
+            if ("-debugClearCase".equalsIgnoreCase(args[i].trim())) { //$NON-NLS-1$
+                debug = Platform.getLocation().append("clearcase.debug.log"); //$NON-NLS-1$
                 break;
             }
         }
@@ -534,6 +543,10 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         pref.setDefault(IClearcasePreferenceConstants.RECURSIVE, true);
         pref.setDefault(IClearcasePreferenceConstants.SAVE_DIRTY_EDITORS,
                 IClearcasePreferenceConstants.VALUE_ASK);
+        pref
+                .setDefault(
+                        IClearcasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY,
+                        true);
 
         // source management
         pref.setDefault(IClearcasePreferenceConstants.ADD_AUTO, true);
@@ -647,12 +660,33 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * time it is requested.
      */
     public void resetClearcase() {
+        // cancel pending refresh jobs
+        StateCacheFactory.getInstance().getJobQueue().cancel(true);
+
+        // destroy clearcase engine
         if (clearcaseImpl != null) {
             clearcaseImpl.destroy();
             clearcaseImpl = null;
         }
     }
 
+    /**
+     * Indicates if there are state refreshes pending.
+     * @return <code>true</code> if there are state refreshes pending
+     */
+    public boolean hasPendingRefreshes()
+    {
+        return !StateCacheFactory.getInstance().getJobQueue().isEmpty();
+    }
+    
+    /**
+     * Cancels all pending state refreshes.
+     */
+    public void cancelPendingRefreshes()
+    {
+        StateCacheFactory.getInstance().getJobQueue().cancel(true);
+    }
+    
     /**
      * Saves the comment history.
      * 
@@ -678,12 +712,12 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             if (!renamed) { throw new CoreException(new Status(IStatus.ERROR,
                     PLUGIN_ID, TeamException.UNABLE, MessageFormat.format(
                             "Could not rename file '{0}'!",
-                            new Object[] { tempFile.getAbsolutePath()}), null)); }
+                            new Object[] { tempFile.getAbsolutePath() }), null)); }
         } catch (IOException e) {
             throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
                     TeamException.UNABLE, MessageFormat.format(
                             "Could not save file '{0}'!",
-                            new Object[] { histFile.getAbsolutePath()}), e));
+                            new Object[] { histFile.getAbsolutePath() }), e));
         }
     }
 
@@ -721,6 +755,8 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         getWorkspace().removeResourceChangeListener(
                 StateCacheFactory.getInstance());
+
+        StateCacheFactory.getInstance().getJobQueue().cancel();
 
         resetClearcase();
 

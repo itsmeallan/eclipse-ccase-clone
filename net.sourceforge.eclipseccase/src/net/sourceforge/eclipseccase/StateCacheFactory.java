@@ -216,7 +216,7 @@ public class StateCacheFactory implements ISaveParticipant,
             }
 
             // schedule update if necessary
-            if (cache.isUninitialized()) cache.updateAsync(true);
+            if (cache.isUninitialized()) cache.updateAsync(false);
         }
         return cache;
     }
@@ -424,21 +424,44 @@ public class StateCacheFactory implements ISaveParticipant,
                 }
 
                 if (!toRefresh.isEmpty()) {
-                    for (Iterator resources = toRefresh.iterator(); resources
-                            .hasNext();) {
-                        IResource resourceToRefresh = (IResource) resources
-                                .next();
-                        // schedule hidden update
-                        StateCache cache = StateCacheFactory.getInstance().get(
-                                resourceToRefresh);
-                        cache.updateAsync(true);
-                    }
+                    refreshStateAsync((IResource[]) toRefresh
+                            .toArray(new IResource[toRefresh.size()]));
                 }
             }
         } catch (CoreException e) {
             ClearcasePlugin.log(IStatus.ERROR,
                     "Unable to do a quick update of resource", e);
         }
+    }
+
+    /**
+     * Refreshes the state of the specified resources.
+     * 
+     * @param resources
+     */
+    void refreshStateAsync(IResource[] resources) {
+        StateCacheJob[] jobs = new StateCacheJob[resources.length];
+        for (int i = 0; i < resources.length; i++) {
+            StateCache cache = StateCacheFactory.getInstance()
+                    .get(resources[i]);
+            jobs[i] = new StateCacheJob(cache);
+        }
+        getJobQueue().schedule(jobs);
+    }
+
+    /**
+     * Refreshes the state of the specified resources.
+     * 
+     * @param resources
+     */
+    void refreshStateAsyncHighPriority(IResource[] resources) {
+        StateCacheJob[] jobs = new StateCacheJob[resources.length];
+        for (int i = 0; i < resources.length; i++) {
+            StateCache cache = StateCacheFactory.getInstance()
+                    .get(resources[i]);
+            jobs[i] = new StateCacheJob(cache, StateCacheJob.PRIORITY_HIGH);
+        }
+        getJobQueue().schedule(jobs);
     }
 
     /**
@@ -522,6 +545,17 @@ public class StateCacheFactory implements ISaveParticipant,
         //System.out.println("IGNORE MARKER DELTA took: "+
         // (System.currentTimeMillis() - start));
         return false;
+    }
+
+    private final StateCacheJobQueue jobQueue = new StateCacheJobQueue();
+
+    /**
+     * Returns the job queue.
+     * 
+     * @return the job queue
+     */
+    StateCacheJobQueue getJobQueue() {
+        return jobQueue;
     }
 
 }

@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipseccase.ui"
    name="%pluginName"
-   version="1.0.0.M1"
+   version="1.0.0.M2"
    provider-name="%providerName"
    class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
 
@@ -176,6 +176,12 @@
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.findcheckouts">
          </action>
+         <action
+               label="Cancel pending refreshes"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+               class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
+               menubarPath="team.main/group3"
+               id="net.sourceforge.eclipseccase.popups.cancelRefreshes"/>
       </objectContribution>
    </extension>
    <extension
@@ -307,9 +313,9 @@
             </enablement>
          </action-->
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.refresh"
-               label="&amp;Refresh State"
+               label="&amp;Refresh state"
                class="net.sourceforge.eclipseccase.ui.actions.RefreshStateAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.refresh"
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.refresh">
             <enablement>
@@ -423,6 +429,18 @@
                </pluginState>
             </enablement>
          </action>
+         <action
+               label="Cancel &amp;pending refreshes"
+               class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+               menubarPath="eclipseccase_menu/group3"
+               id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase.ui.pluginState1"/>
+            </enablement>
+         </action>
       </actionSet>
    </extension>
    <extension
@@ -433,9 +451,9 @@
             id="net.sourceforge.eclipseccase.category">
       </category>
       <command
-            name="Associate"
-            category="net.sourceforge.eclipseccase.category"
             description="Associates the selected project with the clearcase plugin"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Associate"
             id="net.sourceforge.eclipseccase.ui.actionset.associate">
       </command>
       <keyBinding
@@ -445,9 +463,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Dissociate"
-            category="net.sourceforge.eclipseccase.category"
             description="Dissociates the selected project from the clearcase plugin"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Dissociate"
             id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
       </command>
       <keyBinding
@@ -457,9 +475,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Uncheckout"
-            category="net.sourceforge.eclipseccase.category"
             description="Cancels the checkout for the selected resources"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Uncheckout"
             id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
       </command>
       <keyBinding
@@ -469,9 +487,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Checkin"
-            category="net.sourceforge.eclipseccase.category"
             description="Checks in th selected resources"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Checkin"
             id="net.sourceforge.eclipseccase.ui.actionset.checkin">
       </command>
       <keyBinding
@@ -481,9 +499,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Refresh"
-            category="net.sourceforge.eclipseccase.category"
             description="Refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Refresh"
             id="net.sourceforge.eclipseccase.ui.actionset.refresh">
       </command>
       <keyBinding
@@ -493,9 +511,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Refresh Quick"
-            category="net.sourceforge.eclipseccase.category"
             description="Quickly refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Refresh Quick"
             id="net.sourceforge.eclipseccase.ui.actionset.refreshquick">
       </command>
       <keyBinding
@@ -506,9 +524,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Checkout"
-            category="net.sourceforge.eclipseccase.category"
             description="Checks out the selected resources"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Checkout"
             id="net.sourceforge.eclipseccase.ui.actionset.checkout">
       </command>
       <keyBinding
@@ -519,9 +537,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Update"
-            category="net.sourceforge.eclipseccase.category"
             description="Updates the seletced resources (Static view only)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Update"
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
       <keyBinding
@@ -531,9 +549,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Add"
-            category="net.sourceforge.eclipseccase.category"
             description="Adds the selected resources to clearcase"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Add"
             id="net.sourceforge.eclipseccase.ui.actionset.add">
       </command>
       <keyBinding
@@ -543,9 +561,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Delete"
-            category="net.sourceforge.eclipseccase.category"
             description="Removes the selected resources from clearcase"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Delete"
             id="net.sourceforge.eclipseccase.ui.actionset.delete">
       </command>
       <keyBinding
@@ -555,9 +573,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Version Tree"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase version tree browser on the slected resources (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Version Tree"
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
       <keyBinding
@@ -567,9 +585,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Update (External)"
-            category="net.sourceforge.eclipseccase.category"
             description="Updates the selected resources (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Update (External)"
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
       </command>
       <keyBinding
@@ -579,9 +597,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="History"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase hostory browser on the selected resources (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="History"
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
       <keyBinding
@@ -591,9 +609,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="Compare with predecessor"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Compare with predecessor"
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
       </command>
       <keyBinding
@@ -615,9 +633,9 @@
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding-->
       <command
-            name="Find Checkouts"
-            category="net.sourceforge.eclipseccase.category"
             description="Opens the clearcase find checkouts tool on the selected resource (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Find Checkouts"
             id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
       </command>
       <keyBinding
@@ -626,6 +644,11 @@
             commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
+      <command
+            description="Cancels all pendinig refresh state jobs"
+            categoryId="net.sourceforge.eclipseccase.category"
+            name="Cancel Pending Refreshes"
+            id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

@@ -427,6 +427,10 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
                 "Do not look for new resources not under source control",
                 getFieldEditorParent(GENERAL)));
 
+        addField(new BooleanFieldEditor(HIDE_REFRESH_STATE_ACTIVITY,
+                "Hide background refresh state activities",
+                getFieldEditorParent(GENERAL)));
+        
         addField(new BooleanFieldEditor(RECURSIVE,
                 "Perform all operations recursively",
                 getFieldEditorParent(GENERAL)));

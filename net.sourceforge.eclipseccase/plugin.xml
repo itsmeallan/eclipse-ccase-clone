@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.eclipseccase"
    name="%pluginName"
-   version="1.0.0.M1"
+   version="1.0.0.M2"
    provider-name="%providerName"
    class="net.sourceforge.eclipseccase.ClearcasePlugin">
 
@@ -11,6 +11,7 @@
       <library name="eclipseccase.jar">
          <export name="*"/>
       </library>
+      <library name="lib/commons-collections-3.0.jar"/>
    </runtime>
    <requires>
       <import plugin="org.eclipse.team.core" export="true"/>

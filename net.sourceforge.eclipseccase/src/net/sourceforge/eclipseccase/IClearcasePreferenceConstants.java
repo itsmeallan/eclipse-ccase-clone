@@ -19,95 +19,100 @@ public interface IClearcasePreferenceConstants
 {
     /** ClearCase preference */
     String ADD_AUTO = ClearcasePlugin.PLUGIN_ID
-            + ".add.auto";
+            + ".add.auto"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String ADD_WITH_CHECKIN = ClearcasePlugin.PLUGIN_ID
-            + ".add.checkin";
+            + ".add.checkin"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String CHECKOUT_AUTO = ClearcasePlugin.PLUGIN_ID
-            + ".checkout.auto";
+            + ".checkout.auto"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String CHECKOUT_LATEST = ClearcasePlugin.PLUGIN_ID
-            + ".checkout.latest";
+            + ".checkout.latest"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String CHECKOUT_RESERVED = ClearcasePlugin.PLUGIN_ID
-            + ".checkout.reserved";
+            + ".checkout.reserved"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_ADD = ClearcasePlugin.PLUGIN_ID
-            + ".comment.add";
+            + ".comment.add"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_ADD_NEVER_ON_AUTO = ClearcasePlugin.PLUGIN_ID
-            + ".comment.add";
+            + ".comment.add"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_CHECKIN = ClearcasePlugin.PLUGIN_ID
-            + ".comment.checkin";
+            + ".comment.checkin"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_CHECKOUT = ClearcasePlugin.PLUGIN_ID
-            + ".comment.checkout";
+            + ".comment.checkout"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_CHECKOUT_NEVER_ON_AUTO = ClearcasePlugin.PLUGIN_ID
-            + ".comment.checkout.neverOnAuto";
+            + ".comment.checkout.neverOnAuto"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String COMMENT_ESCAPE = ClearcasePlugin.PLUGIN_ID
-            + ".comment.escape";
+            + ".comment.escape"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String IGNORE_NEW = ClearcasePlugin.PLUGIN_ID
-            + ".ignore.new";
+            + ".ignore.new"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String PRESERVE_TIMES = ClearcasePlugin.PLUGIN_ID
-            + ".preserveTimes";
+            + ".preserveTimes"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String RECURSIVE = ClearcasePlugin.PLUGIN_ID
-            + ".recursive";
+            + ".recursive"; //$NON-NLS-1$
 
 
     /** common preference */
     String SAVE_DIRTY_EDITORS = ClearcasePlugin.PLUGIN_ID
-            + ".saveDirtyEditors";
+            + ".saveDirtyEditors"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String USE_CLEARTOOL = ClearcasePlugin.PLUGIN_ID
-            + ".useCleartool";
+            + ".useCleartool"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String USE_CLEARDLG = ClearcasePlugin.PLUGIN_ID
-            + ".useClearDlg";
+            + ".useClearDlg"; //$NON-NLS-1$
 
     /** ClearCase preference */
     String CLEARCASE_API = ClearcasePlugin.PLUGIN_ID
-            + ".clearcaseAPI";
+            + ".clearcaseAPI"; //$NON-NLS-1$
 
     /** preference value for <code>CLEARCASE_API</code> */
-    String CLEARCASE_NATIVE = "native_cal";
+    String CLEARCASE_NATIVE = "native_cal"; //$NON-NLS-1$
 
     /** preference value for <code>CLEARCASE_API</code> */
-    String CLEARCASE_CLEARTOOL = "native_cleartool";
+    String CLEARCASE_CLEARTOOL = "native_cleartool"; //$NON-NLS-1$
 
     /** preference value for <code>CLEARCASE_API</code> */
-    String CLEARCASE_CLEARDLG = "compatible_cleardlg";
+    String CLEARCASE_CLEARDLG = "compatible_cleardlg"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_ASK = "ask";
+    String VALUE_ASK = "ask"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_FORCE = "force";
+    String VALUE_FORCE = "force"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_IF_POSSIBLE = "ifPossible";
+    String VALUE_IF_POSSIBLE = "ifPossible"; //$NON-NLS-1$
 
     /** preference value */
-    String VALUE_NEVER = "never";
+    String VALUE_NEVER = "never"; //$NON-NLS-1$
+
+    /** ClearCase preference */
+    String HIDE_REFRESH_STATE_ACTIVITY = ClearcasePlugin.PLUGIN_ID
+            + ".refreshState.hide"; //$NON-NLS-1$
+
 }

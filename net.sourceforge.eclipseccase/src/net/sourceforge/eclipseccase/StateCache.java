@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
@@ -68,10 +69,29 @@ public class StateCache implements Serializable {
     /**
      * Schedules a state update.
      * 
-     * @param hidden
+     * @param invalidate
      */
-    public void updateAsync(boolean hidden) {
-        if (!hidden) {
+    public void updateAsync(boolean invalidate) {
+        updateAsync(invalidate, false);
+    }
+    
+    /**
+     * Schedules a state update with a high priority.
+     * 
+     * @param invalidate
+     */
+    public void updateAsyncHighPriority(boolean invalidate) {
+        updateAsync(invalidate, true);
+    }
+    
+    /**
+     * Schedules a state update.
+     * 
+     * @param invalidate
+     * @param useHighPriority
+     */
+    private void updateAsync(boolean invalidate, boolean useHighPriority) {
+        if (invalidate) {
             if (!uninitialized) {
                 // synchronize access
                 synchronized (this) {
@@ -82,8 +102,28 @@ public class StateCache implements Serializable {
                 StateCacheFactory.getInstance().fireStateChanged(this.resource);
             }
         }
-        RefreshStateJob job = new RefreshStateJob(this, hidden);
-        job.schedule();
+        StateCacheJob job = new StateCacheJob(this);
+        job.schedule(useHighPriority ? StateCacheJob.PRIORITY_HIGH : StateCacheJob.PRIORITY_DEFAULT);
+    }
+
+    /**
+     * Updates the state.
+     * 
+     * @param monitor
+     * @throws CoreException
+     * @throws OperationCanceledException
+     */
+    void doUpdate(IProgressMonitor monitor) throws CoreException,
+            OperationCanceledException {
+        try {
+            monitor.beginTask("Updating " + getResource(), 10);
+            doUpdate();
+            monitor.worked(10);
+        }
+        finally
+        {
+            monitor.done();
+        }
     }
 
     /**
@@ -376,48 +416,6 @@ public class StateCache implements Serializable {
      */
     public IResource getResource() {
         return resource;
-    }
-
-    private static class RefreshStateJob extends WorkspaceJob {
-
-        private StateCache cache;
-
-        /**
-         * Creates a new instance.
-         * 
-         * @param name
-         */
-        public RefreshStateJob(StateCache cache, boolean hidden) {
-            super("Refreshing element state of "
-                    + cache.getResource().getFullPath());
-            this.cache = cache;
-            setSystem(hidden);
-
-            // set the rule to the clearcase engine
-            setRule(ClearcasePlugin.RULE_CLEARCASE_ENGING);
-
-            setPriority(DECORATE);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.eclipse.core.resources.WorkspaceJob#runInWorkspace(org.eclipse.core.runtime.IProgressMonitor)
-         */
-        public IStatus runInWorkspace(IProgressMonitor monitor)
-                throws CoreException {
-            cache.doUpdate();
-            return Status.OK_STATUS;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.eclipse.core.runtime.jobs.Job#belongsTo(java.lang.Object)
-         */
-        public boolean belongsTo(Object family) {
-            return ClearcasePlugin.FAMILY_CLEARCASE_OPERATION == family;
-        }
     }
 
     /*

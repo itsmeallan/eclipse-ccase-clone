@@ -1,3 +1,13 @@
+1.0.0.M2
+--------
+
+- requires Eclipse 3.0 M9
+- added job queue for all state refreshes (feature request 956508)
+  - fixes bug 956573: high priority for manual refresh
+  - fixes bug 956505: multiple refreshes schedulded for same resource
+  - added ui support to cancel pending refreshes
+  
+
 1.0.0.M1
 --------
 
