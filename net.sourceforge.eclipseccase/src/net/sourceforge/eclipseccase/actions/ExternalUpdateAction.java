@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.StateCacheFactory;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -36,7 +37,9 @@ public class ExternalUpdateAction extends ClearcaseAction
 				return false;
 			if (! provider.hasRemote(resource))
 				return false;
-			if (! provider.isSnapShot())
+			//todo figure why provider.isSnapShot() returns FALSE
+			//if (! provider.isSnapShot())
+			if (! StateCacheFactory.getInstance().get(resource).isSnapShot())
 				return false;
 		}
 		return true;
