@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/net.sourceforge.eclipseccase.feature_0.9.10.jar" id="net.sourceforge.eclipseccase.feature" version="0.9.10" label="Eclipse ClearCase Integration for Eclipse 2.1">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.0.M2jar" id="net.sourceforge.eclipseccase" version="1.0.0.M2" label="Eclipse ClearCase Integration">
       <category name="eclipse-ccase"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase.feature_1.0.0.jar" id="net.sourceforge.eclipseccase.feature" version="1.0.0" label="Eclipse ClearCase Integration for Eclipse 3.0">
-      <category name="eclipse-ccase"/>
+   <feature url="features/net.sourceforge.eclipseccase_0.9.11jar" id="net.sourceforge.eclipseccase" version="0.9.11" label="Eclipse ClearCase Integration">
+      <category name="eclipse-ccase-2"/>
    </feature>
-   <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration">
+   <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration for Eclipse 3.0">
       <description>
-         The free and open source Eclipse ClearCase integration.
+         The free and open source Eclipse ClearCase integration for Eclipse 3.0.
+      </description>
+   </category-def>
+   <category-def name="eclipse-ccase-2" label="Eclipse ClearCase Integration for Eclipse 2.1">
+      <description>
+         The free and open source Eclipse ClearCase integration for Eclipse 2.1.
       </description>
    </category-def>
 </site>
