@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -11,6 +12,7 @@ import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.StateChangeListener;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -27,7 +29,10 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -42,6 +47,7 @@ import org.eclipse.team.internal.ui.UIConstants;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -62,7 +68,40 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	private static final CoreException INTERRUPTED_EXCEPTION =
 		new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
 
-	class ViewContentProvider implements IStructuredContentProvider
+	private final class DoubleClickListener implements IDoubleClickListener
+	{
+		public void doubleClick(DoubleClickEvent event)
+		{
+			if (event.getSelection() instanceof IStructuredSelection)
+			{
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				for (Iterator iter = selection.iterator(); iter.hasNext();)
+				{
+					IResource element = (IResource) iter.next();
+					if (element.getType() == IResource.FILE)
+					{
+						try
+						{
+							PlatformUI.getWorkbench()
+								.getActiveWorkbenchWindow()
+								.getActivePage()
+								.openEditor((IFile) element);
+						}
+						catch (PartInitException e)
+						{
+							ClearcasePlugin.log(
+								IStatus.ERROR,
+								"Could not create editor for " + element,
+								e);
+						}
+					}
+			
+				}
+			}
+		}
+	}
+
+	private final class ViewContentProvider implements IStructuredContentProvider
 	{
 		public void inputChanged(Viewer v, Object oldInput, Object newInput)
 		{
@@ -77,7 +116,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		}
 	}
 
-	class ViewLabelProvider
+	private final class ViewLabelProvider
 		extends LabelProvider
 		implements ITableLabelProvider
 	{
@@ -91,8 +130,24 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		}
 		public Image getImage(Object obj)
 		{
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-				ISharedImages.IMG_OBJ_ELEMENT);
+			Image image = null;
+			IResource resource = (IResource) obj;
+			switch(resource.getType())
+			{
+				case IResource.FILE :
+					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
+					break;
+				case IResource.FOLDER :
+					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+					break;
+				case IResource.PROJECT :
+					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
+					break;					
+				default :
+					image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+					break;					
+			}
+			return image;
 		}
 	}
 	
@@ -124,6 +179,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(ResourcesPlugin.getWorkspace());
+		viewer.addDoubleClickListener(new DoubleClickListener());
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
