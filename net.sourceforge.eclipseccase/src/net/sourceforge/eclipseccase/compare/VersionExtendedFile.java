@@ -39,7 +39,7 @@ public class VersionExtendedFile extends VersionExtendedResource implements IFil
 		InputStream contents = null;
 		try
 		{
-			if (getVersionExtendedPath().endsWith("/CHECKEDOUT"))
+			if (getVersionExtendedPath().endsWith("/CHECKEDOUT") || getVersionExtendedPath().endsWith("/HIJACKED"))
 			{
 				contents = file.getContents();
 			}
