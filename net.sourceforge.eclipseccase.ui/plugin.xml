@@ -439,10 +439,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.associate">
       </command>
       <keyBinding
-            string="Alt+C Alt+S"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.associate"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+S"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Dissociate"
@@ -451,10 +451,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
       </command>
       <keyBinding
-            string="Alt+C Alt+E"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+E"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Uncheckout"
@@ -463,10 +463,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
       </command>
       <keyBinding
-            string="Alt+C Alt+U"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+U"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Checkin"
@@ -475,10 +475,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.checkin">
       </command>
       <keyBinding
-            string="Alt+C Alt+I"
+            keySequence="Alt+C Alt+I"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.checkin"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Refresh"
@@ -487,10 +487,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.refresh">
       </command>
       <keyBinding
-            string="Alt+C Alt+R"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.refresh"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+R"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Refresh Quick"
@@ -499,10 +499,11 @@
             id="net.sourceforge.eclipseccase.ui.actionset.refreshquick">
       </command>
       <keyBinding
-            string="Alt+C Alt+Q"
+            string="org.eclipse.ui.globalScope"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+Q"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Checkout"
@@ -511,10 +512,11 @@
             id="net.sourceforge.eclipseccase.ui.actionset.checkout">
       </command>
       <keyBinding
-            string="Alt+C Alt+O"
+            string="org.eclipse.ui.globalScope"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.checkout"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            keySequence="Alt+C Alt+O"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Update"
@@ -523,10 +525,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
       <keyBinding
-            string="Alt+C Alt+T"
+            keySequence="Alt+C Alt+T"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.update"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Add"
@@ -535,10 +537,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.add">
       </command>
       <keyBinding
-            string="Alt+C Alt+A"
+            keySequence="Alt+C Alt+A"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.add"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Delete"
@@ -547,10 +549,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.delete">
       </command>
       <keyBinding
-            string="Alt+C Alt+D"
+            keySequence="Alt+C Alt+D"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.delete"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Version Tree"
@@ -559,10 +561,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
       <keyBinding
-            string="Alt+C Alt+V"
+            keySequence="Alt+C Alt+V"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Update (External)"
@@ -571,10 +573,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
       </command>
       <keyBinding
-            string="Alt+C Alt+X"
+            keySequence="Alt+C Alt+X"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="History"
@@ -583,10 +585,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
       <keyBinding
-            string="Alt+C Alt+H"
+            keySequence="Alt+C Alt+H"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.history"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
             name="Compare with predecessor"
@@ -595,10 +597,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
       </command>
       <keyBinding
-            string="Alt+C Alt+C"
+            keySequence="Alt+C Alt+C"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
 <!--command
             name="Compare with Predecessor (Internal)"
@@ -607,10 +609,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.internalcomparepredecessor">
       </command>
       <keyBinding
-            string="Alt+C Alt+P"
+            keySequence="Alt+C Alt+P"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.internalcomparepredecessor"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.internalcomparepredecessor"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding-->
       <command
             name="Find Checkouts"
@@ -619,10 +621,10 @@
             id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
       </command>
       <keyBinding
-            string="Alt+C Alt+F"
+            keySequence="Alt+C Alt+F"
             scope="org.eclipse.ui.globalScope"
-            command="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
    </extension>
    <extension
