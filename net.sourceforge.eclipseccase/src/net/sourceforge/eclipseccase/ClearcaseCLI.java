@@ -135,11 +135,11 @@ public class ClearcaseCLI implements IClearcase
 
 		if (out.length() > 0)
 		{
-			msg.append(out);
+			msg.append(out.toString());
 		}
 		if (err.length() > 0)
 		{
-			msg.append(err);
+			msg.append(err.toString());
 			status = false;
 		}
 			
