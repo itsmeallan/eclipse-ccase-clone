@@ -1,4 +1,3 @@
-
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.util.Arrays;
@@ -14,22 +13,22 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.window.Window;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 
-public class CheckInAction extends ClearcaseWorkspaceAction
-{
+public class CheckInAction extends ClearcaseWorkspaceAction {
+
     /*
      * Method declared on IActionDelegate.
      */
-    public void run(IAction action)
-    {
+    public void run(IAction action) {
         String maybeComment = "";
         int maybeDepth = IResource.DEPTH_ZERO;
 
-        if (ClearcasePlugin.isCommentCheckin())
-        {
+        if (!ClearcasePlugin.isUseClearDlg()
+                && ClearcasePlugin.isCommentCheckin()) {
             CommentDialog dlg = new CommentDialog(getShell(), "Checkin comment");
-            if (dlg.open() == CommentDialog.CANCEL) return;
+            if (dlg.open() == Window.CANCEL) return;
             maybeComment = dlg.getComment();
             maybeDepth = dlg.isRecursive() ? IResource.DEPTH_INFINITE
                     : IResource.DEPTH_ZERO;
@@ -42,44 +41,46 @@ public class CheckInAction extends ClearcaseWorkspaceAction
         if (unsavedFiles.length > 0)
                 canContinue = saveModifiedResourcesIfUserConfirms(unsavedFiles);
 
-        if (canContinue)
-        {
+        if (canContinue) {
             final String comment = maybeComment;
             final int depth = maybeDepth;
 
-            IWorkspaceRunnable runnable = new IWorkspaceRunnable()
-            {
-                public void run(IProgressMonitor monitor) throws CoreException
-                {
+            IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
-                    try
-                    {
+                public void run(IProgressMonitor monitor) throws CoreException {
+
+                    try {
                         IResource[] resources = getSelectedResources();
-                        if (resources.length > 0)
-                        {
+                        if (resources.length > 0) {
                             beginTask(monitor, "Checking in...",
                                     resources.length);
 
-                            // Sort resources with directories last so that the
-                            // modification of a
-                            // directory doesn't abort the modification of files
-                            // within it.
-                            Arrays.sort(resources,
-                                    new DirectoryLastComparator());
+                            if (ClearcasePlugin.isUseClearDlg()) {
+                                monitor
+                                        .subTask("Executing ClearCase user interface...");
+                                ClearDlgHelper.add(resources);
+                            } else {
+                                // Sort resources with directories last so that
+                                // the
+                                // modification of a
+                                // directory doesn't abort the modification of
+                                // files
+                                // within it.
+                                Arrays.sort(resources,
+                                        new DirectoryLastComparator());
 
-                            for (int i = 0; i < resources.length; i++)
-                            {
-                                IResource resource = resources[i];
-                                ClearcaseProvider provider = ClearcaseProvider
-                                        .getClearcaseProvider(resource);
-                                provider.setComment(comment);
-                                provider.checkin(new IResource[]{resource},
-                                        depth, subMonitor(monitor));
+                                for (int i = 0; i < resources.length; i++) {
+                                    IResource resource = resources[i];
+                                    ClearcaseProvider provider = ClearcaseProvider
+                                            .getClearcaseProvider(resource);
+                                    provider.setComment(comment);
+                                    provider.checkin(
+                                            new IResource[] { resource },
+                                            depth, subMonitor(monitor));
+                                }
                             }
                         }
-                    }
-                    finally
-                    {
+                    } finally {
                         monitor.done();
                     }
                 }
@@ -92,12 +93,10 @@ public class CheckInAction extends ClearcaseWorkspaceAction
         updateActionEnablement();
     }
 
-    protected boolean isEnabled()
-    {
+    protected boolean isEnabled() {
         IResource[] resources = getSelectedResources();
         if (resources.length == 0) return false;
-        for (int i = 0; i < resources.length; i++)
-        {
+        for (int i = 0; i < resources.length; i++) {
             IResource resource = resources[i];
             ClearcaseProvider provider = ClearcaseProvider
                     .getClearcaseProvider(resource);
