@@ -23,7 +23,8 @@ public class ClearcaseProvider
 
 	private IMoveDeleteHook moveHandler = new MoveHandler(this);
 	private IFileModificationValidator modificationValidator = new ModificationHandler(this);
-
+	private String comment = "";
+	
 	public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider";
 
 	/**
@@ -104,7 +105,7 @@ public class ClearcaseProvider
 				IStatus result =
 					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
 				Clearcase.Status status =
-					Clearcase.checkin(resource.getLocation().toOSString(), "");
+					Clearcase.checkin(resource.getLocation().toOSString(), comment);
 				if (!status.status)
 				{
 					result =
@@ -322,6 +323,23 @@ public class ClearcaseProvider
 		return modificationValidator;
 	}
 
+	/**
+	 * Gets the comment.
+	 * @return Returns a String
+	 */
+	public String getComment()
+	{
+		return comment;
+	}
+
+	/**
+	 * Sets the comment.
+	 * @param comment The comment to set
+	 */
+	public void setComment(String comment)
+	{
+		this.comment = comment;
+	}
 
 	// Out of sheer laziness, I appropriated the following code from the team provider example =)
 	
@@ -451,5 +469,6 @@ public class ClearcaseProvider
 		else
 			return new IResource[0];
 	}
+
 
 }
