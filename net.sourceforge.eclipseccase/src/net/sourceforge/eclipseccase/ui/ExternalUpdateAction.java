@@ -72,8 +72,8 @@ public class ExternalUpdateAction extends TeamAction
 						{
 							Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
 							process.waitFor();
-							try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
 						}
+						try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
 					}
 				}
 				catch (IOException ex)
