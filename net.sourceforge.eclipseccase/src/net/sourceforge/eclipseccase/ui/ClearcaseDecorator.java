@@ -107,13 +107,14 @@ public class ClearcaseDecorator
 		return buffer.toString();
 	}
 
-	private synchronized Image getImage(OverlayComposite icon)
+	private synchronized Image getImage(HashableComposite icon)
 	{
 		Image image = (Image) iconCache.get(icon);
 		if (image == null)
 		{
 			image = icon.createImage();
 			iconCache.put(icon, image);
+			ClearcasePlugin.log(IStatus.INFO, "Image count at: " + iconCache.size(), null);
 		}
 		return image;
 	}
@@ -127,14 +128,13 @@ public class ClearcaseDecorator
 		if (p == null)
 			return image;
 
-		OverlayComposite result = new OverlayComposite(image.getImageData());
+		HashableComposite result = new HashableComposite(image);
 
 		if (p.isUnknownState(resource))
 		{
 			result.addForegroundImage(
 				ClearcaseImages
-					.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR)
-					.getImageData());
+					.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
 		}
 		else
 		{
@@ -145,30 +145,26 @@ public class ClearcaseDecorator
 			{
 				result.addForegroundImage(
 					ClearcaseImages
-						.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR)
-						.getImageData());
+						.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR));
 			}
 			else if (p.isHijacked(resource))
 			{
 				result.addForegroundImage(
 					ClearcaseImages
-						.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR)
-						.getImageData());
+						.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
 			}
 			else
 			{
 				result.addForegroundImage(
 					ClearcaseImages
-						.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR)
-						.getImageData());
+						.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR));
 			}
 			
 	 		if (isDirty(resource))
 			{
 				result.addForegroundImage(
 					ClearcaseImages
-						.getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR)
-						.getImageData());
+						.getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR));
 			}
 		}
 

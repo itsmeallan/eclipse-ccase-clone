@@ -582,7 +582,6 @@ public class ClearcaseProvider
 		}
 	}
 
-	// Notifies decorator that state has changed for an element
 	private IStatus changeClearcaseState(
 		IResource resource,
 		int depth,
@@ -601,7 +600,6 @@ public class ClearcaseProvider
 				return result;
 			}
 		}, resource, depth, monitor);
-		ClearcaseDecorator.refresh();
 		return result;
 	}
 

@@ -76,7 +76,7 @@ public class StateCache implements Serializable
 		if (hasRemote)
 			version = ClearcasePlugin.getEngine().cleartool("describe -fmt \"%Vn\" \"" + osPath + "\"").message.trim().replace('\\', '/');
 		uninitialized = false;
-		//ClearcaseDecorator.labelResource(resource);
+		ClearcaseDecorator.labelResource(resource);
 	}
 	
 	/**

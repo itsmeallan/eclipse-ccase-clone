@@ -80,7 +80,6 @@ public class UpdateQueue
 				{
 					if (queue.isEmpty())
 					{
-						ClearcaseDecorator.refresh();
 						queue.wait();
 					}
 					cmd = (Runnable) queue.removeFirst();
