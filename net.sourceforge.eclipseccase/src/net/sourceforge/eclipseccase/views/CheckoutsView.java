@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase.views;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -21,6 +26,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -31,6 +37,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.team.internal.core.InfiniteSubProgressMonitor;
 import org.eclipse.team.internal.ui.UIConstants;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
@@ -42,13 +49,18 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 {
 	private TableViewer viewer;
 	private Action refreshAction;
-	private Collection checkouts = Collections.synchronizedSortedSet(new TreeSet(new Comparator()
+	private Collection checkouts =
+		Collections.synchronizedSortedSet(new TreeSet(new Comparator()
 	{
 		public int compare(Object o1, Object o2)
 		{
-			return ((IResource) o1).getFullPath().toString().compareTo(((IResource) o2).getFullPath().toString());
+			return ((IResource) o1).getFullPath().toString().compareTo(
+				((IResource) o2).getFullPath().toString());
 		}
 	}));
+
+	private static final CoreException INTERRUPTED_EXCEPTION =
+		new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
@@ -83,7 +95,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 				ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
-
+	
 	/**
 	 * The constructor.
 	 */
@@ -115,7 +127,13 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
-		findCheckouts();
+		try
+		{
+			findCheckouts(new NullProgressMonitor());
+		}
+		catch (InterruptedException e)
+		{
+		}
 	}
 
 	private void hookContextMenu()
@@ -152,7 +170,36 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		{
 			public void run()
 			{
-				findCheckouts();
+				try
+				{
+					IRunnableWithProgress op = new IRunnableWithProgress()
+					{
+						public void run(IProgressMonitor monitor)
+							throws InvocationTargetException, InterruptedException
+						{
+							monitor.beginTask("Finding checkouts", 10);
+							IProgressMonitor subMonitor =
+								new InfiniteSubProgressMonitor(monitor, 10);
+							subMonitor.beginTask("", 5000);
+							findCheckouts(subMonitor);
+							subMonitor.done();
+							monitor.done();
+						}
+					};
+					
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(
+						true,
+						true,
+						op);
+				}
+				catch (InvocationTargetException e)
+				{
+					showError(e.getTargetException().toString());
+				}
+				catch (InterruptedException e)
+				{
+					int i = 1;
+				}
 			}
 		};
 		refreshAction.setText("Refresh");
@@ -185,7 +232,8 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		viewer.getControl().setFocus();
 	}
 
-	private void findCheckouts()
+	private void findCheckouts(final IProgressMonitor monitor)
+		throws InterruptedException
 	{
 		checkouts.clear();
 		try
@@ -197,31 +245,50 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 			{
 				public boolean visit(IResource resource) throws CoreException
 				{
-					if (StateCacheFactory.getInstance().isUnitialized(resource))
+					if (monitor.isCanceled())
+						throw INTERRUPTED_EXCEPTION;
+					monitor.worked(1);
+
+					if (resource.getType() == IResource.ROOT)
+						return true;
+
+					if (StateCacheFactory
+						.getInstance()
+						.isUnitialized(resource))
 						return false;
-					
+
 					StateCache cache =
 						StateCacheFactory.getInstance().get(resource);
+					cache.update(true);
 					if (cache.hasRemote())
 					{
 						updateCheckout(cache);
-						return true;
 					}
-					else
-					{
-						if (resource.getType() == IResource.ROOT)
-							return true;
-						else
-							return false;
-					}
+					return true;
 				}
 			});
 		}
 		catch (CoreException e)
 		{
+			if (e == INTERRUPTED_EXCEPTION)
+				throw new InterruptedException("Find checkouts cancelled");
 			showError("Unable to find checkouts: " + e.toString());
 		}
-		viewer.refresh();
+		finally
+		{
+			asyncRefresh();
+		}
+	}
+
+	private void asyncRefresh()
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				viewer.refresh();
+			}
+		});
 	}
 
 	/**
@@ -231,16 +298,10 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 	{
 		if (updateCheckout(stateCache))
 		{
-			Display.getDefault().asyncExec(new Runnable()
-			{
-				public void run()
-				{
-					viewer.refresh();
-				}
-			});
+			asyncRefresh();
 		}
 	}
-	
+
 	private boolean updateCheckout(StateCache stateCache)
 	{
 		boolean actionPerformed = false;
@@ -248,7 +309,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		boolean contains = checkouts.contains(resource);
 		if (stateCache.isCheckedOut())
 		{
-			if (! contains)
+			if (!contains)
 			{
 				checkouts.add(resource);
 				actionPerformed = true;
@@ -258,7 +319,7 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		{
 			if (contains)
 			{
-				checkouts.remove(resource); 
+				checkouts.remove(resource);
 				actionPerformed = true;
 			}
 		}
