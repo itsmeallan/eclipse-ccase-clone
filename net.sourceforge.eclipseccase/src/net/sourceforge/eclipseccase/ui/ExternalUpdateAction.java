@@ -9,6 +9,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -62,9 +63,17 @@ public class ExternalUpdateAction extends TeamAction
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						Process process = Runtime.getRuntime().exec("clearviewupdate -pname " + resource.getLocation().toOSString());
-						process.waitFor();
-						try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
+						String path = resource.getLocation().toOSString();
+						if (ClearcasePlugin.isUseCleartool())
+						{
+							ClearcasePlugin.getEngine().cleartool("update -graphical " + path);
+						}
+						else
+						{
+							Process process = Runtime.getRuntime().exec("clearviewupdate -pname " + resource.getLocation().toOSString());
+							process.waitFor();
+							try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
+						}
 					}
 				}
 				catch (IOException ex)

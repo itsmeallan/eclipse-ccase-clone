@@ -9,6 +9,7 @@ package net.sourceforge.eclipseccase.ui;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -59,8 +60,16 @@ public class CompareWithPredecessorAction extends TeamAction
 					for (int i = 0; i < resources.length; i++)
 					{
 						IResource resource = resources[i];
-						Runtime.getRuntime().exec(
-							"cleardlg /diffpred " + resource.getLocation().toOSString());
+						String path = resource.getLocation().toOSString();
+						if (ClearcasePlugin.isUseCleartool())
+						{
+							ClearcasePlugin.getEngine().cleartool("diff -graphical -pred " + path);
+						}
+						else
+						{
+							Runtime.getRuntime().exec(
+								"cleardlg /diffpred " + path);
+						}
 					}
 				}
 				catch (IOException ex)
