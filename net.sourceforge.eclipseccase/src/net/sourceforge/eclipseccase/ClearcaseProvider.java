@@ -19,6 +19,7 @@ import java.util.List;
 
 import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.clearcase.simple.IClearcase;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IProject;
@@ -41,8 +42,6 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.core.simpleAccess.SimpleAccessOperations;
-
-import com.sun.rsasign.r;
 
 /**
  * The ClearCase repository provider.

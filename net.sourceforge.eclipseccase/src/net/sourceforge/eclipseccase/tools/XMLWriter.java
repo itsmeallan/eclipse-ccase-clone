@@ -10,8 +10,13 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.tools;
 
-import java.io.*;
-import java.util.*;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 /**
  * A simple XML writer.
