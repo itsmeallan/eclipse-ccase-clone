@@ -726,7 +726,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         saveCommentHistory();
 
-        super.shutdown();
+        super.stop(context);
 
     }
 
