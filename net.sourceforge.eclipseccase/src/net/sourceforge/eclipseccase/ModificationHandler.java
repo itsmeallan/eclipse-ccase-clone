@@ -32,6 +32,10 @@ public class ModificationHandler implements IFileModificationValidator
 	 */
 	public IStatus validateEdit(IFile[] files, Object context)
 	{
+		if (context != null && ! ClearcasePlugin.isCheckoutOnEdit())
+			return new Status(IStatus.ERROR, ClearcaseProvider.ID, TeamException.NOT_CHECKED_OUT,
+								"The resource is not checked out, and checkout on edit is disabled", null);
+			
 		IStatus result = new Status(IStatus.OK, ClearcaseProvider.ID, TeamException.OK, "OK", null);
 		List needCheckout = new ArrayList();
 		for (int i = 0; i < files.length; ++i)
