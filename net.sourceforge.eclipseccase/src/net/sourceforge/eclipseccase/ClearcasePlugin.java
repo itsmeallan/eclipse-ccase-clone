@@ -70,7 +70,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger
         {
             if ("-debugClearCase".equalsIgnoreCase(args[i].trim()))
             {
-                debug = Platform.getInstanceLocation().append("clearcase.debug.log");
+                debug = Platform.getLocation().append("clearcase.debug.log");
                 break;
             }
         }
