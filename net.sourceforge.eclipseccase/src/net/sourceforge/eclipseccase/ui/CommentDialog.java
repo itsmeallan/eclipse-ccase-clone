@@ -18,26 +18,39 @@ import org.eclipse.swt.widgets.Shell;
 public class CommentDialog extends Dialog
 {
     private CommentDialogArea commentDialogArea;
+
     private String title;
 
     /**
      * Creates a new CommentDialog instance.
+     * 
      * @param parentShell
      * @param dialogTitle
      */
     public CommentDialog(Shell parentShell, String dialogTitle)
     {
         super(parentShell);
-        commentDialogArea =
-            new CommentDialogArea(this, null, ClearcasePlugin.isMultiLineComments());
+        /*
+         * don't allow multi line if disabled or
+         * "preserve time on checkin" is enabled while not using cleartool 
+         * executable
+         */
+        commentDialogArea = new CommentDialogArea(
+                this,
+                null,
+                ClearcasePlugin.isMultiLineComments()
+                        && !(ClearcasePlugin.isCheckinPreserveTime() && !ClearcasePlugin
+                                .isUseCleartool()));
         this.title = dialogTitle;
     }
 
     Button recursiveButton;
+
     boolean recursive = false;
 
     /**
      * Gets the recursive.
+     * 
      * @return Returns a boolean
      */
     public boolean isRecursive()
@@ -47,7 +60,9 @@ public class CommentDialog extends Dialog
 
     /**
      * Sets the recursive.
-     * @param recursive The recursive to set
+     * 
+     * @param recursive
+     *            The recursive to set
      */
     public void setRecursive(boolean recursive)
     {
@@ -65,14 +80,15 @@ public class CommentDialog extends Dialog
         composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         commentDialogArea.createArea(composite);
-        commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener()
-        {
-            public void propertyChange(PropertyChangeEvent event)
-            {
-                if (event.getProperty() == CommentDialogArea.OK_REQUESTED)
-                    okPressed();
-            }
-        });
+        commentDialogArea
+                .addPropertyChangeListener(new IPropertyChangeListener()
+                {
+                    public void propertyChange(PropertyChangeEvent event)
+                    {
+                        if (event.getProperty() == CommentDialogArea.OK_REQUESTED)
+                                okPressed();
+                    }
+                });
 
         recursiveButton = new Button(composite, SWT.CHECK);
         recursiveButton.setText("Recurse");
@@ -88,12 +104,15 @@ public class CommentDialog extends Dialog
         });
 
         // set F1 help
-        //WorkbenchHelp.setHelp(composite, IHelpContextIds.RELEASE_COMMENT_DIALOG);
+        //WorkbenchHelp.setHelp(composite,
+        // IHelpContextIds.RELEASE_COMMENT_DIALOG);
 
         return composite;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     protected void okPressed()
@@ -103,6 +122,7 @@ public class CommentDialog extends Dialog
 
     /**
      * Returns the comment.
+     * 
      * @return String
      */
     public String getComment()
