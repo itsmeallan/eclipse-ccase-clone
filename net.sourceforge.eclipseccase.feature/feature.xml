@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.eclipseccase.feature"
-      label="Eclipse Clearcase Integration"
+      label="%featureName"
       version="0.9.10"
-      provider-name="Matt Conway">
+      provider-name="%providerName">
+
+   <install-handler/>
+
+   <description>
+      %description
+   </description>
+
+   <copyright url="%copyrightURL">
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
 
    <url>
-      <update label="Eclipse clearcase plugin" url="http://eclipse-ccase.sourceforge.net/update"/>
+      <update label="%updateSiteName" url="http://eclipse-ccase.sourceforge.net/update/"/>
    </url>
 
    <requires>
