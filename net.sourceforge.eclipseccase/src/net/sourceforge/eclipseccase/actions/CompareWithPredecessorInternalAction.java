@@ -1,7 +1,6 @@
 package net.sourceforge.eclipseccase.actions;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.compare.ResourceCompareInput;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFile;
 import net.sourceforge.eclipseccase.compare.VersionExtendedFolder;
@@ -31,70 +30,126 @@ public class CompareWithPredecessorInternalAction extends ClearcaseAction
 	 */
 	protected boolean isEnabled() throws TeamException
 	{
-		IResource[] resources = getSelectedResources();
+		long time= System.currentTimeMillis();
+		IResource[] resources= getSelectedResources();
 		if (resources.length != 1)
-			return false;
-		IResource resource = resources[0];
-		ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-		if (provider == null || provider.isUnknownState(resource))
-			return false;
-		if (! provider.hasRemote(resource))
-			return false;
-		
-		// Only allow comparing of folders for dynamic views for now
-		// (even on dynamic views it is somewhat broken)
-		if (resource.getType() == IResource.FOLDER && provider.isSnapShot(resource))
-			return false;
-
-		// refresh so cached version number is accurate
-		StateCacheFactory.getInstance().get(resource).update(false);
-
-		IResource current = null;
-		IResource predecessor = null;
-		String version = provider.getPredecessorVersion(resource);
-		String currentversion = provider.getVersion(resource);
-		if (version == null || currentversion == null)
-			return false;
-
-		switch(resource.getType())
 		{
-			case IResource.FILE:
-				predecessor = new VersionExtendedFile((IFile) resource, version);
-				current = new VersionExtendedFile((IFile) resource, currentversion);
-				break;
-			case IResource.FOLDER:
-				predecessor = new VersionExtendedFolder((IFolder) resource, version);
-				current = new VersionExtendedFolder((IFolder) resource, currentversion);
-				break;
-			case IResource.PROJECT:
-				predecessor = new VersionExtendedProject((IProject) resource, version);
-				current = new VersionExtendedProject((IProject) resource, currentversion);
-				break;
-			default:
-				return false;
+			return false;
+		}
+		IResource resource= resources[0];
+		ClearcaseProvider provider= ClearcaseProvider.getProvider(resource);
+		if (provider == null || provider.isUnknownState(resource))
+		{
+			return false;
 		}
 
-		IResource[] comparables = new IResource[] {current, predecessor};
+		if (!provider.hasRemote(resource))
+		{
+			return false;
+		}
+
+		// Only allow comparing of folders for dynamic views for now
+		// (even on dynamic views it is somewhat broken)
+		if (resource.getType() == IResource.FOLDER
+			&& provider.isSnapShot(resource))
+		{
+			return false;
+		}
+
+		return setCompareResources(resource, false);
+	}
+
+	public void run(IAction action)
+	{
+		if (fInput != null)
+		{
+			IResource[] resources= getSelectedResources();
+			IResource resource= resources[0];
+			setCompareResources(resource, true);
+			fInput.initializeCompareConfiguration();
+			CompareUI.openCompareEditorOnPage(fInput, getTargetPage());
+			fInput= null; // don't reuse this input!
+		}
+	}
+	/**
+	 * Gets the current, and previous version of given resource and checks if they are comparable
+	 * Also fInput is filled with both versions.
+	 * @param resource the resource from whihc to get the current and previous version
+	 * @param update Do we need to update the snapshot resource? 
+	 * @return true when both versions can be compared
+	 */
+	private boolean setCompareResources(IResource resource, boolean update)
+	{
+
+		long time= System.currentTimeMillis();
+
+		ClearcaseProvider provider= ClearcaseProvider.getProvider(resource);
+		IResource current= null;
+		IResource predecessor= null;
+		boolean hijacked= false;
+
+		String currentversion= provider.getVersion(resource);
+		if (currentversion.equals(""))
+		{
+			if (provider.isSnapShot(resource) && provider.isHijacked(resource))
+			{
+				hijacked= true;
+				currentversion= "/HIJACKED";
+			}
+		}
+		String version= provider.getPredecessorVersion(resource);
+
+		switch (resource.getType())
+		{
+			case IResource.FILE :
+				current=
+					new VersionExtendedFile((IFile) resource, currentversion);
+				predecessor= new VersionExtendedFile((IFile) resource, version);
+
+				break;
+			case IResource.FOLDER :
+				predecessor=
+					new VersionExtendedFolder((IFolder) resource, version);
+				current=
+					new VersionExtendedFolder(
+						(IFolder) resource,
+						currentversion);
+				break;
+			case IResource.PROJECT :
+				predecessor=
+					new VersionExtendedProject((IProject) resource, version);
+				current=
+					new VersionExtendedProject(
+						(IProject) resource,
+						currentversion);
+				break;
+			default :
+				{
+					System.out.println(
+						"took "
+							+ (System.currentTimeMillis() - time)
+							+ " resource.getType() "
+							+ resource.getType());
+					return false;
+				}
+		}
+
+		IResource[] comparables= new IResource[] { current, predecessor };
+		System.out.println("took " + (System.currentTimeMillis() - time));
 		return fInput.setResources(comparables);
 	}
 
-	public void run(IAction action) {
-		if (fInput != null)
-		{
-			fInput.initializeCompareConfiguration();
-			CompareUI.openCompareEditorOnPage(fInput, getTargetPage());
-			fInput= null;	// don't reuse this input!
-		}
-	}
-
-	public void selectionChanged(IAction action, ISelection selection) {
+	public void selectionChanged(IAction action, ISelection selection)
+	{
 		if (fInput == null)
 		{
 			CompareConfiguration cc= new CompareConfiguration();
 			// buffered merge mode: don't ask for confirmation
 			// when switching between modified resources
-			cc.setProperty(CompareEditor.CONFIRM_SAVE_PROPERTY, new Boolean(false));
-						
+			cc.setProperty(
+				CompareEditor.CONFIRM_SAVE_PROPERTY,
+				new Boolean(false));
+
 			fInput= new ResourceCompareInput(cc);
 		}
 		super.selectionChanged(action, selection);
