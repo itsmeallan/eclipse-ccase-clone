@@ -159,7 +159,8 @@ public class StateCache implements Serializable {
             }
 
             if (resource.isAccessible()) {
-                if (resource.getParent()!=null &&  !(resource instanceof IProject || resource.getParent() instanceof IProject) &&
+            	//can be disable through preference page [work in progress]
+                if (ClearcasePlugin.isRefreshChildrenPrevented() && resource.getParent()!=null &&  !(resource instanceof IProject || resource.getParent() instanceof IProject) &&
                         !StateCacheFactory.getInstance().get(resource.getParent(),false).hasRemote())
                 {
                     //RDM:  resource parent is NOT in clearcase -> do not process children.
