@@ -19,7 +19,6 @@ public class StateCache implements Serializable
 	private boolean uninitialized = true;
 	private boolean hasRemote = false;
 	private boolean isCheckedOut = false;
-	private boolean isDirty = false;
 	private boolean isSnapShot = false;
 	private boolean isHijacked = false;
 	private String version = "";
@@ -85,11 +84,6 @@ public class StateCache implements Serializable
 		boolean isCheckedOut =
 			hasRemote && ClearcasePlugin.getEngine().isCheckedOut(osPath);
 		changed = changed || isCheckedOut != this.isCheckedOut;
-		this.hasRemote = hasRemote;
-
-		boolean isDirty =
-			isCheckedOut && ClearcasePlugin.getEngine().isDifferent(osPath);
-		changed = changed || isDirty != this.isDirty;
 		this.isCheckedOut = isCheckedOut;
 
 		boolean isSnapShot =
@@ -164,7 +158,7 @@ public class StateCache implements Serializable
 	 */
 	public boolean isDirty()
 	{
-		return isDirty;
+		return ClearcasePlugin.getEngine().isDifferent(osPath);
 	}
 
 	/**
