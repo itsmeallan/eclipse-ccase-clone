@@ -23,7 +23,7 @@ public interface IResourceStateListener {
     /**
      * The ClearCase state of the specified resource has changed.
      * 
-     * @param resource
+     * @param resources
      */
-    void resourceStateChanged(IResource resource);
+    void resourceStateChanged(IResource[] resources);
 }

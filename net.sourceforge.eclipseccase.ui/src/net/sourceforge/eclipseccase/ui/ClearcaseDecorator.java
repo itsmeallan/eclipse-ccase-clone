@@ -406,6 +406,11 @@ public class ClearcaseDecorator extends LabelProvider implements
      *      org.eclipse.jface.viewers.IDecoration)
      */
     public void decorate(Object element, IDecoration decoration) {
+        
+        // don't do anything until the state cache is ready
+        if(!StateCacheFactory.getInstance().isInitialized())
+            return;
+        
         IResource resource = getResource(element);
 
         // sanity check
@@ -580,8 +585,14 @@ public class ClearcaseDecorator extends LabelProvider implements
      * @param resources
      */
     public void refresh(IResource[] resources) {
-        if (resources.length == 0) return;
+        if (null == resources || resources.length == 0) return;
 
+        // sometimes is better to fire a global refresh
+        if(resources.length > 200) {
+            refresh();
+            return;
+        }
+        
         // if deep decoration is disabled, update only the specified resources
         if (!ClearcaseUI.isDeepDecoration()) {
             fireLabelProviderChanged(new LabelProviderChangedEvent(this,
@@ -635,8 +646,8 @@ public class ClearcaseDecorator extends LabelProvider implements
      * 
      * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
      */
-    public void resourceStateChanged(IResource resource) {
-        refresh(new IResource[] { resource });
+    public void resourceStateChanged(IResource[] resources) {
+        refresh(resources);
     }
 
     /*

@@ -10,13 +10,10 @@
  ******************************************************************************/
 package net.sourceforge.eclipseccase;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import net.sourceforge.eclipseccase.tools.XMLWriter;
 
@@ -51,11 +48,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class StateCacheFactory implements ISaveParticipant,
         IResourceChangeListener {
@@ -141,29 +136,27 @@ public class StateCacheFactory implements ISaveParticipant,
             }
 
             if (null != currentListeners) {
+
+                IResource[] events = null;
+
                 if (null == resource) {
 
                     // fire all pending changes
-                    Object[] events = null;
                     synchronized (queuedEvents) {
-                        events = queuedEvents.toArray();
+                        events = (IResource[]) queuedEvents
+                                .toArray(new IResource[queuedEvents.size()]);
                         queuedEvents.clear();
-                    }
-                    if (null != events) {
-                        for (int i = 0; i < events.length; i++) {
-                            resource = (IResource) events[i];
-                            for (int j = 0; j < currentListeners.length; j++) {
-                                ((IResourceStateListener) currentListeners[j])
-                                        .resourceStateChanged(resource);
-                            }
-                        }
                     }
                 } else {
 
                     // fire only the given change
-                    for (int i = 0; i < currentListeners.length; i++) {
-                        ((IResourceStateListener) currentListeners[i])
-                                .resourceStateChanged(resource);
+                    events = new IResource[] { resource };
+                }
+
+                if (null != events && events.length > 0) {
+                    for (int j = 0; j < currentListeners.length; j++) {
+                        ((IResourceStateListener) currentListeners[j])
+                                .resourceStateChanged(events);
                     }
                 }
             }
@@ -175,6 +168,9 @@ public class StateCacheFactory implements ISaveParticipant,
 
     /** the operation counter */
     private int operationCounter = 0;
+
+    /** indicates if the state cache is loaded */
+    private boolean isStateCacheLoaded = false;
 
     /**
      * Starts an operation.
@@ -235,7 +231,8 @@ public class StateCacheFactory implements ISaveParticipant,
             }
 
             // schedule update if necessary
-            if (cache.isUninitialized()) cache.updateAsync(false);
+            if (isInitialized() && cache.isUninitialized())
+                cache.updateAsync(false);
         }
         return cache;
     }
@@ -333,12 +330,12 @@ public class StateCacheFactory implements ISaveParticipant,
                         .getStateLocation().append(saveFileName);
 
                 // save state cache
-                //ObjectOutputStream os = new ObjectOutputStream(
-                //        new FileOutputStream(statePath.toFile()));
-                //Collection serList = new LinkedList(cacheMap.values());
-                //os.writeObject(serList);
-                //os.flush();
-                //os.close();
+                // ObjectOutputStream os = new ObjectOutputStream(
+                // new FileOutputStream(statePath.toFile()));
+                // Collection serList = new LinkedList(cacheMap.values());
+                // os.writeObject(serList);
+                // os.flush();
+                // os.close();
                 OutputStream os = new BufferedOutputStream(
                         new FileOutputStream(statePath.toFile()));
                 try {
@@ -363,10 +360,10 @@ public class StateCacheFactory implements ISaveParticipant,
     }
 
     /** xml element name */
-    static final String ELEMENT_RESOURCE = "resource"; //$NON-NLS-1$
+    static final String TAG_RESOURCE = "resource"; //$NON-NLS-1$
 
     /** xml element name */
-    static final String ELEMENT_STATES = "states"; //$NON-NLS-1$
+    static final String TAG_STATES = "states"; //$NON-NLS-1$
 
     /** xml attribute name */
     static final String ATTR_PATH = "path"; //$NON-NLS-1$
@@ -412,7 +409,7 @@ public class StateCacheFactory implements ISaveParticipant,
         // start root tag
         HashMap attributes = new HashMap(1);
         attributes.put(ATTR_VERSION, STATE_CACHE_VERSION);
-        writer.startTag(ELEMENT_STATES, attributes, true);
+        writer.startTag(TAG_STATES, attributes, true);
 
         // write resource tags
         for (int i = 0; i < resources.length; i++) {
@@ -428,15 +425,14 @@ public class StateCacheFactory implements ISaveParticipant,
             attributes.put(ATTR_TIME_STAMP, Long
                     .toString(cache.updateTimeStamp));
             if (null != cache.version)
-                    attributes.put(ATTR_VERSION, cache.version);
+                attributes.put(ATTR_VERSION, cache.version);
             if (null != cache.symbolicLinkTarget)
-                    attributes.put(ATTR_SYMLINK_TARGET,
-                            cache.symbolicLinkTarget);
-            writer.startAndEndTag(ELEMENT_RESOURCE, attributes, true);
+                attributes.put(ATTR_SYMLINK_TARGET, cache.symbolicLinkTarget);
+            writer.startAndEndTag(TAG_RESOURCE, attributes, true);
         }
 
         // finish root TAG
-        writer.endTag(ELEMENT_STATES);
+        writer.endTag(TAG_STATES);
         writer.flush();
     }
 
@@ -453,29 +449,11 @@ public class StateCacheFactory implements ISaveParticipant,
                 File stateFile = ClearcasePlugin.getInstance()
                         .getStateLocation().append(saveFileName).toFile();
                 if (stateFile.exists()) {
-                    //ObjectInputStream is = new ObjectInputStream(
-                    //        new FileInputStream(stateFile));
-                    //Collection values = (Collection) is.readObject();
-                    //for (Iterator iter = values.iterator(); iter.hasNext();)
-                    // {
-                    //    StateCache element = (StateCache) iter.next();
-                    //    IResource resource = element.getResource();
-                    //    if (resource != null && resource.isAccessible()) {
-                    //        synchronized (cacheMap) {
-                    //            cacheMap.put(resource, element);
-                    //        }
-                    //
-                    //        // inform listeners about a new state
-                    //        fireStateChanged(resource);
-                    //    }
-                    //}
-                    //is.close();
-                    BufferedInputStream is = new BufferedInputStream(
-                            new FileInputStream(stateFile));
                     try {
-                        readStateCache(is);
+                        operationBegin();
+                        readStateCache(stateFile);
                     } finally {
-                        is.close();
+                        operationEnd();
                     }
                 }
             }
@@ -485,61 +463,73 @@ public class StateCacheFactory implements ISaveParticipant,
                             IStatus.WARNING,
                             "Could not load saved clearcase state cache, resetting cache", //$NON-NLS-1$
                             ex);
+        } finally {
+            synchronized (this) {
+                isStateCacheLoaded = true;
+            }
         }
     }
 
     /**
      * Builds (reads) the state cache from the specified input stream.
      * 
-     * @param stream
+     * @param stateFile
      * @throws Exception
      * @throws CoreException
      */
-    private void readStateCache(InputStream stream) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder parser = factory.newDocumentBuilder();
-        InputSource source = new InputSource(stream);
-        Document document = parser.parse(source);
-        NodeList list = document.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++) {
-            Node node = list.item(i);
-            if (node instanceof Element) {
-                Element element = (Element) node;
+    private void readStateCache(File stateFile) throws Exception {
+        DefaultHandler stateCacheLoader = new DefaultHandler() {
 
-                // find root node
-                if (ELEMENT_STATES.equals(element.getTagName())) {
+            /** indicates if parsing is enabled */
+            boolean isCorrectVersion = false;
+
+            /** the workspace root (for quick access) */
+            final IWorkspaceRoot ROOT = ResourcesPlugin.getWorkspace()
+                    .getRoot();
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
+             *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
+             */
+            public void startElement(String uri, String localName,
+                    String qName, Attributes attributes) throws SAXException {
+
+                if (TAG_STATES.equals(qName)) {
+
+                    /* root node */
 
                     // check version
-                    if (!STATE_CACHE_VERSION.equals(element
-                            .getAttribute(ATTR_VERSION))) return;
+                    if (STATE_CACHE_VERSION.equals(attributes
+                            .getValue(ATTR_VERSION))) {
+                        isCorrectVersion = true;
+                    }
 
-                    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace()
-                            .getRoot();
+                } else if (isCorrectVersion && TAG_RESOURCE.equals(qName)) {
+
+                    /* resource node */
+
                     // process resources
-                    NodeList resources = element
-                            .getElementsByTagName(ELEMENT_RESOURCE);
-                    for (int j = 0; j < resources.getLength(); j++) {
-                        Element resourceElement = (Element) resources.item(j);
-                        String resourcePath = resourceElement
-                                .getAttribute(ATTR_PATH);
-                        if (null == resourcePath) continue;
+                    String resourcePath = attributes.getValue(ATTR_PATH);
+                    if (null != resourcePath) {
 
                         // determine resource
                         IPath path = new Path(resourcePath);
-                        IResource resource = root.findMember(path);
+                        IResource resource = ROOT.findMember(path);
                         if (resource != null && resource.isAccessible()) {
                             try {
                                 // create cache
                                 StateCache cache = new StateCache(resource);
-                                cache.flags = Integer.parseInt(resourceElement
-                                        .getAttribute(ATTR_STATE));
-                                cache.version = resourceElement
-                                        .getAttribute(ATTR_VERSION);
-                                cache.symbolicLinkTarget = resourceElement
-                                        .getAttribute(ATTR_SYMLINK_TARGET);
+                                cache.flags = Integer.parseInt(attributes
+                                        .getValue(ATTR_STATE));
+                                cache.version = attributes
+                                        .getValue(ATTR_VERSION);
+                                cache.symbolicLinkTarget = attributes
+                                        .getValue(ATTR_SYMLINK_TARGET);
                                 cache.updateTimeStamp = Long
-                                        .parseLong(resourceElement
-                                                .getAttribute(ATTR_TIME_STAMP));
+                                        .parseLong(attributes
+                                                .getValue(ATTR_TIME_STAMP));
 
                                 // store cache
                                 synchronized (cacheMap) {
@@ -557,11 +547,16 @@ public class StateCacheFactory implements ISaveParticipant,
                             } catch (RuntimeException e) {
                                 // ignore
                             }
+
                         }
                     }
                 }
             }
-        }
+        };
+
+        // parse
+        SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+        parser.parse(stateFile, stateCacheLoader);
     }
 
     /*
@@ -676,16 +671,16 @@ public class StateCacheFactory implements ISaveParticipant,
                 || (delta.getKind() == IResourceDelta.CHANGED && 0 != (delta
                         .getFlags() & interestingChangeFlags))) {
 
-            //System.out
-            //        .println(((org.eclipse.core.internal.events.ResourceDelta) delta)
-            //                .toDebugString());
+            // System.out
+            // .println(((org.eclipse.core.internal.events.ResourceDelta) delta)
+            // .toDebugString());
 
             // only refresh if current state is not checked out
             return !getInstance().isUnitialized(resource)
                     && !getInstance().get(resource).isCheckedOut();
         }
 
-        //System.out.println("ignored: " + delta);
+        // System.out.println("ignored: " + delta);
         return false;
     }
 
@@ -694,11 +689,12 @@ public class StateCacheFactory implements ISaveParticipant,
      * resource state, in particular it will not consider MARKER only deltas.
      */
     static boolean isAffectedBy(IResourceDelta rootDelta) {
-        //if (rootDelta == null) System.out.println("NULL DELTA");
-        //long start = System.currentTimeMillis();
+        // if (rootDelta == null) System.out.println("NULL DELTA");
+        // long start = System.currentTimeMillis();
         if (rootDelta != null) {
             // use local exception to quickly escape from delta traversal
             class FoundRelevantDeltaException extends RuntimeException {
+
                 private static final long serialVersionUID = 7668919997423339239L;
             }
             try {
@@ -724,13 +720,13 @@ public class StateCacheFactory implements ISaveParticipant,
                     }
                 });
             } catch (FoundRelevantDeltaException e) {
-                //System.out.println("RELEVANT DELTA detected in: "+
+                // System.out.println("RELEVANT DELTA detected in: "+
                 // (System.currentTimeMillis() - start));
                 return true;
             } catch (CoreException e) { // ignore delta if not able to traverse
             }
         }
-        //System.out.println("IGNORE MARKER DELTA took: "+
+        // System.out.println("IGNORE MARKER DELTA took: "+
         // (System.currentTimeMillis() - start));
         return false;
     }
@@ -754,5 +750,13 @@ public class StateCacheFactory implements ISaveParticipant,
     void ensureInitialized(IResource resource) {
         StateCache cache = get(resource);
         if (cache.isUninitialized()) cache.doUpdate();
+    }
+
+    /**
+     * Indicates if the state cache factory is completly initialized.
+     * @return <code>true</code> if initialized, <code>false</code> otherwise
+     */
+    public boolean isInitialized() {
+        return isStateCacheLoaded;
     }
 }

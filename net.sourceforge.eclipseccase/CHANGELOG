@@ -1,3 +1,9 @@
+1.0.1
+-----
+
+- improved loading of state caches on startup
+
+
 1.0.0
 -----
 
@@ -8,6 +14,7 @@
 - added a workaround for preserving file modification times (refactoring)
 - stopped refreshing for derived and ignored resources (1031167, 1055293)
 - small other issues
+
 
 1.0.0.M3
 --------
