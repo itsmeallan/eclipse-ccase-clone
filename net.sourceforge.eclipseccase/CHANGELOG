@@ -1,3 +1,12 @@
+0.9.6
+-----
+
+- Fixed ModificationHandler to ignore duplicate files (prevents the file already checked
+  out dialog sometimes seen during refactoring)
+- Prevent plugin activation when clearcase engine fails to initialize
+- Synchronized access to JNI layer in simple api (hopefully prevents jvm crashes)
+- Added option to control preservig of modification time on checkin
+
 0.9.5
 -----
 
