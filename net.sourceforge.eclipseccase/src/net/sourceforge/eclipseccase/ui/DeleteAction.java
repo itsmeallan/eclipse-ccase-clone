@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
@@ -15,6 +16,9 @@ public class DeleteAction extends TeamAction
 {
 	public void run(IAction action)
 	{
+		boolean confirmed = MessageDialog.openConfirm(getShell(), "Confirm delete", "Are you sure you want to remove the selected elements from clearcase (rmname)?");
+		if (!confirmed)
+			return;
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
