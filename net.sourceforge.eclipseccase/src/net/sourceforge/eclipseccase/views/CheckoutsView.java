@@ -87,39 +87,62 @@ public class CheckoutsView extends ViewPart implements StateChangeListener
 		}
 	}));
 
-	private static final CoreException INTERRUPTED_EXCEPTION =
-		new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
+	private static final CoreException FIND_NEEDED_EXCEPTION =
+		new CoreException(new Status(IStatus.OK, "findNeeded", 1, "", null));
 
+	private static class ProjectChangedDeltaVisitor implements IResourceDeltaVisitor
+	{
+		public boolean visit(IResourceDelta delta)
+			throws CoreException
+		{
+			IResource resource = delta.getResource();
+			switch (resource.getType())
+			{
+				case IResource.ROOT :
+					return true;
+				case IResource.PROJECT :
+					{
+						switch(delta.getKind())
+						{
+							// Can't get os string for resource after deleted, so do a refresh for all project deletions
+							case IResourceDelta.REMOVED:
+								throw FIND_NEEDED_EXCEPTION;
+							// Don't refresh on add, only when description changes (i.e. associated with ccase) and when openeing/closing
+							case IResourceDelta.CHANGED:
+								if ((delta.getFlags() & (IResourceDelta.OPEN | IResourceDelta.DESCRIPTION)) != 0 && ClearcasePlugin.getEngine().isElement(resource.getLocation().toOSString()))
+								{
+									throw FIND_NEEDED_EXCEPTION;
+								}
+								break;
+						}
+					}
+					return false;
+			}
+			return false;
+		}
+	};
+
+	// Listener to find checkouts if project is added/removed/opened/losed
 	private final IResourceChangeListener updateListener =
 		new IResourceChangeListener()
 	{
 		public void resourceChanged(IResourceChangeEvent event)
 		{
-			if (event.getType() == IResourceChangeEvent.POST_CHANGE)
+			if (event.getType() != IResourceChangeEvent.POST_CHANGE)
+				return;
+
+			ProjectChangedDeltaVisitor visitor = new ProjectChangedDeltaVisitor();
+			try
 			{
-				try
+				event.getDelta().accept(visitor);
+			}
+			catch (CoreException e)
+			{
+				if (e == FIND_NEEDED_EXCEPTION)
 				{
-					event.getDelta().accept(new IResourceDeltaVisitor()
-					{
-						public boolean visit(IResourceDelta delta)
-							throws CoreException
-						{
-							IResource resource = delta.getResource();
-							switch (resource.getType())
-							{
-								case IResource.ROOT :
-									return true;
-								case IResource.PROJECT :
-									IProject project = (IProject) resource;
-									findCheckouts(new NullProgressMonitor());
-									return false;
-								default :
-									return false;
-							}
-						}
-					});
+					findCheckouts(new NullProgressMonitor());
 				}
-				catch (CoreException e)
+				else
 				{
 					ClearcasePlugin.log(
 						IStatus.ERROR,
