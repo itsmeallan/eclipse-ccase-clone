@@ -1,9 +1,7 @@
 package net.sourceforge.eclipseccase;
 
-import net.sourceforge.eclipseccase.StateCache;
-import net.sourceforge.eclipseccase.StateCacheFactory;
-
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

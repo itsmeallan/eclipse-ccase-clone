@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -327,5 +328,14 @@ public class ClearcaseUI extends AbstractUIPlugin {
 
 	/** the listener for opened editors */
 	private PartListener partListener = new PartListener();
+
+    /**
+     * Returns the workbench display
+     * @return the workbench display
+     */
+    public static Display getDisplay() {
+        return PlatformUI.getWorkbench().getDisplay();
+    }
+        
 
 }

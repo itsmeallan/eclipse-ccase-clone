@@ -43,7 +43,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.ui.ISharedImages;
 import org.eclipse.team.ui.TeamImages;
-import org.eclipse.ui.PlatformUI;
 
 /**
  * The ClearCase label decorator.
@@ -486,7 +485,7 @@ public class ClearcaseDecorator extends LabelProvider implements
     protected void fireLabelProviderChanged(
             final LabelProviderChangedEvent event) {
         // delegate to UI thread
-        Display display = PlatformUI.getWorkbench().getDisplay();
+        Display display = ClearcaseUI.getDisplay();
         if (null != display && !display.isDisposed()) {
             display.asyncExec(new Runnable() {
 
