@@ -67,7 +67,11 @@ public class ClearcaseProvider
 
 	public static ClearcaseProvider getProvider(IResource resource)
 	{
-		return (ClearcaseProvider) RepositoryProvider.getProvider(resource.getProject());
+			RepositoryProvider provider = RepositoryProvider.getProvider(resource.getProject());
+			if (provider instanceof ClearcaseProvider)
+				return (ClearcaseProvider) provider;
+			else
+				return null;
 	}
 	
 	/**
