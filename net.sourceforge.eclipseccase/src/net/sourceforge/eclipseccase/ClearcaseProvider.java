@@ -394,7 +394,7 @@ public class ClearcaseProvider
 	 */
 	public boolean isCheckedOut(IResource resource)
 	{
-		return StateCache.getState(resource).isCheckedOut();
+		return StateCacheFactory.getInstance().get(resource).isCheckedOut();
 	}
 
 	/**
@@ -416,7 +416,7 @@ public class ClearcaseProvider
 	 */
 	public boolean hasRemote(IResource resource)
 	{
-		return StateCache.getState(resource).hasRemote();
+		return StateCacheFactory.getInstance().get(resource).hasRemote();
 	}
 
 	/**
@@ -424,9 +424,23 @@ public class ClearcaseProvider
 	 */
 	public boolean isDirty(IResource resource)
 	{
-		return StateCache.getState(resource).isDirty();
+		return StateCacheFactory.getInstance().get(resource).isDirty();
 	}
 
+	public String getVersion(IResource resource)
+	{
+		return StateCacheFactory.getInstance().get(resource).getVersion();
+	}
+	
+	public String getViewName(IResource resource)
+	{
+		Clearcase.Status status = Clearcase.getViewName(resource.getLocation().toOSString());
+		if (status.status)
+			return status.message.trim();
+		else
+			return "none";
+	}
+	
 	public IStatus move(IResource source, IResource destination)
 	{
 		IStatus result = checkoutParent(source);
@@ -508,8 +522,8 @@ public class ClearcaseProvider
 		{
 			// probably overkill/expensive to do it here - should do it on a
 			// case by case basis for eac method that actually changes state
-			StateCache cache = StateCache.getState(resource);
-			cache.update(resource);
+			StateCache cache = StateCacheFactory.getInstance().get(resource);
+			cache.update();
 
 			// This is a hack until I get around to creating my own state change mechanism for decorators
 			// create a marker and set attribute so decorator gets notified without the resource actually

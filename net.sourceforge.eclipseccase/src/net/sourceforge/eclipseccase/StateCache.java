@@ -1,112 +1,31 @@
 package net.sourceforge.eclipseccase;
 
-import java.util.StringTokenizer;
+import java.io.Serializable;
 
 import net.sourceforge.eclipseccase.jni.Clearcase;
 
-import org.eclipse.core.internal.runtime.Log;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.core.runtime.Status;
-import org.xml.sax.InputSource;
-
-public class StateCache
+public class StateCache implements Serializable
 {
-	public static final QualifiedName ID =
-		new QualifiedName("net.sourceforge.eclipseccase", "StateCache");
-
+	private String osPath;
 	private boolean hasRemote = false;
 	private boolean isCheckedOut = false;
 	private boolean isDirty = false;
+	private String version = "";
 
-	private StateCache()
+	public StateCache(String osPath)
 	{
-	}
-
-	private StateCache(IResource resource, String serialized)
-	{
-		if (serialized != null && serialized.length() == 3)
-		{
-			hasRemote = serialized.charAt(0) == '1';
-			isCheckedOut = serialized.charAt(1) == '1';
-			isDirty = serialized.charAt(2) == '1';
-		}
-		else
-		{
-			update(resource);
-		}
+		this.osPath = osPath;
+		update();
 	}
 	
-	private String serialize()
+	public void update()
 	{
-		StringBuffer sb = new StringBuffer(3);
-		sb.append(hasRemote ? "1" : "0");	
-		sb.append(isCheckedOut ? "1" : "0");	
-		sb.append(isDirty ? "1" : "0");
-		return sb.toString();
-	}
-	
-	static public StateCache getState(IResource resource)
-	{
-		StateCache cache = null;
-		try
-		{
-			cache = (StateCache) resource.getSessionProperty(ID);
-			if (cache == null)
-			{
-				String persistentCache = null;
-				if (ClearcasePlugin.isPersistState())
-					persistentCache = resource.getPersistentProperty(ID);
-				cache = new StateCache(resource, persistentCache);
-				resource.setSessionProperty(ID, cache);
-				if (ClearcasePlugin.isPersistState() && persistentCache == null)
-					resource.setPersistentProperty(ID, cache.serialize());
-			}
-		}
-		catch (CoreException ex)
-		{
-			ClearcasePlugin.log(IStatus.WARNING, "Unexpected failure retrieving clearcase state cache", ex);
-		}
-		return cache;
+		hasRemote = Clearcase.isElement(osPath);
+		isCheckedOut = hasRemote && Clearcase.isCheckedOut(osPath);
+		isDirty = (!hasRemote) || isCheckedOut;
+		version = Clearcase.cleartool("describe -fmt \"%Vn\" " + osPath).message.trim().replace('\\', '/');
 	}
 
-	public void update(IResource resource)
-	{
-		ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-		if (provider != null)
-		{
-			String path = resource.getLocation().toOSString();
-			hasRemote = Clearcase.isElement(path);
-			isCheckedOut = hasRemote && Clearcase.isCheckedOut(path);
-			isDirty = (!hasRemote) || isCheckedOut;
-			if (ClearcasePlugin.isPersistState())
-			{
-				try
-				{
-					resource.setPersistentProperty(ID, this.serialize());
-				}
-				catch(CoreException ex)
-				{
-					ClearcasePlugin.log(IStatus.WARNING, "Could not persist clearcase state", ex);
-				}
-			}
-		}
-	}
-
-	public void clear(IResource resource)
-	{
-		try
-		{
-			resource.setSessionProperty(ID, null);
-			resource.setPersistentProperty(ID, null);		
-		} catch (CoreException ex)
-		{
-			ClearcasePlugin.log(IStatus.WARNING, "Could not clear clearcase state", ex);
-		}
-	}
-	
 	/**
 	 * Gets the hasRemote.
 	 * @return Returns a boolean
@@ -132,6 +51,24 @@ public class StateCache
 	public boolean isDirty()
 	{
 		return isDirty;
+	}
+
+	/**
+	 * Returns the osPath.
+	 * @return String
+	 */
+	public String getPath()
+	{
+		return osPath;
+	}
+
+	/**
+	 * Returns the version.
+	 * @return String
+	 */
+	public String getVersion()
+	{
+		return version;
 	}
 
 }
