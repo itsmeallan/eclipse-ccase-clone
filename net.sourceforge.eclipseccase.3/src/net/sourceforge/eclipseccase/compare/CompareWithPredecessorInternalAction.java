@@ -1,10 +1,7 @@
-package net.sourceforge.eclipseccase.ui.actions;
+package net.sourceforge.eclipseccase.compare;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.compare.ResourceCompareInput;
-import net.sourceforge.eclipseccase.compare.VersionExtendedFile;
-import net.sourceforge.eclipseccase.compare.VersionExtendedFolder;
-import net.sourceforge.eclipseccase.compare.VersionExtendedProject;
+import net.sourceforge.eclipseccase.ui.actions.ClearcaseAction;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
