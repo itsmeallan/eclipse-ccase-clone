@@ -101,6 +101,12 @@
                id="net.sourceforge.eclipseccase.popups.checkin">
          </action>
          <action
+               label="Refresh State"
+               class="net.sourceforge.eclipseccase.ui.RefreshStateAction"
+               menubarPath="team.main/group1"
+               id="net.sourceforge.eclipseccase.popups.refresh">
+         </action>
+         <action
                label="Checkout"
                class="net.sourceforge.eclipseccase.ui.CheckOutAction"
                menubarPath="team.main/group1"

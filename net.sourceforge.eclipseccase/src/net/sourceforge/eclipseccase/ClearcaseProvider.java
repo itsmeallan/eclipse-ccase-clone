@@ -138,6 +138,27 @@ public class ClearcaseProvider
 	}
 
 	/**
+	 * @see SimpleAccessOperations#checkout(IResource[], int, IProgressMonitor)
+	 */
+	public void refresh(
+		IResource[] resources,
+		int depth,
+		IProgressMonitor progress)
+		throws TeamException
+	{
+		execute(new IRecursiveOperation()
+		{
+			public IStatus visit(IResource resource, IProgressMonitor progress)
+			{
+				IStatus result =
+					new Status(IStatus.OK, TeamPlugin.ID, TeamException.OK, "OK", null);
+				changeState(resource, IResource.DEPTH_ZERO, progress);
+				return result;
+			}
+		}, resources, depth, progress);
+	}
+
+	/**
 	 * @see SimpleAccessOperations#checkin(IResource[], int, IProgressMonitor)
 	 */
 	public void checkin(
