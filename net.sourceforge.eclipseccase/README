@@ -16,6 +16,25 @@ selecting the project in the resource tree view, right click,
 then Team->Associate with clearcase. After this, clearcase
 operations are then active for all resources in the project.
 
+--- RDM  ---
+One possible way to work with Snapshot views using windows is the following.
+Your snapshot-views are attached to a certain directory on your disk.
+e.g c:\views
+I'll presume this folder contains a snapshot view named "MyView"
+
+Startup eclipse with '-data' parameter to denote this directory as workfolder
+C:\eclipse\eclipse.exe -data c:\views 
+As from Eclipse2.1 you can also use linked folders
+
+Create a new project with the same name as the snapshot view you want to work on
+(in this case "MyView")
+Select the source directory in the view as SourceFolder. 
+(e.g. c:\views\MyView\VOBName\src)
+Click OK.
+
+Associate Clearcase with that project
+---
+
 There is currently no way to add an existing eclipse project to
 clearcase version control - though once you have a
 Project dir under clearcase, you can add a subtree of
