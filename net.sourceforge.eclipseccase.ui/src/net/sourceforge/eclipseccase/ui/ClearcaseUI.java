@@ -1,5 +1,10 @@
 package net.sourceforge.eclipseccase.ui;
 
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.core.runtime.*;
 import java.util.*;
@@ -73,4 +78,33 @@ public class ClearcaseUI extends AbstractUIPlugin
     {
         return resourceBundle;
     }
+
+    /**
+     * Returns an array of all editors that have an unsaved content. If the identical content is 
+     * presented in more than one editor, only one of those editor parts is part of the result.
+     * 
+     * @return an array of all dirty editor parts.
+     */
+    public static IEditorPart[] getDirtyEditors() {
+        Set inputs= new HashSet();
+        List result= new ArrayList(0);
+        IWorkbench workbench= getInstance().getWorkbench();
+        IWorkbenchWindow[] windows= workbench.getWorkbenchWindows();
+        for (int i= 0; i < windows.length; i++) {
+            IWorkbenchPage[] pages= windows[i].getPages();
+            for (int x= 0; x < pages.length; x++) {
+                IEditorPart[] editors= pages[x].getDirtyEditors();
+                for (int z= 0; z < editors.length; z++) {
+                    IEditorPart ep= editors[z];
+                    IEditorInput input= ep.getEditorInput();
+                    if (!inputs.contains(input)) {
+                        inputs.add(input);
+                        result.add(ep);
+                    }
+                }
+            }
+        }
+        return (IEditorPart[])result.toArray(new IEditorPart[result.size()]);
+    }
+    
 }

@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -903,6 +904,9 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         throws TeamException
     {
 
+        if (null == progress)
+            progress = new NullProgressMonitor();
+
         // Create an array to hold the status for each resource.
         MultiStatus multiStatus = new MultiStatus(getID(), TeamException.OK, "OK", null);
 
@@ -976,6 +980,9 @@ public class ClearcaseProvider extends RepositoryProvider implements SimpleAcces
         int depth,
         IProgressMonitor progress)
     {
+        if (null == progress)
+            progress = new NullProgressMonitor();
+
         try
         {
             progress.beginTask("processing", 2000);
