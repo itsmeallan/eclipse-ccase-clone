@@ -19,6 +19,8 @@ public class ClearcasePreferencePage extends PreferencePage
 	private Button checkinCommentButton;
 	private Button checkoutCommentButton;
 	private Button addCommentButton;
+	private Button checkoutOnEditButton;
+	private Button refactorAddsDirButton;
 	
 	/**
 	 * Constructor for ClearcasePreferencePage.
@@ -62,6 +64,8 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkinCommentButton = createCheckBox(composite, "Prompt for comment on checkin");
 		checkoutCommentButton = createCheckBox(composite, "Prompt for comment on checkout");
 		reservedCheckoutButton = createCheckBox(composite, "Reserved Checkouts");
+		checkoutOnEditButton = createCheckBox(composite, "Automatically checkout file when edited");
+		refactorAddsDirButton = createCheckBox(composite, "Automatically add dest dir to clearcase when refactoring");
 		persistStateButton = createCheckBox(composite, "Persist element state cache across sessions");
 
 		initializeValues();
@@ -80,6 +84,8 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkinCommentButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_CHECKIN_COMMENT));
 		checkoutCommentButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_CHECKOUT_COMMENT));
 		addCommentButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_ADD_COMMENT));
+		checkoutOnEditButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
+		refactorAddsDirButton.setSelection(store.getBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
 	}
 
 	/**
@@ -118,6 +124,10 @@ public class ClearcasePreferencePage extends PreferencePage
 					   checkoutCommentButton.getSelection());
 		store.setValue(ClearcasePlugin.PREF_ADD_COMMENT,
 					   addCommentButton.getSelection());
+		store.setValue(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT,
+					   checkoutOnEditButton.getSelection());
+		store.setValue(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR,
+					   refactorAddsDirButton.getSelection());
 		savePreferenceStore();
 		return true;
 	}
@@ -131,6 +141,8 @@ public class ClearcasePreferencePage extends PreferencePage
 		checkinCommentButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_CHECKIN_COMMENT));
 		checkoutCommentButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_CHECKOUT_COMMENT));
 		addCommentButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_ADD_COMMENT));
+		checkoutOnEditButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_CHECKOUT_ON_EDIT));
+		refactorAddsDirButton.setSelection(store.getDefaultBoolean(ClearcasePlugin.PREF_REFACTOR_ADDS_DIR));
 	}
 
 	public IPreferenceStore getPreferenceStore()

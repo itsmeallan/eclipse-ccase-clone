@@ -33,6 +33,10 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static final String PREF_CHECKOUT_COMMENT_DEFAULT = "false";
 	public static final String PREF_ADD_COMMENT = "net.sourceforge.eclipseccase.add_comment";
 	public static final String PREF_ADD_COMMENT_DEFAULT = "true";
+	public static final String PREF_CHECKOUT_ON_EDIT = "net.sourceforge.eclipseccase.checkout_on_edit";
+	public static final String PREF_CHECKOUT_ON_EDIT_DEFAULT = "true";
+	public static final String PREF_REFACTOR_ADDS_DIR = "net.sourceforge.eclipseccase.refactor_adds_dir";
+	public static final String PREF_REFACTOR_ADDS_DIR_DEFAULT = "true";
 	
 	/**
 	 * The constructor.
@@ -72,6 +76,8 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(PREF_CHECKIN_COMMENT, PREF_CHECKIN_COMMENT_DEFAULT);
 		store.setDefault(PREF_CHECKOUT_COMMENT, PREF_CHECKOUT_COMMENT_DEFAULT);
 		store.setDefault(PREF_ADD_COMMENT, PREF_ADD_COMMENT_DEFAULT);
+		store.setDefault(PREF_CHECKOUT_ON_EDIT, PREF_CHECKOUT_ON_EDIT_DEFAULT);
+		store.setDefault(PREF_REFACTOR_ADDS_DIR, PREF_REFACTOR_ADDS_DIR_DEFAULT);
 	}
 	
 	public static boolean isReservedCheckouts()
@@ -97,6 +103,16 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 	public static boolean isAddComment()
 	{
 		return getDefault().getPreferenceStore().getBoolean(PREF_ADD_COMMENT);
+	}
+
+	public static boolean isCheckoutOnEdit()
+	{
+		return getDefault().getPreferenceStore().getBoolean(PREF_CHECKOUT_ON_EDIT);
+	}
+
+	public static boolean isRefactorAddsDir()
+	{
+		return getDefault().getPreferenceStore().getBoolean(PREF_REFACTOR_ADDS_DIR);
 	}
 
 }
