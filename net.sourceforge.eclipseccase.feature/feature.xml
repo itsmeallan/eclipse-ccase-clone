@@ -16,6 +16,7 @@
 
    <url>
       <update label="%updateSiteName" url="http://eclipse-ccase.sourceforge.net/update/"/>
+      <discovery label="%updateSiteName" url="http://eclipse-ccase.sourceforge.net/update/"/>
    </url>
 
    <requires>
