@@ -147,13 +147,15 @@ public class ClearcaseProvider extends RepositoryProvider implements
     }
 
     /**
-     * Invalidates the state of the specified resource and only of the specified resource
+     * Invalidates the state of the specified resource and only of the specified
+     * resource
+     * 
      * @param resources
      */
     public void refresh(IResource resources) {
         StateCacheFactory.getInstance().get(resources).updateAsync(true);
     }
-    
+
     /*
      * @see SimpleAccessOperations#checkin(IResource[], int, IProgressMonitor)
      */
@@ -309,7 +311,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * Returns the vob relative path of the specified element
      * 
      * @param resource
-     * @return
+     * @return the vob relativ path (maybe <code>null</code> if outside vob)
      */
     public String getVobRelativPath(IResource resource) throws TeamException {
         String viewRoot = getViewRoot(resource);
@@ -328,7 +330,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                     return vobLocation.removeFirstSegments(1).makeRelative()
                             .toString();
         }
-        return "none";
+        return null;
     }
 
     public IStatus move(IResource source, IResource destination,
@@ -586,7 +588,8 @@ public class ClearcaseProvider extends RepositoryProvider implements
                             monitor.worked(10);
                             // FIXME: support -master
                             IClearcase.Status status = ClearcasePlugin
-                                    .getEngine().add(path, getComment(), true, false);
+                                    .getEngine().add(path, getComment(), true,
+                                            false);
                             monitor.worked(10);
                             if (status.status) {
                                 File[] members = mkelemfolder.listFiles();
@@ -782,7 +785,7 @@ public class ClearcaseProvider extends RepositoryProvider implements
                                         .toString()}), null); }
 
                 IStatus result = OK_STATUS;
-                
+
                 // update if necessary
                 if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
                     monitor.subTask("Updating " + resource.getName());
@@ -1038,16 +1041,25 @@ public class ClearcaseProvider extends RepositoryProvider implements
      * @return
      */
     public boolean isIgnored(IResource resource) {
+
         // ignore eclipse linked resource
         if (resource.isLinked()) return true;
+
         // never ignore handled resources
         if (hasRemote(resource)) return false;
+
+        // ignore resources outside vob
+        if (!isInsideView(resource)) return true;
+
         // never ignore workspace root
         if (null == resource.getParent()) return false;
+
         // check the global ignores from Team (includes derived resources)
         if (Team.isIgnoredHint(resource)) return true;
+
         // bug 904248: do not ignore if parent is a linked resource
         if (resource.getParent().isLinked()) return false;
+
         // check the parent, if the parent is ignored
         // then this resource is ignored also
         return isIgnored(resource.getParent());
@@ -1122,5 +1134,22 @@ public class ClearcaseProvider extends RepositoryProvider implements
          */
         return resource.getType() == IResource.FOLDER && !resource.isLinked()
                 && isViewRoot(resource.getParent());
+    }
+    
+    /**
+     * Indicates if the specified resource is inside a view directory.
+     * 
+     * @param resource
+     * @return <code>true</code> if the specified resource is a view
+     *         directory
+     */
+    public boolean isInsideView(IResource resource) {
+        IClearcase.Status status = ClearcasePlugin.getEngine().getViewRoot(
+                resource.getLocation().toOSString());
+        
+        if (status.status)
+            return true;
+
+        return false;
     }
 }
