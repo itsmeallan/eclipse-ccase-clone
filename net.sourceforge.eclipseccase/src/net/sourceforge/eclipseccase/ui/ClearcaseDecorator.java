@@ -179,7 +179,7 @@ public class ClearcaseDecorator
 		if (manager.getEnabled(ID))
 		{
 			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getLightweightLabelDecorator(ID);
+				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
 			if (activeDecorator != null)
 			{
 				activeDecorator.postLabelEvent(
@@ -219,7 +219,7 @@ public class ClearcaseDecorator
 		if (manager.getEnabled(ID))
 		{
 			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getLightweightLabelDecorator(ID);
+				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
 			if (activeDecorator != null)
 			{
 				activeDecorator.resourceStateChanged(new IResource[] { resource });
@@ -234,7 +234,7 @@ public class ClearcaseDecorator
 		if (manager.getEnabled(ID))
 		{
 			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getLightweightLabelDecorator(ID);
+				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
 			if (activeDecorator != null)
 			{
 				activeDecorator.resourceStateChanged(resources);
