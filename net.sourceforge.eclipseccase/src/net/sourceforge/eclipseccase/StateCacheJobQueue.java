@@ -53,7 +53,7 @@ class StateCacheJobQueue extends Job {
         setSystem(ClearcasePlugin.isHideRefreshActivity());
 
         // set priority for long running jobs
-        setPriority(LONG);
+        setPriority(DECORATE);
 
         // set the rule to the clearcase engine
         setRule(ClearcasePlugin.RULE_CLEARCASE_ENGING);
