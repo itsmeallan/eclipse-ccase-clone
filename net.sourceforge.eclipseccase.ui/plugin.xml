@@ -163,12 +163,12 @@
                menubarPath="team.main/group2"
                id="net.sourceforge.eclipseccase.popups.comparepredecessor">
          </action>
-<!--action
+		<action
                label="Predecessor"
-               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorInternalAction"
+               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
                menubarPath="compareWithMenu/compareWithGroup"
-               id="net.sourceforge.eclipseccase.popups.internalcomparepredecessor">
-         </action-->
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor2">
+         </action>
          <action
                label="Find checkouts"
                class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
