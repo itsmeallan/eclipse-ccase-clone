@@ -5,6 +5,7 @@ public interface IPreferenceConstants
 	/* For general preference page */
 	public static final String ADD_COMMENT = "addComment";
 	public static final String CHECKIN_COMMENT = "checkinComment";
+	public static final String CHECKIN_PRESERVE_TIME = "checkinPreserveTime";
 	public static final String CHECKOUT_COMMENT = "checkoutComment";
 	public static final String CHECKOUT_ON_EDIT = "checkoutOnEdit";
 	public static final String PERSIST_STATE = "persistState";

@@ -43,6 +43,13 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePage
 
 		addField(
 			new BooleanFieldEditor(
+				IPreferenceConstants.CHECKIN_PRESERVE_TIME,
+				"Preserve the file modification time on checkin",
+				getFieldEditorParent())
+		);
+
+		addField(
+			new BooleanFieldEditor(
 				IPreferenceConstants.CHECKOUT_COMMENT,
 				"Prompt for comment on checkout",
 				getFieldEditorParent())

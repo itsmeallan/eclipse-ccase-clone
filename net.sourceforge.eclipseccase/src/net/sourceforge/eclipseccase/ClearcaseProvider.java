@@ -214,11 +214,10 @@ public class ClearcaseProvider
 					IProgressMonitor progress)
 				{
 					IStatus result = OK_STATUS;
-					IClearcase.Status status =
-						ClearcasePlugin.getEngine().checkin(
+					IClearcase.Status status = ClearcasePlugin.getEngine().checkin(
 							resource.getLocation().toOSString(),
 							comment,
-							true);
+							ClearcasePlugin.isCheckinPreserveTime());
 					changeState(resource, IResource.DEPTH_ZERO, progress);
 					if (!status.status)
 					{

@@ -135,6 +135,7 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		store.setDefault(IPreferenceConstants.PERSIST_STATE, true);
 		store.setDefault(IPreferenceConstants.REFRESH_ON_CHANGE, true);
 		store.setDefault(IPreferenceConstants.CHECKIN_COMMENT, true);
+		store.setDefault(IPreferenceConstants.CHECKIN_PRESERVE_TIME, true);
 		store.setDefault(IPreferenceConstants.CHECKOUT_COMMENT, false);
 		store.setDefault(IPreferenceConstants.ADD_COMMENT, true);
 		store.setDefault(IPreferenceConstants.CHECKOUT_ON_EDIT, true);
@@ -168,6 +169,11 @@ public class ClearcasePlugin extends AbstractUIPlugin {
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKIN_COMMENT);
 	}
 	
+	public static boolean isCheckinPreserveTime()
+	{
+		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKIN_PRESERVE_TIME);
+	}
+
 	public static boolean isCheckoutComment()
 	{
 		return getDefault().getPreferenceStore().getBoolean(IPreferenceConstants.CHECKOUT_COMMENT);
