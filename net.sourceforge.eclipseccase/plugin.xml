@@ -719,5 +719,12 @@
             id="net.sourceforge.eclipseccase.predecessorQuickDiff">
       </referenceprovider>
    </extension>
+   <extension
+         point="org.eclipse.team.core.projectSets">
+      <projectSets
+            class="net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer"
+            id="net.sourceforge.eclipseccase.ClearcaseProvider">
+      </projectSets>
+   </extension>
 
 </plugin>

@@ -86,4 +86,12 @@ public class DissociateProjectAction extends ClearcaseAction
 		return true;
 	}
 
+    /* (non-Javadoc)
+     * @see org.eclipse.team.internal.ui.actions.TeamAction#getSelectedProjects()
+     */
+    protected IProject[] getSelectedProjects()
+    {
+        return super.getSelectedProjects();
+    }
+
 }

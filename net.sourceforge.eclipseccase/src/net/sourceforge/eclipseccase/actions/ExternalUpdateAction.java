@@ -21,65 +21,63 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 public class ExternalUpdateAction extends ClearcaseAction
 {
 
-	/**
-	 * @see TeamAction#isEnabled()
-	 */
-	protected boolean isEnabled() throws TeamException
-	{
-		IResource[] resources = getSelectedResources();
-		if (resources.length == 0)
-			return false;
-		for (int i = 0; i < resources.length; i++)
-		{
-			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource))
-				return false;
-			if (! provider.hasRemote(resource))
-				return false;
-			if (! provider.isSnapShot(resource))
-				return false;
-		}
-		return true;
-	}
+    /**
+     * @see TeamAction#isEnabled()
+     */
+    protected boolean isEnabled() throws TeamException
+    {
+        IResource[] resources = getSelectedResources();
+        if (resources.length == 0)
+            return false;
+        for (int i = 0; i < resources.length; i++)
+        {
+            IResource resource = resources[i];
+            ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+                return false;
+            if (!provider.isSnapShot(resource))
+                return false;
+        }
+        return true;
+    }
 
-	/**
-	 * @see IActionDelegate#run(IAction)
-	 */
-	public void run(IAction action)
-	{
-		run(new WorkspaceModifyOperation()
-		{
-			public void execute(IProgressMonitor monitor)
-				throws InterruptedException, InvocationTargetException
-			{
-				try
-				{
-					IResource[] resources = getSelectedResources();
-					for (int i = 0; i < resources.length; i++)
-					{
-						IResource resource = resources[i];
-						String path = resource.getLocation().toOSString();
-						if (ClearcasePlugin.isUseCleartool())
-						{
-							ClearcasePlugin.getEngine().cleartool("update -graphical " + ClearcaseUtil.quote(path));
-						}
-						else
-						{
-							Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
-							process.waitFor();
-						}
-						try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
-					}
-				}
-				catch (IOException ex)
-				{
-					throw new InvocationTargetException(ex);
-				}
-			}
-		}, "Update ", TeamAction.PROGRESS_BUSYCURSOR);
+    /**
+     * @see IActionDelegate#run(IAction)
+     */
+    public void run(IAction action)
+    {
+        run(new WorkspaceModifyOperation()
+        {
+            public void execute(IProgressMonitor monitor)
+                throws InterruptedException, InvocationTargetException
+            {
+                try
+                {
+                    IResource[] resources = getSelectedResources();
+                    for (int i = 0; i < resources.length; i++)
+                    {
+                        IResource resource = resources[i];
+                        String path = resource.getLocation().toOSString();
+                        if (ClearcasePlugin.isUseCleartool())
+                        {
+                            ClearcasePlugin.getEngine().cleartool("update -graphical " + ClearcaseUtil.quote(path));
+                        }
+                        else
+                        {
+                            Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
+                            process.waitFor();
+                        }
+                        try {resource.refreshLocal(IResource.DEPTH_INFINITE, monitor);} catch (CoreException ex) {}
+                    }
+                }
+                catch (IOException ex)
+                {
+                    throw new InvocationTargetException(ex);
+                }
+            }
+        }, "Update ", TeamAction.PROGRESS_BUSYCURSOR);
 
-		updateActionEnablement();
-	}
+        updateActionEnablement();
+    }
 
 }

@@ -61,9 +61,7 @@ public class UpdateAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource))
-				return false;
-			if (! provider.hasRemote(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
 				return false;
 			if (! provider.isSnapShot(resource))
 				return false;

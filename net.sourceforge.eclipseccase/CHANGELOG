@@ -1,3 +1,19 @@
+0.9.9
+-----
+
+- Merged changes from eclipse_2 branch
+- Added a project set serializer to enable export and import of project sets
+- Added support for multi-line comments and comments with double quotes
+- Added possibility to escape special characters in comments (see preferences)
+- Added decoration for new resource not under source control
+- Added sanity checks for checkin, checkout, delete, get and move operations
+- Sanity checks for adds, checkins, checkouts and uncheckouts will 
+  generate warnings instead of errors (deletes, moves, gets generate errors)	
+- Added support for ignoring resources (linked, derived and as configured 
+  in the global Team preferences)
+- Fixed operations to continue on warnings but stop immediately on errors
+
+
 0.9.8
 -----
 

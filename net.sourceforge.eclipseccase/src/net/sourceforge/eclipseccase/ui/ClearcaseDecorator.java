@@ -26,335 +26,336 @@ import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.internal.decorators.DecoratorManager;
 
 public class ClearcaseDecorator
-	extends LabelProvider
-	implements ILightweightLabelDecorator, StateChangeListener
+    extends LabelProvider
+    implements ILightweightLabelDecorator, StateChangeListener
 {
-	private static final String ID =
-		"net.sourceforge.eclipseccase.ui.decorator";
+    private static final String ID = "net.sourceforge.eclipseccase.ui.decorator";
 
-	// Used to exit the isDirty resource visitor
-	private static final CoreException CORE_DIRTY_EXCEPTION =
-		new CoreException(new Status(IStatus.OK, "dirty", 1, "", null));
-	private static final CoreException CORE_UNKNOWN_EXCEPTION =
-		new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
-	private final int CLEAN_STATE = 0;
-	private final int DIRTY_STATE = 1;
-	private final int UNKNOWN_STATE = 2;
+    // Used to exit the isDirty resource visitor
+    static final CoreException CORE_DIRTY_EXCEPTION =
+        new CoreException(new Status(IStatus.OK, "dirty", 1, "", null));
+    static final CoreException CORE_UNKNOWN_EXCEPTION =
+        new CoreException(new Status(IStatus.OK, "unknown", 1, "", null));
+    private final int CLEAN_STATE = 0;
+    private final int DIRTY_STATE = 1;
+    private final int UNKNOWN_STATE = 2;
 
-	private Timer parentUpdateTimer;
-	private boolean decorationInProcess = false;
-	private List parentQueue = new LinkedList();
+    private Timer parentUpdateTimer;
+    boolean decorationInProcess = false;
+    List parentQueue = new LinkedList();
 
-	public ClearcaseDecorator()
-	{
-		super();
-		DecoratorManager manager =
-			(DecoratorManager) ClearcasePlugin
-				.getDefault()
-				.getWorkbench()
-				.getDecoratorManager();
-		addListener(manager);
-		StateCacheFactory.getInstance().addStateChangeListerer(this);
-		
-		parentUpdateTimer = new Timer();
-		parentUpdateTimer.schedule(new TimerTask()
-		{
-			public void run()
-			{
-				synchronized(ClearcaseDecorator.this)
-				{
-					if (decorationInProcess)
-					{
-						decorationInProcess = false;
-						return;
-					}
-				}
-				synchronized(parentQueue)
-				{
-					resourceStateChanged(
-						(IResource[]) parentQueue.toArray(
-							new IResource[parentQueue.size()]));
-					parentQueue.clear();
-				}
-			}
-		}, 0, 500);
-	}
+    public ClearcaseDecorator()
+    {
+        super();
+        DecoratorManager manager =
+            (DecoratorManager) ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+        addListener(manager);
+        StateCacheFactory.getInstance().addStateChangeListerer(this);
 
-	public void dispose()
-	{
-		parentUpdateTimer.cancel();
-	}
-	
-	/**
-	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
-	 */
-	public void decorate(Object element, IDecoration decoration)
-	{
-		IResource resource = getResource(element);
-		if (resource == null || resource.getType() == IResource.ROOT)
-			return;
-		ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
-		if (p == null)
-			return;
+        parentUpdateTimer = new Timer();
+        parentUpdateTimer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                synchronized (ClearcaseDecorator.this)
+                {
+                    if (decorationInProcess)
+                    {
+                        decorationInProcess = false;
+                        return;
+                    }
+                }
+                synchronized (parentQueue)
+                {
+                    resourceStateChanged(
+                        (IResource[]) parentQueue.toArray(new IResource[parentQueue.size()]));
+                    parentQueue.clear();
+                }
+            }
+        }, 0, 500);
+    }
 
-		if (p.isUnknownState(resource))
-		{
-			decoration.addOverlay(
-				ClearcaseImages.getImageDescriptor(
-					ClearcaseImages.IMG_UNKNOWN_OVR));
-			p.hasRemote(resource);
-		}
-		else
-		{
-			if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource))
-				return;
+    public void dispose()
+    {
+        parentUpdateTimer.cancel();
+    }
 
-			int dirty = isDirty(resource);
+    /**
+     * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
+     */
+    public void decorate(Object element, IDecoration decoration)
+    {
+        IResource resource = getResource(element);
+        if (resource == null || resource.getType() == IResource.ROOT)
+            return;
+        ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
+        if (p == null)
+            return;
+            
+        if(p.isIgnored(resource))
+            return;
 
-			if (p.isCheckedOut(resource))
-			{
-				decoration.addOverlay(
-					ClearcaseImages.getImageDescriptor(
-				ClearcaseImages.IMG_CHECKEDOUT_OVR));
-			}
-			else if (dirty == DIRTY_STATE)
-			{
-				decoration.addOverlay(
-					ClearcaseImages.getImageDescriptor(
-						ClearcaseImages.IMG_DIRTY_OVR));
-			}
-			else if (dirty == UNKNOWN_STATE)
-			{
-				decoration.addOverlay(
-					ClearcaseImages.getImageDescriptor(
-						ClearcaseImages.IMG_DIRTY_UNKNOWN_OVR));
-			}
-			else if (p.isHijacked(resource))
-			{
-				decoration.addOverlay(
-					ClearcaseImages.getImageDescriptor(
-						ClearcaseImages.IMG_HIJACKED_OVR));
-			}
-			else if (p.hasRemote(resource))
-			{
-				decoration.addOverlay(
-					ClearcaseImages.getImageDescriptor(
-				ClearcaseImages.IMG_CHECKEDIN_OVR));
-			}
+        if (p.isUnknownState(resource))
+        {
+            decoration.addOverlay(
+                ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
+        }
+        else if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource))
+        {
+            // decorate new elements not added to ClearCase
+            decoration.addOverlay(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_NEW_OVR));
 
-			StringBuffer prefix = new StringBuffer();
-			StringBuffer suffix = new StringBuffer();
+            if (ClearcasePlugin.isTextNewDecoration())
+                decoration.addPrefix("*");
+        }
+        else
+        {
+            int dirty = isDirty(resource);
 
-			if (ClearcasePlugin.isTextViewDecoration()
-				&& resource.getType() == IResource.PROJECT)
-			{
-				suffix.append(" [view: ");
-				suffix.append(p.getViewName(resource));
-				suffix.append("]");
-			}
+            if (p.isCheckedOut(resource))
+            {
+                decoration.addOverlay(
+                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
+            }
+            else if (dirty == DIRTY_STATE)
+            {
+                decoration.addOverlay(
+                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DIRTY_OVR));
+            }
+            else if (dirty == UNKNOWN_STATE)
+            {
+                decoration.addOverlay(
+                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DIRTY_UNKNOWN_OVR));
+            }
+            else if (p.isHijacked(resource))
+            {
+                decoration.addOverlay(
+                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
+            }
+            else if (p.hasRemote(resource))
+            {
+                decoration.addOverlay(
+                    ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDIN_OVR));
+            }
 
-			if (ClearcasePlugin.isTextDirtyDecoration())
-			{
-				if (dirty == DIRTY_STATE)
-				{
-					prefix.append(">");
-				}
-				else if (dirty == UNKNOWN_STATE)
-				{
-					prefix.append("?>");
-				}
-			}
+            StringBuffer prefix = new StringBuffer();
+            StringBuffer suffix = new StringBuffer();
 
-			if (ClearcasePlugin.isTextVersionDecoration())
-			{
-				suffix.append(" : ");
-				suffix.append(p.getVersion(resource));
-			}
+            if (ClearcasePlugin.isTextViewDecoration() && resource.getType() == IResource.PROJECT)
+            {
+                suffix.append(" [view: ");
+                suffix.append(p.getViewName(resource));
+                suffix.append("]");
+            }
 
-			decoration.addPrefix(prefix.toString());
-			decoration.addSuffix(suffix.toString());
-		}
+            if (ClearcasePlugin.isTextDirtyDecoration())
+            {
+                if (dirty == DIRTY_STATE)
+                {
+                    prefix.append(">");
+                }
+                else if (dirty == UNKNOWN_STATE)
+                {
+                    prefix.append("?>");
+                }
+            }
 
-	}
+            if (ClearcasePlugin.isTextVersionDecoration())
+            {
+                suffix.append(" : ");
+                suffix.append(p.getVersion(resource));
+            }
 
-	public static void refresh()
-	{
-		IDecoratorManager manager =
-			ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
-		if (manager.getEnabled(ID))
-		{
-			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-			if (activeDecorator != null)
-			{
-				activeDecorator.postLabelEvent(
-					new LabelProviderChangedEvent(activeDecorator));
-			}
-		}
-	}
+            decoration.addPrefix(prefix.toString());
+            decoration.addSuffix(suffix.toString());
+        }
 
-	public static void refresh(IResource resource)
-	{
-		final List resources = new LinkedList();
-		try
-		{
-			resource.accept(new IResourceVisitor()
-			{
-				/**
-				 * @see org.eclipse.core.resources.IResourceVisitor#visit(IResource)
-				 */
-				public boolean visit(IResource resource) throws CoreException
-				{
-					resources.add(resource);
-					return true;
-				}
-			});
-		}
-		catch (CoreException ex)
-		{
-		}
-		labelResources(
-			(IResource[]) resources.toArray(new IResource[resources.size()]));
-	}
+    }
 
-	public static void labelResource(IResource resource)
-	{
-		IDecoratorManager manager =
-			ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
-		if (manager.getEnabled(ID))
-		{
-			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-			if (activeDecorator != null)
-			{
-				activeDecorator.resourceStateChanged(new IResource[] { resource });
-			}
-		}
-	}
+    public static void refresh()
+    {
+        IDecoratorManager manager =
+            ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+        if (manager.getEnabled(ID))
+        {
+            ClearcaseDecorator activeDecorator =
+                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
+            if (activeDecorator != null)
+            {
+                activeDecorator.postLabelEvent(new LabelProviderChangedEvent(activeDecorator));
+            }
+        }
+    }
 
-	public static void labelResources(IResource[] resources)
-	{
-		IDecoratorManager manager =
-			ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
-		if (manager.getEnabled(ID))
-		{
-			ClearcaseDecorator activeDecorator =
-				(ClearcaseDecorator) manager.getBaseLabelProvider(ID);
-			if (activeDecorator != null)
-			{
-				activeDecorator.resourceStateChanged(resources);
-			}
-		}
-	}
+    public static void refresh(IResource resource)
+    {
+        final List resources = new LinkedList();
+        try
+        {
+            resource.accept(new IResourceVisitor()
+            {
+                /**
+                 * @see org.eclipse.core.resources.IResourceVisitor#visit(IResource)
+                 */
+                public boolean visit(IResource resource) throws CoreException
+                {
+                    resources.add(resource);
+                    return true;
+                }
+            });
+        }
+        catch (CoreException ex)
+        {}
+        labelResources((IResource[]) resources.toArray(new IResource[resources.size()]));
+    }
 
-	public void resourceStateChanged(IResource[] changedResources)
-	{
-		boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
-		for (int i = 0; i < changedResources.length; i++)
-		{
-			if (deepDecoration)
-				queueParents(changedResources[i]);
-		}
+    public static void labelResource(IResource resource)
+    {
+        IDecoratorManager manager =
+            ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+        if (manager.getEnabled(ID))
+        {
+            ClearcaseDecorator activeDecorator =
+                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
+            if (activeDecorator != null)
+            {
+                activeDecorator.resourceStateChanged(new IResource[] { resource });
+            }
+        }
+    }
 
-		postLabelEvent(
-			new LabelProviderChangedEvent(this, changedResources));
-	}
+    public static void labelResources(IResource[] resources)
+    {
+        IDecoratorManager manager =
+            ClearcasePlugin.getDefault().getWorkbench().getDecoratorManager();
+        if (manager.getEnabled(ID))
+        {
+            ClearcaseDecorator activeDecorator =
+                (ClearcaseDecorator) manager.getBaseLabelProvider(ID);
+            if (activeDecorator != null)
+            {
+                activeDecorator.resourceStateChanged(resources);
+            }
+        }
+    }
 
-	private void queueParents(IResource resource)
-	{
-		IResource current = resource.getParent();
+    public void resourceStateChanged(IResource[] changedResources)
+    {
+        boolean deepDecoration = ClearcasePlugin.isDeepDecoration();
+        for (int i = 0; i < changedResources.length; i++)
+        {
+            if (deepDecoration)
+                queueParents(changedResources[i]);
+        }
 
-		while (current != null && current.getType() != IResource.ROOT)
-		{
-			synchronized (parentQueue)
-			{
-				if (! parentQueue.contains(current))
-					parentQueue.add(current);
-			}
-			current = current.getParent();
-		}
-	}
+        postLabelEvent(new LabelProviderChangedEvent(this, changedResources));
+    }
 
-	private void postLabelEvent(final LabelProviderChangedEvent event)
-	{
-		synchronized (this)
-		{
-			decorationInProcess = true;
-		}
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				fireLabelProviderChanged(event);
-			}
-		});
-	}
+    private void queueParents(IResource resource)
+    {
+        IResource current = resource.getParent();
 
-	private int isDirty(IResource resource)
-	{
-		// Since dirty == checkout/hijacked for files, redundant to show files as dirty
-		if (resource.getType() == IResource.FILE)
-			return CLEAN_STATE;
+        while (current != null && current.getType() != IResource.ROOT)
+        {
+            synchronized (parentQueue)
+            {
+                if (!parentQueue.contains(current))
+                    parentQueue.add(current);
+            }
+            current = current.getParent();
+        }
+    }
 
-		if (!ClearcasePlugin.isDeepDecoration())
-			return CLEAN_STATE;
+    private void postLabelEvent(final LabelProviderChangedEvent event)
+    {
+        synchronized (this)
+        {
+            decorationInProcess = true;
+        }
+        Display.getDefault().asyncExec(new Runnable()
+        {
+            public void run()
+            {
+                fireLabelProviderChanged(event);
+            }
+        });
+    }
 
-		try
-		{
-			resource.accept(new IResourceVisitor()
-			{
-				public boolean visit(IResource resource) throws CoreException
-				{
-					ClearcaseProvider p =
-						ClearcaseProvider.getProvider(resource);
-					if (p == null)
-						return false;
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.LabelProvider#fireLabelProviderChanged(org.eclipse.jface.viewers.LabelProviderChangedEvent)
+     */
+    protected void fireLabelProviderChanged(LabelProviderChangedEvent event)
+    {
+        super.fireLabelProviderChanged(event);
+    }
 
-					if (p.isUnknownState(resource))
-						throw CORE_UNKNOWN_EXCEPTION;
 
-					if (!p.hasRemote(resource))
-						return false;
+    private int isDirty(IResource resource)
+    {
+        // Since dirty == checkout/hijacked for files, redundant to show files as dirty
+        if (resource.getType() == IResource.FILE)
+            return CLEAN_STATE;
 
-					if (p.isCheckedOut(resource) || p.isHijacked(resource))
-						throw CORE_DIRTY_EXCEPTION;
+        if (!ClearcasePlugin.isDeepDecoration())
+            return CLEAN_STATE;
 
-					return true;
-				}
-			}, IResource.DEPTH_INFINITE, true);
-		}
-		catch (CoreException e)
-		{
-			//if our exception was caught, we know there's a dirty child
-			if (e == CORE_DIRTY_EXCEPTION)
-			{
-				return DIRTY_STATE;
-			}
-			else if (e == CORE_UNKNOWN_EXCEPTION)
-			{
-				return UNKNOWN_STATE;
-			}
-		}
-		return CLEAN_STATE;
-	}
+        try
+        {
+            resource.accept(new IResourceVisitor()
+            {
+                public boolean visit(IResource resource) throws CoreException
+                {
+                    ClearcaseProvider p = ClearcaseProvider.getProvider(resource);
+                    if (p == null)
+                        return false;
+                        
+                    if(p.isIgnored(resource))
+                        return false;                    
 
-	private IResource getResource(Object object)
-	{
-		if (object instanceof IResource)
-		{
-			return (IResource) object;
-		}
-		if (object instanceof IAdaptable)
-		{
-			return (IResource) ((IAdaptable) object).getAdapter(
-				IResource.class);
-		}
-		return null;
-	}
-	
-	public void stateChanged(StateCache stateCache)
-	{
-		resourceStateChanged(new IResource[] { stateCache.getResource() });
-	}
+                    if (p.isUnknownState(resource))
+                        throw CORE_UNKNOWN_EXCEPTION;
+
+                    if (!p.hasRemote(resource))
+                        throw CORE_DIRTY_EXCEPTION;
+
+                    if (p.isCheckedOut(resource) || p.isHijacked(resource))
+                        throw CORE_DIRTY_EXCEPTION;
+
+                    return true;
+                }
+            }, IResource.DEPTH_INFINITE, true);
+        }
+        catch (CoreException e)
+        {
+            //if our exception was caught, we know there's a dirty child
+            if (e == CORE_DIRTY_EXCEPTION)
+            {
+                return DIRTY_STATE;
+            }
+            else if (e == CORE_UNKNOWN_EXCEPTION)
+            {
+                return UNKNOWN_STATE;
+            }
+        }
+        return CLEAN_STATE;
+    }
+
+    private IResource getResource(Object object)
+    {
+        if (object instanceof IResource)
+        {
+            return (IResource) object;
+        }
+        if (object instanceof IAdaptable)
+        {
+            return (IResource) ((IAdaptable) object).getAdapter(IResource.class);
+        }
+        return null;
+    }
+
+    public void stateChanged(StateCache stateCache)
+    {
+        resourceStateChanged(new IResource[] { stateCache.getResource()});
+    }
 
 }

@@ -74,9 +74,9 @@ public class UndoCheckOutAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
 				return false;
-			if (! provider.isCheckedOut(resource))
+			if (!provider.isCheckedOut(resource))
 				return false;
 		}
 		return true;

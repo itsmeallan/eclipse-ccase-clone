@@ -48,6 +48,13 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePage implement
 				getFieldEditorParent());
 		addField(textDirtyDecoration);
 
+        BooleanFieldEditor textNewDecoration =
+            new BooleanFieldEditor(
+                IPreferenceConstants.TEXT_NEW_DECORATION,
+                "Enable text decoration for new resources not in ClearCase.",
+                getFieldEditorParent());
+        addField(textNewDecoration);
+
 		SpacerFieldEditor spacer1 = new SpacerFieldEditor(
 			getFieldEditorParent());
 		addField(spacer1);

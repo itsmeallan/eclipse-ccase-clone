@@ -1,83 +1,112 @@
 package net.sourceforge.eclipseccase.ui;
 
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
+import net.sourceforge.eclipseccase.ClearcasePlugin;
+
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-public class CommentDialog extends InputDialog
+public class CommentDialog extends Dialog
 {
-	Button recursiveButton;
-	boolean recursive = false;
-	
-	/**
-	 * Constructor for CommentDialog.
-	 * @param parentShell
-	 * @param dialogTitle
-	 * @param dialogMessage
-	 * @param initialValue
-	 * @param validator
-	 */
-	public CommentDialog(
-		Shell parentShell,
-		String dialogTitle,
-		String dialogMessage,
-		String initialValue,
-		IInputValidator validator)
-	{
-		super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
-	}
+    private CommentDialogArea commentDialogArea;
+    private String title;
 
-	/**
-	 * @see Dialog#createButtonsForButtonBar(Composite)
-	 */
-	protected void createButtonsForButtonBar(Composite parent)
-	{
-		super.createButtonsForButtonBar(parent);
-	}
+    /**
+     * Creates a new CommentDialog instance.
+     * @param parentShell
+     * @param dialogTitle
+     */
+    public CommentDialog(Shell parentShell, String dialogTitle)
+    {
+        super(parentShell);
+        commentDialogArea =
+            new CommentDialogArea(this, null, ClearcasePlugin.isMultiLineComments());
+        this.title = dialogTitle;
+    }
 
-	/**
-	 * Gets the recursive.
-	 * @return Returns a boolean
-	 */
-	public boolean isRecursive()
-	{
-		return recursive;
-	}
+    Button recursiveButton;
+    boolean recursive = false;
 
-	/**
-	 * Sets the recursive.
-	 * @param recursive The recursive to set
-	 */
-	public void setRecursive(boolean recursive)
-	{
-		this.recursive = recursive;
-	}
+    /**
+     * Gets the recursive.
+     * @return Returns a boolean
+     */
+    public boolean isRecursive()
+    {
+        return recursive;
+    }
 
-	/**
-	 * @see Dialog#createDialogArea(Composite)
-	 */
-	protected Control createDialogArea(Composite parent)
-	{
-		Composite control = (Composite) super.createDialogArea(parent);
-		recursiveButton = new Button(control, SWT.CHECK);
-		recursiveButton.setText("Recurse");
-		return control;
-	}
+    /**
+     * Sets the recursive.
+     * @param recursive The recursive to set
+     */
+    public void setRecursive(boolean recursive)
+    {
+        this.recursive = recursive;
+    }
 
-	/**
-	 * @see Dialog#buttonPressed(int)
-	 */
-	protected void buttonPressed(int buttonId)
-	{
-		if (buttonId == IDialogConstants.OK_ID)
-		{
-			recursive = recursiveButton.getSelection();
-		}
-		super.buttonPressed(buttonId);
-	}
+    /**
+     * @see Dialog#createDialogArea(Composite)
+     */
+    protected Control createDialogArea(Composite parent)
+    {
+        getShell().setText(title);
+        Composite composite = new Composite(parent, SWT.NULL);
+        composite.setLayout(new GridLayout(1, true));
+        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        commentDialogArea.createArea(composite);
+        commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener()
+        {
+            public void propertyChange(PropertyChangeEvent event)
+            {
+                if (event.getProperty() == CommentDialogArea.OK_REQUESTED)
+                    okPressed();
+            }
+        });
+
+        recursiveButton = new Button(composite, SWT.CHECK);
+        recursiveButton.setText("Recurse");
+        recursiveButton.addSelectionListener(new SelectionListener()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                recursive = recursiveButton.getSelection();
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e)
+            {}
+        });
+
+        // set F1 help
+        //WorkbenchHelp.setHelp(composite, IHelpContextIds.RELEASE_COMMENT_DIALOG);
+
+        return composite;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.dialogs.Dialog#okPressed()
+     */
+    protected void okPressed()
+    {
+        super.okPressed();
+    }
+
+    /**
+     * Returns the comment.
+     * @return String
+     */
+    public String getComment()
+    {
+        return commentDialogArea.getComment();
+    }
 }

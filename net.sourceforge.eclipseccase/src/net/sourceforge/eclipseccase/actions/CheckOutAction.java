@@ -20,8 +20,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public class CheckOutAction extends ClearcaseAction
 {
-	private String lastComment = "";
-
 	public void run(IAction action)
 	{
 		String maybeComment = "";
@@ -29,23 +27,16 @@ public class CheckOutAction extends ClearcaseAction
 		
 		if (ClearcasePlugin.isCheckoutComment())
 		{
-			CommentDialog dlg =
-				new CommentDialog(
-					shell,
-					"Checkout comment",
-					"Enter a checkout comment",
-					lastComment,
-					null);
-			if (dlg.open() == CommentDialog.CANCEL)
-				return;
-			maybeComment = dlg.getValue();
+            CommentDialog dlg = new CommentDialog(shell, "Checkout comment");
+            if (dlg.open() == CommentDialog.CANCEL)
+                return;
+            maybeComment = dlg.getComment();
 			maybeDepth =
 				dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 		}
 
 		final String comment = maybeComment;
 		final int depth = maybeDepth;
-		lastComment = comment;
 		run(new WorkspaceModifyOperation()
 		{
 			public void execute(IProgressMonitor monitor)
@@ -95,10 +86,8 @@ public class CheckOutAction extends ClearcaseAction
 		{
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getProvider(resource);
-			if (provider == null || provider.isUnknownState(resource))
-				return false;
-			if (! provider.hasRemote(resource))
-				return false;
+            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+                return false;
 			if (provider.isCheckedOut(resource))
 				return false;
 		}
