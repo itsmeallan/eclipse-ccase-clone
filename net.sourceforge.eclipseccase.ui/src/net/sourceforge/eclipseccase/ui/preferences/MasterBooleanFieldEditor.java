@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - concepts and ideas taken from Eclipse code
+ *     Roel De Meester - extended the simple Editor 
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.util.ArrayList;
