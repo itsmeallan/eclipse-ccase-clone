@@ -5,15 +5,19 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ClearcaseImages
 {
-    public static final String ICON_PATH = "icons/full/";
+    // base path
+    public static final String ICON_PATH = "icons/full/"; //$NON-NLS-1$
 
-    public static final String IMG_HIJACKED = "hijacked.gif";
-    public static final String IMG_LINK = "link_ovr.gif";
-    public static final String IMG_LINK_WARNING = "linkwarn_ovr.gif";
+    // images
+    public static final String IMG_HIJACKED = "hijacked.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK = "link_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK_WARNING = "linkwarn_ovr.gif"; //$NON-NLS-1$
 	public static final String IMG_QUESTIONABLE = "question_ov.gif"; //$NON-NLS-1$
 	public static final String IMG_EDITED = "edited_ov.gif"; //$NON-NLS-1$
 	public static final String IMG_NO_REMOTEDIR = "no_remotedir_ov.gif"; //$NON-NLS-1$
-	
+    public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
+    public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
+    
     /**
      * @param string
      * @return

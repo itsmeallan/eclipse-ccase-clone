@@ -4,12 +4,13 @@
 
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.eclipseccase.ui.ClearcaseImages;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.team.internal.ui.ITeamUIImages;
 import org.eclipse.team.ui.TeamImages;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionFactory;
@@ -44,8 +45,8 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
     protected void makeActions() {
         super.makeActions();
 
-        refreshAction = new Action("&Refresh View", TeamImages
-                .getImageDescriptor(ITeamUIImages.IMG_REFRESH)) {
+        refreshAction = new Action("&Refresh View", ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_REFRESH)) {
 
             public void run() {
                 getClearcaseView().refresh();
@@ -53,10 +54,10 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 
         };
         refreshAction.setToolTipText("Refreshes the view");
-        refreshAction.setDisabledImageDescriptor(TeamImages
-                .getImageDescriptor(ITeamUIImages.IMG_REFRESH_DISABLED));
-        refreshAction.setHoverImageDescriptor(TeamImages
-                .getImageDescriptor(ITeamUIImages.IMG_REFRESH_ENABLED));
+        refreshAction.setDisabledImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_REFRESH_DISABLED));
+        refreshAction.setHoverImageDescriptor(ClearcaseImages
+                .getImageDescriptor(ClearcaseImages.IMG_REFRESH));
 
         showInNavigatorAction = new ShowInNavigatorAction(getClearcaseView()
                 .getSite().getPage(), getClearcaseView().getViewer());
