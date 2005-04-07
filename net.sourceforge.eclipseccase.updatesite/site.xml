@@ -9,9 +9,12 @@
    <feature url="features/net.sourceforge.eclipseccase_1.0.1.jar" id="net.sourceforge.eclipseccase" version="1.0.1" label="Eclipse ClearCase Integration">
       <category name="eclipse-ccase"/>
    </feature>
-   <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration for Eclipse 3.0">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.2.jar" id="net.sourceforge.eclipseccase" version="1.0.2" label="Eclipse ClearCase Integration">
+      <category name="eclipse-ccase"/>
+   </feature>
+   <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration for Eclipse 3.x">
       <description>
-         The free and open source Eclipse ClearCase integration for Eclipse 3.0.
+         The free and open source Eclipse ClearCase integration for Eclipse 3.x.
       </description>
    </category-def>
    <category-def name="eclipse-ccase-2" label="Eclipse ClearCase Integration for Eclipse 2.1">
