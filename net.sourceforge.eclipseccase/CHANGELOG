@@ -2,6 +2,9 @@
 -----
 - fixed 1176906 - should now work in 3.1M6
 - fixed 757524 - auto-checkout does not prompt for comment
+- if a directory is added, the complete subtree will be scheduled for a refresh
+  (necessary due to changes in 1.0.1, which stops refreshing if parent is not
+  a clearcase element)
 
 
 1.0.1

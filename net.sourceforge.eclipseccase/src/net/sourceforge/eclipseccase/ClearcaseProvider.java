@@ -646,6 +646,8 @@ public class ClearcaseProvider extends RepositoryProvider {
                                         TeamException.UNABLE, "Add failed: "
                                                 + status.message, null);
                             }
+                            // remove the complete tree from the cache
+                            StateCacheFactory.getInstance().remove(resource);
                             updateState(resource, IResource.DEPTH_ZERO,
                                     new SubProgressMonitor(monitor, 10));
                         } catch (Exception ex) {
