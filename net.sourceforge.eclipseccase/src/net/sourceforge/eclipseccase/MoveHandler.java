@@ -260,8 +260,10 @@ private IStatus validateDest(IResource destination, IProgressMonitor monitor)
                             new SubProgressMonitor(monitor, 40));
                 }
 
-                if (status.getCode() == IStatus.OK)
+                if (status.getCode() == IStatus.OK) {
                     tree.movedFile(source, destination);
+					tree.updateMovedFileTimestamp(destination, tree.computeTimestamp(destination));
+                }
                 else
                     tree.failed(status);
 
