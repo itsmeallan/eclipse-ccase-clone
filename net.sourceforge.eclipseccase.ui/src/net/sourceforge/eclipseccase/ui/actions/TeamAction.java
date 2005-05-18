@@ -19,7 +19,7 @@ import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 
 import org.eclipse.core.resources.*;
-import org.eclipse.core.resources.mapping.*;
+import org.eclipse.core.internal.resources.mapping.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;

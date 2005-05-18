@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/net.sourceforge.eclipseccase_1.0.0.jar" id="net.sourceforge.eclipseccase" version="1.0.0" label="Eclipse ClearCase Integration">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.0.jar" id="net.sourceforge.eclipseccase" version="1.0.0">
       <category name="eclipse-ccase"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase_0.9.11.jar" id="net.sourceforge.eclipseccase" version="0.9.11" label="Eclipse ClearCase Integration">
+   <feature url="features/net.sourceforge.eclipseccase_0.9.11.jar" id="net.sourceforge.eclipseccase" version="0.9.11">
       <category name="eclipse-ccase-2"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase_1.0.1.jar" id="net.sourceforge.eclipseccase" version="1.0.1" label="Eclipse ClearCase Integration">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.1.jar" id="net.sourceforge.eclipseccase" version="1.0.1">
       <category name="eclipse-ccase"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase_1.0.2.jar" id="net.sourceforge.eclipseccase" version="1.0.2" label="Eclipse ClearCase Integration">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.2.jar" id="net.sourceforge.eclipseccase" version="1.0.2">
       <category name="eclipse-ccase"/>
    </feature>
    <category-def name="eclipse-ccase" label="Eclipse ClearCase Integration for Eclipse 3.x">
