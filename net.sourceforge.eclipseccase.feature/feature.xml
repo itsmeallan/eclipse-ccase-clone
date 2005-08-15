@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipseccase"
       label="%featureName"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="%providerName"
       image="eclipse-ccase.jpg">
 
@@ -20,25 +20,27 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.platform" version="3.0.1" match="compatible"/>
+      <import feature="org.eclipse.platform" version="3.0.1"/>
    </requires>
 
    <plugin
          id="net.sourceforge.clearcase"
          download-size="1000"
          install-size="1800"
-         version="1.0.2"/>
+         version="1.0.3"/>
 
    <plugin
          id="net.sourceforge.eclipseccase"
          download-size="400"
          install-size="800"
-         version="1.0.2"/>
+         version="1.0.3"
+         unpack="false"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.ui"
          download-size="400"
          install-size="800"
-         version="1.0.2"/>
+         version="1.0.3"
+         unpack="false"/>
 
 </feature>

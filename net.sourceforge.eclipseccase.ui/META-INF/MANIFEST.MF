@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: net.sourceforge.eclipseccase.ui; singleton:=true
+Bundle-Version: 1.0.3
+Bundle-ClassPath: .
+Bundle-Activator: net.sourceforge.eclipseccase.ui.ClearcaseUI
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Export-Package: net.sourceforge.eclipseccase,
+ net.sourceforge.eclipseccase.ui,
+ net.sourceforge.eclipseccase.ui.actions,
+ net.sourceforge.eclipseccase.ui.preferences,
+ net.sourceforge.eclipseccase.ui.viewsupport,
+ net.sourceforge.eclipseccase.views
+Require-Bundle: org.eclipse.ui,
+ net.sourceforge.eclipseccase;visibility:=reexport,
+ org.eclipse.team.ui;visibility:=reexport,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.ide
+Eclipse-AutoStart: true

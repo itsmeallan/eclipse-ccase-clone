@@ -1,3 +1,9 @@
+1.0.3
+-----
+- fixed [1220338] External Update on multiple selection with single dialog
+- fixed [1209625] ExceptionInInitializer in Win32
+- Eclipse 3.1
+
 1.0.2
 -----
 - fixed 1176906 - should now work in 3.1M6
@@ -5,7 +11,6 @@
 - if a directory is added, the complete subtree will be scheduled for a refresh
   (necessary due to changes in 1.0.1, which stops refreshing if parent is not
   a clearcase element)
-
 
 1.0.1
 -----
