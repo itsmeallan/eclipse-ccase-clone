@@ -1,6 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.clearcase.simple.ClearcaseUtil;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -48,30 +50,43 @@ public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
                 try {
                     IResource[] resources = getSelectedResources();
                     beginTask(monitor, "Updating...", resources.length);
-                    for (int i = 0; i < resources.length; i++) {
-                        IResource resource = resources[i];
 
-                        if(ClearcasePlugin.isUseCleartool())
-                        {
+                    if(ClearcasePlugin.isUseCleartool()) {
+                        for (int i = 0; i < resources.length; i++) {
+                            IResource resource = resources[i];
+    
                             // update using cleartool
                             ClearcasePlugin.getEngine().cleartool(
                                     "update -graphical "
                                             + ClearcaseUtil.quote(resource.getLocation().toOSString()));
+                            
+                            // refresh resources: will refresh state if necessary
+                            resource.refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
                         }
-                        else
-                        {
-                            try {
-                                Process process = Runtime.getRuntime().exec(new String[] {"clearviewupdate", "-pname", resource.getLocation().toOSString()});
-                                process.waitFor();
-                            } catch (IOException e) {
-                                throw new TeamException("Could not execute: clearviewupdate: " + e.getMessage(), e);
-                            } catch (InterruptedException e) {
-                                throw new OperationCanceledException();
-                            }
+                    } else {
+                        List l = new ArrayList();
+                        l.add("clearviewupdate");
+                        l.add("-pname");
+                        for (int i = 0; i < resources.length; i++) {
+                            IResource resource = resources[i];
+                            l.add(resource.getLocation().toOSString());
                         }
                         
-                        // refresh resources: will refresh state if necessary
-                        resource.refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
+                        try {
+                            Process process = Runtime.getRuntime().exec((String[]) l.toArray(new String[l.size()]));
+                            process.waitFor();
+                        } catch (IOException e) {
+                            throw new TeamException("Could not execute: clearviewupdate: " + e.getMessage(), e);
+                        } catch (InterruptedException e) {
+                            throw new OperationCanceledException();
+                        }
+                        
+                        for (int i = 0; i < resources.length; i++) {
+                            IResource resource = resources[i];
+                            
+                            // refresh resources: will refresh state if necessary
+                            resource.refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
+                        }
                     }
                 } finally {
                     monitor.done();
