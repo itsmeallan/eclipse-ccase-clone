@@ -274,11 +274,12 @@ public class ClearcaseProvider extends RepositoryProvider {
         return StateCacheFactory.getInstance().get(resource).hasRemote();
     }
 
-    /*
-     * @see SimpleAccessOperations#isDirty(IResource)
-     */
     public boolean isDirty(IResource resource) {
         return StateCacheFactory.getInstance().get(resource).isDirty();
+    }
+
+    public boolean isDifferent(IResource resource) {
+        return StateCacheFactory.getInstance().get(resource).isDifferent();
     }
 
     public String getVersion(IResource resource) {

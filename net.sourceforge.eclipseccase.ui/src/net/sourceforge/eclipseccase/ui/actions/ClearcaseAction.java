@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 import net.sourceforge.eclipseccase.ui.ConfirmSaveModifiedResourcesDialog;
 
@@ -149,6 +150,32 @@ abstract public class ClearcaseAction extends TeamAction implements
 			}
 		}
 		return (IFile[]) unsavedFiles.toArray(new IFile[unsavedFiles.size()]);
+	}
+
+	/**
+	 * Returns a list of selected resources that are different from their
+	 * predecessors.
+	 * 
+	 * @return a list of selected resources that are different from their
+	 *         predecessors
+	 */
+	protected IResource[] getChangedResources() {
+		IResource[] resources = getSelectedResources();
+		Set changedResources = new HashSet(resources.length);
+		if (resources.length > 0) {
+			for (int i = 0; i < resources.length; i++) {
+				IResource resource = resources[i];
+				ClearcaseProvider provider = ClearcaseProvider
+						.getClearcaseProvider(resource);
+				if (null != provider) {
+					if (provider.isDifferent(resource))
+						changedResources.add(resource);
+				}
+			}
+		}
+		return (IResource[]) changedResources
+				.toArray(new IResource[changedResources.size()]);
+
 	}
 
 	/**
