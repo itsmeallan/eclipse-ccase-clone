@@ -106,7 +106,10 @@ public class ClearcaseProvider extends RepositoryProvider {
     }
 
     public static ClearcaseProvider getClearcaseProvider(IResource resource) {
-        if (null == resource || null == resource.getProject()) return null;
+        if (null == resource || null == resource.getProject()) {
+        	ClearcasePlugin.log(IStatus.WARNING, "ClearcaseProvider#getClearcaseProvider called with invalid resource: " + String.valueOf(resource), null);
+        	return null;
+        }
         RepositoryProvider provider = RepositoryProvider.getProvider(resource
                 .getProject());
         if (provider instanceof ClearcaseProvider)

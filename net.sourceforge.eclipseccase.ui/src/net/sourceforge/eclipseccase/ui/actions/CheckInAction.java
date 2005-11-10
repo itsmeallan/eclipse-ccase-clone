@@ -72,10 +72,12 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                                     IResource resource = resources[i];
                                     ClearcaseProvider provider = ClearcaseProvider
                                             .getClearcaseProvider(resource);
-                                    provider.setComment(comment);
-                                    provider.checkin(
-                                            new IResource[] { resource },
-                                            depth, subMonitor(monitor));
+                                    if(null != provider) {
+                                        provider.setComment(comment);
+                                        provider.checkin(
+                                                new IResource[] { resource },
+                                                depth, subMonitor(monitor));
+                                    }
                                 }
                             }
                         }

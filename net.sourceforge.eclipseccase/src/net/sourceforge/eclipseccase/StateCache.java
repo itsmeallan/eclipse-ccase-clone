@@ -234,7 +234,7 @@ public class StateCache implements Serializable {
                     if (newIsSymbolicLink) {
                         IClearcase.Status status = ClearcasePlugin.getEngine()
                                 .getSymbolicLinkTarget(osPath);
-                        if (status.status) {
+                        if (null != status && status.status) {
                             String newTarget = status.message;
                             if (null != newTarget
                                     && newTarget.trim().length() == 0)
