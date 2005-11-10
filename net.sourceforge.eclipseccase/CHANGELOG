@@ -3,6 +3,7 @@
 - fixed 1315515 - NullPointerException on checkin, Refresh or update
 - fixed 1263098 - 1.0.3 eclipse dependency
 - fixed 1220119 - Undo Checkout of dirty (unsaved) file
+- fixed 1293016 - Automatic checkout on edit causes file to go out sync
 - added support for Eclipse 3.2 ResourceMapping API
   (https://bugs.eclipse.org/bugs/show_bug.cgi?id=37723)
 - changed auto-checkout behavior to allow callers to handle cases were
