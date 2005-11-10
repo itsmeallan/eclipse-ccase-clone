@@ -158,8 +158,16 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 							null, false, store,
 							IClearcasePreferenceConstants.CHECKOUT_AUTO);
 
-			if (dialog.getReturnCode() != IDialogConstants.OK_ID)
+			switch (dialog.getReturnCode()) {
+			case IDialogConstants.OK_ID:
+			case IDialogConstants.YES_ID:
+			case IDialogConstants.YES_TO_ALL_ID:
+				break;
+
+			default:
 				return CANCEL;
+			}
+
 		}
 
 		final ClearcaseProvider provider = getProvider(files);
