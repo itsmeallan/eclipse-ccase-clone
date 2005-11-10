@@ -1,3 +1,14 @@
+1.1.0
+-----
+- fixed 1315515 - NullPointerException on checkin, Refresh or update
+- fixed 1263098 - 1.0.3 eclipse dependency
+- added support for Eclipse 3.2 ResourceMapping API
+  (https://bugs.eclipse.org/bugs/show_bug.cgi?id=37723)
+- changed auto-checkout behavior to allow callers to handle cases were
+  the user canceled an auto-checkout or an auto-checkout was disabled
+- upgraded clearcase-java to 1.0.4
+
+
 1.0.3
 -----
 - fixed [1220338] External Update on multiple selection with single dialog

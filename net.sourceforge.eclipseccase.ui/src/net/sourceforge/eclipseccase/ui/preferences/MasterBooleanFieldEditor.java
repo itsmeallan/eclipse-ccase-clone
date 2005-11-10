@@ -43,12 +43,6 @@ public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 		parent = fieldEditorParent;
 	}
 
-	private static void indent(Control control) {
-		GridData gridData= new GridData();
-		gridData.horizontalIndent= 30;
-		control.setLayoutData(gridData);		
-	}
-	
 	void addSlave(FieldEditor slave) {
 		//todo Below code works for StringField, but not for BooleanField. Why?
 //		indent(slave.getLabelControl(parent));

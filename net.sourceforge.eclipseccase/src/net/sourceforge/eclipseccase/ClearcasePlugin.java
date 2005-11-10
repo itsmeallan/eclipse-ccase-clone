@@ -195,7 +195,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      */
     static boolean getDebugOption(String optionId) {
         String option = Platform.getDebugOption(optionId);
-        return option != null ? Boolean.valueOf(option).booleanValue() : false; //$NON-NLS-1$
+        return option != null ? Boolean.valueOf(option).booleanValue() : false; 
     }
 
     /**
@@ -682,7 +682,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         // General preferences
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
                 !isWindows());
-        pref.setDefault(IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT, true); //$NON-NLS-1$
+        pref.setDefault(IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT, true); 
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
         pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
@@ -851,7 +851,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     private void saveCommentHistory() throws CoreException {
         IPath pluginStateLocation = getStateLocation();
         File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp") //$NON-NLS-1$
-                .toFile(); //$NON-NLS-1$
+                .toFile(); 
         File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
         try {
             XMLWriter writer = new XMLWriter(new BufferedOutputStream(

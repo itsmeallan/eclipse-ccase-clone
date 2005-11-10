@@ -155,7 +155,7 @@ public class StateCache implements Serializable {
             osPath = location.toOSString();
 
             if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-                ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$//$NON-NLS-2$
+                ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$
             }
 
             if (resource.isAccessible()) {
@@ -295,7 +295,7 @@ public class StateCache implements Serializable {
         } else {
             // no changes
             if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-                ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
+                ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ 
             }
         }
     }

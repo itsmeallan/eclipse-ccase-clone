@@ -88,7 +88,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
      */
     static boolean getDebugOption(String optionId) {
         String option = Platform.getDebugOption(optionId);
-        return option != null ? Boolean.valueOf(option).booleanValue() : false; //$NON-NLS-1$
+        return option != null ? Boolean.valueOf(option).booleanValue() : false; 
     }
 
     /*

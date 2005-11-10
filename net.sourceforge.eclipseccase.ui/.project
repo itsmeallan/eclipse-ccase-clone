@@ -3,14 +3,6 @@
 	<name>net.sourceforge.eclipseccase.ui</name>
 	<comment></comment>
 	<projects>
-		<project>net.sourceforge.eclipseccase</project>
-		<project>org.eclipse.core.boot</project>
-		<project>org.eclipse.core.runtime</project>
-		<project>org.eclipse.core.runtime.compatibility</project>
-		<project>org.eclipse.osgi</project>
-		<project>org.eclipse.team.ui</project>
-		<project>org.eclipse.ui</project>
-		<project>org.eclipse.ui.ide</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
