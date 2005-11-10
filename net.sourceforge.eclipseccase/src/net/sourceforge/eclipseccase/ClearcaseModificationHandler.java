@@ -130,8 +130,10 @@ public class ClearcaseModificationHandler implements IFileModificationValidator 
      */
     private IStatus checkout(final IFile[] files) {
 
-        // don't fail and don't do anything if auto checkout is NEVER
-        if (ClearcasePlugin.isCheckoutAutoNever()) return OK;
+		// cancel if auto-checkout is disabled to give underlying
+		// logic a chance to handle that case
+		if (ClearcasePlugin.isCheckoutAutoNever())
+			return CANCEL;
 
         // fail if not set to always
         if (!ClearcasePlugin.isCheckoutAutoAlways()) {
