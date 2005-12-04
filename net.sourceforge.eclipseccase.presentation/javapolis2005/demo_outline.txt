@@ -1,0 +1,18 @@
+* What message do we want to bring to the interested?
+
+- Difference between eclipse-ccase plugin [SF] and official Clearcase plugin [ibm]
+ + google : eclipse clearcase top listed
+ + http://tinyurl.com/a9awo  vs http://tinyurl.com/95scv
+ + half download size [1200 vs 580kb]
+ + Especially aimed in helping with the every day developer tasks. Does not provide ALL clearcase functionality
+ + includes the clearcase-java library that provides access to clearcase functionalities for ANY java developer.
+ + support latest eclispe release [currently 3.2]
+ - SLOW to refresh the clearcase 'state' of large projects because of file-by-file operation. Issue is being tackled by major 
+ API rework by Gunnar
+ 
+ - Interesting features
+- Keyboard shortcuts.. for all frequent used operations
+- Refactor support [move, rename, ..]
+- Auto-checkout on edit
+- Support ALL OS's On win32 -> wrapper around SCM adapter [dll]
+                 - On all other os's -> uses cleartool commandline
