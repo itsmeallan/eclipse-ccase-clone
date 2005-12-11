@@ -185,14 +185,14 @@ public class StateCache implements Serializable {
 				// resources)
 
 				else if (!Team.isIgnoredHint(resource)) {
+					boolean newInsideView = checkInsideView(osPath);
+					changed |= newInsideView != this.isInsideView();
+					setFlag(INSIDE_VIEW, newInsideView);
+
 					boolean newHasRemote = ClearcasePlugin.getEngine()
 							.isElement(osPath);
 					changed |= newHasRemote != this.hasRemote();
 					setFlag(HAS_REMOTE, newHasRemote);
-
-					boolean newInsideView = checkInsideView(osPath);
-					changed |= newInsideView != this.isInsideView();
-					setFlag(INSIDE_VIEW, newInsideView);
 
 					boolean newIsSymbolicLink = newHasRemote
 							&& ClearcasePlugin.getEngine().isSymbolicLink(
