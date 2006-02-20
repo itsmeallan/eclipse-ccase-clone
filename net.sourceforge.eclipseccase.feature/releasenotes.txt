@@ -1,4 +1,4 @@
-1.1.0
+1.1.1
 =====
 
 The software and associated documentation are
@@ -8,7 +8,7 @@ come with no warranty (see the license.html shipped with
 the feature(s) and the Common Public License 1.0 for more
 details).
 
-This is our 1.0.2 release. It contains fixes for issues
+This is our 1.1.1 release. It contains fixes for issues
 detected in the previous release. Please see CHANGELOG
 and TODO for more information.
 
@@ -16,7 +16,7 @@ and TODO for more information.
 Requirenments
 -------------
 
-This release requires Eclipse 3.2 M3.
+This release requires Eclipse 3.2 M5.
 
 
 Install via Eclipse
