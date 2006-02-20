@@ -13,26 +13,15 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.lang.reflect.InvocationTargetException;
-
-import net.sourceforge.eclipseccase.ClearcaseModificationHandler;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
+import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.actions.ClearDlgHelper;
 import net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferenceStore;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.MultiRule;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -120,8 +109,7 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
 				public void run() {
-					status[0] = checkout(new IFile[] { file }, PlatformUI
-							.getWorkbench().getDisplay().getActiveShell());
+					status[0] = checkout(new IFile[] { file }, PlatformUI.getWorkbench().getDisplay().getActiveShell());
 				}
 			});
 			if (null == status[0])
@@ -148,15 +136,9 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 
 		// check if we are allowed to prompt
 		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
-			MessageDialogWithToggle dialog = MessageDialogWithToggle
-					.openYesNoCancelQuestion(
-							shell,
-							Messages
-									.getString("ClearcaseUIModificationHandler.checkoutDialog.title"), //$NON-NLS-1$
-							Messages
-									.getString("ClearcaseUIModificationHandler.checkoutDialog.message"), //$NON-NLS-1$
-							null, false, store,
-							IClearcasePreferenceConstants.CHECKOUT_AUTO);
+			MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(shell, Messages.getString("ClearcaseUIModificationHandler.checkoutDialog.title"), //$NON-NLS-1$
+					Messages.getString("ClearcaseUIModificationHandler.checkoutDialog.message"), //$NON-NLS-1$
+					null, false, store, IClearcasePreferenceConstants.CHECKOUT_AUTO);
 
 			switch (dialog.getReturnCode()) {
 			case IDialogConstants.OK_ID:
@@ -174,113 +156,72 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 
 		// check for provider
 		if (null == provider) {
-			ClearcasePlugin
-					.log(
-							Messages
-									.getString("ClearcaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
-							new IllegalStateException(
-									Messages
-											.getString("ClearcaseUIModificationHandler.error.noProviderAvailable"))); //$NON-NLS-1$
-			MessageDialog
-					.openError(
-							shell,
-							Messages
-									.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
-							Messages
-									.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
+			ClearcasePlugin.log(Messages.getString("ClearcaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
+					new IllegalStateException(Messages.getString("ClearcaseUIModificationHandler.error.noProviderAvailable"))); //$NON-NLS-1$
+			MessageDialog.openError(shell, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
+					Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
 			return CANCEL;
 		}
 
 		final boolean useClearDlg = ClearcasePlugin.isUseClearDlg();
-		final boolean askForComment = ClearcasePlugin.isCommentCheckout()
-				&& !ClearcasePlugin.isCommentCheckoutNeverOnAuto();
+		final boolean askForComment = ClearcasePlugin.isCommentCheckout() && !ClearcasePlugin.isCommentCheckoutNeverOnAuto();
 
 		try {
 			// use workbench window as preferred runnable context
 			IRunnableContext context;
-			if (PlatformUI.isWorkbenchRunning()
-					&& null != PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow()) {
+			if (PlatformUI.isWorkbenchRunning() && null != PlatformUI.getWorkbench().getActiveWorkbenchWindow())
 				context = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			} else {
+			else
 				context = new ProgressMonitorDialog(shell);
-			}
 
 			// checkout
-			PlatformUI.getWorkbench().getProgressService().runInUI(context,
-					new IRunnableWithProgress() {
+			PlatformUI.getWorkbench().getProgressService().runInUI(context, new IRunnableWithProgress() {
 
-						public void run(IProgressMonitor monitor)
-								throws InvocationTargetException,
-								InterruptedException {
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					try {
+						String comment = null;
+
+						if (!useClearDlg && askForComment) {
+							CommentDialog dlg = new CommentDialog(shell, "Checkout comment");
+							dlg.setRecursive(false);
+							dlg.setRecursiveEnabled(false);
+							if (dlg.open() == Window.CANCEL)
+								throw new InterruptedException("Operation canceled by user.");
+							else
+								comment = dlg.getComment();
+						}
+
+						synchronized (provider) {
+							boolean refreshing = setResourceRefreshing(provider, false);
 							try {
-								String comment = null;
+								monitor.beginTask(Messages.getString("ClearcaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
+								if (ClearcasePlugin.isUseClearDlg()) {
+									monitor.subTask("Executing ClearCase user interface...");
+									ClearDlgHelper.checkout(files);
+								} else {
+									if (null != comment)
+										provider.setComment(comment);
 
-								if (!useClearDlg && askForComment) {
-									CommentDialog dlg = new CommentDialog(
-											shell, "Checkout comment");
-									dlg.setRecursive(false);
-									dlg.setRecursiveEnabled(false);
-									if (dlg.open() == Window.CANCEL)
-										throw new InterruptedException(
-												"Operation canceled by user.");
-									else
-										comment = dlg.getComment();
-								}
-
-								synchronized (provider) {
-									boolean refreshing = setResourceRefreshing(
-											provider, false);
-									try {
-										monitor
-												.beginTask(
-														Messages
-																.getString("ClearcaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
-										if (ClearcasePlugin.isUseClearDlg()) {
-											monitor
-													.subTask("Executing ClearCase user interface...");
-											ClearDlgHelper.checkout(files);
-										} else {
-											if (null != comment)
-												provider.setComment(comment);
-
-											for (int i = 0; i < files.length; i++) {
-												IFile file = files[i];
-												monitor.subTask(file.getName());
-												provider.checkout(
-														new IFile[] { file },
-														IResource.DEPTH_ZERO,
-														null);
-												file.refreshLocal(
-														IResource.DEPTH_ZERO,
-														null);
-												monitor.worked(i);
-											}
-										}
-									} finally {
-										setResourceRefreshing(provider,
-												refreshing);
-										monitor.done();
+									for (int i = 0; i < files.length; i++) {
+										IFile file = files[i];
+										monitor.subTask(file.getName());
+										provider.checkout(new IFile[] { file }, IResource.DEPTH_ZERO, null);
+										file.refreshLocal(IResource.DEPTH_ZERO, null);
+										monitor.worked(i);
 									}
 								}
-							} catch (CoreException ex) {
-								throw new InvocationTargetException(ex);
+							} finally {
+								setResourceRefreshing(provider, refreshing);
+								monitor.done();
 							}
 						}
-					}, new MultiRule(files));
+					} catch (CoreException ex) {
+						throw new InvocationTargetException(ex);
+					}
+				}
+			}, new MultiRule(files));
 		} catch (InvocationTargetException e) {
-			ClearcasePlugin.log(Messages
-					.getString("ClearcaseUIModificationHandler.error.checkout") //$NON-NLS-1$
-					+ (null != e.getCause() ? e.getCause().getMessage() : e
-							.getMessage()), null != e.getCause() ? e.getCause()
-					: e);
-			MessageDialog
-					.openError(
-							shell,
-							Messages
-									.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
-							Messages
-									.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
+			ClearcaseUI.handleError(shell, e, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), null);
 			return CANCEL;
 		} catch (InterruptedException e) {
 			return CANCEL;

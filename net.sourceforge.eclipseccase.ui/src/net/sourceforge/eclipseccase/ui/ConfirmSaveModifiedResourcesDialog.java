@@ -22,15 +22,14 @@ import org.eclipse.swt.widgets.Shell;
  * be subclassed.
  * </p>
  */
-public class ConfirmSaveModifiedResourcesDialog extends
-		ConfirmLostModifiedResourcesDialog {
+public class ConfirmSaveModifiedResourcesDialog extends ConfirmLostModifiedResourcesDialog {
 
 	// String constants for widgets
 	private static String TITLE = "Modified Resources";
+
 	private static String MESSAGE = "The following files must be saved in order to proceed.";
 
-	public ConfirmSaveModifiedResourcesDialog(Shell parentShell,
-			IFile[] unsavedFiles) {
+	public ConfirmSaveModifiedResourcesDialog(Shell parentShell, IFile[] unsavedFiles) {
 		super(parentShell, TITLE, MESSAGE, unsavedFiles);
 	}
 }

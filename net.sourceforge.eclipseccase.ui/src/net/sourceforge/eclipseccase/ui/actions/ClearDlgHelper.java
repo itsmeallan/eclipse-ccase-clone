@@ -15,11 +15,9 @@ package net.sourceforge.eclipseccase.ui.actions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import net.sourceforge.clearcase.simple.ClearDlg;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.TeamException;
 
@@ -94,8 +92,7 @@ public class ClearDlgHelper {
 	 * @param resources
 	 * @throws TeamException
 	 */
-	public static void perform(String operation, IResource[] resources)
-			throws TeamException {
+	public static void perform(String operation, IResource[] resources) throws TeamException {
 		// prepare command
 		List command = new ArrayList(1 + resources.length);
 		command.add(operation);
@@ -107,32 +104,23 @@ public class ClearDlgHelper {
 		}
 
 		// preserver time if enabled and allowed
-		if (ClearcasePlugin.isPreserveTimes()
-				&& (CHECKOUT.equalsIgnoreCase(operation)
-						|| CHECKIN.equalsIgnoreCase(operation) || ADDTOSRC
-						.equalsIgnoreCase(operation))) {
+		if (ClearcasePlugin.isPreserveTimes() && (CHECKOUT.equalsIgnoreCase(operation) || CHECKIN.equalsIgnoreCase(operation) || ADDTOSRC.equalsIgnoreCase(operation)))
 			command.add(PTIME);
-		}
 
 		// execute cleardlg
-		ClearDlg clearDlg = new ClearDlg((String[]) command
-				.toArray(new String[command.size()]));
+		ClearDlg clearDlg = new ClearDlg((String[]) command.toArray(new String[command.size()]));
 		try {
 			int success = clearDlg.execute();
 			if (0 != success && success != resources.length)
-				throw new TeamException("Execution of cleardlg " + operation
-						+ " failed (process returned: "
-						+ clearDlg.getExitValue() + ")!");
+				throw new TeamException("Execution of cleardlg " + operation + " failed (process returned: " + clearDlg.getExitValue() + ")!");
 		} catch (IOException e) {
-			throw new TeamException("Execution of cleardlg " + operation
-					+ " failed: " + e.getMessage(), e);
+			throw new TeamException("Execution of cleardlg " + operation + " failed: " + e.getMessage(), e);
 		}
 
 		// refresh resources
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider
-					.getClearcaseProvider(resource);
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 
 			// refresh resource
 			provider.refresh(resource);

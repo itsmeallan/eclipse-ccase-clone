@@ -1,117 +1,105 @@
-
 package net.sourceforge.eclipseccase.views;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IDialogSettings;
 
 /**
  * The Checkouts view
  */
-public class CheckoutsView extends ClearcaseViewPart
-{
-    private static final String SETTING_HIDE_CHECKOUTS = "hideCheckouts";
+public class CheckoutsView extends ClearcaseViewPart {
+	private static final String SETTING_HIDE_CHECKOUTS = "hideCheckouts";
 
-    private static final String SETTING_HIDE_NEW_ELEMENTS = "hideNewElements";
+	private static final String SETTING_HIDE_NEW_ELEMENTS = "hideNewElements";
 
-    private static final String DIALOG_SETTINGS_STORE = "CheckoutsView";
+	private static final String DIALOG_SETTINGS_STORE = "CheckoutsView";
 
-    /** the dialog settings */
-    private IDialogSettings settings;
+	/** the dialog settings */
+	private IDialogSettings settings;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#shouldAdd(org.eclipse.core.resources.IResource)
-     */
-    protected boolean shouldAdd(IResource resource)
-    {
-        ClearcaseProvider provider = ClearcaseProvider
-                .getClearcaseProvider(resource);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#shouldAdd(org.eclipse.core.resources.IResource)
+	 */
+	protected boolean shouldAdd(IResource resource) {
+		ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 
-        if (null == provider) return false;
+		if (null == provider)
+			return false;
 
-        // don't show resources with unknown state
-        if (provider.isUnknownState(resource)) return false;
+		// don't show resources with unknown state
+		if (provider.isUnknownState(resource))
+			return false;
 
-        // show checkouts if enabled
-        if (provider.isCheckedOut(resource)) return !hideCheckouts();
+		// show checkouts if enabled
+		if (provider.isCheckedOut(resource))
+			return !hideCheckouts();
 
-        // show new elements if enabled
-        if (!provider.hasRemote(resource)) return !hideNewElements();
+		// show new elements if enabled
+		if (!provider.hasRemote(resource))
+			return !hideNewElements();
 
-        // hide all other
-        return false;
-    }
+		// hide all other
+		return false;
+	}
 
-    /**
-     * Indicates if checkouts should not be shown.
-     * 
-     * @return
-     */
-    public boolean hideCheckouts()
-    {
-        return settings.getBoolean(SETTING_HIDE_CHECKOUTS);
-    }
+	/**
+	 * Indicates if checkouts should not be shown.
+	 * 
+	 * @return
+	 */
+	public boolean hideCheckouts() {
+		return settings.getBoolean(SETTING_HIDE_CHECKOUTS);
+	}
 
-    /**
-     * @param hide
-     */
-    public void setHideCheckouts(boolean hide)
-    {
-        if (hideCheckouts() != hide)
-        {
-            settings.put(SETTING_HIDE_CHECKOUTS, hide);
-            refresh();
-        }
-    }
+	/**
+	 * @param hide
+	 */
+	public void setHideCheckouts(boolean hide) {
+		if (hideCheckouts() != hide) {
+			settings.put(SETTING_HIDE_CHECKOUTS, hide);
+			refresh();
+		}
+	}
 
-    /**
-     * Indicates if new elements should not be shown.
-     * 
-     * @return
-     */
-    public boolean hideNewElements()
-    {
-        return settings.getBoolean(SETTING_HIDE_NEW_ELEMENTS);
-    }
+	/**
+	 * Indicates if new elements should not be shown.
+	 * 
+	 * @return
+	 */
+	public boolean hideNewElements() {
+		return settings.getBoolean(SETTING_HIDE_NEW_ELEMENTS);
+	}
 
-    /**
-     * @param hide
-     */
-    public void setHideNewElements(boolean hide)
-    {
-        if (hideNewElements() != hide)
-        {
-            settings.put(SETTING_HIDE_NEW_ELEMENTS, hide);
-            refresh();
-        }
-    }
+	/**
+	 * @param hide
+	 */
+	public void setHideNewElements(boolean hide) {
+		if (hideNewElements() != hide) {
+			settings.put(SETTING_HIDE_NEW_ELEMENTS, hide);
+			refresh();
+		}
+	}
 
-    /**
-     * Creates a new instance.
-     */
-    public CheckoutsView()
-    {
-        super();
-        IDialogSettings dialogSettings = ClearcaseUI.getInstance()
-                .getDialogSettings();
-        settings = dialogSettings.getSection(DIALOG_SETTINGS_STORE);
-        if (null == settings)
-        {
-            settings = dialogSettings.addNewSection(DIALOG_SETTINGS_STORE);
-        }
-    }
+	/**
+	 * Creates a new instance.
+	 */
+	public CheckoutsView() {
+		super();
+		IDialogSettings dialogSettings = ClearcaseUI.getInstance().getDialogSettings();
+		settings = dialogSettings.getSection(DIALOG_SETTINGS_STORE);
+		if (null == settings)
+			settings = dialogSettings.addNewSection(DIALOG_SETTINGS_STORE);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#makeActions()
-     */
-    protected void makeActions()
-    {
-        setActionGroup(new CheckoutsViewActionGroup(this));
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#makeActions()
+	 */
+	protected void makeActions() {
+		setActionGroup(new CheckoutsViewActionGroup(this));
+	}
 }

@@ -1,7 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -18,11 +17,9 @@ public class UpdateAction extends ClearcaseWorkspaceAction {
 					beginTask(monitor, "Updating...", resources.length);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
-						ClearcaseProvider provider = ClearcaseProvider
-								.getClearcaseProvider(resource);
+						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						if (null != provider)
-							provider.get(new IResource[] { resource },
-									IResource.DEPTH_ZERO, subMonitor(monitor));
+							provider.get(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
 					}
 				} finally {
 					monitor.done();
@@ -43,11 +40,8 @@ public class UpdateAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider
-					.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource)
-					|| provider.isIgnored(resource)
-					|| !provider.hasRemote(resource))
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
 				return false;
 			if (!provider.isSnapShot(resource))
 				return false;

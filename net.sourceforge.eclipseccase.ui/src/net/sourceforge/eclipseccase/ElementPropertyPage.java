@@ -7,48 +7,42 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-public class ElementPropertyPage extends PropertyPage
-{
+public class ElementPropertyPage extends PropertyPage {
 
 	private Text predecessorVersionValue;
 
 	private Text versionLabelValue;
+
 	private Button checkedOutValue;
+
 	private Button hijackedValue;
+
 	private Button dirtyValue;
 
 	/**
 	 * Constructor for SamplePropertyPage.
 	 */
-	public ElementPropertyPage()
-	{
+	public ElementPropertyPage() {
 		super();
 		noDefaultAndApplyButton();
 	}
 
-	private void addFirstSection(Composite parent)
-	{
+	private void addFirstSection(Composite parent) {
 		Composite composite = createDefaultComposite(parent);
 
-		//Label for path field
+		// Label for path field
 		Label pathLabel = new Label(composite, SWT.NONE);
 		pathLabel.setText("Native Path:");
 
 		// Path text field
 		Text pathValueText = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		pathValueText.setText(
-			((IResource) getElement()).getLocation().toOSString());
+		pathValueText.setText(((IResource) getElement()).getLocation().toOSString());
 	}
 
-	private void addSeparator(Composite parent)
-	{
+	private void addSeparator(Composite parent) {
 		Label separator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
@@ -56,47 +50,41 @@ public class ElementPropertyPage extends PropertyPage
 		separator.setLayoutData(gridData);
 	}
 
-	private void addSecondSection(Composite parent)
-	{
+	private void addSecondSection(Composite parent) {
 		Composite composite = createDefaultComposite(parent);
 		IResource resource = (IResource) getElement();
-		StateCache cache = StateCacheFactory.getInstance().get(resource);		
+		StateCache cache = StateCacheFactory.getInstance().get(resource);
 
-		if (cache.hasRemote())
-		{
+		if (cache.hasRemote()) {
 			Label versionLabel = new Label(composite, SWT.NONE);
 			versionLabel.setText("Version:");
 			versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		
+
 			Label predecessorVersionLabel = new Label(composite, SWT.NONE);
 			predecessorVersionLabel.setText("Predecessor Version:");
 			predecessorVersionValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
-		
+
 			Label checkedOutLabel = new Label(composite, SWT.NONE);
 			checkedOutLabel.setText("Checked Out:");
 			checkedOutValue = new Button(composite, SWT.CHECK);
 			checkedOutValue.setEnabled(false);
-	
-			if (cache.isSnapShot())
-			{
+
+			if (cache.isSnapShot()) {
 				Label hijackedLabel = new Label(composite, SWT.NONE);
 				hijackedLabel.setText("Hijacked:");
 				hijackedValue = new Button(composite, SWT.CHECK);
 				hijackedValue.setEnabled(false);
 			}
-			
-			if (cache.isCheckedOut())
-			{
+
+			if (cache.isCheckedOut()) {
 				Label dirtyLabel = new Label(composite, SWT.NONE);
 				dirtyLabel.setText("Contents differ from predecessor:");
 				dirtyValue = new Button(composite, SWT.CHECK);
 				dirtyValue.setEnabled(false);
-				
+
 			}
 			performRefresh();
-		}
-		else
-		{
+		} else {
 			Label notRemoteLabel = new Label(composite, SWT.NONE);
 			notRemoteLabel.setText("The selected resource is not a clearcase element");
 		}
@@ -105,8 +93,7 @@ public class ElementPropertyPage extends PropertyPage
 	/**
 	 * @see PreferencePage#createContents(Composite)
 	 */
-	protected Control createContents(Composite parent)
-	{
+	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -120,8 +107,7 @@ public class ElementPropertyPage extends PropertyPage
 		return composite;
 	}
 
-	private Composite createDefaultComposite(Composite parent)
-	{
+	private Composite createDefaultComposite(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
@@ -135,8 +121,7 @@ public class ElementPropertyPage extends PropertyPage
 		return composite;
 	}
 
-	protected void performRefresh()
-	{
+	protected void performRefresh() {
 		StateCache cache = StateCacheFactory.getInstance().get((IResource) getElement());
 		if (versionLabelValue != null)
 			versionLabelValue.setText(cache.getVersion());
@@ -148,19 +133,15 @@ public class ElementPropertyPage extends PropertyPage
 			hijackedValue.setSelection(cache.isHijacked());
 	}
 
-	public void dispose()
-	{
+	public void dispose() {
 		super.dispose();
 	}
 
-	protected void contributeButtons(Composite parent)
-	{
+	protected void contributeButtons(Composite parent) {
 		Button refreshButton = new Button(parent, SWT.PUSH);
 		refreshButton.setText("Refresh");
-		refreshButton.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
+		refreshButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
 				performRefresh();
 			}
 		});

@@ -13,15 +13,12 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
-
+import net.sourceforge.eclipseccase.StateCacheFactory;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionDelegate;
 
 /**
@@ -29,46 +26,44 @@ import org.eclipse.ui.actions.ActionDelegate;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
-public class CancelPendingRefreshesAction extends ActionDelegate implements
-        IObjectActionDelegate, IWorkbenchWindowActionDelegate {
+public class CancelPendingRefreshesAction extends ActionDelegate implements IObjectActionDelegate, IWorkbenchWindowActionDelegate {
 
-    public CancelPendingRefreshesAction() {
-        super();
-    }
+	public CancelPendingRefreshesAction() {
+		super();
+	}
 
-    public void dispose() {
-        shell = null;
-    }
+	public void dispose() {
+		shell = null;
+	}
 
-    Shell shell;
+	Shell shell;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
-     */
-    public void init(IWorkbenchWindow window) {
-        this.shell = window.getShell();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+	 */
+	public void init(IWorkbenchWindow window) {
+		this.shell = window.getShell();
+	}
 
-    public void run(IAction action) {
-        if (MessageDialog.openQuestion(shell, "Clearcase Plugin",
-                "Do you want to cancel all pending state refreshes?")) {
-            ClearcasePlugin.getInstance().cancelPendingRefreshes();
-            if (action != null) action.setEnabled(false);
-        }
-    }
+	public void run(IAction action) {
+		if (MessageDialog.openQuestion(shell, "Clearcase Plugin", "Do you want to cancel all pending state refreshes?")) {
+			StateCacheFactory.getInstance().cancelPendingRefreshes();
+			if (action != null)
+				action.setEnabled(false);
+		}
+	}
 
-    public void selectionChanged(IAction action, ISelection selection) {
-        if (action != null) {
-            action.setEnabled(null != shell
-                    && ClearcasePlugin.getInstance().hasPendingRefreshes());
-        }
-    }
+	public void selectionChanged(IAction action, ISelection selection) {
+		if (action != null)
+			action.setEnabled(null != shell && ClearcasePlugin.getInstance().hasPendingRefreshes());
+	}
 
-    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-        this.shell = targetPart.getSite().getShell();
-        if (action != null && shell == null) action.setEnabled(false);
-    }
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		this.shell = targetPart.getSite().getShell();
+		if (action != null && shell == null)
+			action.setEnabled(false);
+	}
 
 }

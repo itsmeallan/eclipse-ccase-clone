@@ -1,29 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.ant.AntLaunchConfigurationType">
 <stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
-<booleanAttribute key="org.eclipse.ant.ui.DEFAULT_VM_INSTALL" value="false"/>
-<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
-</listAttribute>
-<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="clean,build.sources,zip.sources,gather.bin.parts,build.jars,gather.logs,zip.logs,build.update.jar,zip.distribution,"/>
-<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 <mapAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_PROPERTIES">
+<mapEntry key="J2SE-1.4" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
 <mapEntry key="eclipse.running" value="true"/>
+<mapEntry key="javacFailOnError" value="false"/>
 <mapEntry key="baseos" value="win32"/>
-<mapEntry key="javacFailOnError" value="true"/>
-<mapEntry key="javacDebugInfo" value="on"/>
 <mapEntry key="javacVerbose" value="true"/>
+<mapEntry key="javacDebugInfo" value="on"/>
 <mapEntry key="basenl" value="de_DE"/>
+<mapEntry key="CDC-1.0/Foundation-1.0" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="OSGi/Minimum-1.1" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
 <mapEntry key="basearch" value="x86"/>
-<mapEntry key="basews" value="win32"/>
-<mapEntry key="javacTarget" value="1.2"/>
+<mapEntry key="JavaSE-1.6" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
 <mapEntry key="bootclasspath" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="J2SE-1.5" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="OSGi/Minimum-1.0" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="J2SE-1.2" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="JRE-1.1" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="CDC-1.1/Foundation-1.1" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="J2SE-1.3" value="D:\Java\j2sdk1.4.2_06\jre\lib\rt.jar;D:\Java\j2sdk1.4.2_06\jre\lib\sunrsasign.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jsse.jar;D:\Java\j2sdk1.4.2_06\jre\lib\jce.jar;D:\Java\j2sdk1.4.2_06\jre\lib\charsets.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\dnsns.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\ldapsec.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\localedata.jar;D:\Java\j2sdk1.4.2_06\jre\lib\ext\sunjce_provider.jar"/>
+<mapEntry key="javacTarget" value="1.2"/>
+<mapEntry key="basews" value="win32"/>
 <mapEntry key="javacSource" value="1.3"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="net.sourceforge.eclipseccase-feature"/>
 <stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/net.sourceforge.eclipseccase-feature/build.xml}"/>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 <booleanAttribute key="org.eclipse.debug.core.ATTR_REFRESH_RECURSIVE" value="false"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="clean,build.sources,zip.sources,gather.bin.parts,build.jars,gather.logs,zip.logs,build.update.jar,zip.distribution,"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 </launchConfiguration>

@@ -12,24 +12,25 @@
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.util.ArrayList;
-
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 /**
- * Upgrade of BooleanFieldEditor.
- * When this fieldeditor is unchecked/checked -> all slave Components get disabled/enabled
- * You just have to {@link #addSlave(FieldEditor) add} some slaves during control setup
- * and don't forget to activate the {@link #listen() listener} when the component gets initialized
- * @version $Id$\
- * */
+ * Upgrade of BooleanFieldEditor. When this fieldeditor is unchecked/checked ->
+ * all slave Components get disabled/enabled You just have to
+ * {@link #addSlave(FieldEditor) add} some slaves during control setup and don't
+ * forget to activate the {@link #listen() listener} when the component gets
+ * initialized
+ * 
+ * @version $Id: MasterBooleanFieldEditor.java,v 1.5 2005/11/10 11:35:38
+ *          gwagenknecht Exp $\
+ */
 public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 	Composite parent;
+
 	ArrayList slaves = new ArrayList();
 
 	/**
@@ -37,31 +38,25 @@ public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 	 * @param string
 	 * @param fieldEditorParent
 	 */
-	public MasterBooleanFieldEditor(String text_prefix_decoration,
-			String string, Composite fieldEditorParent) {
+	public MasterBooleanFieldEditor(String text_prefix_decoration, String string, Composite fieldEditorParent) {
 		super(text_prefix_decoration, string, fieldEditorParent);
 		parent = fieldEditorParent;
 	}
 
 	void addSlave(FieldEditor slave) {
-		//todo Below code works for StringField, but not for BooleanField. Why?
-//		indent(slave.getLabelControl(parent));
+		// todo Below code works for StringField, but not for BooleanField. Why?
+		// indent(slave.getLabelControl(parent));
 		slaves.add(slave);
 	}
 
 	void listen() {
-		for (int i = 0; i < slaves.size(); i++) {
-			((FieldEditor) (slaves.get(i))).setEnabled(
-					getBooleanValue(), parent);
-		}
+		for (int i = 0; i < slaves.size(); i++)
+			((FieldEditor) (slaves.get(i))).setEnabled(getBooleanValue(), parent);
 
 		setPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
-				for (int i = 0; i < slaves.size(); i++) {
-					((FieldEditor) (slaves.get(i))).setEnabled(
-							getBooleanValue(), parent);
-
-				}
+				for (int i = 0; i < slaves.size(); i++)
+					((FieldEditor) (slaves.get(i))).setEnabled(getBooleanValue(), parent);
 			}
 		});
 	}

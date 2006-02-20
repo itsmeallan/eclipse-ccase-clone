@@ -325,20 +325,12 @@ public class StateCache implements Serializable {
 	}
 
 	/**
-	 * Gets the isDirty.
-	 * <p>
-	 * The check is done using the timestamp only (for performance reasons). If
-	 * you really want to compare using the conent you need to look at
-	 * {@link #isDifferent()}.
+	 * Indicates if the state cache is dirty. 
 	 * 
-	 * @return Returns a boolean
+	 * @return <code>true</code> indicates that the cache maybe out of sych.
 	 */
 	public boolean isDirty() {
 		if (null == resource)
-			return false;
-
-		// performance improve: if not checked out it is not dirty
-		if (!isCheckedOut())
 			return false;
 
 		return resource.getModificationStamp() != updateTimeStamp;
@@ -352,9 +344,10 @@ public class StateCache implements Serializable {
 	 */
 	public boolean isDifferent() {
 
-		// performance improve: if not dirty it can't be different
-		if (!isDirty())
+		// it can't be different if not checkout
+		if(!isDirty() && !isCheckedOut())
 			return false;
+		
 
 		// this is very expensive
 		try {

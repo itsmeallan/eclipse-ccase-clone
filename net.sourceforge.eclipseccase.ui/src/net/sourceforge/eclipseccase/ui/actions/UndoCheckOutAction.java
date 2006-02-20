@@ -1,16 +1,10 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.ConfirmLostModifiedResourcesDialog;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -30,12 +24,10 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 
 		// prompt for unsaved and modified files
 		if (!ClearcasePlugin.isUseClearDlg()) {
-			Set changedResources = new HashSet(Arrays
-					.asList(getChangedResources()));
+			Set changedResources = new HashSet(Arrays.asList(getChangedResources()));
 			changedResources.addAll(Arrays.asList(getUnsavedFiles()));
 			if (!changedResources.isEmpty())
-				if (!confirmUncheckoutModifiedResources((IResource[]) changedResources
-						.toArray(new IResource[changedResources.size()])))
+				if (!confirmUncheckoutModifiedResources((IResource[]) changedResources.toArray(new IResource[changedResources.size()])))
 					return;
 		}
 
@@ -47,8 +39,7 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 					beginTask(monitor, "Undoing checkout...", resources.length);
 
 					if (ClearcasePlugin.isUseClearDlg()) {
-						monitor
-								.subTask("Executing ClearCase user interface...");
+						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.uncheckout(resources);
 					} else {
 						// Sort resources with directories last so that the
@@ -57,15 +48,12 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 						// within
 						// it.
 						List resList = Arrays.asList(resources);
-						Collections
-								.sort(resList, new DirectoryLastComparator());
+						Collections.sort(resList, new DirectoryLastComparator());
 
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
-							ClearcaseProvider provider = ClearcaseProvider
-									.getClearcaseProvider(resource);
-							provider.uncheckout(new IResource[] { resource },
-									IResource.DEPTH_ZERO, subMonitor(monitor));
+							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+							provider.uncheckout(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
 						}
 					}
 				} finally {
@@ -83,11 +71,8 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider
-					.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource)
-					|| provider.isIgnored(resource)
-					|| !provider.hasRemote(resource))
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
 				return false;
 			if (!provider.isCheckedOut(resource))
 				return false;
@@ -100,8 +85,7 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 	 * 
 	 * @return true if user pressed OK.
 	 */
-	private boolean confirmUncheckoutModifiedResources(
-			IResource[] changedResources) {
+	private boolean confirmUncheckoutModifiedResources(IResource[] changedResources) {
 		if (changedResources == null || changedResources.length == 0)
 			return true;
 
@@ -111,8 +95,7 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 			return false;
 
 		// Ask user to confirm saving of all files
-		final ConfirmLostModifiedResourcesDialog dlg = new ConfirmLostModifiedResourcesDialog(
-				getShell(), changedResources);
+		final ConfirmLostModifiedResourcesDialog dlg = new ConfirmLostModifiedResourcesDialog(getShell(), changedResources);
 		final int[] intResult = new int[1];
 		Runnable runnable = new Runnable() {
 			public void run() {

@@ -6,3 +6,4 @@ temp.folder
 dev.properties
 @dot
 src.zip
+javaCompiler.*.args

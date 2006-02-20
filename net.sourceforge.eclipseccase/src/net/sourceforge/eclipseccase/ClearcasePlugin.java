@@ -12,53 +12,22 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.LinkedList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import net.sourceforge.clearcase.simple.ClearcaseException;
-import net.sourceforge.clearcase.simple.ClearcaseFactory;
-import net.sourceforge.clearcase.simple.IClearcase;
-import net.sourceforge.clearcase.simple.IClearcaseDebugger;
+import net.sourceforge.clearcase.simple.*;
 import net.sourceforge.eclipseccase.tools.XMLWriter;
-
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ISavedState;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Preferences;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.environment.Constants;
 import org.eclipse.team.core.TeamException;
 import org.osgi.framework.BundleContext;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.InputSource;
-
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -834,13 +803,6 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      */
     public boolean hasPendingRefreshes() {
         return !StateCacheFactory.getInstance().getJobQueue().isEmpty();
-    }
-
-    /**
-     * Cancels all pending state refreshes.
-     */
-    public void cancelPendingRefreshes() {
-        StateCacheFactory.getInstance().getJobQueue().cancel(true);
     }
 
     /**

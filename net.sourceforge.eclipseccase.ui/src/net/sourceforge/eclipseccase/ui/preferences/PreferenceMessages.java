@@ -16,9 +16,9 @@ import java.util.ResourceBundle;
 
 public class PreferenceMessages {
 
-	private static final String RESOURCE_BUNDLE= "net.sourceforge.eclipseccase.ui.preferences.PreferenceMessages";//$NON-NLS-1$
+	private static final String RESOURCE_BUNDLE = "net.sourceforge.eclipseccase.ui.preferences.PreferenceMessages";//$NON-NLS-1$
 
-	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+	private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
 	private PreferenceMessages() {
 	}
@@ -30,13 +30,13 @@ public class PreferenceMessages {
 			return '!' + key + '!';
 		}
 	}
-	
+
 	public static String getFormattedString(String key, String arg) {
 		return getFormattedString(key, new String[] { arg });
 	}
-	
+
 	public static String getFormattedString(String key, String[] args) {
-		return MessageFormat.format(getString(key), args);	
-	}	
-	
+		return MessageFormat.format(getString(key), args);
+	}
+
 }

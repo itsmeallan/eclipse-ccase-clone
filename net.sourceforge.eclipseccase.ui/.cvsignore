@@ -7,3 +7,4 @@ net.sourceforge.eclipseccase.ui*.zip
 dev.properties
 @dot
 src.zip
+javaCompiler.*.args

@@ -1,3 +1,16 @@
+1.1.1
+-----
+- fixed 1421320 - Provide filename+action if ClearcaseProvider.execute fails.
+- fixed 1425259 - Uncheckout on edited file deletes file without warning
+- fixed problem with Checkouts view & working sets
+- added support for auto-canceling of background refreshes
+- fixed "Associate" & "Dissociate" actions
+- reorganized context menu contributions
+- enabled context menu contributions for resource mappers
+- removed execution environment specifications
+- upgraded clearcase-java to 1.0.5
+- tested with 3.2 M5
+
 1.1.0
 -----
 - fixed 1315515 - NullPointerException on checkin, Refresh or update

@@ -12,41 +12,36 @@
 package net.sourceforge.eclipseccase.ui.viewsupport;
 
 import java.util.List;
-
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-/** 
+/**
  * A specialized content provider to show a list of elements.
  */
-public class ListContentProvider implements IStructuredContentProvider
-{
-    List fContents;
+public class ListContentProvider implements IStructuredContentProvider {
+	List fContents;
 
-    public ListContentProvider()
-    {}
+	public ListContentProvider() {
+	}
 
-    public Object[] getElements(Object input)
-    {
-        if (fContents != null && fContents == input)
-            return fContents.toArray();
-        return new Object[0];
-    }
+	public Object[] getElements(Object input) {
+		if (fContents != null && fContents == input)
+			return fContents.toArray();
+		return new Object[0];
+	}
 
-    public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-    {
-        if (newInput instanceof List)
-            fContents = (List) newInput;
-        else
-            fContents = null;
-        // we use a fixed set.
-    }
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if (newInput instanceof List)
+			fContents = (List) newInput;
+		else
+			fContents = null;
+		// we use a fixed set.
+	}
 
-    public void dispose()
-    {}
+	public void dispose() {
+	}
 
-    public boolean isDeleted(Object o)
-    {
-        return fContents != null && !fContents.contains(o);
-    }
+	public boolean isDeleted(Object o) {
+		return fContents != null && !fContents.contains(o);
+	}
 }

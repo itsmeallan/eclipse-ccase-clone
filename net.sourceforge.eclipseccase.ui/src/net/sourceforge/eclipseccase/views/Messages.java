@@ -17,27 +17,26 @@ import java.util.ResourceBundle;
 
 /**
  * TODO Provide description for Messages.
- *
+ * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
 public class Messages {
 
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipseccase.views.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipseccase.views.messages";//$NON-NLS-1$
 
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-            .getBundle(BUNDLE_NAME);
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-    private Messages() {
-        super(); 
-        // hidden
-    }
+	private Messages() {
+		super();
+		// hidden
+	}
 
-    public static String getString(String key) {
-        // TODO Auto-generated method stub
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
+	public static String getString(String key) {
+		// TODO Auto-generated method stub
+		try {
+			return RESOURCE_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
+		}
+	}
 }

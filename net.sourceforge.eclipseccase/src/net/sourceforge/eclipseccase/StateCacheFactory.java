@@ -773,4 +773,25 @@ public class StateCacheFactory implements ISaveParticipant,
     public boolean isInitialized() {
         return isStateCacheLoaded;
     }
+
+	/**
+	 * Cancels all pending state refreshes.
+	 */
+	public void cancelPendingRefreshes() {
+	    StateCacheFactory.getInstance().getJobQueue().cancel(true);
+	}
+
+	/**
+	 * Interrupts all pending state refreshes.
+	 */
+	public void interruptPendingRefreshes() {
+	    StateCacheFactory.getInstance().getJobQueue().interrupt();
+	}
+
+	/**
+	 * Cancels all pending state refreshes.
+	 */
+	public void resumePendingRefreshes() {
+	    StateCacheFactory.getInstance().getJobQueue().scheduleQueueRun();
+	}
 }

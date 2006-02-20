@@ -1,26 +1,14 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.ClearcaseUI;
 import net.sourceforge.eclipseccase.ui.ConfirmSaveModifiedResourcesDialog;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -28,15 +16,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.*;
 
-abstract public class ClearcaseAction extends TeamAction implements
-		IWorkbenchWindowActionDelegate {
+abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
 
 	private static Map actions = new HashMap();
@@ -68,9 +50,8 @@ abstract public class ClearcaseAction extends TeamAction implements
 			IEditorPart editor = (IEditorPart) part;
 			IEditorInput input = editor.getEditorInput();
 			IResource edited = (IFile) input.getAdapter(IFile.class);
-			if (edited != null) {
+			if (edited != null)
 				result = new IResource[] { edited };
-			}
 		}
 
 		if (null != result)
@@ -89,16 +70,13 @@ abstract public class ClearcaseAction extends TeamAction implements
 	}
 
 	private void registerAction(IAction action) {
-		if (action != null) {
+		if (action != null)
 			synchronized (actions) {
 				IAction old = (IAction) actions.get(this);
-				if (old != null && old != action) {
-					ClearcasePlugin.log(IStatus.WARNING,
-							"Mismatched actions in ClearcaseAction", null);
-				}
+				if (old != null && old != action)
+					ClearcasePlugin.log(IStatus.WARNING, "Mismatched actions in ClearcaseAction", null);
 				actions.put(this, action);
 			}
-		}
 	}
 
 	private void deregisterAction() {
@@ -139,15 +117,12 @@ abstract public class ClearcaseAction extends TeamAction implements
 		Set unsavedFiles = new HashSet(dirtyEditors.length);
 		if (dirtyEditors.length > 0) {
 			List selectedResources = Arrays.asList(getSelectedResources());
-			for (int i = 0; i < dirtyEditors.length; i++) {
+			for (int i = 0; i < dirtyEditors.length; i++)
 				if (dirtyEditors[i].getEditorInput() instanceof IFileEditorInput) {
-					IFile dirtyFile = ((IFileEditorInput) dirtyEditors[i]
-							.getEditorInput()).getFile();
-					if (selectedResources.contains(dirtyFile)) {
+					IFile dirtyFile = ((IFileEditorInput) dirtyEditors[i].getEditorInput()).getFile();
+					if (selectedResources.contains(dirtyFile))
 						unsavedFiles.add(dirtyFile);
-					}
 				}
-			}
 		}
 		return (IFile[]) unsavedFiles.toArray(new IFile[unsavedFiles.size()]);
 	}
@@ -162,19 +137,15 @@ abstract public class ClearcaseAction extends TeamAction implements
 	protected IResource[] getChangedResources() {
 		IResource[] resources = getSelectedResources();
 		Set changedResources = new HashSet(resources.length);
-		if (resources.length > 0) {
+		if (resources.length > 0)
 			for (int i = 0; i < resources.length; i++) {
 				IResource resource = resources[i];
-				ClearcaseProvider provider = ClearcaseProvider
-						.getClearcaseProvider(resource);
-				if (null != provider) {
+				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+				if (null != provider)
 					if (provider.isDifferent(resource))
 						changedResources.add(resource);
-				}
 			}
-		}
-		return (IResource[]) changedResources
-				.toArray(new IResource[changedResources.size()]);
+		return (IResource[]) changedResources.toArray(new IResource[changedResources.size()]);
 
 	}
 
@@ -223,8 +194,7 @@ abstract public class ClearcaseAction extends TeamAction implements
 			return false;
 
 		// Ask user to confirm saving of all files
-		final ConfirmSaveModifiedResourcesDialog dlg = new ConfirmSaveModifiedResourcesDialog(
-				getShell(), dirtyFiles);
+		final ConfirmSaveModifiedResourcesDialog dlg = new ConfirmSaveModifiedResourcesDialog(getShell(), dirtyFiles);
 		final int[] intResult = new int[1];
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -251,12 +221,10 @@ abstract public class ClearcaseAction extends TeamAction implements
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					new ProgressMonitorDialog(getShell()).run(false, false,
-							createSaveModifiedResourcesRunnable(dirtyFiles));
+					new ProgressMonitorDialog(getShell()).run(false, false, createSaveModifiedResourcesRunnable(dirtyFiles));
 					retVal[0] = true;
 				} catch (InvocationTargetException ex) {
-					handle(ex, "Error Saving",
-							"An error occured while saving modified resource.");
+					handle(ex, "Error Saving", "An error occured while saving modified resource.");
 					retVal[0] = false;
 				} catch (InterruptedException ex) {
 					// Can't happen. Operation isn't cancelable.
@@ -268,8 +236,7 @@ abstract public class ClearcaseAction extends TeamAction implements
 		return retVal[0];
 	}
 
-	IRunnableWithProgress createSaveModifiedResourcesRunnable(
-			final IFile[] dirtyFiles) {
+	IRunnableWithProgress createSaveModifiedResourcesRunnable(final IFile[] dirtyFiles) {
 		return new IRunnableWithProgress() {
 			public void run(final IProgressMonitor pm) {
 				IEditorPart[] editorsToSave = getDirtyEditors(getShell());
@@ -278,11 +245,9 @@ abstract public class ClearcaseAction extends TeamAction implements
 					List dirtyFilesList = Arrays.asList(dirtyFiles);
 					for (int i = 0; i < editorsToSave.length; i++) {
 						if (editorsToSave[i].getEditorInput() instanceof IFileEditorInput) {
-							IFile dirtyFile = ((IFileEditorInput) editorsToSave[i]
-									.getEditorInput()).getFile();
+							IFile dirtyFile = ((IFileEditorInput) editorsToSave[i].getEditorInput()).getFile();
 							if (dirtyFilesList.contains((dirtyFile)))
-								editorsToSave[i].doSave(new SubProgressMonitor(
-										pm, 1));
+								editorsToSave[i].doSave(new SubProgressMonitor(pm, 1));
 						}
 						pm.worked(1);
 					}
@@ -316,8 +281,7 @@ abstract public class ClearcaseAction extends TeamAction implements
 	 * @param monitor
 	 * @param resources
 	 */
-	protected static void beginTask(IProgressMonitor monitor, String taskName,
-			int length) {
+	protected static void beginTask(IProgressMonitor monitor, String taskName, int length) {
 		monitor.beginTask(taskName, length * 10000);
 	}
 
