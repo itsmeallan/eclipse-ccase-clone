@@ -186,7 +186,7 @@
             visible="true"
             id="net.sourceforge.eclipseccase.ui.actionset">
          <menu
-               label="&amp;Clearcase"
+               label="C&amp;learcase"
                id="eclipseccase_menu">
             <separator
                   name="projectGroup">
@@ -300,9 +300,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -317,9 +317,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -334,9 +334,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -351,9 +351,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -368,9 +368,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -385,9 +385,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -422,9 +422,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -439,9 +439,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -456,9 +456,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -473,9 +473,9 @@
                   <pluginState
                         id="net.sourceforge.eclipseccase"
                         value="activated"/>
-                  <objectState
+                  <!--objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
                </and>
             </enablement>
          </action>
@@ -587,70 +587,76 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
+         
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
             sequence="M3+C M3+S"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
             sequence="M3+C M3+E"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
             sequence="M3+C M3+U"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
             sequence="M3+C M3+I"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
             sequence="M3+C M3+R"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
             sequence="M3+C M3+Q"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
             sequence="M3+C M3+O"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
             schemeId="org.eclipse.ui.globalScope"/>
+
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
-            sequence="M3+C M3+T"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
-            sequence="M3+C M3+A"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
-            sequence="M3+C M3+D"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
             sequence="M3+C M3+V"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            
+      <key
+            sequence="M3+C M3+T"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
             schemeId="org.eclipse.ui.globalScope"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            sequence="M3+C M3+A"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
+            schemeId="org.eclipse.ui.globalScope"/>
+      <key
+            sequence="M3+C M3+D"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
             sequence="M3+C M3+X"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
             sequence="M3+C M3+H"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
             sequence="M3+C M3+C"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
             sequence="M3+C M3+F"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
             sequence="M3+C M3+Z"
-            schemeId="org.eclipse.ui.globalScope"/>
+            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
