@@ -517,13 +517,13 @@ public class ClearcasePlugin extends Plugin {
     }
 
     /**
-     * Returns the preference value for <code>CACHE_TIMEOUT</code>.
+     * Returns the preference value for <code>WIP_REFRESH_CHILDREN</code>.
      * 
      * @return the preference value
      */
-    public static int getCacheTimeOut() {
-        return getInstance().getPluginPreferences().getInt(
-                IClearcasePreferenceConstants.CACHE_TIMEOUT);
+    public static boolean isRefreshChildrenPrevented() {
+    	return getInstance().getPluginPreferences().getBoolean(
+    			IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
     }    
     
     /**
@@ -675,7 +675,7 @@ public class ClearcasePlugin extends Plugin {
         // General preferences
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
                 !isWindows());
-        pref.setDefault(IClearcasePreferenceConstants.CACHE_TIMEOUT, "0"); //$NON-NLS-1$
+        pref.setDefault(IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT, true);
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
         pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
