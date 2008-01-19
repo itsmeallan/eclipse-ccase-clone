@@ -215,11 +215,10 @@ public class StateCacheFactory implements ISaveParticipant,
     /**
      * Returns the state cache fo the specified resource.
      * 
-     * @param resource the resource from which we need the 'cached' state
-     * @param async when false, the given resource's cache is update immediately [not added to queuing]
+     * @param resource
      * @return the state cache fo the specified resource
      */
-    public StateCache get(IResource resource, boolean async) {
+    public StateCache get(IResource resource) {
         StateCache cache = (StateCache) cacheMap.get(resource);
         if (cache == null) {
 
@@ -233,22 +232,9 @@ public class StateCacheFactory implements ISaveParticipant,
 
             // schedule update if necessary
             if (isInitialized() && cache.isUninitialized())
-            {
-                if (async)cache.updateAsync(false); 
-                else cache.doUpdate();
-            }
+                cache.updateAsync(false);
         }
-        if(cache.isUninitialized() && !async) cache.doUpdate();
         return cache;
-    }    
-    /**
-     * Returns the state cache fo the specified resource.
-     * 
-     * @param resource
-     * @return the state cache fo the specified resource
-     */
-    public StateCache get(IResource resource) {
-        return get(resource,true);
     }
 
     /**
@@ -773,25 +759,25 @@ public class StateCacheFactory implements ISaveParticipant,
     public boolean isInitialized() {
         return isStateCacheLoaded;
     }
-
-	/**
+    
+    /**
 	 * Cancels all pending state refreshes.
 	 */
 	public void cancelPendingRefreshes() {
-	    StateCacheFactory.getInstance().getJobQueue().cancel(true);
+		StateCacheFactory.getInstance().getJobQueue().cancel(true);
 	}
 
 	/**
 	 * Interrupts all pending state refreshes.
 	 */
 	public void interruptPendingRefreshes() {
-	    StateCacheFactory.getInstance().getJobQueue().interrupt();
+		StateCacheFactory.getInstance().getJobQueue().interrupt();
 	}
 
 	/**
 	 * Cancels all pending state refreshes.
 	 */
 	public void resumePendingRefreshes() {
-	    StateCacheFactory.getInstance().getJobQueue().scheduleQueueRun();
+		StateCacheFactory.getInstance().getJobQueue().scheduleQueueRun();
 	}
 }

@@ -1,3 +1,11 @@
+2.0.0.dev1
+----------
+
+- ported to new ClearCase API
+- backports:
+- improved loading of state caches on startup
+
+
 1.1.1
 -----
 - fixed 1421320 - Provide filename+action if ClearcaseProvider.execute fails.
@@ -11,44 +19,10 @@
 - upgraded clearcase-java to 1.0.5
 - tested with 3.2 M5
 
-1.1.0
------
-- fixed 1315515 - NullPointerException on checkin, Refresh or update
-- fixed 1263098 - 1.0.3 eclipse dependency
-- fixed 1220119 - Undo Checkout of dirty (unsaved) file
-- fixed 1293016 - Automatic checkout on edit causes file to go out sync
-- added support for Eclipse 3.2 ResourceMapping API
-  (https://bugs.eclipse.org/bugs/show_bug.cgi?id=37723)
-- changed auto-checkout behavior to allow callers to handle cases were
-  the user canceled an auto-checkout or an auto-checkout was disabled
-- upgraded clearcase-java to 1.0.4
 
 
-1.0.3
------
-- fixed [1220338] External Update on multiple selection with single dialog
-- fixed [1209625] ExceptionInInitializer in Win32
-- Eclipse 3.1
-
-1.0.2
------
-- fixed 1176906 - should now work in 3.1M6
-- fixed 757524 - auto-checkout does not prompt for comment
-- if a directory is added, the complete subtree will be scheduled for a refresh
-  (necessary due to changes in 1.0.1, which stops refreshing if parent is not
-  a clearcase element)
-
-1.0.1
------
-
-- improved loading of state caches on startup
-- removed Caching of Clearcase calls (fix for bug  1069529)
-- stopped refreshing for children of directories that are NOT 
-  even in clearcase (can be disabled through a preference
-  in the GENERAL tab)
-
-1.0.0
------
+1.0.0.RC1
+---------
 
 - applied patch 1024155 (fix for preference setting)
 - checkins are now also performed in the background

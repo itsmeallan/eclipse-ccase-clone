@@ -12,21 +12,47 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import net.sourceforge.clearcase.simple.*;
+import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseException;
+import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.eclipseccase.tools.XMLWriter;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ISavedState;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.environment.Constants;
 import org.eclipse.team.core.TeamException;
 import org.osgi.framework.BundleContext;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -34,7 +60,7 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
+public class ClearcasePlugin extends Plugin {
 
     private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
 
@@ -164,7 +190,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      */
     static boolean getDebugOption(String optionId) {
         String option = Platform.getDebugOption(optionId);
-        return option != null ? Boolean.valueOf(option).booleanValue() : false; 
+        return option != null ? Boolean.valueOf(option).booleanValue() : false; //$NON-NLS-1$
     }
 
     /**
@@ -246,12 +272,10 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * 
      * @return the ClearCase engine (maybe <code>null</code>)
      */
-    public static IClearcase getEngine() {
-        IClearcase impl = null;
+    public static ClearCaseInterface getEngine() {
+        ClearCaseInterface impl = null;
         try {
             impl = ClearcasePlugin.getInstance().getClearcase();
-
-            if (isDebug()) impl.setDebugger(plugin);
         } catch (CoreException e) {
             log(IStatus.ERROR, Messages
                     .getString("ClearcasePlugin.error.noClearcase"), e); //$NON-NLS-1$
@@ -493,15 +517,15 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     }
 
     /**
-     * Returns the preference value for <code>WIP_REFRESH_CHILDREN</code>.
+     * Returns the preference value for <code>CACHE_TIMEOUT</code>.
      * 
      * @return the preference value
      */
-    public static boolean isRefreshChildrenPrevented() {
-        return getInstance().getPluginPreferences().getBoolean(
-                IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
-    }
-
+    public static int getCacheTimeOut() {
+        return getInstance().getPluginPreferences().getInt(
+                IClearcasePreferenceConstants.CACHE_TIMEOUT);
+    }    
+    
     /**
      * Logs an exception with the specified severity an message.
      * 
@@ -527,7 +551,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         log(IStatus.ERROR, message, ex);
     }
 
-    private IClearcase clearcaseImpl;
+    private ClearCaseInterface clearcaseImpl;
 
     /** debug flag */
     public static boolean DEBUG_PROVIDER = false;
@@ -598,21 +622,21 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
      * @throws CoreException
      *             if no engine is available
      */
-    public IClearcase getClearcase() throws CoreException {
+    public ClearCaseInterface getClearcase() throws CoreException {
         try {
             if (clearcaseImpl == null) {
                 if (DEBUG) trace("initializing clearcase engine"); //$NON-NLS-1$
                 if (isUseCleartool()) {
                     if (DEBUG) trace("using cleartool engine"); //$NON-NLS-1$
-                    clearcaseImpl = ClearcaseFactory.getInstance()
-                            .createInstance(ClearcaseFactory.CLI);
+                    clearcaseImpl = ClearCase
+                            .createInterface(ClearCase.INTERFACE_CLI);
                 } else {
                     if (DEBUG) trace("using default engine"); //$NON-NLS-1$
-                    clearcaseImpl = ClearcaseFactory.getInstance().getDefault();
+                    clearcaseImpl = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
                 }
             }
             return clearcaseImpl;
-        } catch (ClearcaseException e) {
+        } catch (ClearCaseException e) {
             throw new CoreException(
                     new Status(
                             IStatus.ERROR,
@@ -651,7 +675,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
         // General preferences
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
                 !isWindows());
-        pref.setDefault(IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT, true); 
+        pref.setDefault(IClearcasePreferenceConstants.CACHE_TIMEOUT, "0"); //$NON-NLS-1$
         pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
         pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
         pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
@@ -791,7 +815,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
 
         // destroy clearcase engine
         if (clearcaseImpl != null) {
-            clearcaseImpl.destroy();
+            clearcaseImpl.dispose();
             clearcaseImpl = null;
         }
     }
@@ -806,6 +830,13 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     }
 
     /**
+     * Cancels all pending state refreshes.
+     */
+    public void cancelPendingRefreshes() {
+        StateCacheFactory.getInstance().getJobQueue().cancel(true);
+    }
+
+    /**
      * Saves the comment history.
      * 
      * @throws CoreException
@@ -813,7 +844,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
     private void saveCommentHistory() throws CoreException {
         IPath pluginStateLocation = getStateLocation();
         File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp") //$NON-NLS-1$
-                .toFile(); 
+                .toFile(); //$NON-NLS-1$
         File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
         try {
             XMLWriter writer = new XMLWriter(new BufferedOutputStream(
@@ -895,7 +926,7 @@ public class ClearcasePlugin extends Plugin implements IClearcaseDebugger {
             }
         };
         processSavedState.setSystem(!DEBUG);
-        processSavedState.setPriority(Job.LONG);
+        processSavedState.setPriority(Job.LONG); 
         processSavedState.schedule(500);
 
         loadCommentHistory();
