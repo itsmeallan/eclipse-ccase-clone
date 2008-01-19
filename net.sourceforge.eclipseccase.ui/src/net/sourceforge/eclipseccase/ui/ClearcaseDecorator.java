@@ -143,14 +143,13 @@ public class ClearcaseDecorator extends LabelProvider implements
 			return STATE_CLEAN;
 
 		// don't need to calculate if deep decoration is disabled
-		if (!ClearcaseUI.isDeepDecoration())
+		if (!ClearcaseUIPreferences.decorateFoldersDirty())
 			return STATE_CLEAN;
 
 		// cache some settings (visitor performance)
-		final boolean decorateNew = ClearcaseUI.isDeepNew() && (ClearcaseUI.isIconNewDecoration() || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixNew().length() > 0));
-		final boolean decorateUnknown = ClearcaseUI.isIconUnknownDecoration() || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixUnknown().length() > 0);
-		final boolean decorateHijacked = ClearcaseUI.isIconHijackedDecoration() || (ClearcaseUI.isTextPrefixDecoration() && ClearcaseUI.getTextPrefixHijacked().length() > 0);
-
+		final boolean decorateNew = ClearcaseUIPreferences.decorateFoldersContainingViewPrivateElementsDirty()&& (ClearcaseUIPreferences.decorateViewPrivateElements() || (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixNew().length() > 0)); 
+		final boolean decorateUnknown = ClearcaseUIPreferences.decorateUnknownElements()|| (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixUnknown().length() > 0);
+		final boolean decorateHijacked = ClearcaseUIPreferences.decorateHijackedElements()|| (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixHijacked().length() > 0);
 		try {
 			// visit all children to determine the state
 			resource.accept(new IResourceVisitor() {
@@ -237,7 +236,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateCheckedOut"); //$NON-NLS-1$
 		decoration.addOverlay(IMG_DESC_CHECKED_OUT);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
 	}
 
@@ -250,7 +249,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateDirty"); //$NON-NLS-1$
 		decoration.addOverlay(IMG_DESC_DIRTY);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
 	}
 
@@ -262,9 +261,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateEdited(IDecoration decoration) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateEdited"); //$NON-NLS-1$
-		if (ClearcaseUI.isIconEditedDecoration())
+		if (ClearcaseUIPreferences.decorateEditedElements())
 			decoration.addOverlay(IMG_DESC_EDITED);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixEdited());
 	}
 
@@ -276,9 +275,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateHijacked(IDecoration decoration) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateHijacked"); //$NON-NLS-1$
-		if (ClearcaseUI.isIconHijackedDecoration())
+		if (ClearcaseUIPreferences.decorateHijackedElements())
 			decoration.addOverlay(IMG_DESC_HIJACKED);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixHijacked());
 	}
 
@@ -306,9 +305,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateNew(IDecoration decoration) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateNew"); //$NON-NLS-1$
-		if (ClearcaseUI.isIconNewDecoration())
+		if (ClearcaseUIPreferences.decorateViewPrivateElements())
 			decoration.addOverlay(IMG_DESC_NEW_RESOURCE);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixNew());
 	}
 
@@ -320,9 +319,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateUnknown(IDecoration decoration) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateUnknown"); //$NON-NLS-1$
-		if (ClearcaseUI.isIconUnknownDecoration())
+		if (ClearcaseUIPreferences.decorateUnknownElements())
 			decoration.addOverlay(IMG_DESC_UNKNOWN_STATE);
-		if (ClearcaseUI.isTextPrefixDecoration())
+		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixUnknown());
 	}
 
@@ -334,7 +333,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateVersion(IDecoration decoration, String version) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateVersion"); //$NON-NLS-1$
-		if (ClearcaseUI.isTextVersionDecoration() && null != version)
+		if (ClearcaseUIPreferences.decorateElementsWithVersionInfo() && null != version)
 			decoration.addSuffix("  " + version); //$NON-NLS-1$
 	}
 
@@ -346,7 +345,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 	private static void decorateViewName(IDecoration decoration, String viewName) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateViewName"); //$NON-NLS-1$
-		if (ClearcaseUI.isTextViewDecoration() && null != viewName)
+		if (ClearcaseUIPreferences.decorateProjectsWithViewInfo() && null != viewName)
 			decoration.addSuffix(" [" + viewName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -578,7 +577,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 		}
 
 		// if deep decoration is disabled, update only the specified resources
-		if (!ClearcaseUI.isDeepDecoration())
+		if (!ClearcaseUIPreferences.decorateFoldersDirty())
 			fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources));
 		else {
 			// deep decoration is enabled: update parents also
@@ -657,7 +656,7 @@ public class ClearcaseDecorator extends LabelProvider implements
 						case IResourceDelta.ADDED:
 						case IResourceDelta.REMOVED:
 							// if resource was added or removed
-							if (ClearcaseUI.isDeepDecoration())
+							if (ClearcaseUIPreferences.decorateFoldersDirty())
 								// refresh parent if deep decoration is enabled
 								resources.add(delta.getResource().getParent());
 							return false;
