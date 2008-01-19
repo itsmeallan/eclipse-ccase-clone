@@ -1,37 +1,80 @@
 package net.sourceforge.eclipseccase.ui;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
+import net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class ClearcaseImages {
-	// base path
-	public static final String ICON_PATH = "icons/full/"; //$NON-NLS-1$
 
-	// images (don't forget to add to ClearcaseUI#initialize...)
+public class ClearcaseImages
+{
+    // base path
+    public static final String ICON_PATH = "icons/full/"; //$NON-NLS-1$
+
+    // images (don't forget to add to ClearcaseUI#initialize...)
 	public static final String IMG_EDITED_OVR = "edited_ovr.gif"; //$NON-NLS-1$
-
-	public static final String IMG_HIJACKED_OVR = "hijacked_ovr.gif"; //$NON-NLS-1$
-
-	public static final String IMG_LINK_OVR = "link_ovr.gif"; //$NON-NLS-1$
-
-	public static final String IMG_LINK_WARNING_OVR = "linkwarn_ovr.gif"; //$NON-NLS-1$
-
+    public static final String IMG_HIJACKED_OVR = "hijacked_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK_OVR = "link_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_LINK_WARNING_OVR = "linkwarn_ovr.gif"; //$NON-NLS-1$
 	public static final String IMG_UNKNOWN_OVR = "unknown_ovr.gif"; //$NON-NLS-1$
-
 	public static final String IMG_QUESTIONABLE_OVR = "question_ovr.gif"; //$NON-NLS-1$
-
 	public static final String IMG_DYNAMIC_OVR = "proj_dynamic_ovr.gif"; //$NON-NLS-1$
-
 	public static final String IMG_SNAPSHOT_OVR = "proj_snapshot_ovr.gif"; //$NON-NLS-1$
+    public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
+    public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
+    public static final String IMG_ELEMENT_BG = "element_BG.gif"; //$NON-NLS-1$
+    
+    /**
+     * @param string
+     * @return
+     */
+    public static ImageDescriptor getImageDescriptor(String string)
+    {
+        return ClearcaseUI.getInstance().getImageRegistry().getDescriptor(string);
+    }
 
-	public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
+    /**
+     * Returns the image that the ClearCase decorator should use for
+     * all ClearCase element backgrounds.
+     * 
+     * @return the background image for decorating ClearCase elements.
+     */
+    public static ImageDescriptor getClearCaseElementsBackgroundImage() {
+        if(!ClearcaseUIPreferences.getPluginPreferences().getBoolean(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM))
+            return getImageDescriptor(IMG_ELEMENT_BG);
+            
+        String customImage = ClearcaseUIPreferences.getPluginPreferences().getString(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND);
+        if (null == customImage || customImage.trim().length() == 0)
+            return ImageDescriptor.getMissingImageDescriptor();
+        
+        if (!(customImage.toLowerCase().endsWith(".gif") //$NON-NLS-1$
+                || customImage.toLowerCase().endsWith(".jpg") //$NON-NLS-1$
+        || customImage.toLowerCase().endsWith(".png"))) //$NON-NLS-1$
+            return ImageDescriptor.getMissingImageDescriptor();
 
-	public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
+        ImageDescriptor image = getImageDescriptor(customImage);
+        if(null == image) {
+            // create image
+            File imageFile = new File(customImage);
+            if(imageFile.canRead()) {
+                try {
+                    image = ImageDescriptor.createFromURL(imageFile.toURL());
+                } catch (MalformedURLException e) {
+                    // ignore
+                    image = null;
+                }
+            }
+            // ensure image is not null
+            if(null == image)
+                image = ImageDescriptor.getMissingImageDescriptor();
+            
+            // store image
+            ClearcaseUI.getInstance().getImageRegistry().put(customImage, image);
+        }
+        
+        return image;
+    }
 
-	/**
-	 * @param string
-	 * @return
-	 */
-	public static ImageDescriptor getImageDescriptor(String string) {
-		return ClearcaseUI.getInstance().getImageRegistry().getDescriptor(string);
-	}
 }

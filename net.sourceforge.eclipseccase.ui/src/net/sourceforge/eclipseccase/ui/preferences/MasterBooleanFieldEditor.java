@@ -12,53 +12,114 @@
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.util.ArrayList;
+
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * Upgrade of BooleanFieldEditor. When this fieldeditor is unchecked/checked ->
- * all slave Components get disabled/enabled You just have to
- * {@link #addSlave(FieldEditor) add} some slaves during control setup and don't
- * forget to activate the {@link #listen() listener} when the component gets
- * initialized
- * 
- * @version $Id: MasterBooleanFieldEditor.java,v 1.5 2005/11/10 11:35:38
- *          gwagenknecht Exp $\
+ * Upgrade of BooleanFieldEditor.
+ * <p>
+ * When this fieldeditor is unchecked/checked all slave Components get
+ * disabled/enabled You just have to {@link #addSlave(FieldEditor) add}some
+ * slaves during control setup and don't forget to activate the
+ * {@link #listen() listener}when the component gets initialized
+ * </p>
  */
 public class MasterBooleanFieldEditor extends BooleanFieldEditor {
-	Composite parent;
 
-	ArrayList slaves = new ArrayList();
+    /** the parent */
+    final Composite parent;
 
-	/**
-	 * @param text_prefix_decoration
-	 * @param string
-	 * @param fieldEditorParent
-	 */
-	public MasterBooleanFieldEditor(String text_prefix_decoration, String string, Composite fieldEditorParent) {
-		super(text_prefix_decoration, string, fieldEditorParent);
-		parent = fieldEditorParent;
-	}
+    /** the slaves */
+    ArrayList slaves = new ArrayList();
 
-	void addSlave(FieldEditor slave) {
-		// todo Below code works for StringField, but not for BooleanField. Why?
-		// indent(slave.getLabelControl(parent));
-		slaves.add(slave);
-	}
+    /** the enabled state */
+    boolean enabled = true;
+    
+    /**
+     * @param text_prefix_decoration
+     * @param string
+     * @param fieldEditorParent
+     */
+    public MasterBooleanFieldEditor(String text_prefix_decoration,
+            String string, Composite fieldEditorParent) {
+        super(text_prefix_decoration, string, fieldEditorParent);
+        parent = fieldEditorParent;
+    }
 
-	void listen() {
-		for (int i = 0; i < slaves.size(); i++)
-			((FieldEditor) (slaves.get(i))).setEnabled(getBooleanValue(), parent);
+    /**
+     * Adds a slave editor to control.
+     * 
+     * @param slave
+     */
+    public void addSlave(FieldEditor slave) {
+        slaves.add(slave);
+        slave.setEnabled(getBooleanValue(), parent);
+    }
 
-		setPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				for (int i = 0; i < slaves.size(); i++)
-					((FieldEditor) (slaves.get(i))).setEnabled(getBooleanValue(), parent);
-			}
-		});
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoad()
+     */
+    protected void doLoad() {
 
+        // call super
+        super.doLoad();
+
+        updateSlaves();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoadDefault()
+     */
+    protected void doLoadDefault() {
+
+        // call super
+        super.doLoadDefault();
+
+        updateSlaves();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.preference.FieldEditor#fireValueChanged(java.lang.String,
+     *      java.lang.Object, java.lang.Object)
+     */
+    protected void fireValueChanged(String property, Object oldValue,
+            Object newValue) {
+        if (VALUE.equals(property)) {
+            updateSlaves();
+        }
+        super.fireValueChanged(property, oldValue, newValue);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.preference.BooleanFieldEditor#setEnabled(boolean,
+     *      org.eclipse.swt.widgets.Composite)
+     */
+    public void setEnabled(boolean enabled, Composite parent) {
+
+        // call super
+        super.setEnabled(enabled, parent);
+
+        this.enabled = enabled;
+        updateSlaves();
+    }
+
+    /**
+     * Updates the slaves
+     */
+    private void updateSlaves() {
+        boolean enable = enabled && getBooleanValue();
+        for (int i = 0; i < slaves.size(); i++) {
+            ((FieldEditor) (slaves.get(i))).setEnabled(enable, parent);
+        }
+    }
 }

@@ -12,12 +12,35 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-import java.util.*;
-import net.sourceforge.eclipseccase.*;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.IResourceStateListener;
+import net.sourceforge.eclipseccase.StateCacheFactory;
+import net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.jface.viewers.ILightweightLabelDecorator;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.ui.ISharedImages;
@@ -26,15 +49,17 @@ import org.eclipse.team.ui.TeamImages;
 /**
  * The ClearCase label decorator.
  */
-public class ClearcaseDecorator extends LabelProvider implements ILightweightLabelDecorator, IResourceStateListener, IResourceChangeListener {
+public class ClearcaseDecorator extends LabelProvider implements
+        ILightweightLabelDecorator, IResourceStateListener,
+        IResourceChangeListener {
 
-	/** trace if */
-	private static final String DECORATOR = "ClearcaseDecorator"; //$NON-NLS-1$
+    /** trace if */
+    private static final String DECORATOR = "ClearcaseDecorator"; //$NON-NLS-1$
 
-	/*
-	 * Define a cached image descriptor which only creates the image data once
-	 */
-	public static class CachedImageDescriptor extends ImageDescriptor {
+    /*
+     * Define a cached image descriptor which only creates the image data once
+     */
+    public static class CachedImageDescriptor extends ImageDescriptor {
 
 		ImageData data;
 

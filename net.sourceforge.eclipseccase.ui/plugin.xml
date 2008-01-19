@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin>
+<plugin
+   id="net.sourceforge.eclipseccase.ui"
+   name="%pluginName"
+   version="2.0.0.dev1"
+   provider-name="%providerName"
+   class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
 
-     <extension
+   <runtime>
+      <library name="clearcase-ui.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="net.sourceforge.eclipseccase" export="true"/>
+      <import plugin="org.eclipse.team.ui" export="true"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.ide"/>
+   </requires>
+
+   <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
-            id="net.sourceforge.eclipseccase.ui.IProjectContributions">
+            adaptable="true"
+            id="net.sourceforge.eclipseccase.popups.Associate">
          <action
                label="Dissociate from clearcase"
                class="net.sourceforge.eclipseccase.ui.actions.DissociateProjectAction"
@@ -61,15 +80,13 @@
             </enablement>
          </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
       <objectContribution
+            objectClass="org.eclipse.core.resources.IResource"
             adaptable="true"
-            objectClass="org.eclipse.core.resources.mapping.ResourceMapping"
-            id="net.sourceforge.eclipseccase.ui.ResourceMapperContributions">
-		 <enablement>
-           <adapt type="org.eclipse.core.resources.mapping.ResourceMapping">
-              <test property="org.eclipse.core.resources.projectPersistentProperty" args="org.eclipse.team.core.repository,net.sourceforge.eclipseccase.ClearcaseProvider" />
-           </adapt>
-         </enablement>
+            id="net.sourceforge.eclipseccase.popups.BuiltIn">
          <visibility>
             <pluginState
                   value="activated"
@@ -186,7 +203,7 @@
             visible="true"
             id="net.sourceforge.eclipseccase.ui.actionset">
          <menu
-               label="C&amp;learcase"
+               label="&amp;Clearcase"
                id="eclipseccase_menu">
             <separator
                   name="projectGroup">
@@ -262,14 +279,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.update">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -279,14 +292,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.delete">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -296,14 +305,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.add">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -313,14 +318,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.refresh">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -330,14 +331,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -347,14 +344,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.checkin">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -364,14 +357,10 @@
                menubarPath="eclipseccase_menu/group1"
                id="net.sourceforge.eclipseccase.ui.actionset.checkout">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -381,14 +370,10 @@
                menubarPath="eclipseccase_menu/group2"
                id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -400,14 +385,13 @@
             <enablement>
                <and>
                   <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
+                        value="activated"
+                        id="net.sourceforge.eclipseccase">
+                  </pluginState>
                   <systemProperty
                         name="osgi.os"
-                        value="win32"/>
-                  <objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/>
+                        value="win32">
+                  </systemProperty>
                </and>
             </enablement>
          </action>
@@ -418,14 +402,10 @@
                menubarPath="eclipseccase_menu/group2"
                id="net.sourceforge.eclipseccase.ui.actionset.history">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -435,14 +415,10 @@
                menubarPath="eclipseccase_menu/group2"
                id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -452,14 +428,10 @@
                menubarPath="eclipseccase_menu/group2"
                id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
             </enablement>
          </action>
          <action
@@ -469,14 +441,10 @@
                menubarPath="eclipseccase_menu/group3"
                id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
             <enablement>
-               <and>
-                  <pluginState
-                        id="net.sourceforge.eclipseccase"
-                        value="activated"/>
-                  <!--objectState
-                        name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider"/-->
-               </and>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase.ui.pluginState1">
+               </pluginState>
             </enablement>
          </action>
       </actionSet>
@@ -494,169 +462,194 @@
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.associate">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
+            keySequence="Alt+C Alt+S"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Dissociate"
             description="Dissociates the selected project from the clearcase plugin"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
+            keySequence="Alt+C Alt+E"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Uncheckout"
             description="Cancels the checkout for the selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+            keySequence="Alt+C Alt+U"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Checkin"
             description="Checks in th selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkin">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+I"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Refresh"
             description="Refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refresh">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
+            keySequence="Alt+C Alt+R"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Refresh Quick"
             description="Quickly refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refreshquick">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
+            string="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+Q"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Checkout"
             description="Checks out the selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkout">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
+            string="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+O"
+            scope="org.eclipse.ui.globalScope"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Update"
             description="Updates the seletced resources (Static view only)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+T"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Add"
             description="Adds the selected resources to clearcase"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.add">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+A"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Delete"
             description="Removes the selected resources from clearcase"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.delete">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+D"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Version Tree"
             description="Opens the clearcase version tree browser on the slected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+V"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Update (External)"
             description="Updates the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+X"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="History"
             description="Opens the clearcase hostory browser on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+H"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Compare with predecessor"
             description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+C"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Find Checkouts"
             description="Opens the clearcase find checkouts tool on the selected resource (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
       </command>
+      <keyBinding
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+F"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
       <command
             name="Cancel Pending Refreshes"
             description="Cancels all pending refresh state jobs"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.bindings">
-         
-      <key
-            sequence="M3+C M3+S"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+E"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+U"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
-            contextId="org.eclipse.ui.contexts.dialogAndWindow"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-
-      <key
-            sequence="M3+C M3+I"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+R"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+Q"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+O"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
-            schemeId="org.eclipse.ui.globalScope"/>
-
-      <key
-            sequence="M3+C M3+V"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-            contextId="org.eclipse.ui.contexts.dialogAndWindow"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-            
-      <key
-            sequence="M3+C M3+T"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+A"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
-            schemeId="org.eclipse.ui.globalScope"/>
-      <key
-            sequence="M3+C M3+D"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <key
-            sequence="M3+C M3+X"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <key
-            sequence="M3+C M3+H"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <key
-            sequence="M3+C M3+C"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <key
-            sequence="M3+C M3+F"
-            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-      <key
-            sequence="M3+C M3+Z"
+      <keyBinding
             commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            scope="org.eclipse.ui.globalScope"
+            keySequence="Alt+C Alt+Z"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -679,8 +672,8 @@
             lightweight="true"
             adaptable="true"
             label="%clearcaseDecorator.name"
-            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
             state="true"
+            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
             id="net.sourceforge.eclipseccase.ui.decorator">
          <enablement>
             <objectClass
@@ -705,8 +698,8 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            adaptable="true"
             objectClass="org.eclipse.core.resources.IResource"
+            adaptable="true"
             name="Clearcase Element Properties"
             class="net.sourceforge.eclipseccase.ElementPropertyPage"
             id="net.sourceforge.eclipseccase.elementPropertyPage">
@@ -722,7 +715,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="net.sourceforge.eclipseccase.ui.ClearcaseUIPreferencesInitializer">
+            class="net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences">
       </initializer>
    </extension>
 
