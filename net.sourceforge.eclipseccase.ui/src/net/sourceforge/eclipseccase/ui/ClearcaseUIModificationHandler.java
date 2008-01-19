@@ -221,7 +221,10 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 				}
 			}, new MultiRule(files));
 		} catch (InvocationTargetException e) {
-			ClearcaseUI.handleError(shell, e, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), null);
+			ClearcasePlugin.log(Messages.getString("ClearcaseUIModificationHandler.error.checkout") //$NON-NLS-1$
+					+ (null != e.getCause() ? e.getCause().getMessage() : e.getMessage()), null != e.getCause() ? e.getCause(): e);
+			MessageDialog.openError(shell,Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
+			Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
 			return CANCEL;
 		} catch (InterruptedException e) {
 			return CANCEL;
