@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.eclipseccase.ui"
-   name="%pluginName"
-   version="2.0.0.dev1"
-   provider-name="%providerName"
-   class="net.sourceforge.eclipseccase.ui.ClearcaseUI">
-
-   <runtime>
-      <library name="clearcase-ui.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="net.sourceforge.eclipseccase" export="true"/>
-      <import plugin="org.eclipse.team.ui" export="true"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.ui.ide"/>
-   </requires>
+<plugin>
 
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -462,194 +443,96 @@
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.associate">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
-            keySequence="Alt+C Alt+S"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Dissociate"
             description="Dissociates the selected project from the clearcase plugin"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-            keySequence="Alt+C Alt+E"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Uncheckout"
             description="Cancels the checkout for the selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
-            keySequence="Alt+C Alt+U"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Checkin"
             description="Checks in th selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkin">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+I"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Refresh"
             description="Refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refresh">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
-            keySequence="Alt+C Alt+R"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Refresh Quick"
             description="Quickly refreshes eclipse&apos;s cache of the resource&apos;s clearcase state"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.refreshquick">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
-            string="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+Q"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Checkout"
             description="Checks out the selected resources"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.checkout">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
-            string="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+O"
-            scope="org.eclipse.ui.globalScope"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Update"
             description="Updates the seletced resources (Static view only)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+T"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Add"
             description="Adds the selected resources to clearcase"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.add">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+A"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Delete"
             description="Removes the selected resources from clearcase"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.delete">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+D"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Version Tree"
             description="Opens the clearcase version tree browser on the slected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+V"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Update (External)"
             description="Updates the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+X"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="History"
             description="Opens the clearcase hostory browser on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+H"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Compare with predecessor"
             description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+C"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Find Checkouts"
             description="Opens the clearcase find checkouts tool on the selected resource (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+F"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             name="Cancel Pending Refreshes"
             description="Cancels all pending refresh state jobs"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
       </command>
-      <keyBinding
-            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-            scope="org.eclipse.ui.globalScope"
-            keySequence="Alt+C Alt+Z"
-            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -717,6 +600,104 @@
       <initializer
             class="net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+S">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+E">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+U">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+I">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+R">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+A">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+T">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+Q">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+O">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+D">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+V">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+H">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+X">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+F">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+C">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+Z">
+      </key>
    </extension>
 
 </plugin>
