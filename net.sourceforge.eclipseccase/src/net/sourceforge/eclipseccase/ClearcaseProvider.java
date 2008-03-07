@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.clearcase.ClearCase;
-import net.sourceforge.clearcase.ClearCaseElementState;
-import net.sourceforge.clearcase.ClearCaseInterface;
-import net.sourceforge.clearcase.ClearcaseUtil;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFileModificationValidator;
@@ -413,17 +410,17 @@ public class ClearcaseProvider extends RepositoryProvider {
 			monitor.beginTask("Checking out "
 					+ resource.getParent().getFullPath().toString(), 10);
 			IStatus result = OK_STATUS;
-			String parent = null;
+			// String parent = null;
 			// IProject's parent is the workspace directory, we want the
 			// filesystem
 			// parent if the workspace is not itself in clearcase
-			boolean flag = resource instanceof IProject
-					&& !hasRemote(resource.getParent());
-			if (flag) {
-				parent = resource.getLocation().toFile().getParent().toString();
-			} else {
-				parent = resource.getParent().getLocation().toOSString();
-			}
+			//boolean flag = resource instanceof IProject
+			//		&& !hasRemote(resource.getParent());
+			//if (flag) {
+			//	parent = resource.getLocation().toFile().getParent().toString();
+			//} else {
+			//	parent = resource.getParent().getLocation().toOSString();
+			//}
 			monitor.worked(2);
 			// if (!ClearcasePlugin.getEngine().isElement(parent)) {
 			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
@@ -888,7 +885,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// update if necessary
 				if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
 					monitor.subTask("Updating " + resource.getName());
-					String filename = resource.getLocation().toOSString();
+					// String filename = resource.getLocation().toOSString();
 					// ClearCaseInterface.Status status =
 					// ClearcasePlugin.getEngine()
 					// .cleartool(
@@ -906,9 +903,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// only checkout if update was successful
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + resource.getName());
-					boolean reserved = ClearcasePlugin
-							.isReservedCheckoutsAlways()
-							|| ClearcasePlugin.isReservedCheckoutsIfPossible();
+					//boolean reserved = ClearcasePlugin
+					//		.isReservedCheckoutsAlways()
+					//		|| ClearcasePlugin.isReservedCheckoutsIfPossible();
 					ClearcasePlugin.getEngine()
 							.checkout(
 									new String[] { resource.getLocation()
@@ -969,7 +966,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 							null);
 				}
 				IStatus result = OK_STATUS;
-				String filename = resource.getLocation().toOSString();
+				// String filename = resource.getLocation().toOSString();
 				// ClearCaseInterface.Status status =
 				// ClearcasePlugin.getEngine()
 				// .cleartool(

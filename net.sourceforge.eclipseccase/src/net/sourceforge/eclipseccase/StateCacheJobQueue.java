@@ -45,7 +45,7 @@ class StateCacheJobQueue extends Job {
 	private boolean interrupted = false;
 
 	/** the job manager */
-	private final IJobManager jobManager = Platform.getJobManager();
+	private final IJobManager jobManager = Job.getJobManager();
 
 	/** the system bundle */
 	private final Bundle systemBundle = Platform.getBundle("org.eclipse.osgi"); //$NON-NLS-1$
