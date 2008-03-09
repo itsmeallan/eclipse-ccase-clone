@@ -18,6 +18,7 @@ import net.sourceforge.eclipseccase.ui.actions.ClearDlgHelper;
 import net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferenceStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.team.FileModificationValidationContext;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.MultiRule;
@@ -53,74 +54,6 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	}
 
 	/**
-	 * Returns the shell context
-	 * 
-	 * @param context
-	 * @return the shell context
-	 */
-	private Shell getShell(Object context) {
-		if (context instanceof Shell)
-			return (Shell) context;
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateEdit(org.eclipse.core.resources.IFile[],
-	 *      java.lang.Object)
-	 */
-	public IStatus validateEdit(IFile[] files, Object context) {
-		final Shell shell = getShell(context);
-		if (null == shell)
-			return super.validateEdit(files, context);
-
-		try {
-			validateEditLock.acquire();
-			final IFile[] readOnlyFiles = getFilesToCheckout(files);
-			if (readOnlyFiles.length == 0)
-				return OK;
-			final IStatus[] status = new IStatus[1];
-			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-
-				public void run() {
-					status[0] = checkout(readOnlyFiles, shell);
-				}
-			});
-			if (null == status[0])
-				return CANCEL;
-			return status[0];
-		} finally {
-			validateEditLock.release();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateSave(org.eclipse.core.resources.IFile)
-	 */
-	public IStatus validateSave(final IFile file) {
-		try {
-			validateEditLock.acquire();
-			if (!needsCheckout(file))
-				return OK;
-			final IStatus[] status = new IStatus[1];
-			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-
-				public void run() {
-					status[0] = checkout(new IFile[] { file }, PlatformUI.getWorkbench().getDisplay().getActiveShell());
-				}
-			});
-			if (null == status[0])
-				return CANCEL;
-			return status[0];
-		} finally {
-			validateEditLock.release();
-		}
-	}
-
-	/**
 	 * Checks out the specified files.
 	 * 
 	 * @param files
@@ -131,8 +64,9 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 
 		// cancel if auto-checkout is disabled to give underlying
 		// logic a chance to handle that case
-		if (ClearcasePlugin.isCheckoutAutoNever())
+		if (ClearcasePlugin.isCheckoutAutoNever()) {
 			return CANCEL;
+		}
 
 		// check if we are allowed to prompt
 		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
@@ -169,15 +103,16 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 		try {
 			// use workbench window as preferred runnable context
 			IRunnableContext context;
-			if (PlatformUI.isWorkbenchRunning() && null != PlatformUI.getWorkbench().getActiveWorkbenchWindow())
+			if (PlatformUI.isWorkbenchRunning() && (null != PlatformUI.getWorkbench().getActiveWorkbenchWindow())) {
 				context = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			else
+			} else {
 				context = new ProgressMonitorDialog(shell);
+			}
 
 			// checkout
 			PlatformUI.getWorkbench().getProgressService().runInUI(context, new IRunnableWithProgress() {
 
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					try {
 						String comment = null;
 
@@ -185,10 +120,11 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 							CommentDialog dlg = new CommentDialog(shell, "Checkout comment");
 							dlg.setRecursive(false);
 							dlg.setRecursiveEnabled(false);
-							if (dlg.open() == Window.CANCEL)
+							if (dlg.open() == Window.CANCEL) {
 								throw new InterruptedException("Operation canceled by user.");
-							else
+							} else {
 								comment = dlg.getComment();
+							}
 						}
 
 						synchronized (provider) {
@@ -199,8 +135,9 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 									monitor.subTask("Executing ClearCase user interface...");
 									ClearDlgHelper.checkout(files);
 								} else {
-									if (null != comment)
+									if (null != comment) {
 										provider.setComment(comment);
+									}
 
 									for (int i = 0; i < files.length; i++) {
 										IFile file = files[i];
@@ -222,14 +159,88 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 			}, new MultiRule(files));
 		} catch (InvocationTargetException e) {
 			ClearcasePlugin.log(Messages.getString("ClearcaseUIModificationHandler.error.checkout") //$NON-NLS-1$
-					+ (null != e.getCause() ? e.getCause().getMessage() : e.getMessage()), null != e.getCause() ? e.getCause(): e);
-			MessageDialog.openError(shell,Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
-			Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
+					+ (null != e.getCause() ? e.getCause().getMessage() : e.getMessage()), null != e.getCause() ? e.getCause() : e);
+			MessageDialog.openError(shell, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
+					Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
 			return CANCEL;
 		} catch (InterruptedException e) {
 			return CANCEL;
 		}
 
 		return OK;
+	}
+
+	/**
+	 * Returns the shell context
+	 * 
+	 * @param context
+	 * @return the shell context
+	 */
+	private Shell getShell(final Object context) {
+		if (context instanceof Shell) {
+			return (Shell) context;
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateEdit(org.eclipse.core.resources.IFile[],
+	 *      org.eclipse.core.resources.team.FileModificationValidationContext)
+	 */
+	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
+		final Shell shell = getShell(context);
+		if (null == shell) {
+			return super.validateEdit(files, context);
+		}
+
+		try {
+			this.validateEditLock.acquire();
+			final IFile[] readOnlyFiles = getFilesToCheckout(files);
+			if (readOnlyFiles.length == 0) {
+				return OK;
+			}
+			final IStatus[] status = new IStatus[1];
+			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+
+				public void run() {
+					status[0] = checkout(readOnlyFiles, shell);
+				}
+			});
+			if (null == status[0]) {
+				return CANCEL;
+			}
+			return status[0];
+		} finally {
+			this.validateEditLock.release();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateSave(org.eclipse.core.resources.IFile)
+	 */
+	public IStatus validateSave(final IFile file) {
+		try {
+			this.validateEditLock.acquire();
+			if (!needsCheckout(file)) {
+				return OK;
+			}
+			final IStatus[] status = new IStatus[1];
+			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+
+				public void run() {
+					status[0] = checkout(new IFile[] { file }, PlatformUI.getWorkbench().getDisplay().getActiveShell());
+				}
+			});
+			if (null == status[0]) {
+				return CANCEL;
+			}
+			return status[0];
+		} finally {
+			this.validateEditLock.release();
+		}
 	}
 }

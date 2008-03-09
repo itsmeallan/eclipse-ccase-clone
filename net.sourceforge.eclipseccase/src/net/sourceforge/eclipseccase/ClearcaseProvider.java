@@ -20,12 +20,12 @@ import java.util.List;
 import net.sourceforge.clearcase.ClearCase;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFileModificationValidator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -414,13 +414,13 @@ public class ClearcaseProvider extends RepositoryProvider {
 			// IProject's parent is the workspace directory, we want the
 			// filesystem
 			// parent if the workspace is not itself in clearcase
-			//boolean flag = resource instanceof IProject
-			//		&& !hasRemote(resource.getParent());
-			//if (flag) {
-			//	parent = resource.getLocation().toFile().getParent().toString();
-			//} else {
-			//	parent = resource.getParent().getLocation().toOSString();
-			//}
+			// boolean flag = resource instanceof IProject
+			// && !hasRemote(resource.getParent());
+			// if (flag) {
+			// parent = resource.getLocation().toFile().getParent().toString();
+			// } else {
+			// parent = resource.getParent().getLocation().toOSString();
+			// }
 			monitor.worked(2);
 			// if (!ClearcasePlugin.getEngine().isElement(parent)) {
 			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
@@ -495,10 +495,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 		return moveHandler;
 	}
 
-	/**
-	 * @see RepositoryProvider#getFileModificationValidator()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.team.core.RepositoryProvider#getFileModificationValidator2()
 	 */
-	public IFileModificationValidator getFileModificationValidator() {
+	public FileModificationValidator getFileModificationValidator2() {
 		return ClearcasePlugin.getInstance().getClearcaseModificationHandler();
 	}
 
@@ -619,74 +621,74 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 				if (result.isOK()) {
 					if (resource instanceof IContainer) {
-					// try {
-					// String path = resource.getLocation().toOSString();
-					// File origfolder = new File(path);
-					// File mkelemfolder = new File(path + ".mkelem");
-					// origfolder.renameTo(mkelemfolder);
-					// monitor.worked(10);
-					// // FIXME: support -master
+						// try {
+						// String path = resource.getLocation().toOSString();
+						// File origfolder = new File(path);
+						// File mkelemfolder = new File(path + ".mkelem");
+						// origfolder.renameTo(mkelemfolder);
+						// monitor.worked(10);
+						// // FIXME: support -master
 
-					// FIXME:Old
-					/*
-					 * ClearcasePlugin .getEngine().add(new String[]
-					 * {resource.getLocation().toOSString()}, getComment(),
-					 * ClearCase.PTIME | ClearCase.MASTER | ClearCase.RECURSIVE,
-					 * null);
-					 */
-						
-					// When a container e.g. folder
-					ClearcasePlugin.getEngine().add(
-							resource.getLocation().toOSString(),
-							true,
-							getComment(),
-							ClearCase.PTIME | ClearCase.MASTER
-									| ClearCase.RECURSIVE, null);
-					// monitor.worked(10);
-					// if (status.status) {
-					// File[] members = mkelemfolder.listFiles();
-					// if (null != members && members.length > 0) {
-					// int ticks = 10 / members.length;
-					// for (int i = 0; i < members.length; i++) {
-					// File member = members[i];
-					// File newMember = new File(origfolder
-					// .getPath(), member.getName());
-					// member.renameTo(newMember);
-					// monitor.worked(ticks);
-					// }
-					// }
-					// mkelemfolder.delete();
-					// monitor.worked(10);
-					// } else {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE, "Add failed: "
-					// + status.message, null);
-					// }
-					// updateState(resource, IResource.DEPTH_ZERO,
-					// new SubProgressMonitor(monitor, 10));
-					// } catch (Exception ex) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE, "Add failed: "
-					// + ex.getMessage(), ex);
-					// updateState(resource.getParent(),
-					// IResource.DEPTH_ONE,
-					// new SubProgressMonitor(monitor, 10));
-					// }
-					// } else {
-					// // FIXME: support -master
-					// ClearCaseInterface.Status status =
-					// ClearcasePlugin.getEngine()
-					// .add(resource.getLocation().toOSString(),
-					// getComment(), false, false);
-					
-					// if (!status.status) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE, "Add failed: "
-					// + status.message, null);
-					// }
-					// }
-					
-					}else{
+						// FIXME:Old
+						/*
+						 * ClearcasePlugin .getEngine().add(new String[]
+						 * {resource.getLocation().toOSString()}, getComment(),
+						 * ClearCase.PTIME | ClearCase.MASTER |
+						 * ClearCase.RECURSIVE, null);
+						 */
+
+						// When a container e.g. folder
+						ClearcasePlugin.getEngine().add(
+								resource.getLocation().toOSString(),
+								true,
+								getComment(),
+								ClearCase.PTIME | ClearCase.MASTER
+										| ClearCase.RECURSIVE, null);
+						// monitor.worked(10);
+						// if (status.status) {
+						// File[] members = mkelemfolder.listFiles();
+						// if (null != members && members.length > 0) {
+						// int ticks = 10 / members.length;
+						// for (int i = 0; i < members.length; i++) {
+						// File member = members[i];
+						// File newMember = new File(origfolder
+						// .getPath(), member.getName());
+						// member.renameTo(newMember);
+						// monitor.worked(ticks);
+						// }
+						// }
+						// mkelemfolder.delete();
+						// monitor.worked(10);
+						// } else {
+						// result = new Status(IStatus.ERROR, ID,
+						// TeamException.UNABLE, "Add failed: "
+						// + status.message, null);
+						// }
+						// updateState(resource, IResource.DEPTH_ZERO,
+						// new SubProgressMonitor(monitor, 10));
+						// } catch (Exception ex) {
+						// result = new Status(IStatus.ERROR, ID,
+						// TeamException.UNABLE, "Add failed: "
+						// + ex.getMessage(), ex);
+						// updateState(resource.getParent(),
+						// IResource.DEPTH_ONE,
+						// new SubProgressMonitor(monitor, 10));
+						// }
+						// } else {
+						// // FIXME: support -master
+						// ClearCaseInterface.Status status =
+						// ClearcasePlugin.getEngine()
+						// .add(resource.getLocation().toOSString(),
+						// getComment(), false, false);
+
+						// if (!status.status) {
+						// result = new Status(IStatus.ERROR, ID,
+						// TeamException.UNABLE, "Add failed: "
+						// + status.message, null);
+						// }
+						// }
+
+					} else {
 						ClearcasePlugin.getEngine().add(
 								resource.getLocation().toOSString(),
 								false,
@@ -694,7 +696,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 								ClearCase.PTIME | ClearCase.MASTER
 										| ClearCase.RECURSIVE, null);
 					}
-					
+
 					monitor.worked(40);
 					updateState(resource, IResource.DEPTH_ZERO,
 							new SubProgressMonitor(monitor, 40));
@@ -903,9 +905,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// only checkout if update was successful
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + resource.getName());
-					//boolean reserved = ClearcasePlugin
-					//		.isReservedCheckoutsAlways()
-					//		|| ClearcasePlugin.isReservedCheckoutsIfPossible();
+					// boolean reserved = ClearcasePlugin
+					// .isReservedCheckoutsAlways()
+					// || ClearcasePlugin.isReservedCheckoutsIfPossible();
 					ClearcasePlugin.getEngine()
 							.checkout(
 									new String[] { resource.getLocation()
