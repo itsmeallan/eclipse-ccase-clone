@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseElementState;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -410,43 +411,49 @@ public class ClearcaseProvider extends RepositoryProvider {
 			monitor.beginTask("Checking out "
 					+ resource.getParent().getFullPath().toString(), 10);
 			IStatus result = OK_STATUS;
-			// String parent = null;
+			String parent = null;
 			// IProject's parent is the workspace directory, we want the
 			// filesystem
 			// parent if the workspace is not itself in clearcase
-			// boolean flag = resource instanceof IProject
-			// && !hasRemote(resource.getParent());
-			// if (flag) {
-			// parent = resource.getLocation().toFile().getParent().toString();
-			// } else {
-			// parent = resource.getParent().getLocation().toOSString();
-			// }
+			boolean flag = resource instanceof IProject
+					&& !hasRemote(resource.getParent());
+			if (flag) {
+				parent = resource.getLocation().toFile().getParent().toString();
+			} else {
+				parent = resource.getParent().getLocation().toOSString();
+			}
 			monitor.worked(2);
-			// if (!ClearcasePlugin.getEngine().isElement(parent)) {
-			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
-					"Could not find a parent that is a clearcase element", null);
+			ClearCaseElementState elementState = ClearcasePlugin.getEngine().getElementState(parent);
+			if (!elementState.isElement()) {
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Could not find a parent that is a clearcase element",
+						null);
+				return result;
+			}
+			monitor.worked(2);
+			if(!elementState.isCheckedOut() && !elementState.isLink()){
+				String [] element = {parent};
+				//TODO: In old we used ClearcasePlugin.isReservedCheckoutsAlways(). How to handle that.
+				ClearCaseElementState [] elementState2 = ClearcasePlugin.getEngine().checkout(element, getComment(), 0, null);
+//				ClearCaseInterface.Status ccStatus = ClearcasePlugin
+//						.getEngine().checkout(parent, getComment(),
+//								ClearcasePlugin.isReservedCheckoutsAlways(),
+//								true);
+				
+				
+				monitor.worked(4);
+				if (!flag)
+					updateState(resource.getParent(), IResource.DEPTH_ZERO,
+							new SubProgressMonitor(monitor, 10));
+				if (elementState2 == null) {
+					//TODO: Handle ccStatus.message.
+					result = new Status(IStatus.ERROR, ID,
+							TeamException.UNABLE,
+							"Could not check out parent: " + "ccStatus",
+							null);
+				}
+			}
 			return result;
-			// }
-			// monitor.worked(2);
-			// if
-			// (!ClearcasePlugin.getEngine().isCheckedOut(parent,ClearcasePlugin.getEngine().isSymbolicLink(parent)))
-			// {
-			// ClearCaseInterface.Status ccStatus = ClearcasePlugin.getEngine()
-			// .checkout(parent, getComment(),
-			// ClearcasePlugin.isReservedCheckoutsAlways(),
-			// true);
-			// monitor.worked(4);
-			// if (!flag)
-			// updateState(resource.getParent(), IResource.DEPTH_ZERO,
-			// new SubProgressMonitor(monitor, 10));
-			// if (!ccStatus.status) {
-			// result = new Status(IStatus.ERROR, ID,
-			// TeamException.UNABLE,
-			// "Could not check out parent: " + ccStatus.message,
-			// null);
-			// }
-			// }
-			// return result;
 		} finally {
 			monitor.done();
 		}
@@ -621,22 +628,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 				if (result.isOK()) {
 					if (resource instanceof IContainer) {
-						// try {
-						// String path = resource.getLocation().toOSString();
-						// File origfolder = new File(path);
-						// File mkelemfolder = new File(path + ".mkelem");
-						// origfolder.renameTo(mkelemfolder);
-						// monitor.worked(10);
-						// // FIXME: support -master
-
-						// FIXME:Old
-						/*
-						 * ClearcasePlugin .getEngine().add(new String[]
-						 * {resource.getLocation().toOSString()}, getComment(),
-						 * ClearCase.PTIME | ClearCase.MASTER |
-						 * ClearCase.RECURSIVE, null);
-						 */
-
 						// When a container e.g. folder
 						ClearcasePlugin.getEngine().add(
 								resource.getLocation().toOSString(),
