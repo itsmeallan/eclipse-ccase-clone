@@ -59,7 +59,7 @@ public class HistoryAction extends ClearcaseAction
                         String path = resource.getLocation().toOSString();
                         if (ClearcasePlugin.isUseCleartool())
                         {
-                            new CommandLauncher(new CleartoolCommandLine("lshistory").addOption("-graphical").addElement(path).create(),null,null,null);
+                            new CommandLauncher().execute(new CleartoolCommandLine("lshistory").addOption("-graphical").addElement(path).create(),null,null,null);
                         }
                         else
                         {

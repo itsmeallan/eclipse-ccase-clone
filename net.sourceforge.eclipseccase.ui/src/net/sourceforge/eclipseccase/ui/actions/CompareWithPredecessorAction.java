@@ -60,7 +60,7 @@ public class CompareWithPredecessorAction extends ClearcaseAction
                         String path = resource.getLocation().toOSString();
                         if (ClearcasePlugin.isUseCleartool())
                         {
-                            new CommandLauncher(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(),null,null,null);
+                            new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(),null,null,null);
                         }
                         else
                         {

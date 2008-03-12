@@ -59,7 +59,7 @@ public class VersionTreeAction extends ClearcaseAction
                         String path = resource.getLocation().toOSString();
                         if (ClearcasePlugin.isUseCleartool())
                         {
-                            new CommandLauncher(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path).create(),null,null,null);
+                            new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path).create(),null,null,null);
                         }
                         else
                         {

@@ -102,8 +102,8 @@ public class ClearDlgHelper {
         }
 
         // execute cleardlg
-        CommandLauncher launcher = new CommandLauncher(cleardlg.create(), null,
-                null, null);
+        CommandLauncher launcher = new CommandLauncher();
+        launcher.execute(cleardlg.create(), null,null, null);
 
             int returnValue = launcher.getExitValue();
             if (0 != returnValue && returnValue != resources.length)

@@ -56,7 +56,7 @@ public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
                         if(ClearcasePlugin.isUseCleartool())
                         {
                             // update using cleartool
-                            new CommandLauncher(new CleartoolCommandLine("update").addOption("-graphical").addElement(resource.getLocation().toOSString()).create(),null,null,null);
+                            new CommandLauncher().execute(new CleartoolCommandLine("update").addOption("-graphical").addElement(resource.getLocation().toOSString()).create(),null,null,null);
                         }
                         else
                         {
