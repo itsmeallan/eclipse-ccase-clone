@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.Bundle;
 
 /**
- * The queue for refreshe state jobs.
+ * The queue for refresh state jobs.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
@@ -117,7 +117,7 @@ class StateCacheJobQueue extends Job {
 
                 StateCacheJob job = null;
 
-                // synchonize on the buffer but execute job outside lock
+                // synchronize on the buffer but execute job outside lock
                 synchronized (priorityQueue) {
                     if (!priorityQueue.isEmpty())
                             job = (StateCacheJob) priorityQueue.remove();
