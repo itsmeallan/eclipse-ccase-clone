@@ -293,7 +293,8 @@ public class StateCache implements Serializable {
         if (null == resource) return false;
 
         // performance improve: if not checked out it is not dirty
-        if (!isCheckedOut()) return false;
+        // wrong : it can be hijacked
+        // if (!isCheckedOut()) return false;
 
         // this is too expensive
         //try {
