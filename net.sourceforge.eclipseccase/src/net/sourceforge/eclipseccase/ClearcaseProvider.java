@@ -21,6 +21,7 @@ import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
@@ -433,12 +434,14 @@ public class ClearcaseProvider extends RepositoryProvider {
 			monitor.worked(2);
 			if(!elementState.isCheckedOut() && !elementState.isLink()){
 				String [] element = {parent};
-				//TODO: In old we used ClearcasePlugin.isReservedCheckoutsAlways(). How to handle that.
+				// TODO: In old we used
+				// ClearcasePlugin.isReservedCheckoutsAlways(). How to handle
+				// that.
 				ClearCaseElementState [] elementState2 = ClearcasePlugin.getEngine().checkout(element, getComment(), 0, null);
-//				ClearCaseInterface.Status ccStatus = ClearcasePlugin
-//						.getEngine().checkout(parent, getComment(),
-//								ClearcasePlugin.isReservedCheckoutsAlways(),
-//								true);
+// ClearCaseInterface.Status ccStatus = ClearcasePlugin
+// .getEngine().checkout(parent, getComment(),
+// ClearcasePlugin.isReservedCheckoutsAlways(),
+// true);
 				
 				
 				monitor.worked(4);
@@ -446,7 +449,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 					updateState(resource.getParent(), IResource.DEPTH_ZERO,
 							new SubProgressMonitor(monitor, 10));
 				if (elementState2 == null) {
-					//TODO: Handle ccStatus.message.
+					// TODO: Handle ccStatus.message.
 					result = new Status(IStatus.ERROR, ID,
 							TeamException.UNABLE,
 							"Could not check out parent: " + "ccStatus",
@@ -592,6 +595,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	private final class AddOperation implements IRecursiveOperation {
+		List nonCCResurces = null;
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
@@ -612,92 +616,108 @@ public class ClearcaseProvider extends RepositoryProvider {
 													.getFullPath().toString() }),
 							null);
 				}
-				// Walk up parent heirarchy, find first ccase
-				// element that is a parent, and walk back down, adding each to
-				// ccase
+				if(nonCCResurces == null){
+				nonCCResurces = new ArrayList();
+				}
+				
 				IResource parent = resource.getParent();
+				
 				// When resource is a project, try checkout its parent, and if
 				// that fails,
 				// then neither project nor workspace is in clearcase.
 				if (resource instanceof IProject || hasRemote(parent)) {
 					result = checkoutParent(resource, new SubProgressMonitor(
 							monitor, 10));
+					nonCCResurces.add(resource);
 				} else {
+					// Add files or directories that are not elements.
+					nonCCResurces.add(resource);
 					result = visit(parent, new SubProgressMonitor(monitor, 10));
 				}
+				
+				if (result.isOK()) {									
+					for (int i = 1; i < nonCCResurces.size(); i++) {
+						IResource nonCCResource = (IResource) nonCCResurces
+								.get(nonCCResurces.size() - i);
+						if (nonCCResource.getType() == IResource.FOLDER) {
+							File tmpDir = null;
+							if (!hasRemote(nonCCResource)) {
+								
+								System.out.println(nonCCResource.getLocation().toString());
+								 tmpDir = new File (nonCCResource.getParent().getLocation().toString(), nonCCResource.getName()+".tmp");
+								 boolean success = tmpDir.mkdirs();
+								 if (!success) {
+									 return new Status(
+												IStatus.OK,
+												ID,
+												TeamException.UNABLE,
+												MessageFormat
+														.format(
+																"Directory  noy\"{0}\" created!",
+																new Object[] { resource.getFullPath().toString() }),
+																null);
+																 
+								  }
+								File dir = new File(nonCCResource.getParent().getLocation().toString(), nonCCResource.getName());
+								boolean success1 = dir.renameTo(tmpDir);
+								
+							    if (!success1) {
+							    	return new Status(
+											IStatus.OK,
+											ID,
+											TeamException.UNABLE,
+											MessageFormat
+													.format(
+															"Directory  \"{0}\" could not be moved!",
+															new Object[] { resource
+																	.getFullPath().toString() }),
+											null);
+							    }
+							    //Create the new directory as cc element.
+							    ClearcasePlugin.getEngine().add(
+										nonCCResource.getLocation().toOSString(), true,
+										getComment(), ClearCase.NO_CHECK_OUT, null);
+							    //If ok the move renamed into new cc dir.
+							    boolean success2 = tmpDir.renameTo(new File(nonCCResource.getLocation().toOSString(), nonCCResource.getName()));
+							    if (!success2) {
+							        // File was not successfully moved
+							    }
+							    
 
-				if (result.isOK()) {
-					if (resource instanceof IContainer) {
-						// When a container e.g. folder
-						ClearcasePlugin.getEngine().add(
-								resource.getLocation().toOSString(),
-								true,
-								getComment(),
-								ClearCase.PTIME | ClearCase.MASTER
-										| ClearCase.RECURSIVE, null);
-						// monitor.worked(10);
-						// if (status.status) {
-						// File[] members = mkelemfolder.listFiles();
-						// if (null != members && members.length > 0) {
-						// int ticks = 10 / members.length;
-						// for (int i = 0; i < members.length; i++) {
-						// File member = members[i];
-						// File newMember = new File(origfolder
-						// .getPath(), member.getName());
-						// member.renameTo(newMember);
-						// monitor.worked(ticks);
-						// }
-						// }
-						// mkelemfolder.delete();
-						// monitor.worked(10);
-						// } else {
-						// result = new Status(IStatus.ERROR, ID,
-						// TeamException.UNABLE, "Add failed: "
-						// + status.message, null);
-						// }
-						// updateState(resource, IResource.DEPTH_ZERO,
-						// new SubProgressMonitor(monitor, 10));
-						// } catch (Exception ex) {
-						// result = new Status(IStatus.ERROR, ID,
-						// TeamException.UNABLE, "Add failed: "
-						// + ex.getMessage(), ex);
-						// updateState(resource.getParent(),
-						// IResource.DEPTH_ONE,
-						// new SubProgressMonitor(monitor, 10));
-						// }
-						// } else {
-						// // FIXME: support -master
-						// ClearCaseInterface.Status status =
-						// ClearcasePlugin.getEngine()
-						// .add(resource.getLocation().toOSString(),
-						// getComment(), false, false);
 
-						// if (!status.status) {
-						// result = new Status(IStatus.ERROR, ID,
-						// TeamException.UNABLE, "Add failed: "
-						// + status.message, null);
-						// }
-						// }
+								
+								
+							}
+						}
+						
+						ClearcasePlugin.getEngine()
+								.add(
+										nonCCResource.getLocation().toOSString(),
+										false,
+										getComment(),
+										ClearCase.PTIME | ClearCase.MASTER
+												| ClearCase.NO_CHECK_OUT, null);
 
-					} else {
-						ClearcasePlugin.getEngine().add(
-								resource.getLocation().toOSString(),
-								false,
-								getComment(),
-								ClearCase.PTIME | ClearCase.MASTER
-										| ClearCase.RECURSIVE, null);
 					}
+				}	
+			
 
 					monitor.worked(40);
 					updateState(resource, IResource.DEPTH_ZERO,
 							new SubProgressMonitor(monitor, 40));
-				}
+				
 				return result;
 			} finally {
 				monitor.done();
 			}
 		}
 	}
+	
+	
+			
+
+			
+
 
 	private final class UncheckOutOperation implements IRecursiveOperation {
 
@@ -790,6 +810,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				monitor.done();
 			}
 		}
+		
 	}
 
 	private final class CheckInOperation implements IRecursiveOperation {
