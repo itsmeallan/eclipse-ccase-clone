@@ -8,8 +8,8 @@
 		<!-- must contain properties "user" and "password"-->
 		<property file="login.properties"/>
 
-		<!-- current version (also used for release label) -->				
-		<property name="version" value="1.0.0.M2"/>
+		<!-- current version (also used for release label) -->
+		<property name="version" value="2.1.0.BETA1"/>
 		
 		<property name="staging.dir" value="${basedir}"/>
 		<property name="features.dir" value="${staging.dir}/features"/>
