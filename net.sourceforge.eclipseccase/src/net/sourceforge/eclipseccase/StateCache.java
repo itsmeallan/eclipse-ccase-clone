@@ -165,6 +165,8 @@ public class StateCache implements Serializable {
 
                 ClearCaseElementState newState = ClearcasePlugin.getEngine()
                         .getElementState(osPath);
+                
+                if (newState != null){
 
                 boolean newHasRemote = newState.isElement();
                 changed |= newHasRemote != this.hasRemote();
@@ -223,6 +225,8 @@ public class StateCache implements Serializable {
                     setFlag(SYM_LINK_TARGET_VALID, false);
                     changed = true;
                 }
+                
+                }//End newState !=null
 
             } else {
                     // resource is ignored by Team plug-ins
