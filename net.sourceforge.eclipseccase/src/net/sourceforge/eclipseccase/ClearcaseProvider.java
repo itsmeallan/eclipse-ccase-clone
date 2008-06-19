@@ -427,7 +427,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 				parent = resource.getParent().getLocation().toOSString();
 			}
 			monitor.worked(2);
-			ClearCaseElementState elementState = ClearcasePlugin.getEngine().getElementState(parent);
+			ClearCaseElementState elementState = ClearcasePlugin.getEngine()
+					.getElementState(parent);
 			if (!elementState.isElement()) {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Could not find a parent that is a clearcase element",
@@ -435,18 +436,18 @@ public class ClearcaseProvider extends RepositoryProvider {
 				return result;
 			}
 			monitor.worked(2);
-			if(!elementState.isCheckedOut() && !elementState.isLink()){
-				String [] element = {parent};
+			if (!elementState.isCheckedOut() && !elementState.isLink()) {
+				String[] element = { parent };
 				// TODO: In old we used
 				// ClearcasePlugin.isReservedCheckoutsAlways(). How to handle
 				// that.
-				ClearCaseElementState [] elementState2 = ClearcasePlugin.getEngine().checkout(element, getComment(), 0, null);
-// ClearCaseInterface.Status ccStatus = ClearcasePlugin
-// .getEngine().checkout(parent, getComment(),
-// ClearcasePlugin.isReservedCheckoutsAlways(),
-// true);
-				
-				
+				ClearCaseElementState[] elementState2 = ClearcasePlugin
+						.getEngine().checkout(element, getComment(), 0, null);
+				// ClearCaseInterface.Status ccStatus = ClearcasePlugin
+				// .getEngine().checkout(parent, getComment(),
+				// ClearcasePlugin.isReservedCheckoutsAlways(),
+				// true);
+
 				monitor.worked(4);
 				if (!flag)
 					updateState(resource.getParent(), IResource.DEPTH_ZERO,
@@ -455,8 +456,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 					// TODO: Handle ccStatus.message.
 					result = new Status(IStatus.ERROR, ID,
 							TeamException.UNABLE,
-							"Could not check out parent: " + "ccStatus",
-							null);
+							"Could not check out parent: " + "ccStatus", null);
 				}
 			}
 			return result;
@@ -619,12 +619,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 													.getFullPath().toString() }),
 							null);
 				}
-				if(nonCCResurces == null){
-				nonCCResurces = new ArrayList();
+				if (nonCCResurces == null) {
+					nonCCResurces = new ArrayList();
 				}
-				
+
 				IResource parent = resource.getParent();
-				
+
 				// When resource is a project, try checkout its parent, and if
 				// that fails,
 				// then neither project nor workspace is in clearcase.
@@ -637,118 +637,136 @@ public class ClearcaseProvider extends RepositoryProvider {
 					nonCCResurces.add(resource);
 					result = visit(parent, new SubProgressMonitor(monitor, 10));
 				}
-				//Found cc element to be checked-out.
+				// Found cc element to be checked-out.
 				if (result.isOK()) {
 					if (resource.getType() == IResource.FOLDER) {
-						IFolder folder = (IFolder)resource;
-						try{
-							IPath path = new Path(folder.getName()+".tmp");
-							IFolder tmpFolder = resource.getParent().getFolder(path);
-							if(!tmpFolder.exists()){
+						IFolder folder = (IFolder) resource;
+						try {
+							IPath path = new Path(folder.getName() + ".tmp");
+							IFolder tmpFolder = resource.getParent().getFolder(
+									path);
+							if (!tmpFolder.exists()) {
 								tmpFolder.create(false, true, null);
 							}
-							//Move content of original directory to tmp
-							IResource []resources = folder.members();
-							if(resources != null && resources.length > 0){
+							// Move content of original directory to tmp
+							IResource[] resources = folder.members();
+							if (resources != null && resources.length > 0) {
 								for (int i = 0; i < resources.length; i++) {
-									IPath renamedPath = tmpFolder.getFullPath().append(resources[i].getName());
+									IPath renamedPath = tmpFolder.getFullPath()
+											.append(resources[i].getName());
 									resources[i].move(renamedPath, false, null);
 								}
-								
+
 							}
-							
-							//Now all content of directory is moved delete original directory.
-							if(folder.exists()){
+
+							// Now all content of directory is moved delete
+							// original directory.
+							if (folder.exists()) {
 								folder.delete(false, null);
 							}
-							
-							//TODO:Testing with 0 as Flag ok but all directories are checked out.
-							// Now using ClearCase.NO_CHECK_OUT and the tmp fails.
-							
-							//Now time to create the original directory in clearcase.
-							ClearCaseElementState state = ClearcasePlugin.getEngine().add(
-									resource.getLocation().toOSString(), true,
-									getComment(),0, null);
+
+							// TODO:Testing with 0 as Flag ok but all
+							// directories are checked out.
+							// Now using ClearCase.NO_CHECK_OUT and the tmp
+							// fails.
+
+							// Now time to create the original directory in
+							// clearcase.
+							ClearCaseElementState state = ClearcasePlugin
+									.getEngine()
+									.add(resource.getLocation().toOSString(),
+											true, getComment(), 0, null);
 							if (!state.isElement()) {
 								result = new Status(IStatus.ERROR, ID,
-							    TeamException.UNABLE, "Add failed: "
-							    + "Could not add element" +resource.getName(), null);
+										TeamException.UNABLE, "Add failed: "
+												+ "Could not add element"
+												+ resource.getName(), null);
 							}
-							
-							//Now move back the content of tmp to original.
-							//To avoid CoreException do a refreshLocal(). Does not recognize the cc created resource directory.
+
+							// Now move back the content of tmp to original.
+							// To avoid CoreException do a refreshLocal(). Does
+							// not recognize the cc created resource directory.
 							resource.refreshLocal(IResource.DEPTH_ZERO, null);
-							IResource []tmpResources = tmpFolder.members();
+							IResource[] tmpResources = tmpFolder.members();
 							for (int i = 0; i < tmpResources.length; i++) {
-								IPath renamedPath = folder.getFullPath().append(tmpResources[i].getName());
+								IPath renamedPath = folder.getFullPath()
+										.append(tmpResources[i].getName());
 								tmpResources[i].move(renamedPath, false, null);
 							}
-							
-							//Remove the temporary.
-							if(tmpFolder.exists()){
+
+							// Remove the temporary.
+							if (tmpFolder.exists()) {
 								tmpFolder.delete(false, null);
 							}
-							
-							//Check-in parent since since new directory is now created.
-							String [] element = {resource.getParent().getLocation().toOSString()};
-							ClearCaseElementState [] stateB = ClearcasePlugin.getEngine().checkin(element, comment, 0, null);
-							if(!stateB[0].isCheckedIn()){
-								result = new Status(IStatus.ERROR, ID,
-									    TeamException.UNABLE, "Add failed: "
-									    + "Could not check-in directory" +resource.getName(), null);
+
+							// Check-in parent since since new directory is now
+							// created.
+							String[] element = { resource.getParent()
+									.getLocation().toOSString() };
+							ClearCaseElementState[] stateB = ClearcasePlugin
+									.getEngine().checkin(element, comment, 0,
+											null);
+							if (!stateB[0].isCheckedIn()) {
+								result = new Status(
+										IStatus.ERROR,
+										ID,
+										TeamException.UNABLE,
+										"Add failed: "
+												+ "Could not check-in directory"
+												+ resource.getName(), null);
 							}
-							
-						}catch(CoreException ce){
+
+						} catch (CoreException ce) {
 							ce.printStackTrace();
 							result = new Status(IStatus.ERROR, ID,
-								    TeamException.UNABLE, "Add failed: "
-								    + "Exception" +ce.getMessage(), null);
+									TeamException.UNABLE, "Add failed: "
+											+ "Exception" + ce.getMessage(),
+									null);
 						}
-						
-						
-						
-						
-					}else{
-						ClearcasePlugin.getEngine()
-						.add(
-								resource.getLocation().toOSString(),
-								false,
+
+					} else {
+						ClearcasePlugin.getEngine().add(
+								resource.getLocation().toOSString(), false,
 								getComment(),
-								ClearCase.PTIME | ClearCase.MASTER
-										, null);
-						//check-in element itself.
-						String [] file = {resource.getLocation().toOSString()};
-						ClearCaseElementState [] state = ClearcasePlugin.getEngine().checkin(file, comment, 0, null);
-						if(!state[0].isCheckedIn()){
+								ClearCase.PTIME | ClearCase.MASTER, null);
+						// check-in element itself.
+						String[] file = { resource.getLocation().toOSString() };
+						ClearCaseElementState[] state = ClearcasePlugin
+								.getEngine().checkin(file, comment, 0, null);
+						if (!state[0].isCheckedIn()) {
 							result = new Status(IStatus.ERROR, ID,
-								    TeamException.UNABLE, "Add failed: "
-								    + "Could not check-in directory" +resource.getName(), null);
+									TeamException.UNABLE, "Add failed: "
+											+ "Could not check-in directory"
+											+ resource.getName(), null);
 						}
-						//check-in parent dir
-						String [] dir = {resource.getParent().getLocation().toOSString()};
-						ClearCaseElementState [] stateB = ClearcasePlugin.getEngine().checkin(dir, comment, 0, null);
-						if(!stateB[0].isCheckedIn()){
+						// check-in parent dir
+						String[] dir = { resource.getParent().getLocation()
+								.toOSString() };
+						ClearCaseElementState[] stateB = ClearcasePlugin
+								.getEngine().checkin(dir, comment, 0, null);
+						if (!stateB[0].isCheckedIn()) {
 							result = new Status(IStatus.ERROR, ID,
-								    TeamException.UNABLE, "Add failed: "
-								    + "Could not check-in directory" +resource.getName(), null);
-							
+									TeamException.UNABLE, "Add failed: "
+											+ "Could not check-in directory"
+											+ resource.getName(), null);
+
 						}
-					     
+
 					}
-					
-					//Update state when done with operation. Do on whole project.
+
+					// Update state when done with operation. Do on whole
+					// project.
 					monitor.worked(40);
 					updateState(resource.getProject(), IResource.DEPTH_ZERO,
 							new SubProgressMonitor(monitor, 40));
 				}
-				
+
 				return result;
 			} finally {
 				monitor.done();
 			}
 		}
 	}
-	
 
 	private final class UncheckOutOperation implements IRecursiveOperation {
 
@@ -841,7 +859,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				monitor.done();
 			}
 		}
-		
+
 	}
 
 	private final class CheckInOperation implements IRecursiveOperation {
@@ -926,31 +944,32 @@ public class ClearcaseProvider extends RepositoryProvider {
 				}
 
 				IStatus result = OK_STATUS;
-
+				String[] file = { resource.getLocation().toOSString() };//Since all methods uses arrays also for single.
+				
 				// update if necessary
 				if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
 					monitor.subTask("Updating " + resource.getName());
-					// String filename = resource.getLocation().toOSString();
-					// ClearCaseInterface.Status status =
-					// ClearcasePlugin.getEngine()
-					// .cleartool(
-					// "update -log NUL -force -ptime "
-					// + ClearcaseUtil.quote(filename));
-					// if (!status.status) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE,
-					// "Update before checkout failed: "
-					// + status.message, null);
-					// }
+					
+					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
+							.update(file, comment, 0, null);
+					if (state[0] == null) {
+						result = new Status(IStatus.ERROR, ID,
+								TeamException.UNABLE,
+								"Update before checkout failed: "
+										+ resource.getName(), null);
+
+					}
+					
 				}
 				monitor.worked(20);
 
 				// only checkout if update was successful
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + resource.getName());
-					// boolean reserved = ClearcasePlugin
-					// .isReservedCheckoutsAlways()
-					// || ClearcasePlugin.isReservedCheckoutsIfPossible();
+					boolean reserved = ClearcasePlugin
+							.isReservedCheckoutsAlways()
+							|| ClearcasePlugin.isReservedCheckoutsIfPossible();
+					ClearcasePlugin.getEngine().checkout(file, getComment(),ClearCase.RESERVED|ClearCase.FORCE |ClearCase.PTIME , null);
 					ClearcasePlugin.getEngine()
 							.checkout(
 									new String[] { resource.getLocation()
