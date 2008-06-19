@@ -944,14 +944,15 @@ public class ClearcaseProvider extends RepositoryProvider {
 				}
 
 				IStatus result = OK_STATUS;
-				String[] file = { resource.getLocation().toOSString() };//Since all methods uses arrays also for single.
-				
+
 				// update if necessary
 				if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
 					monitor.subTask("Updating " + resource.getName());
-					
+
 					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
-							.update(file, comment, 0, null);
+							.update(
+									new String[] { resource.getLocation()
+											.toOSString() }, comment, 0, null);
 					if (state[0] == null) {
 						result = new Status(IStatus.ERROR, ID,
 								TeamException.UNABLE,
@@ -959,42 +960,41 @@ public class ClearcaseProvider extends RepositoryProvider {
 										+ resource.getName(), null);
 
 					}
-					
+
 				}
 				monitor.worked(20);
 
 				// only checkout if update was successful
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + resource.getName());
+					ClearCaseElementState[] state = null;
+
 					boolean reserved = ClearcasePlugin
 							.isReservedCheckoutsAlways()
 							|| ClearcasePlugin.isReservedCheckoutsIfPossible();
-					ClearcasePlugin.getEngine().checkout(file, getComment(),ClearCase.RESERVED|ClearCase.FORCE |ClearCase.PTIME , null);
-					ClearcasePlugin.getEngine()
-							.checkout(
-									new String[] { resource.getLocation()
-											.toOSString() },
-									getComment(),
-									ClearCase.RESERVED | ClearCase.FORCE
-											| ClearCase.PTIME, null);
+					if (!reserved) {
+
+						// unreserved
+						state = ClearcasePlugin.getEngine().checkout(
+								new String[] { resource.getLocation()
+										.toOSString() }, getComment(),
+								ClearCase.UNRESERVED | ClearCase.PTIME, null);
+					} else {
+						// reserved
+						state = ClearcasePlugin.getEngine().checkout(
+								new String[] { resource.getLocation()
+										.toOSString() }, getComment(),
+								ClearCase.RESERVED | ClearCase.PTIME, null);
+					}
+
 					monitor.worked(20);
-					// if (!status.status) {
-					//
-					// // try unreserved before failing finally
-					// if (reserved
-					// && ClearcasePlugin
-					// .isReservedCheckoutsIfPossible()) {
-					// status = ClearcasePlugin.getEngine().checkout(
-					// resource.getLocation().toOSString(),
-					// getComment(), false, true);
-					// }
-					//
-					// if (!status.status) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE, "Checkout failed: "
-					// + status.message, null);
-					// }
-					// }
+
+					if (state == null) {
+						result = new Status(IStatus.ERROR, ID,
+								TeamException.UNABLE, "Checkout failed: "
+										+ resource.getName(), null);
+					}
+
 				}
 				monitor.worked(20);
 
