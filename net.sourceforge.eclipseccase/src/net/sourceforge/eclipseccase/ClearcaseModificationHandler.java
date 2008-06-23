@@ -130,23 +130,27 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
-
-		// cancel if auto-checkout is disabled to give underlying
-		// logic a chance to handle that case
-		if (ClearcasePlugin.isCheckoutAutoNever())
-			return CANCEL;
-
-		// fail if not set to always
-		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
-			StringBuffer message = new StringBuffer(
-					"No auto checkout performed for the following resources:\n");
-			for (int i = 0; i < files.length; i++) {
-				IFile file = files[i];
-				message.append("\n\t" + file.getFullPath());
-			}
-			return new Status(IStatus.ERROR, ClearcaseProvider.ID,
-					TeamException.NOT_CHECKED_OUT, message.toString(), null);
-		}
+		
+		
+		//TODO: The check is done in CheckOutAction.java as early as possible.
+		// However we miss the status. Needed?
+		
+//		// cancel if auto-checkout is disabled to give underlying
+//		// logic a chance to handle that case
+//		if (ClearcasePlugin.isCheckoutAutoNever())
+//			return CANCEL;
+//
+//		// fail if not set to always
+//		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
+//			StringBuffer message = new StringBuffer(
+//					"No auto checkout performed for the following resources:\n");
+//			for (int i = 0; i < files.length; i++) {
+//				IFile file = files[i];
+//				message.append("\n\t" + file.getFullPath());
+//			}
+//			return new Status(IStatus.ERROR, ClearcaseProvider.ID,
+//					TeamException.NOT_CHECKED_OUT, message.toString(), null);
+//		}
 
 		ClearcaseProvider provider = getProvider(files);
 
