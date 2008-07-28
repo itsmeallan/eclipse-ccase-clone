@@ -12,9 +12,7 @@
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.util.ArrayList;
-
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.*;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -113,13 +111,23 @@ public class MasterBooleanFieldEditor extends BooleanFieldEditor {
         updateSlaves();
     }
 
-    /**
-     * Updates the slaves
-     */
     private void updateSlaves() {
-        boolean enable = enabled && getBooleanValue();
-        for (int i = 0; i < slaves.size(); i++) {
-            ((FieldEditor) (slaves.get(i))).setEnabled(enable, parent);
-        }
+	boolean enable = enabled && getBooleanValue();
+	for (int i = 0; i < slaves.size(); i++) {
+
+	    Object e = slaves.get(i);
+	    FieldEditor fe = (FieldEditor) e;
+	    String name = fe.getPreferenceName();
+	    String imageccelelmentback = ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND;
+	    if (name.equals(imageccelelmentback) && enable) {
+		FileFieldEditor fed = ((FileFieldEditor) fe);
+		fed.setEmptyStringAllowed(false);
+
+	    } else if (name.equals(imageccelelmentback) && !enable) {
+		FileFieldEditor fed = ((FileFieldEditor) fe);
+		fed.setEmptyStringAllowed(true);
+	    }
+	    fe.setEnabled(enable, parent);
+	}
     }
 }

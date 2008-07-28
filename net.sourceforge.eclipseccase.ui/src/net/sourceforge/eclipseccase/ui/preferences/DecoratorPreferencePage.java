@@ -589,7 +589,7 @@ public class DecoratorPreferencePage extends
                         .getString("DecoratorPreferencePage.imageClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
         imageClearCaseElementsBackground
                 .setFileExtensions(new String[] { "*.gif;*.jpg;*.png" }); //$NON-NLS-1$
-        imageClearCaseElementsBackground.setEmptyStringAllowed(false);
+        imageClearCaseElementsBackground.setEmptyStringAllowed(true);
         customClearCaseElementsBackground
                 .addSlave(imageClearCaseElementsBackground);
         addField(imageClearCaseElementsBackground);
