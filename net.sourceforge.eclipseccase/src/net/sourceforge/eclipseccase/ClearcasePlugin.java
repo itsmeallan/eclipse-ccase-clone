@@ -524,7 +524,12 @@ public class ClearcasePlugin extends Plugin {
     public static boolean isRefreshChildrenPrevented() {
     	return getInstance().getPluginPreferences().getBoolean(
     			IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
-    }    
+    }
+    
+    public static boolean isCheckinIdenticalAllowed() {
+    	return getInstance().getPluginPreferences().getBoolean(
+    			IClearcasePreferenceConstants.CHECKIN_IDENTICAL);
+    }
     
     /**
      * Logs an exception with the specified severity an message.

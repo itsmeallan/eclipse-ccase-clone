@@ -20,7 +20,11 @@ public interface IClearcasePreferenceConstants
     /** ClearCase preference */
     String ADD_AUTO = ClearcasePlugin.PLUGIN_ID
             + ".add.auto"; //$NON-NLS-1$
-
+    
+    /** ClearCase preference */
+    String CHECKIN_IDENTICAL = ClearcasePlugin.PLUGIN_ID
+    + ".checkin.identical"; //$NON-NLS-1$
+    
     /** ClearCase preference */
     String ADD_WITH_CHECKIN = ClearcasePlugin.PLUGIN_ID
             + ".add.checkin"; //$NON-NLS-1$

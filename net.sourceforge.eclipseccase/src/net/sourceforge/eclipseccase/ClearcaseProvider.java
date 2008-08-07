@@ -21,6 +21,7 @@ import java.util.List;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
+import net.sourceforge.clearcase.ClearCaseException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -893,9 +894,45 @@ public class ClearcaseProvider extends RepositoryProvider {
 											.toString() }), null);
 				}
 				IStatus result = OK_STATUS;
-				ClearcasePlugin.getEngine().checkin(
-						new String[] { resource.getLocation().toOSString() },
-						getComment(), ClearCase.PTIME, null);
+
+				if (ClearcasePlugin.isCheckinIdenticalAllowed()) {
+					ClearcasePlugin
+							.getEngine()
+							.checkin(
+									new String[] { resource.getLocation()
+											.toOSString() }, getComment(),
+									ClearCase.PTIME | ClearCase.IDENTICAL, null);
+				} else {
+
+					try {
+						ClearcasePlugin.getEngine().checkin(
+								new String[] { resource.getLocation()
+										.toOSString() }, getComment(),
+								ClearCase.PTIME, null);
+					} catch (ClearCaseException cce) {
+						// check error
+						switch (cce.getErrorCode()) {
+						case ClearCase.ERROR_PREDECESSOR_IS_IDENTICAL:
+							result = new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.NOT_CHECKED_IN,
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearcasePlugin.error.checkin.identicalPredecessor"),
+													new Object[] { cce
+															.getElements() }),
+									null);
+							break;
+
+						default:
+							break;
+						}
+
+					}
+				}
+
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));

@@ -111,7 +111,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new RadioGroupFieldEditor(CHECKOUT_AUTO, PreferenceMessages.getString("Preferences.Source.CheckoutAuto"), //$NON-NLS-1$
 				3, ALWAYS_NEVER_PROMPT, getFieldEditorParent(SOURCE_MANAGEMENT), true));
 
-		addField(new BooleanFieldEditor(ADD_AUTO, PreferenceMessages.getString("Preferences.Source.AddAuto"), //$NON-NLS-1$
+		addField(new BooleanFieldEditor(CHECKIN_IDENTICAL, PreferenceMessages.getString("Preferences.Source.CheckinIdentical"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new BooleanFieldEditor(ADD_WITH_CHECKIN, PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
