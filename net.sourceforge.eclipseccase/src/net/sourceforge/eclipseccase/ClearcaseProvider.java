@@ -13,8 +13,7 @@
 package net.sourceforge.eclipseccase;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -597,9 +596,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 			}
 		}
 	}
-
+	
 	private final class AddOperation implements IRecursiveOperation {
-		List nonCCResurces = null;
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
@@ -620,9 +618,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 													.getFullPath().toString() }),
 							null);
 				}
-				if (nonCCResurces == null) {
-					nonCCResurces = new ArrayList();
-				}
 
 				IResource parent = resource.getParent();
 
@@ -632,141 +627,134 @@ public class ClearcaseProvider extends RepositoryProvider {
 				if (resource instanceof IProject || hasRemote(parent)) {
 					result = checkoutParent(resource, new SubProgressMonitor(
 							monitor, 10));
-					nonCCResurces.add(resource);
 				} else {
-					// Add files or directories that are not elements.
-					nonCCResurces.add(resource);
 					result = visit(parent, new SubProgressMonitor(monitor, 10));
 				}
-				// Found cc element to be checked-out.
+
+				// Now make elements of the view private files if parent could
+				// be checked-out.
 				if (result.isOK()) {
 					if (resource.getType() == IResource.FOLDER) {
-						IFolder folder = (IFolder) resource;
-						try {
-							IPath path = new Path(folder.getName() + ".tmp");
-							IFolder tmpFolder = resource.getParent().getFolder(
-									path);
-							if (!tmpFolder.exists()) {
-								tmpFolder.create(false, true, null);
-							}
-							// Move content of original directory to tmp
-							IResource[] resources = folder.members();
-							if (resources != null && resources.length > 0) {
-								for (int i = 0; i < resources.length; i++) {
-									IPath renamedPath = tmpFolder.getFullPath()
-											.append(resources[i].getName());
-									resources[i].move(renamedPath, false, null);
-								}
-
-							}
-
-							// Now all content of directory is moved delete
-							// original directory.
-							if (folder.exists()) {
-								folder.delete(false, null);
-							}
-
-							// TODO:Testing with 0 as Flag ok but all
-							// directories are checked out.
-							// Now using ClearCase.NO_CHECK_OUT and the tmp
-							// fails.
-
-							// Now time to create the original directory in
-							// clearcase.
-							ClearCaseElementState state = ClearcasePlugin
-									.getEngine()
-									.add(resource.getLocation().toOSString(),
-											true, getComment(), 0, null);
-							if (!state.isElement()) {
-								result = new Status(IStatus.ERROR, ID,
-										TeamException.UNABLE, "Add failed: "
-												+ "Could not add element"
-												+ resource.getName(), null);
-							}
-
-							// Now move back the content of tmp to original.
-							// To avoid CoreException do a refreshLocal(). Does
-							// not recognize the cc created resource directory.
-							resource.refreshLocal(IResource.DEPTH_ZERO, null);
-							IResource[] tmpResources = tmpFolder.members();
-							for (int i = 0; i < tmpResources.length; i++) {
-								IPath renamedPath = folder.getFullPath()
-										.append(tmpResources[i].getName());
-								tmpResources[i].move(renamedPath, false, null);
-							}
-
-							// Remove the temporary.
-							if (tmpFolder.exists()) {
-								tmpFolder.delete(false, null);
-							}
-
-							// Check-in parent since since new directory is now
-							// created.
-							String[] element = { resource.getParent()
-									.getLocation().toOSString() };
-							ClearCaseElementState[] stateB = ClearcasePlugin
-									.getEngine().checkin(element, comment, 0,
-											null);
-							if (!stateB[0].isCheckedIn()) {
-								result = new Status(
-										IStatus.ERROR,
-										ID,
-										TeamException.UNABLE,
-										"Add failed: "
-												+ "Could not check-in directory"
-												+ resource.getName(), null);
-							}
-
-						} catch (CoreException ce) {
-							ce.printStackTrace();
-							result = new Status(IStatus.ERROR, ID,
-									TeamException.UNABLE, "Add failed: "
-											+ "Exception" + ce.getMessage(),
-									null);
-						}
-
-					} else {
-						ClearcasePlugin.getEngine().add(
-								resource.getLocation().toOSString(), false,
-								getComment(),
-								ClearCase.PTIME | ClearCase.MASTER, null);
-						// check-in element itself.
-						String[] file = { resource.getLocation().toOSString() };
-						ClearCaseElementState[] state = ClearcasePlugin
-								.getEngine().checkin(file, comment, 0, null);
-						if (!state[0].isCheckedIn()) {
-							result = new Status(IStatus.ERROR, ID,
-									TeamException.UNABLE, "Add failed: "
-											+ "Could not check-in directory"
-											+ resource.getName(), null);
-						}
-						// check-in parent dir
-						String[] dir = { resource.getParent().getLocation()
-								.toOSString() };
-						ClearCaseElementState[] stateB = ClearcasePlugin
-								.getEngine().checkin(dir, comment, 0, null);
-						if (!stateB[0].isCheckedIn()) {
-							result = new Status(IStatus.ERROR, ID,
-									TeamException.UNABLE, "Add failed: "
-											+ "Could not check-in directory"
-											+ resource.getName(), null);
-
-						}
-
+						makeFolderElement(resource, monitor);
+					} else if (resource.getType() == IResource.FILE) {
+						makeFileElement(resource, monitor);
 					}
-
-					// Update state when done with operation. Do on whole
-					// project.
-					monitor.worked(40);
-					updateState(resource.getProject(), IResource.DEPTH_ZERO,
-							new SubProgressMonitor(monitor, 40));
 				}
-
+				// refresh state on all elements.
+				monitor.worked(40);
+				updateState(parent, IResource.DEPTH_INFINITE,
+						new SubProgressMonitor(monitor, 10));
 				return result;
 			} finally {
 				monitor.done();
 			}
 		}
+	}
+
+	private Status makeFileElement(IResource resource, IProgressMonitor monitor) {
+		Status result = OK_STATUS;
+
+		ClearcasePlugin.getEngine().add(resource.getLocation().toOSString(),
+				false, getComment(),
+				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN, null);
+
+		// check-in parent dir
+		String[] dir = { resource.getParent().getLocation().toOSString() };
+		ClearCaseElementState[] stateB = ClearcasePlugin.getEngine().checkin(
+				dir, comment, 0, null);
+
+		return result;
+	}
+
+	private Status makeFolderElement(IResource resource,
+			IProgressMonitor monitor) {
+
+		IFolder folder = (IFolder) resource;
+		Status result = OK_STATUS;
+		try {
+			IPath path = new Path(folder.getName() + ".tmp");
+			IFolder tmpFolder = resource.getParent().getFolder(path);
+			if (!tmpFolder.exists()) {
+				tmpFolder.create(false, true, new SubProgressMonitor(monitor,
+						10));
+			}
+			// Move content of original directory to tmp
+			IResource[] resources = folder.members();
+			if (resources != null && resources.length > 0) {
+				for (int i = 0; i < resources.length; i++) {
+					IPath renamedPath = tmpFolder.getFullPath().append(
+							resources[i].getName());
+					resources[i].move(renamedPath, false,
+							new SubProgressMonitor(monitor, 10));
+				}
+
+			}
+
+			// Now all content of directory is moved delete
+			// original directory.
+			if (folder.exists()) {
+				folder.delete(true, true, new SubProgressMonitor(monitor, 10));
+			}
+
+			// Now time to create the original directory in
+			// clearcase.
+			ClearCaseElementState state = ClearcasePlugin.getEngine().add(
+					resource.getLocation().toOSString(), true, getComment(), 0,
+					null);
+			if (!state.isElement()) {
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Add failed: " + "Could not add element"
+								+ resource.getName(), null);
+			}
+
+			// Now move back the content of tmp to original.
+			// To avoid CoreException do a refreshLocal(). Does
+			// not recognize the cc created resource directory.
+			resource.refreshLocal(IResource.DEPTH_ZERO, new SubProgressMonitor(
+					monitor, 10));
+			IResource[] tmpResources = tmpFolder.members();
+			for (int i = 0; i < tmpResources.length; i++) {
+				IPath renamedPath = folder.getFullPath().append(
+						tmpResources[i].getName());
+				tmpResources[i].move(renamedPath, true, new SubProgressMonitor(
+						monitor, 10));
+			}
+
+			// Remove the temporary.
+			if (tmpFolder.exists()) {
+				tmpFolder.delete(true, true,
+						new SubProgressMonitor(monitor, 10));
+			}
+
+			// Check-in parent since since new directory is now
+			// created.
+			String[] parentResource = { resource.getParent().getLocation()
+					.toOSString() };
+
+			ClearCaseElementState[] stateB = ClearcasePlugin.getEngine()
+					.checkin(parentResource, comment, 0,
+
+					null);
+			// hasRemote checks if element is a clearcase element.
+			// if(stateB[0].isCheckedOut()){
+			//			
+			// result = new Status(
+			// IStatus.ERROR,
+			// ID,
+			// TeamException.UNABLE,
+			// "Add failed: "
+			// + "Could not check-in directory"
+			// + resource.getName(), null);
+			// }
+
+		} catch (CoreException ce) {
+			System.out.println("We got an exception!");
+			ce.printStackTrace();
+			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+					"Add failed: " + "Exception" + ce.getMessage(), null);
+		}
+
+		return result;
 	}
 
 	private final class UncheckOutOperation implements IRecursiveOperation {
