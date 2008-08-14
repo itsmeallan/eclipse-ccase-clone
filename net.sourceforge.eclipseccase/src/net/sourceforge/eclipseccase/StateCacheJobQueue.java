@@ -144,7 +144,12 @@ class StateCacheJobQueue extends Job {
 	 * interrupted.
 	 */
 	private void checkCanceled(IProgressMonitor monitor) {
-		// if the system is shutting down, don't build
+	    //if the monitor is canceled, throw an exception.
+	    boolean iscanceled = monitor.isCanceled();
+	    if(iscanceled) {
+	        throw new OperationCanceledException();
+	    }	    
+	    // if the system is shutting down, don't build
 		if (systemBundle.getState() == Bundle.STOPPING)
 			throw new OperationCanceledException();
 		// check for request to interrupt the auto-build
