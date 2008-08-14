@@ -145,8 +145,7 @@ class StateCacheJobQueue extends Job {
 	 */
 	private void checkCanceled(IProgressMonitor monitor) {
 	    //if the monitor is canceled, throw an exception.
-	    boolean iscanceled = monitor.isCanceled();
-	    if(iscanceled) {
+	    if(monitor.isCanceled()) {
 	        throw new OperationCanceledException();
 	    }	    
 	    // if the system is shutting down, don't build
