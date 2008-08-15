@@ -10,6 +10,8 @@ import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
@@ -18,10 +20,9 @@ import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 /**
- *  Pulls up the clearcase version tree for the element
+ * Pulls up the compare with predecessor dialog.
  */
-public class CompareWithPredecessorAction extends ClearcaseAction
-{
+public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 
     /**
      * @see TeamAction#isEnabled()
@@ -41,40 +42,33 @@ public class CompareWithPredecessorAction extends ClearcaseAction
         return true;
     }
 
-    /**
-     * @see IActionDelegate#run(IAction)
-     */
-    public void execute(IAction action)
-    {
-        run(new WorkspaceModifyOperation()
-        {
-            public void execute(IProgressMonitor monitor)
-                throws InterruptedException, InvocationTargetException
-            {
-                try
-                {
-                    IResource[] resources = getSelectedResources();
-                    for (int i = 0; i < resources.length; i++)
-                    {
-                        IResource resource = resources[i];
-                        String path = resource.getLocation().toOSString();
-                        if (ClearcasePlugin.isUseCleartool())
-                        {
-                            new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(),null,null,null);
-                        }
-                        else
-                        {
-                            Runtime.getRuntime().exec(
-                                new String[] { "cleardlg", "/diffpred", path });
-                        }
-                    }
-                }
-                catch (IOException ex)
-                {
-                    throw new InvocationTargetException(ex);
-                }
-            }
-        }, "Compare with predecessor", TeamAction.PROGRESS_BUSYCURSOR);
-    }
+	/**
+	 * @see IActionDelegate#run(IAction)
+	 */
+	public void execute(IAction action) {
+
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				try {
+					IResource[] resources = getSelectedResources();
+					for (int i = 0; i < resources.length; i++) {
+						IResource resource = resources[i];
+						String path = resource.getLocation().toOSString();
+						if (ClearcasePlugin.isUseCleartool()) {
+							new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(), null, null, null);
+						} else {
+							Runtime.getRuntime().exec(new String[] { "cleardlg", "/diffpred", path });
+						}
+					}
+				} catch (IOException ex) {
+
+				} finally {
+					monitor.done();
+				}
+			}
+		};
+		executeInBackground(runnable, "Compare With Predecessor");
+
+	}
 
 }
