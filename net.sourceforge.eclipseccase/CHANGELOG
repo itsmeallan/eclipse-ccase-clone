@@ -3,9 +3,21 @@
 
 Bugs fixed
 
-1997603  	  Checkin in identical file is silently ignored
+2046195  Error exporting team project sets.
+2012384  Label decorations preference page does not work.
+1997603  Checkin in identical file is silently ignored.
+1997177  Error occurred while checking in file.
+1995847  Checkouts always reserved.
+1962329  Automatically checkout resources if necessary.
+1958186  Refresh problem.
+1942816  Error while refreshing ressources.
+1919483  Cannot Activate Eclipse Clearcase Plugin.
+1905282  Cannot add element in a view private directory.
+1525181  Clear case operations wait in queue 
+1482294  Can no longer cancel background state refresh.
 
-2.0.0.dev1
+
+2.0.0.BETA
 ----------
 
 - ported to new ClearCase API
