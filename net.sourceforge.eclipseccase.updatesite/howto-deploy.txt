@@ -6,12 +6,21 @@ Requires: Eclipse 3.0 and all projects and features in workspace.
 Note: Build has to be done manually because we should test after build if
       it is usable and everything works.
 
-1. ensure same version number for all features and plugins
-   (check feature.xml files)
+0. ensure same version number for all features and plugins
+   (check feature.xml and plugin.xml files). 
+   - Make change  project.version in build.xml and
+     and in META-INF/MANIFEST.MF file.
+   - Make change in, plugin.xml, in eclipseccase ( core ).
+   - Make change in, plugin.xml, in eclipseccase ( ui ).
+   - Make change in, feature.xml, in eclipseccase ( feature).
 
-2. update version numbers in site.xml
 
-3. build each feature as single, deployable zip into 
+2. update version numbers in site.xml ( Use Feature editor).
+    
+   - New category if the plugin only supports a new version of Eclipse.
+   - Add feature in category.
+
+3. build each feature as single, deployable zip (Archive file) into 
    "net.sourceforge.eclipseccase.updatesite/full/${feature_id}_${feature_version}.zip"
    (either via File->Export...->Deployable Feature or via feature.xml->Export...)
    
@@ -27,9 +36,23 @@ Note: Build has to be done manually because we should test after build if
      -> one plugin jar for each plugin
      
 6. break: test the build output and update site from within your local 
-   machin if it works, only upload/deploy a release that works.
+   machine if it works, only upload/deploy a release that works.
+   Help --> Software Updates --> Find and Install --> Search for new Features to Install
+   --> New Local Site
+   ${workspace}/net.sourceforge.eclipseccase.updatesite
+   (it will complain if no site.xml is found).
+   
+   Make sure it downloads and installs.
+   
+   
 
-7. create "login.properties" with user=... and password=... next to site-deploy.xml
+7. create "login.properties" file with user=... and password=... ( name=value) next to site-deploy.xml
+   Change in site-deploy.xml to new version.
 
 8. run site-deploy.xml with ant
    (right click "Run Ant..." with target "all")
+   Check that the update site contains the new version. ( Use IE instead of Mozilla).
+   At the moment the 'deploy-sf-release' target is not working.
+   I used WebDaV.
+   
+ 9. Don't forget to TAG all projects.  
