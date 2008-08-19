@@ -1,6 +1,13 @@
 ToDos
 =====
 
+For:
+
+2.1.3
+-----
+
+- Continue fixing bugs.
+- Enhance exception handling and error checking with clearcase-java and eclipseccase layers.
 
 1.0.0 
 -----

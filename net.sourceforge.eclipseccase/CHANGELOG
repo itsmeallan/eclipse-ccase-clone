@@ -1,3 +1,11 @@
+2.1.2
+-----
+
+Bug fixed
+
+2059641 Refactoring a package gives exception when move.
+
+
 2.1.1
 -----
 
