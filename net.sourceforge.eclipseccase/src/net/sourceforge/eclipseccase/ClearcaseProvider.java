@@ -385,10 +385,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				result = checkoutParent(destination, new SubProgressMonitor(
 						monitor, 10));
 			if (result.isOK()) {
-				// ClearCaseInterface.Status ccStatus =
-				// ClearcasePlugin.getEngine().move(
-				// source.getLocation().toOSString(),
-				// destination.getLocation().toOSString(), getComment());
+				ClearCaseElementState state = ClearcasePlugin.getEngine().move(source.getLocation().toOSString(), destination.getLocation().toOSString(), getComment(), ClearCase.FORCE, null);
 				monitor.worked(40);
 				StateCacheFactory.getInstance().remove(source);
 				updateState(source.getParent(), IResource.DEPTH_ZERO,
@@ -397,12 +394,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 						new SubProgressMonitor(monitor, 10));
 				updateState(destination, IResource.DEPTH_INFINITE,
 						new SubProgressMonitor(monitor, 10));
-				// if (!ccStatus.status) {
+				if (!state.isMoved()) {
 				return new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Could not move element: "
 						// + ccStatus.message
 						, null);
-				// }
+				}
 			}
 			return result;
 		} finally {
