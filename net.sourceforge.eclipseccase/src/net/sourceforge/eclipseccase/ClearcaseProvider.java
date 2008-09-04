@@ -787,7 +787,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				IStatus result = OK_STATUS;
 				ClearcasePlugin.getEngine().uncheckout(
 						new String[] { resource.getLocation().toOSString() },
-						ClearCase.RECURSIVE | ClearCase.KEEP, null);
+						ClearCase.RECURSIVE, null);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
