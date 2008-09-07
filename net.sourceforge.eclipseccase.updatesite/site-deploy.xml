@@ -9,7 +9,7 @@
 		<property file="login.properties"/>
 
 		<!-- current version (also used for release label) -->
-		<property name="version" value="2.1.1"/>
+		<property name="version" value="2.1.2"/>
 		
 		<property name="staging.dir" value="${basedir}"/>
 		<property name="features.dir" value="${staging.dir}/features"/>
@@ -77,7 +77,7 @@
 	</target>
 	
 	<target name="deploy-sf-release" depends="init" unless="site.local">
-		<!--sfpublish	releasename="${version}"
+		<sfpublish	releasename="${version}"
 					packagename="eclipse-ccase"
 					packagehidden="no"
 					hidden="no"
@@ -89,7 +89,7 @@
         <filespec file="${feature.eclipseccase.package}" 
                   filetype="gzip_file" 
                   processortype="platform_independent"/>
-      </sfpublish-->
+      </sfpublish>
     </target>
     
 </project>

@@ -8,8 +8,8 @@ come with no warranty (see the license.html shipped with
 the feature(s) and the Common Public License 1.0 for more
 details).
 
-This is our 2.1.2 release. It contains a fix for issue
-2059641. Please see CHANGELOG
+This is our 2.1.3 release. It contains a fix for issue
+2065184. Please see CHANGELOG
 and TODO for more information.
 
 

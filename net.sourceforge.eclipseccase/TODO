@@ -3,11 +3,12 @@ ToDos
 
 For:
 
-2.1.3
+2.1.4
 -----
 
 - Continue fixing bugs.
 - Enhance exception handling and error checking with clearcase-java and eclipseccase layers.
+- Add fix for uploading .zip to sourceforge.net
 
 1.0.0 
 -----

@@ -13,19 +13,29 @@ Note: Build has to be done manually because we should test after build if
    - Make change in, plugin.xml, in eclipseccase ( core ).
    - Make change in, plugin.xml, in eclipseccase ( ui ).
    - Make change in, feature.xml, in eclipseccase ( feature).
+   
+1. Update CHANGELOG.txt and TODO.txt in eclipseccase project.
+   And releasenotes.txt in eclipseccase.feature project.   
 
 
 2. update version numbers in site.xml ( Use Feature editor).
     
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
+   
+2.5 Update feature.xml in net.sourceforge.eclipseccase with manifest editor.
+     Plug-ins and Fragments. Update versions. Make a copy.   
 
 3. build each feature as single, deployable zip (Archive file) into 
    "net.sourceforge.eclipseccase.updatesite/full/${feature_id}_${feature_version}.zip"
    (either via File->Export...->Deployable Feature or via feature.xml->Export...)
    
+3.5 Use the manifest editor and build (not build all) only current release.    
+   
 4. build update site
    (right click site.xml->PDE Tools->Build Site)
+   
+  
    
 5. check directories for content:
    "net.sourceforge.eclipseccase.updatesite/full/" 
@@ -53,6 +63,13 @@ Note: Build has to be done manually because we should test after build if
    (right click "Run Ant..." with target "all")
    Check that the update site contains the new version. ( Use IE instead of Mozilla).
    At the moment the 'deploy-sf-release' target is not working.
-   I used WebDaV.
+   I used IE with the following steps:
+   
+   1. Open Internet Explorer.
+   2. Select 'Open...' from the 'File' menu.
+   3. Click the 'Open as Web folder' checkbox.
+   4. Enter 'https://frs.sourceforge.net/e/er/eraonel/uploads' into the 'Open:' box, where 'U/US/USERNAME' would be 'j/js/jsmith' if your username was 'jsmith'.
+   5. Click on the 'OK' button.
+   6. Enter your SourceForge.net username and password when prompted
    
  9. Don't forget to TAG all projects.  
