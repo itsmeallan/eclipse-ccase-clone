@@ -236,7 +236,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 			setComment("");
 		}
 	}
-
+	
 	/*
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
 	 */
@@ -385,7 +385,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 				result = checkoutParent(destination, new SubProgressMonitor(
 						monitor, 10));
 			if (result.isOK()) {
-				ClearCaseElementState state = ClearcasePlugin.getEngine().move(source.getLocation().toOSString(), destination.getLocation().toOSString(), getComment(), ClearCase.FORCE, null);
+				ClearCaseElementState state = ClearcasePlugin.getEngine().move(
+						source.getLocation().toOSString(),
+						destination.getLocation().toOSString(), getComment(),
+						ClearCase.FORCE, null);
 				monitor.worked(40);
 				StateCacheFactory.getInstance().remove(source);
 				updateState(source.getParent(), IResource.DEPTH_ZERO,
@@ -395,10 +398,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 				updateState(destination, IResource.DEPTH_INFINITE,
 						new SubProgressMonitor(monitor, 10));
 				if (!state.isMoved()) {
-				return new Status(IStatus.ERROR, ID, TeamException.UNABLE,
-						"Could not move element: "
-						// + ccStatus.message
-						, null);
+					return new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+							"Could not move element: "
+							// + ccStatus.message
+							, null);
 				}
 			}
 			return result;
@@ -593,7 +596,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 			}
 		}
 	}
-	
+
 	private final class AddOperation implements IRecursiveOperation {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
@@ -787,7 +790,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				IStatus result = OK_STATUS;
 				ClearcasePlugin.getEngine().uncheckout(
 						new String[] { resource.getLocation().toOSString() },
-						ClearCase.RECURSIVE, null);
+						ClearCase.RECURSIVE | ClearCase.KEEP, null);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
@@ -910,8 +913,35 @@ public class ClearcaseProvider extends RepositoryProvider {
 															.getElements() }),
 									null);
 							break;
+						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
+							result = new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.NOT_CHECKED_IN,
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearcasePlugin.error.checkin.mergeneeded"),
+													new Object[] { cce
+															.getElements() }),
+									null);
+							//TODO: Add simple Merge
+							//ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString());
+							break;
 
 						default:
+							result = new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.NOT_CHECKED_IN,
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearcasePlugin.error.checkin.unknown"),
+													new Object[] { cce
+															.getElements() }),
+									null);
+
 							break;
 						}
 
