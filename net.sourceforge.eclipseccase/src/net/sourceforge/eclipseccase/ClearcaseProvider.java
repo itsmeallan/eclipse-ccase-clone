@@ -1264,6 +1264,11 @@ public class ClearcaseProvider extends RepositoryProvider {
 	public boolean canHandleLinkedResources() {
 		return true;
 	}
+	
+	public boolean canHandleLinkedResourceURI() {
+        return true;
+    }
+    
 
 	/**
 	 * Indicates if a resource is ignored and not handled.
