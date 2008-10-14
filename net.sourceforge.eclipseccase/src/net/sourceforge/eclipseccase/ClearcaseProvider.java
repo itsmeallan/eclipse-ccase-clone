@@ -913,6 +913,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 															.getElements() }),
 									null);
 							break;
+						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
+							//FIXME:Add message here.
+							result = new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.NOT_CHECKED_IN,
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearcasePlugin.error.checkin.elementHasCheckouts"),
+													new Object[] { cce
+															.getElements() }),
+									null);
+							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
 							result = new Status(
 									IStatus.ERROR,
@@ -1001,18 +1015,19 @@ public class ClearcaseProvider extends RepositoryProvider {
 				if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
 					monitor.subTask("Updating " + resource.getName());
 
-					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
-							.update(
-									new String[] { resource.getLocation()
-											.toOSString() }, comment, 0, null);
-					if (state[0] == null) {
-						result = new Status(IStatus.ERROR, ID,
-								TeamException.UNABLE,
-								"Update before checkout failed: "
-										+ resource.getName(), null);
-
-					}
-
+//					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
+//							.update(
+//									new String[] { resource.getLocation()
+//											.toOSString() }, comment, 0, null);
+//					if (state[0] == null) {
+//						result = new Status(IStatus.ERROR, ID,
+//								TeamException.UNABLE,
+//								"Update before checkout failed: "
+//										+ resource.getName(), null);
+//
+//					}
+					
+					//FIXME: Handle exceptions from update.
 				}
 				monitor.worked(20);
 
