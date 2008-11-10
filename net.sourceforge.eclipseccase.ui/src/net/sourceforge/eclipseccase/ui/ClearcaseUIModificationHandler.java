@@ -61,31 +61,6 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
-
-		// cancel if auto-checkout is disabled to give underlying
-		// logic a chance to handle that case
-		if (ClearcasePlugin.isCheckoutAutoNever()) {
-			return CANCEL;
-		}
-
-		// check if we are allowed to prompt
-		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
-			MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(shell, Messages.getString("ClearcaseUIModificationHandler.checkoutDialog.title"), //$NON-NLS-1$
-					Messages.getString("ClearcaseUIModificationHandler.checkoutDialog.message"), //$NON-NLS-1$
-					null, false, store, IClearcasePreferenceConstants.CHECKOUT_AUTO);
-
-			switch (dialog.getReturnCode()) {
-			case IDialogConstants.OK_ID:
-			case IDialogConstants.YES_ID:
-			case IDialogConstants.YES_TO_ALL_ID:
-				break;
-
-			default:
-				return CANCEL;
-			}
-
-		}
-
 		final ClearcaseProvider provider = getProvider(files);
 
 		// check for provider

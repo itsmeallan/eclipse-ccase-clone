@@ -13,9 +13,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.team.core.TeamException;
+
 
 public class CheckOutAction extends ClearcaseWorkspaceAction {
 
@@ -32,30 +31,6 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
             maybeDepth = dlg.isRecursive() ? IResource.DEPTH_INFINITE
                     : IResource.DEPTH_ZERO;
         }
-        if(!ClearcasePlugin.isCheckoutAutoAlways()){
-        	
-        IResource[] resources = getSelectedResources();
-        MessageDialog checkoutQuestion = new MessageDialog(getShell(), "Checkout",
-				null, "Do you really want to checkout?", MessageDialog.QUESTION, new
-				String[] {"Yes", "No", "Cancel" }, 0);
-				int returncode = checkoutQuestion.open();
-				if (returncode == 1) {
-				//No option
-				StringBuffer message = new StringBuffer("No auto checkout performed for the following resources:\n");
-				for (int i = 0; i < resources.length; i++) {
-					IResource resource = resources[i];
-					message.append("\n\t" + resource.getFullPath());
-				}
-				//TODO: No status here??? Ref to ClearcaseModificationHandler.java.
-				//return new Status(IStatus.ERROR, ClearcaseProvider.ID,
-				//TeamException.NOT_CHECKED_OUT, message.toString(), null);
-				return;
-				} else if(returncode == 2) {
-				//Cancel option.
-				return;
-				}
-        }
-    
 
         final String comment = maybeComment;
         final int depth = maybeDepth;
