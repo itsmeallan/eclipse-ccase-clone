@@ -22,6 +22,7 @@ import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.TeamException;
 
 /**
@@ -130,27 +131,27 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
-		
-		
-		//TODO: The check is done in CheckOutAction.java as early as possible.
-		// However we miss the status. Needed?
-		
-//		// cancel if auto-checkout is disabled to give underlying
-//		// logic a chance to handle that case
-//		if (ClearcasePlugin.isCheckoutAutoNever())
-//			return CANCEL;
-//
-//		// fail if not set to always
-//		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
-//			StringBuffer message = new StringBuffer(
-//					"No auto checkout performed for the following resources:\n");
-//			for (int i = 0; i < files.length; i++) {
-//				IFile file = files[i];
-//				message.append("\n\t" + file.getFullPath());
-//			}
-//			return new Status(IStatus.ERROR, ClearcaseProvider.ID,
-//					TeamException.NOT_CHECKED_OUT, message.toString(), null);
-//		}
+
+		if (ClearcasePlugin.isCheckoutAutoNever()) {
+			return CANCEL;
+		}
+
+		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
+
+			MessageDialog checkoutQuestion = new MessageDialog(null,
+					"Checkout", null, "Do you really want to checkout?",
+					MessageDialog.QUESTION, new String[] { "Yes", "No",
+							"Cancel" }, 0);
+			int returncode = checkoutQuestion.open();
+			/* Yes=0 No=1 Cancel=2 */
+			if (returncode == 1) {
+				return CANCEL;
+			} else if (returncode == 2) {
+				// Cancel option.
+				return CANCEL;
+			}
+			// Yes continue checking out.
+		}
 
 		ClearcaseProvider provider = getProvider(files);
 
