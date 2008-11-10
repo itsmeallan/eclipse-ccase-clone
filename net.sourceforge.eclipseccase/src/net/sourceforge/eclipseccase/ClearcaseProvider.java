@@ -635,9 +635,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// be checked-out.
 				if (result.isOK()) {
 					if (resource.getType() == IResource.FOLDER) {
-						makeFolderElement(resource, monitor);
+						result = makeFolderElement(resource, monitor);
 					} else if (resource.getType() == IResource.FILE) {
-						makeFileElement(resource, monitor);
+						result = makeFileElement(resource, monitor);
 					}
 				}
 				// refresh state on all elements.
@@ -654,14 +654,19 @@ public class ClearcaseProvider extends RepositoryProvider {
 	private Status makeFileElement(IResource resource, IProgressMonitor monitor) {
 		Status result = OK_STATUS;
 
-		ClearcasePlugin.getEngine().add(resource.getLocation().toOSString(),
-				false, getComment(),
+		ClearCaseElementState state = ClearcasePlugin.getEngine().add(
+				resource.getLocation().toOSString(), false, getComment(),
 				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN, null);
-
-		// check-in parent dir
-		String[] dir = { resource.getParent().getLocation().toOSString() };
-		ClearCaseElementState[] stateB = ClearcasePlugin.getEngine().checkin(
-				dir, comment, 0, null);
+		if (state.isCheckedIn()) {
+			// check-in parent dir
+			String[] dir = { resource.getParent().getLocation().toOSString() };
+			ClearCaseElementState[] stateB = ClearcasePlugin.getEngine()
+					.checkin(dir, comment, 0, null);
+		} else {
+			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+					"Add failed: " + "Could not add element"
+							+ resource.getName(), null);
+		}
 
 		return result;
 	}
@@ -850,7 +855,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 
 	}
-
 	private final class CheckInOperation implements IRecursiveOperation {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
@@ -1014,6 +1018,23 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// update if necessary
 				if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
 					monitor.subTask("Updating " + resource.getName());
+
+					// ClearCaseElementState[] state =
+					// ClearcasePlugin.getEngine()
+					// .update(
+					// new String[] { resource.getLocation()
+					// .toOSString() }, comment, 0, null);
+					ClearcasePlugin.getEngine()
+							.update(
+									new String[] { resource.getLocation()
+											.toOSString() }, comment, 0, null);
+					// if (state[0] == null) {
+					// result = new Status(IStatus.ERROR, ID,
+					// TeamException.UNABLE,
+					// "Update before checkout failed: "
+					// + resource.getName(), null);
+					//
+					// }
 
 //					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
 //							.update(

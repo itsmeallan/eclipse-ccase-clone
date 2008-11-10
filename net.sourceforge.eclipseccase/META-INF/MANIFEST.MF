@@ -13,5 +13,6 @@ Export-Package: net.sourceforge.eclipseccase,
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.1.0.v20051027";visibility:=reexport,
  org.eclipse.core.resources;visibility:=reexport,
  org.eclipse.team.core;visibility:=reexport,
- net.sourceforge.clearcase;visibility:=reexport
+ net.sourceforge.clearcase;visibility:=reexport,
+ org.eclipse.jface
 Eclipse-LazyStart: true
