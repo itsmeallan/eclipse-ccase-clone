@@ -642,7 +642,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				}
 				// refresh state on all elements.
 				monitor.worked(40);
-				updateState(parent, IResource.DEPTH_INFINITE,
+				updateState(parent, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
 				return result;
 			} finally {
