@@ -946,8 +946,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 							//TODO: Add simple Merge
 							//getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
-							String latestVersion = "\\"+branchName+"\\"+"LATEST";
-							//ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString());
+							String latestVersion = branchName+"LATEST";
 							ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString(),new String []{latestVersion},0);
 							break;
 
@@ -1464,18 +1463,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	private String getBranchName(String version){
-		int firstBackSlash;
-		int lastBackSlash;
+		int firstBackSlash = 0;
+		int lastBackSlash = 0;
 		if(version.startsWith("\\")){
 			//Win32
-		 firstBackSlash = version.indexOf('\\');
-		 lastBackSlash = version.lastIndexOf('\\');
+		 firstBackSlash = version.indexOf("\\");
+		 lastBackSlash = version.lastIndexOf("\\");
+		 
+		 
 		}else{
 			//Unix
-			 firstBackSlash = version.indexOf('/');
-			 lastBackSlash = version.lastIndexOf('/');
+			 firstBackSlash = version.indexOf("/");
+			 lastBackSlash = version.lastIndexOf("/");
 		}
 		
-		return version.substring(firstBackSlash, lastBackSlash);
+		return version.substring(firstBackSlash, lastBackSlash+1);
 	}
 }
