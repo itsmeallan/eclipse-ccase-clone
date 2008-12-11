@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
@@ -793,6 +794,23 @@ public class ClearcaseProvider extends RepositoryProvider {
 											.toString() }), null);
 				}
 				IStatus result = OK_STATUS;
+				//TODO:eraonel Test it.
+				MessageDialog checkoutQuestion = new MessageDialog(null,
+							"Checkout", null, "Do you really want to checkout?",
+							MessageDialog.QUESTION, new String[] { "Yes", "No",
+									"Cancel" }, 0);
+					int returncode = checkoutQuestion.open();
+					/* Yes=0 No=1 Cancel=2 */
+					if (returncode == 1) {
+						return result;
+					} else if (returncode == 2) {
+						// Cancel option.
+						return result;
+					}
+					// Yes continue checking out.
+			
+				
+				
 				ClearcasePlugin.getEngine().uncheckout(
 						new String[] { resource.getLocation().toOSString() },
 						ClearCase.RECURSIVE | ClearCase.KEEP, null);
