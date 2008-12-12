@@ -965,7 +965,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 							//getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
 							String latestVersion = branchName+"LATEST";
-							ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString(),new String []{latestVersion},0);
+							ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString(),new String []{latestVersion},ClearCase.GRAPHICAL);
 							break;
 
 						default:
