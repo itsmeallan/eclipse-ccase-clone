@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.team.core.TeamException;
 
 /**
  * This class collects information about a collection of ClearCase elements.
@@ -136,14 +135,12 @@ public class ClearcaseElementStatusCollector {
 				ClearcaseProvider clearcaseProvider = ClearcaseProvider
 						.getClearcaseProvider(resource);
 				boolean isSnapshotView;
-				try {
-					isSnapshotView = !clearcaseProvider.getViewRoot(resource).equals("");
-					projects.put(project, new RefreshSourceData(project,
-							resource, clearcaseProvider.getViewName(resource),
-							isSnapshotView));
-				} catch (TeamException e) {
-					ClearcasePlugin.log("Error getting view root", e);
-				}
+				isSnapshotView = clearcaseProvider.getViewType(resource)
+						.equals("snapshot");
+				projects.put(project,
+						new RefreshSourceData(project, resource,
+								clearcaseProvider.getViewName(resource),
+								isSnapshotView));
 			} else {
 				RefreshSourceData data = projects.get(project);
 				data.addResource(resource);

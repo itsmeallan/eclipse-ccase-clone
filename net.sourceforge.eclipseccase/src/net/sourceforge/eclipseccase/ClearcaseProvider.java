@@ -21,6 +21,7 @@ import java.util.List;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
+import net.sourceforge.clearcase.ClearCaseInterface;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -150,7 +151,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * @throws CoreException
 	 */
 	public void refreshRecursive(IResource resourceToRefresh,
-			IProgressMonitor monitor, boolean quickRefresh) throws CoreException {
+			IProgressMonitor monitor, boolean quickRefresh)
+			throws CoreException {
 
 		try {
 			monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
@@ -171,14 +173,16 @@ public class ClearcaseProvider extends RepositoryProvider {
 			}
 			if (quickRefresh) {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						new IResource[] { resourceToRefresh }, monitor, quickRefresh);
+						new IResource[] { resourceToRefresh }, monitor,
+						quickRefresh);
 			} else {
 				if (!toRefresh.isEmpty()) {
 					StateCacheFactory.getInstance()
 							.refreshStateAsyncHighPriority(
 									(IResource[]) toRefresh
 											.toArray(new IResource[toRefresh
-													.size()]), monitor, quickRefresh);
+													.size()]), monitor,
+									quickRefresh);
 				}
 			}
 			monitor.worked(10);
@@ -188,9 +192,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	public void refreshRecursive(IResource[] resources, IProgressMonitor monitor) {
-		StateCacheFactory.getInstance().refreshStateAsyncHighPriority(resources, monitor, true);
+		StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
+				resources, monitor, true);
 	}
-	
+
 	/**
 	 * Invalidates the state of the specified resource and only of the specified
 	 * resource
@@ -320,6 +325,17 @@ public class ClearcaseProvider extends RepositoryProvider {
 	public String getViewName(IResource resource) {
 		return ClearcasePlugin.getEngine().getViewName(
 				resource.getLocation().toOSString());
+	}
+
+	/**
+	 * Returns the view type of the view containing the resource.
+	 * 
+	 * @param resource
+	 *            The resource inside a view.
+	 * @return "dynamic" or "snapshot"
+	 */
+	public String getViewType(IResource resource) {
+		return ClearcasePlugin.getEngine().getViewType(getViewName(resource));
 	}
 
 	/**
@@ -789,7 +805,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	private final class UncheckOutOperation implements IRecursiveOperation {
 
-		public IStatus visit(final IResource resource, final IProgressMonitor monitor) {
+		public IStatus visit(final IResource resource,
+				final IProgressMonitor monitor) {
 			try {
 				monitor.beginTask("Uncheckout " + resource.getFullPath(), 100);
 				// Sanity check - can't process something that is not part of
@@ -818,27 +835,31 @@ public class ClearcaseProvider extends RepositoryProvider {
 											.toString() }), null);
 				}
 				IStatus result = OK_STATUS;
-				//TODO:eraonel Test it.
+				// TODO:eraonel Test it.
 				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 					public void run() {
-						Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-						MessageDialog checkoutQuestion = new MessageDialog(activeShell,
-								"Checkout", null, "Do you really want to uncheckout?",
-								MessageDialog.QUESTION, new String[] { "Yes", "No",
-										"Cancel" }, 0);
+						Shell activeShell = PlatformUI.getWorkbench()
+								.getDisplay().getActiveShell();
+						MessageDialog checkoutQuestion = new MessageDialog(
+								activeShell, "Checkout", null,
+								"Do you really want to uncheckout?",
+								MessageDialog.QUESTION, new String[] { "Yes",
+										"No", "Cancel" }, 0);
 						int returncode = checkoutQuestion.open();
 						/* Yes=0 No=1 Cancel=2 */
 						if (returncode == 0) {
 							// Yes continue checking out.
 							ClearcasePlugin.getEngine().uncheckout(
-									new String[] { resource.getLocation().toOSString() },
+									new String[] { resource.getLocation()
+											.toOSString() },
 									ClearCase.RECURSIVE | ClearCase.KEEP, null);
 							monitor.worked(40);
 							updateState(resource, IResource.DEPTH_ZERO,
-									new SubProgressMonitor(monitor, 10));		
+									new SubProgressMonitor(monitor, 10));
 						}
-					}});
-				
+					}
+				});
+
 				// if (!status.status) {
 				// result = new Status(IStatus.ERROR, ID,
 				// TeamException.UNABLE, "Uncheckout failed: "
@@ -984,11 +1005,14 @@ public class ClearcaseProvider extends RepositoryProvider {
 													new Object[] { cce
 															.getElements() }),
 									null);
-							//TODO: Add simple Merge
-							//getVersion --> \branch\CHECKEDOUT.
+							// TODO: Add simple Merge
+							// getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
-							String latestVersion = branchName+"LATEST";
-							ClearcasePlugin.getEngine().merge(resource.getLocation().toOSString(),new String []{latestVersion},ClearCase.GRAPHICAL);
+							String latestVersion = branchName + "LATEST";
+							ClearcasePlugin.getEngine().merge(
+									resource.getLocation().toOSString(),
+									new String[] { latestVersion },
+									ClearCase.GRAPHICAL);
 							break;
 
 						default:
@@ -1495,29 +1519,29 @@ public class ClearcaseProvider extends RepositoryProvider {
 	public void ensureInitialized(IResource resource) {
 		StateCacheFactory.getInstance().ensureInitialized(resource);
 	}
-	
+
 	/**
 	 * 
-	 * Helper method that retrieves the branch name.
-	 * Handles both win and unix versions.
+	 * Helper method that retrieves the branch name. Handles both win and unix
+	 * versions.
+	 * 
 	 * @param version
 	 * @return
 	 */
-	private String getBranchName(String version){
+	private String getBranchName(String version) {
 		int firstBackSlash = 0;
 		int lastBackSlash = 0;
-		if(version.startsWith("\\")){
-			//Win32
-		 firstBackSlash = version.indexOf("\\");
-		 lastBackSlash = version.lastIndexOf("\\");
-		 
-		 
-		}else{
-			//Unix
-			 firstBackSlash = version.indexOf("/");
-			 lastBackSlash = version.lastIndexOf("/");
+		if (version.startsWith("\\")) {
+			// Win32
+			firstBackSlash = version.indexOf("\\");
+			lastBackSlash = version.lastIndexOf("\\");
+
+		} else {
+			// Unix
+			firstBackSlash = version.indexOf("/");
+			lastBackSlash = version.lastIndexOf("/");
 		}
-		
-		return version.substring(firstBackSlash, lastBackSlash+1);
+
+		return version.substring(firstBackSlash, lastBackSlash + 1);
 	}
 }
