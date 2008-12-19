@@ -9,6 +9,7 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *     Tobias Sodergren - added preferences for quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -97,6 +98,15 @@ public interface IClearcasePreferenceConstants
     /** ClearCase preference */
     String CLEARCASE_API = ClearcasePlugin.PLUGIN_ID
             + ".clearcaseAPI"; //$NON-NLS-1$
+
+    /** ClearCase preference */
+	String QUICK_REFRESH = ClearcasePlugin.PLUGIN_ID + ".useQuickRefresh"; // //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String TEST_LINKED_PARENT_IN_CLEARCASE = ClearcasePlugin.PLUGIN_ID + ".testLinkedParentInClearcase"; // //$NON-NLS-1$
+
+    /** ClearCase preference */
+	String JOB_QUEUE_PRIORITY = ClearcasePlugin.PLUGIN_ID + ".jobQueuePriority"; // //$NON-NLS-1$
 
     /** preference value for <code>CLEARCASE_API</code> */
     String CLEARCASE_NATIVE = "native_cal"; //$NON-NLS-1$

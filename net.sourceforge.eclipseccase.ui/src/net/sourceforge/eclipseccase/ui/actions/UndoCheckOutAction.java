@@ -1,19 +1,14 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.team.core.TeamException;
 
 /**
  * @author conwaym To change this generated comment edit the template variable

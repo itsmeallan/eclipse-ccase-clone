@@ -9,38 +9,17 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *     Tobias Sodergren - added quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.IResourceStateListener;
-import net.sourceforge.eclipseccase.StateCacheFactory;
+import java.util.*;
+import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.IDecoration;
-import org.eclipse.jface.viewers.ILightweightLabelDecorator;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.ui.ISharedImages;
@@ -49,17 +28,15 @@ import org.eclipse.team.ui.TeamImages;
 /**
  * The ClearCase label decorator.
  */
-public class ClearcaseDecorator extends LabelProvider implements
-        ILightweightLabelDecorator, IResourceStateListener,
-        IResourceChangeListener {
+public class ClearcaseDecorator extends LabelProvider implements ILightweightLabelDecorator, IResourceStateListener, IResourceChangeListener {
 
-    /** trace if */
-    private static final String DECORATOR = "ClearcaseDecorator"; //$NON-NLS-1$
+	/** trace if */
+	private static final String DECORATOR = "ClearcaseDecorator"; //$NON-NLS-1$
 
-    /*
-     * Define a cached image descriptor which only creates the image data once
-     */
-    public static class CachedImageDescriptor extends ImageDescriptor {
+	/*
+	 * Define a cached image descriptor which only creates the image data once
+	 */
+	public static class CachedImageDescriptor extends ImageDescriptor {
 
 		ImageData data;
 
@@ -147,9 +124,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 			return STATE_CLEAN;
 
 		// cache some settings (visitor performance)
-		final boolean decorateNew = ClearcaseUIPreferences.decorateFoldersContainingViewPrivateElementsDirty()&& (ClearcaseUIPreferences.decorateViewPrivateElements() || (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixNew().length() > 0)); 
-		final boolean decorateUnknown = ClearcaseUIPreferences.decorateUnknownElements()|| (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixUnknown().length() > 0);
-		final boolean decorateHijacked = ClearcaseUIPreferences.decorateHijackedElements()|| (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixHijacked().length() > 0);
+		final boolean decorateNew = ClearcaseUIPreferences.decorateFoldersContainingViewPrivateElementsDirty() && (ClearcaseUIPreferences.decorateViewPrivateElements() || (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixNew().length() > 0));
+		final boolean decorateUnknown = ClearcaseUIPreferences.decorateUnknownElements() || (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixUnknown().length() > 0);
+		final boolean decorateHijacked = ClearcaseUIPreferences.decorateHijackedElements() || (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix() && ClearcaseUI.getTextPrefixHijacked().length() > 0);
 		try {
 			// visit all children to determine the state
 			resource.accept(new IResourceVisitor() {
@@ -157,7 +134,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 				/*
 				 * (non-Javadoc)
 				 * 
-				 * @see org.eclipse.core.resources.IResourceVisitor#visit(org.eclipse.core.resources.IResource)
+				 * @see
+				 * org.eclipse.core.resources.IResourceVisitor#visit(org.eclipse
+				 * .core.resources.IResource)
 				 */
 				public boolean visit(IResource childResource) throws CoreException {
 					// the provider of the child resource
@@ -516,7 +495,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.LabelProvider#fireLabelProviderChanged(org.eclipse.jface.viewers.LabelProviderChangedEvent)
+	 * @see
+	 * org.eclipse.jface.viewers.LabelProvider#fireLabelProviderChanged(org.
+	 * eclipse.jface.viewers.LabelProviderChangedEvent)
 	 */
 	protected void fireLabelProviderChanged(final LabelProviderChangedEvent event) {
 		// delegate to UI thread
@@ -543,13 +524,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	 * @param project
 	 */
 	public void refresh(IProject project) {
-		if (!project.isAccessible())
-			return;
-
 		final List resources = new ArrayList();
 		try {
 			project.accept(new IResourceVisitor() {
-
 				public boolean visit(IResource resource) {
 					resources.add(resource);
 					return true;
@@ -558,6 +535,27 @@ public class ClearcaseDecorator extends LabelProvider implements
 			fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources.toArray()));
 		} catch (CoreException e) {
 			handleException(e);
+		}
+	}
+
+	public void refreshUsingStatusCollector(IProject[] projects, IProgressMonitor monitor) {
+		final ClearcaseElementStatusCollector statusCollector = StateCacheFactory.getInstance().getStatusCollector(projects);
+		statusCollector.collectRefreshStatus(monitor);
+		final List resources = new ArrayList();
+		for (int i = 0; i < projects.length; i++) {
+			IProject project = projects[i];
+			try {
+				project.accept(new IResourceVisitor() {
+					public boolean visit(IResource resource) {
+						StateCacheFactory.getInstance().getUsingStatusCollector(resource, statusCollector);
+						resources.add(resource);
+						return true;
+					}
+				});
+				fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources.toArray()));
+			} catch (CoreException e) {
+				handleException(e);
+			}
 		}
 	}
 
@@ -625,7 +623,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.sourceforge.eclipseccase.StateCache)
+	 * @see
+	 * net.sourceforge.eclipseccase.IResourceStateListener#stateChanged(net.
+	 * sourceforge.eclipseccase.StateCache)
 	 */
 	public void resourceStateChanged(IResource[] resources) {
 		refresh(resources);
@@ -634,7 +634,9 @@ public class ClearcaseDecorator extends LabelProvider implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org.eclipse.core.resources.IResourceChangeEvent)
+	 * @see
+	 * org.eclipse.core.resources.IResourceChangeListener#resourceChanged(org
+	 * .eclipse.core.resources.IResourceChangeEvent)
 	 */
 	public void resourceChanged(IResourceChangeEvent event) {
 
@@ -683,4 +685,5 @@ public class ClearcaseDecorator extends LabelProvider implements
 	final void superFireLabelProviderChanged(LabelProviderChangedEvent event) {
 		super.fireLabelProviderChanged(event);
 	}
+
 }

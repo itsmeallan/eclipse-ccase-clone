@@ -12,15 +12,9 @@
 
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sourceforge.clearcase.commandline.CleardlgCommandLine;
-import net.sourceforge.clearcase.commandline.CommandLauncher;
-import net.sourceforge.clearcase.commandline.CommandLine;
+import net.sourceforge.clearcase.commandline.*;
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.TeamException;
 
@@ -120,11 +114,11 @@ public class ClearDlgHelper {
                     .getClearcaseProvider(resource);
 
             // refresh resource
-            provider.refresh(resource);
+            provider.refresh(resource, ClearcasePlugin.isUseQuickRefresh());
 
             // also invalidate state of parent container
             // (some operations my checkout parent)
-            provider.refresh(resource.getParent());
+            provider.refresh(resource.getParent(), ClearcasePlugin.isUseQuickRefresh());
         }
     }
 

@@ -1,20 +1,15 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.io.IOException;
-
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.TeamException;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.IActionDelegate;
 
 /**
@@ -23,7 +18,7 @@ import org.eclipse.ui.IActionDelegate;
 public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
 
     /**
-     * @see TeamAction#isEnabled()
+     * {@inheritDoc}
      */
     public boolean isEnabled() {
         IResource[] resources = getSelectedResources();

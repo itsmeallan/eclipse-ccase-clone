@@ -9,8 +9,11 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *     Tobias Sodergren - added preferences for quick refresh and job priority
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
+
+import org.eclipse.core.runtime.jobs.Job;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
@@ -40,6 +43,9 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 			{ PreferenceMessages.getString("IfPossible"), IF_POSSIBLE }, //$NON-NLS-1$
 			{ PreferenceMessages.getString("Never"), NEVER } }; //$NON-NLS-1$
 
+	static final String[][] PRIORITIES = new String[][] { { PreferenceMessages.getString("HighPriority"), Integer.toString(Job.LONG) }, //$NON-NLS-1$ 
+			{ PreferenceMessages.getString("DefaultPriority"), Integer.toString(Job.DECORATE) } }; //$NON-NLS-1$
+
 	/**
 	 * Creates a new instance.
 	 */
@@ -53,7 +59,8 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+	 * @see
+	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
 		// ignore
@@ -62,7 +69,9 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
+	 * @see
+	 * org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors
+	 * ()
 	 */
 	protected void createFieldEditors() {
 
@@ -82,6 +91,13 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(PRESERVE_TIMES, PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
+		BooleanFieldEditor quickRefresh = new BooleanFieldEditor(QUICK_REFRESH, PreferenceMessages.getString("Preferences.General.QuickRefresh"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL));
+		addField(quickRefresh);
+
+		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+
 		// use cleartool option only available on windows
 		BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL, PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL));
@@ -90,6 +106,9 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
 				ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));
+
+		addField(new RadioGroupFieldEditor(JOB_QUEUE_PRIORITY, PreferenceMessages.getString("Preferences.General.JobQueuePriority"), 1, //$NON-NLS-1$
+				PRIORITIES, getFieldEditorParent(GENERAL), true));
 
 		// RadioGroupFieldEditor clearcaseLayer = new
 		// RadioGroupFieldEditor(CLEARCASE_API,
@@ -163,7 +182,9 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.ui.preferences.TabFieldEditorPreferencePage#getCategories()
+	 * @see
+	 * net.sourceforge.eclipseccase.ui.preferences.TabFieldEditorPreferencePage
+	 * #getCategories()
 	 */
 	protected String[] getCategories() {
 		return CATEGORIES;
@@ -172,7 +193,8 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.ui.preferences.FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
+	 * @seenet.sourceforge.eclipseccase.ui.preferences.
+	 * FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
 	 */
 	protected String getDescription(String category) {
 		if (GENERAL.equals(category))

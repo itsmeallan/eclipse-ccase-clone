@@ -8,9 +8,12 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
+ *     Tobias Sodergren - added quick refresh
  *******************************************************************************/
 
 package net.sourceforge.eclipseccase.ui;
+
+import net.sourceforge.eclipseccase.ClearcasePlugin;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
@@ -45,7 +48,7 @@ class PartListener implements IPartListener2, IWindowListener {
 		if (null != resource) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 			if (null != provider)
-				provider.refresh(resource);
+				provider.refresh(resource, ClearcasePlugin.isUseQuickRefresh());
 		}
 	}
 

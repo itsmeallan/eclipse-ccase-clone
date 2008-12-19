@@ -8,6 +8,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
+ *     Tobias Sodergren - added quick refresh
  *******************************************************************************/
 
 package net.sourceforge.eclipseccase;
@@ -23,138 +24,169 @@ import org.eclipse.core.runtime.OperationCanceledException;
  */
 class StateCacheJob implements Comparable {
 
-    /** default priority */
-    static final int PRIORITY_DEFAULT = 0;
+	/** default priority */
+	static final int PRIORITY_DEFAULT = 0;
 
-    /** high priority */
-    static final int PRIORITY_HIGH = 1000;
+	/** high priority */
+	static final int PRIORITY_HIGH = 1000;
 
-    /** the state cache to refresh */
-    private StateCache stateCache;
+	/** the state cache to refresh */
+	private StateCache stateCache;
 
-    /** the priority (higher value means higher priority) */
-    private int priority;
+	/** the priority (higher value means higher priority) */
+	private int priority;
 
-    /**
-     * Creates a new job with default priority.
-     * @param cache the state cache to refresh
-     */
-    StateCacheJob(StateCache cache) {
-        this(cache, PRIORITY_DEFAULT);
-    }
+	private ClearcaseElementStatusCollector statusCollector;
 
-    /**
-     * Creates a njob with the specified priority.
-     * 
-     * @param cache
-     * @param jobPriority
-     */
-    public StateCacheJob(StateCache cache, int jobPriority) {
-        this.stateCache = cache;
-        this.priority = jobPriority;
-    }
+	/**
+	 * Creates a new job with default priority.
+	 * 
+	 * @param cache
+	 *            the state cache to refresh
+	 */
+	StateCacheJob(StateCache cache) {
+		this(cache, PRIORITY_DEFAULT);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(Object o) {
-        if (this == o) return 0;
+	/**
+	 * Creates a new job with default priority.
+	 * 
+	 * @param cache
+	 *            The state cache to refresh.
+	 * @param statusCollector
+	 *            The status collector containing new status for element.
+	 */
+	public StateCacheJob(StateCache cache,
+			ClearcaseElementStatusCollector statusCollector) {
+		this(cache, PRIORITY_DEFAULT);
+		this.statusCollector = statusCollector;
+	}
 
-        // will throw ClassCastException which is ok here
-        StateCacheJob other = (StateCacheJob) o;
+	/**
+	 * Creates a njob with the specified priority.
+	 * 
+	 * @param cache
+	 * @param jobPriority
+	 */
+	public StateCacheJob(StateCache cache, int jobPriority) {
+		this.stateCache = cache;
+		this.priority = jobPriority;
+	}
 
-        // use priority delta
-        int priorityDelta = this.priority - other.priority;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(Object o) {
+		if (this == o)
+			return 0;
 
-        if (priorityDelta > 0) {
-            // our priority is higher than the other priority
-            // we are greater than the other
-            return 1;
-        }
+		// will throw ClassCastException which is ok here
+		StateCacheJob other = (StateCacheJob) o;
 
-        if (priorityDelta < 0) {
-            // our priority is smaller than the other priority
-            // we are lesser than the other
-            return -1;
-        }
+		// use priority delta
+		int priorityDelta = this.priority - other.priority;
 
-        // equal priority
-        return 0;
-    }
+		if (priorityDelta > 0) {
+			// our priority is higher than the other priority
+			// we are greater than the other
+			return 1;
+		}
 
-    /**
-     * Returns the stateCache.
-     * 
-     * @return returns the stateCache
-     */
-    StateCache getStateCache() {
-        return stateCache;
-    }
+		if (priorityDelta < 0) {
+			// our priority is smaller than the other priority
+			// we are lesser than the other
+			return -1;
+		}
 
-    /**
-     * Returns the priority.
-     * 
-     * @return returns the priority
-     */
-    int getPriority() {
-        return priority;
-    }
+		// equal priority
+		return 0;
+	}
 
-    /**
-     * Executes this job
-     * <p>
-     * This method should not be called by clients. It is called by the
-     * {@link StateCacheJobQueue}.
-     * </p>
-     * 
-     * @param monitor
-     * @throws CoreException in case of problems
-     * @throws OperationCanceledException if the operation was canceled
-     */
-    void execute(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-        getStateCache().doUpdate(monitor);
-    }
+	/**
+	 * Returns the stateCache.
+	 * 
+	 * @return returns the stateCache
+	 */
+	StateCache getStateCache() {
+		return stateCache;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode() {
+	/**
+	 * Returns the priority.
+	 * 
+	 * @return returns the priority
+	 */
+	int getPriority() {
+		return priority;
+	}
 
-        if (null == getStateCache()) return super.hashCode();
+	/**
+	 * Executes this job
+	 * <p>
+	 * This method should not be called by clients. It is called by the
+	 * {@link StateCacheJobQueue}.
+	 * </p>
+	 * 
+	 * @param monitor
+	 * @throws CoreException
+	 *             in case of problems
+	 * @throws OperationCanceledException
+	 *             if the operation was canceled
+	 */
+	void execute(IProgressMonitor monitor) throws CoreException,
+			OperationCanceledException {
+		if (statusCollector != null) {
+			getStateCache().doUpdate(monitor, statusCollector);
+		} else {
+			getStateCache().doUpdate(monitor);
+		}
+	}
 
-        return getStateCache().hashCode();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj) {
+		if (null == getStateCache())
+			return super.hashCode();
 
-        if (this == obj) return true;
-        if (null == getStateCache()) return super.equals(obj);
-        if (null == obj || this.getClass() != obj.getClass()) return false;
+		return getStateCache().hashCode();
+	}
 
-        StateCacheJob other = (StateCacheJob) obj;
-        return getStateCache().equals(other.getStateCache());
-    }
-    
-    /**
-     * Schedules this job with the specified priority.
-     * 
-     * @param jobPriority the priority
-     * @see #PRIORITY_DEFAULT
-     * @see #PRIORITY_HIGH
-     */
-    public void schedule(int jobPriority)
-    {
-        priority = jobPriority;
-        StateCacheJobQueue queue = StateCacheFactory.getInstance().getJobQueue();
-        queue.schedule(this);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (null == getStateCache())
+			return super.equals(obj);
+		if (null == obj || this.getClass() != obj.getClass())
+			return false;
+
+		StateCacheJob other = (StateCacheJob) obj;
+		return getStateCache().equals(other.getStateCache());
+	}
+
+	/**
+	 * Schedules this job with the specified priority.
+	 * 
+	 * @param jobPriority
+	 *            the priority
+	 * @see #PRIORITY_DEFAULT
+	 * @see #PRIORITY_HIGH
+	 */
+	public void schedule(int jobPriority) {
+		priority = jobPriority;
+		StateCacheJobQueue queue = StateCacheFactory.getInstance()
+				.getJobQueue();
+		queue.schedule(this);
+	}
 }

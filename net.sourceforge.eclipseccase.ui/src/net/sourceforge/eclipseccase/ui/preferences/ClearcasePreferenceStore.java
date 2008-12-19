@@ -14,8 +14,8 @@ package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.io.IOException;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
@@ -129,7 +129,7 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 		// being added/removed during the notification
 		final Object[] list = listeners.getListeners();
 		final PropertyChangeEvent event = new PropertyChangeEvent(this, name, oldValue, newValue);
-		Platform.run(new SafeRunnable(JFaceResources.getString("PreferenceStore.changeError")) { //$NON-NLS-1$
+		SafeRunner.run(new SafeRunnable(JFaceResources.getString("PreferenceStore.changeError")) { //$NON-NLS-1$
 
 					public void run() {
 						for (int i = 0; i < list.length; i++)

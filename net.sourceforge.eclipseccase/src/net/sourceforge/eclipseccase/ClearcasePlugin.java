@@ -9,6 +9,7 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
+ *     Tobias Sodergren - Added preferences for quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -531,6 +532,20 @@ public class ClearcasePlugin extends Plugin {
     			IClearcasePreferenceConstants.CHECKIN_IDENTICAL);
     }
     
+	public static boolean isUseQuickRefresh() {
+		return getInstance().getPluginPreferences().getBoolean(IClearcasePreferenceConstants.QUICK_REFRESH);
+	}
+    
+	public static boolean isTestLinkedParentInClearCase() {
+		return getInstance().getPluginPreferences().getBoolean(IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE);
+	}
+	
+	
+	public static int jobQueuePriority() {
+		return getInstance().getPluginPreferences().getInt(IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY);
+	}
+   
+	
     /**
      * Logs an exception with the specified severity an message.
      * 
@@ -711,6 +726,9 @@ public class ClearcasePlugin extends Plugin {
                 IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
                 true);
         pref.setDefault(IClearcasePreferenceConstants.COMMENT_ESCAPE, false);
+        pref.setDefault(IClearcasePreferenceConstants.QUICK_REFRESH, false);
+        pref.setDefault(IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY, Job.DECORATE);
+        pref.setDefault(IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE, false);
     }
 
     /**
@@ -1002,4 +1020,5 @@ public class ClearcasePlugin extends Plugin {
             ClearcaseModificationHandler clearcaseModificationHandler) {
         this.clearcaseModificationHandler = clearcaseModificationHandler;
     }
+
 }

@@ -9,11 +9,11 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
  *     Gunnar Wagenknecht - new features, enhancements and bug fixes
+ *     Tobias Sodergren - Added quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
 import java.io.File;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -42,9 +41,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * The ClearCase repository provider.
@@ -149,26 +150,36 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * @throws CoreException
 	 */
 	public void refreshRecursive(IResource resourceToRefresh,
-			IProgressMonitor monitor) throws CoreException {
+			IProgressMonitor monitor, boolean quickRefresh) throws CoreException {
 
 		try {
 			monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
 			final List toRefresh = new ArrayList(80);
 			monitor.subTask("collecting members");
-			resourceToRefresh.accept(new IResourceVisitor() {
+			if (!quickRefresh) {
+				resourceToRefresh.accept(new IResourceVisitor() {
 
-				public boolean visit(IResource resource) throws CoreException {
-					if (!Team.isIgnoredHint(resource))
-						toRefresh.add(resource);
-					return true;
-				}
-			});
-			monitor.worked(30);
-			monitor.subTask("scheduling updates");
-			if (!toRefresh.isEmpty()) {
+					public boolean visit(IResource resource)
+							throws CoreException {
+						if (!Team.isIgnoredHint(resource))
+							toRefresh.add(resource);
+						return true;
+					}
+				});
+				monitor.worked(30);
+				monitor.subTask("scheduling updates");
+			}
+			if (quickRefresh) {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						(IResource[]) toRefresh.toArray(new IResource[toRefresh
-								.size()]));
+						new IResource[] { resourceToRefresh }, monitor, quickRefresh);
+			} else {
+				if (!toRefresh.isEmpty()) {
+					StateCacheFactory.getInstance()
+							.refreshStateAsyncHighPriority(
+									(IResource[]) toRefresh
+											.toArray(new IResource[toRefresh
+													.size()]), monitor, quickRefresh);
+				}
 			}
 			monitor.worked(10);
 		} finally {
@@ -176,15 +187,27 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 	}
 
+	public void refreshRecursive(IResource[] resources, IProgressMonitor monitor) {
+		StateCacheFactory.getInstance().refreshStateAsyncHighPriority(resources, monitor, true);
+	}
+	
 	/**
 	 * Invalidates the state of the specified resource and only of the specified
 	 * resource
 	 * 
 	 * @param resources
 	 */
-	public void refresh(IResource resources) {
-		StateCacheFactory.getInstance().get(resources).updateAsyncHighPriority(
-				false);
+	public void refresh(IResource resources, boolean quickRefresh) {
+		if (quickRefresh) {
+			ClearcaseElementStatusCollector statusCollector = StateCacheFactory
+					.getInstance().getStatusCollector(
+							new IResource[] { resources });
+			statusCollector.collectRefreshStatus(null);
+			StateCacheFactory.getInstance().get(resources)
+					.updateAsyncHighPriority(false, statusCollector);
+		} else {
+			StateCacheFactory.getInstance().get(resources).updateAsync(false);
+		}
 	}
 
 	/*
@@ -237,7 +260,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 			setComment("");
 		}
 	}
-	
+
 	/*
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
 	 */
@@ -485,7 +508,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 						10));
 			} else {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						new IResource[] { resource });
+						new IResource[] { resource }, null, false);
 			}
 		} catch (CoreException ex) {
 			ClearcasePlugin.log(IStatus.ERROR,
@@ -512,7 +535,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.team.core.RepositoryProvider#getFileModificationValidator2()
+	 * @see
+	 * org.eclipse.team.core.RepositoryProvider#getFileModificationValidator2()
 	 */
 	public FileModificationValidator getFileModificationValidator2() {
 		return ClearcasePlugin.getInstance().getClearcaseModificationHandler();
@@ -765,7 +789,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	private final class UncheckOutOperation implements IRecursiveOperation {
 
-		public IStatus visit(IResource resource, IProgressMonitor monitor) {
+		public IStatus visit(final IResource resource, final IProgressMonitor monitor) {
 			try {
 				monitor.beginTask("Uncheckout " + resource.getFullPath(), 100);
 				// Sanity check - can't process something that is not part of
@@ -795,28 +819,26 @@ public class ClearcaseProvider extends RepositoryProvider {
 				}
 				IStatus result = OK_STATUS;
 				//TODO:eraonel Test it.
-				MessageDialog checkoutQuestion = new MessageDialog(null,
-							"Checkout", null, "Do you really want to checkout?",
-							MessageDialog.QUESTION, new String[] { "Yes", "No",
-									"Cancel" }, 0);
-					int returncode = checkoutQuestion.open();
-					/* Yes=0 No=1 Cancel=2 */
-					if (returncode == 1) {
-						return result;
-					} else if (returncode == 2) {
-						// Cancel option.
-						return result;
-					}
-					// Yes continue checking out.
-			
+				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+					public void run() {
+						Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+						MessageDialog checkoutQuestion = new MessageDialog(activeShell,
+								"Checkout", null, "Do you really want to uncheckout?",
+								MessageDialog.QUESTION, new String[] { "Yes", "No",
+										"Cancel" }, 0);
+						int returncode = checkoutQuestion.open();
+						/* Yes=0 No=1 Cancel=2 */
+						if (returncode == 0) {
+							// Yes continue checking out.
+							ClearcasePlugin.getEngine().uncheckout(
+									new String[] { resource.getLocation().toOSString() },
+									ClearCase.RECURSIVE | ClearCase.KEEP, null);
+							monitor.worked(40);
+							updateState(resource, IResource.DEPTH_ZERO,
+									new SubProgressMonitor(monitor, 10));		
+						}
+					}});
 				
-				
-				ClearcasePlugin.getEngine().uncheckout(
-						new String[] { resource.getLocation().toOSString() },
-						ClearCase.RECURSIVE | ClearCase.KEEP, null);
-				monitor.worked(40);
-				updateState(resource, IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 10));
 				// if (!status.status) {
 				// result = new Status(IStatus.ERROR, ID,
 				// TeamException.UNABLE, "Uncheckout failed: "
@@ -873,6 +895,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 
 	}
+
 	private final class CheckInOperation implements IRecursiveOperation {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
@@ -936,7 +959,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 									null);
 							break;
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
-							//FIXME:Add message here.
+							// FIXME:Add message here.
 							result = new Status(
 									IStatus.ERROR,
 									ID,
@@ -1057,19 +1080,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 					//
 					// }
 
-//					ClearCaseElementState[] state = ClearcasePlugin.getEngine()
-//							.update(
-//									new String[] { resource.getLocation()
-//											.toOSString() }, comment, 0, null);
-//					if (state[0] == null) {
-//						result = new Status(IStatus.ERROR, ID,
-//								TeamException.UNABLE,
-//								"Update before checkout failed: "
-//										+ resource.getName(), null);
-//
-//					}
-					
-					//FIXME: Handle exceptions from update.
+					// ClearCaseElementState[] state =
+					// ClearcasePlugin.getEngine()
+					// .update(
+					// new String[] { resource.getLocation()
+					// .toOSString() }, comment, 0, null);
+					// if (state[0] == null) {
+					// result = new Status(IStatus.ERROR, ID,
+					// TeamException.UNABLE,
+					// "Update before checkout failed: "
+					// + resource.getName(), null);
+					//
+					// }
+
+					// FIXME: Handle exceptions from update.
 				}
 				monitor.worked(20);
 
@@ -1321,11 +1345,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 	public boolean canHandleLinkedResources() {
 		return true;
 	}
-	
+
 	public boolean canHandleLinkedResourceURI() {
-        return true;
-    }
-    
+		return true;
+	}
 
 	/**
 	 * Indicates if a resource is ignored and not handled.

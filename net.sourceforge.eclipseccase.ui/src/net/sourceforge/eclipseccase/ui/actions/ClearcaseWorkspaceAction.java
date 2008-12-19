@@ -5,12 +5,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearCaseOperation;
-
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;

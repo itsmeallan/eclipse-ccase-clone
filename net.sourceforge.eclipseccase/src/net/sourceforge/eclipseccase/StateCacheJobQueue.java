@@ -8,6 +8,7 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
+ *     Tobias Sodergren - configurable job priority
  *******************************************************************************/
 
 package net.sourceforge.eclipseccase;
@@ -65,7 +66,7 @@ class StateCacheJobQueue extends Job {
         setSystem(ClearcasePlugin.isHideRefreshActivity());
 
         // set priority for long running jobs
-        setPriority(DECORATE);
+        setPriority(ClearcasePlugin.jobQueuePriority());
 
         // set the rule to the clearcase engine
         setRule(ClearcasePlugin.RULE_CLEARCASE_REFRESH);

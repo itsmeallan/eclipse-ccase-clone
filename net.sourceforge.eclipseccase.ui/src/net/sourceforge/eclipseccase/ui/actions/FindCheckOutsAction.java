@@ -1,7 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
 import net.sourceforge.clearcase.utils.Os;
@@ -12,7 +11,6 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.IActionDelegate;
 
 /**
@@ -21,7 +19,7 @@ import org.eclipse.ui.IActionDelegate;
 public class FindCheckOutsAction extends ClearcaseWorkspaceAction {
 
 	/**
-	 * @see TeamAction#isEnabled()
+	 * {@inheritDoc}
 	 */
 	public boolean isEnabled() {
 		// workaround for bug 960292
