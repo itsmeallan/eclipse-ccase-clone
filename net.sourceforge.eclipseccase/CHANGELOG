@@ -1,3 +1,18 @@
+2.1.4
+-----
+
+ -Testing a new refresh mechanism ( thanks Filip Gustafsson and Tobias Södergren).
+ 
+ Bugs fixed:
+ - 2261140  Add shows all elements in gui as being added.
+ - 2218690  Auto checkout doesn't prompt.
+ - 2255478  Debug printouts?
+ - 2218698  Checkin failure not reported.
+ - 2149347  Unable to associate project if contains URI.
+ - 2092706  2.1.3 version always creates *.keep file on uncheckout.
+ - 2092673  Console is full of garbage on Linux after update to 2.1.3
+ 
+
 2.1.3
 -----
 Bug fixed:

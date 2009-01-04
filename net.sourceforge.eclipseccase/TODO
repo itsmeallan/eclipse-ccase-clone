@@ -15,6 +15,7 @@ For:
 - Continue fixing bugs.
 - Enhance exception handling and error checking with clearcase-java and eclipseccase layers.
 - Add fix for uploading .zip to sourceforge.net
+- New refresh.
 
 1.0.0 
 -----
