@@ -61,4 +61,6 @@ Note: Build has to be done manually because we should test after build if
    At the moment the 'deploy-sf-release' target is not working.
    I used WebDaV, https://frs.sourceforge.net/webupload.
    
+   For shell based:  sftp eraonel,eclipse-ccase@web.sourceforge.net
+   
  9. Don't forget to TAG all projects. For each project synchonize with repos.
