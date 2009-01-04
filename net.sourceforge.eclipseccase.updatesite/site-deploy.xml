@@ -9,7 +9,7 @@
 		<property file="login.properties"/>
 
 		<!-- current version (also used for release label) -->
-		<property name="version" value="2.1.2"/>
+		<property name="version" value="2.1.4"/>
 		
 		<property name="staging.dir" value="${basedir}"/>
 		<property name="features.dir" value="${staging.dir}/features"/>
@@ -17,7 +17,8 @@
 		
 		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip"/>
 
-		<property name="site.deploy.host" value="shell.sourceforge.net"/>	
+		
+		<property name="site.deploy.host" value="web.sourceforge.net"/>
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update"/>
 		<property name="site.url" value="http://eclipse-ccase.sourceforge.net/update"/>
 		
@@ -57,7 +58,7 @@
 
 	<target name="deploy-site" depends="init" unless="site.local">
 		<ssh	host="${site.deploy.host}"
-				username="${user}"
+				username="${webuser}"
 				password="${password}"
 				verifyhost="false">
 			<sftp action="put"
@@ -77,6 +78,8 @@
 	</target>
 	
 	<target name="deploy-sf-release" depends="init" unless="site.local">
+		<!-- sfutils is not maintained any more. R1C fixes. Have not tested.
+		     file length must be between 20 and 256,000 bytes
 		<sfpublish	releasename="${version}"
 					packagename="eclipse-ccase"
 					packagehidden="no"
@@ -89,7 +92,7 @@
         <filespec file="${feature.eclipseccase.package}" 
                   filetype="gzip_file" 
                   processortype="platform_independent"/>
-      </sfpublish>
+      </sfpublish>-->
     </target>
     
 </project>
