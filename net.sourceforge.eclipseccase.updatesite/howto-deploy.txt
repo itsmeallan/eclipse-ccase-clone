@@ -22,9 +22,6 @@ Note: Build has to be done manually because we should test after build if
     
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
-   
-2.5 Update feature.xml in net.sourceforge.eclipseccase with manifest editor.
-     Plug-ins and Fragments. Update versions. Make a copy.   
 
 3. build each feature as single, deployable zip (Archive file) into 
    "net.sourceforge.eclipseccase.updatesite/full/${feature_id}_${feature_version}.zip"
@@ -34,8 +31,6 @@ Note: Build has to be done manually because we should test after build if
    
 4. build update site
    (right click site.xml->PDE Tools->Build Site)
-   
-  
    
 5. check directories for content:
    "net.sourceforge.eclipseccase.updatesite/full/" 
@@ -56,20 +51,14 @@ Note: Build has to be done manually because we should test after build if
    
    
 
-7. create "login.properties" file with user=... and password=... ( name=value) next to site-deploy.xml
+7. create "login.properties" file with user=... ,webuser= ... password=... ( name=value) next to site-deploy.xml
    Change in site-deploy.xml to new version.
+   Note: webuser is "userid,projectname" as one string. E.g. "eraonel,eclipse-ccase".
 
 8. run site-deploy.xml with ant
    (right click "Run Ant..." with target "all")
    Check that the update site contains the new version. ( Use IE instead of Mozilla).
    At the moment the 'deploy-sf-release' target is not working.
-   I used IE with the following steps:
+   I used WebDaV, https://frs.sourceforge.net/webupload.
    
-   1. Open Internet Explorer.
-   2. Select 'Open...' from the 'File' menu.
-   3. Click the 'Open as Web folder' checkbox.
-   4. Enter 'https://frs.sourceforge.net/e/er/eraonel/uploads' into the 'Open:' box, where 'U/US/USERNAME' would be 'j/js/jsmith' if your username was 'jsmith'.
-   5. Click on the 'OK' button.
-   6. Enter your SourceForge.net username and password when prompted
-   
- 9. Don't forget to TAG all projects.  
+ 9. Don't forget to TAG all projects. For each project synchonize with repos.

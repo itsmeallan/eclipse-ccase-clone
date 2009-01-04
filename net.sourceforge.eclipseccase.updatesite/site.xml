@@ -21,9 +21,6 @@
    <feature url="features/net.sourceforge.eclipseccase_1.1.0.jar" id="net.sourceforge.eclipseccase" version="1.1.0">
       <category name="eclipse-ccase-32"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase_2.1.0.BETA1.jar" id="net.sourceforge.eclipseccase" version="2.1.0.BETA1">
-      <category name="eclipse-ccase3.3"/>
-   </feature>
    <feature url="features/net.sourceforge.eclipseccase_1.1.2.jar" id="net.sourceforge.eclipseccase" version="1.1.2">
       <category name="eclipse-ccase-33"/>
    </feature>
@@ -31,6 +28,9 @@
       <category name="eclipse-ccase-33"/>
    </feature>
    <feature url="features/net.sourceforge.eclipseccase_2.1.1.jar" id="net.sourceforge.eclipseccase" version="2.1.1">
+      <category name="eclipse-ccase-33"/>
+   </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.1.4.jar" id="net.sourceforge.eclipseccase" version="2.1.4">
       <category name="eclipse-ccase-33"/>
    </feature>
    <feature url="features/net.sourceforge.eclipseccase_2.1.2.jar" id="net.sourceforge.eclipseccase" version="2.1.2">
@@ -51,10 +51,5 @@
    </category-def>
    <category-def name="eclipse-ccase-32" label="Eclipse ClearCase Integration for Eclipse 3.2"/>
    <category-def name="eclipse-ccase-31" label="Eclipse ClearCase Integration for Eclipse 3.1"/>
-   <category-def name="eclipse-ccase3.3" label="eclipse-ccase3.3">
-      <description>
-         Eclipse clearcase Europa
-      </description>
-   </category-def>
    <category-def name="eclipse-ccase-33" label="Eclipse ClearCase Integration for Eclipse 3.3"/>
 </site>
