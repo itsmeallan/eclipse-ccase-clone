@@ -54,6 +54,13 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 							if (path == null || !current.startsWith(path)) {
 								path = current;
 								result.add(map.get(current));
+							} else {
+								IResource curr = (IResource) map.get(current);
+								IResource old = (IResource) map.get(path);
+								if (curr.getProject() != old.getProject()) {
+									result.add(map.get(current));
+									path = current;
+								}
 							}
 						}
 
@@ -62,7 +69,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 							ClearcaseProvider clearcaseProvider = ClearcaseProvider.getClearcaseProvider((IResource) iterator.next());
 							clearcaseProvider.refreshRecursive((IResource[]) result.toArray(new IResource[0]), subMonitor(monitor));
 						}
-						
+
 					} else {
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];

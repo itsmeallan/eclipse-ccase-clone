@@ -163,7 +163,7 @@ public class ClearcaseElementStatusCollector {
 				trace("Refreshing " + data.getViewName()
 						+ " using snapshot view functionality");
 				getSnapshotViewRefreshStatusForProject(data.getResources(),
-						monitor);
+						data.getViewName(), queriedViews, monitor);
 			} else {
 				trace("Refreshing " + data.getViewName()
 						+ " using dynamic view functionality");
@@ -197,30 +197,21 @@ public class ClearcaseElementStatusCollector {
 				elementStates.put(element.element, element);
 			}
 			queriedViews.add(viewName);
+
+			addCheckedOutFiles(viewName, monitor, resources[0].getLocation());
+
 		}
 
-		List<IPath> paths = optimizeClearcaseOperationsForLinkedResources(resources);
+		monitor.worked(1);
 
-		for (IPath path : paths) {
-			String resourcePath = path.toOSString();
-			monitor.subTask("Checked out: " + resourcePath);
-			ClearCaseElementState[] checkedOut = ClearcasePlugin.getEngine()
-					.getCheckedOutElements(resourcePath, null);
-			for (int i = 0; i < checkedOut.length; i++) {
-				ClearCaseElementState element = checkedOut[i];
-				elementStates.put(element.element, element);
-			}
-
-			monitor.worked(1);
-
-			if (monitor.isCanceled()) {
-				throw new OperationCanceledException();
-			}
+		if (monitor.isCanceled()) {
+			throw new OperationCanceledException();
 		}
+
 	}
 
 	private void getSnapshotViewRefreshStatusForProject(IResource[] resources,
-			IProgressMonitor monitor) {
+			String viewName, Set<String> queriedViews, IProgressMonitor monitor) {
 
 		List<IPath> paths = optimizeClearcaseOperationsForLinkedResources(resources);
 
@@ -237,21 +228,30 @@ public class ClearcaseElementStatusCollector {
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
 			}
+		}
 
-			monitor.subTask("Checked out: " + resourcePath);
-			ClearCaseElementState[] checkedOut = ClearcasePlugin.getEngine()
-					.getCheckedOutElements(resourcePath, null);
-			for (int i = 0; i < checkedOut.length; i++) {
-				ClearCaseElementState element = checkedOut[i];
-				elementStates.put(element.element, element);
-			}
+		if (!queriedViews.contains(viewName)) {
+			addCheckedOutFiles(viewName, monitor, paths.get(0));
+			queriedViews.add(viewName);
+		}
 
-			monitor.worked(1);
+		monitor.worked(1);
 
-			if (monitor.isCanceled()) {
-				throw new OperationCanceledException();
-			}
+		if (monitor.isCanceled()) {
+			throw new OperationCanceledException();
+		}
 
+	}
+
+	private void addCheckedOutFiles(String viewName, IProgressMonitor monitor,
+			IPath path) {
+		String resourcePath = path.toOSString();
+		monitor.subTask("Checked out: " + viewName);
+		ClearCaseElementState[] checkedOut = ClearcasePlugin.getEngine()
+				.getCheckedOutElements(resourcePath, null);
+		for (int i = 0; i < checkedOut.length; i++) {
+			ClearCaseElementState element = checkedOut[i];
+			elementStates.put(element.element, element);
 		}
 	}
 
