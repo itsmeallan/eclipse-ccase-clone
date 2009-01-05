@@ -5,6 +5,8 @@ Requires: Eclipse 3.0 and all projects and features in workspace.
 
 Note: Build has to be done manually because we should test after build if
       it is usable and everything works.
+      
+0.5 run build.xml in net.sourceforge.clearcase project.      
 
 0. ensure same version number for all features and plugins
    (check feature.xml and plugin.xml files). 
