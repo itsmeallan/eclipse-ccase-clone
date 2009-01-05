@@ -23,6 +23,7 @@ import java.util.Set;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -324,6 +325,10 @@ public class ClearcaseElementStatusCollector {
 			throws CoreException {
 		final Set<IResource> result = new HashSet<IResource>();
 
+		if (resource instanceof IFile) {
+			resource = resource.getParent();
+		}
+		
 		// Check the resource itself if it is in ClearCase.
 		if (isResourceInClearcase(resource)) {
 			result.add(resource);
