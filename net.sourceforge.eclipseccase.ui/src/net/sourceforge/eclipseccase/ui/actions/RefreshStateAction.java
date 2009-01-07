@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.core.runtime.OperationCanceledException;
+
 import java.util.*;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -19,7 +21,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 	 */
 	public void execute(IAction action) {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
+			public void run(final IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Refreshing state...", resources.length);
@@ -30,6 +32,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							monitor.subTask("Collecting members for: " + resource.getName());
+							checkCanceled(monitor);
 							if (resource.getType() == IResource.FILE) {
 								// Only work on directories
 								resource = resource.getParent();
@@ -68,6 +71,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 						if (iterator.hasNext()) {
 							ClearcaseProvider clearcaseProvider = ClearcaseProvider.getClearcaseProvider((IResource) iterator.next());
 							clearcaseProvider.refreshRecursive((IResource[]) result.toArray(new IResource[0]), subMonitor(monitor));
+							checkCanceled(monitor);
 						}
 
 					} else {
