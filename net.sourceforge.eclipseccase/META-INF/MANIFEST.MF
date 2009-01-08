@@ -15,5 +15,5 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.1.0.v20051027";visibi
  org.eclipse.team.core;visibility:=reexport,
  net.sourceforge.clearcase;visibility:=reexport,
  org.eclipse.jface,
- org.eclipse.ui;bundle-version="3.3.0"
+ org.eclipse.ui
 Eclipse-LazyStart: true
