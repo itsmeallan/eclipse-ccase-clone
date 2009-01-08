@@ -1,13 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import org.eclipse.core.runtime.OperationCanceledException;
-
 import java.util.*;
-
 import net.sourceforge.eclipseccase.ClearcasePlugin;
-
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;

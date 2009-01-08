@@ -13,8 +13,6 @@
 
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.*;
@@ -48,7 +46,7 @@ class PartListener implements IPartListener2, IWindowListener {
 		if (null != resource) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 			if (null != provider)
-				provider.refresh(resource, ClearcasePlugin.isUseQuickRefresh());
+				provider.refresh(resource, false);
 		}
 	}
 
