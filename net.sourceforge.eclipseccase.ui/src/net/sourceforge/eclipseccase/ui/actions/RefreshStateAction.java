@@ -23,14 +23,15 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 
 					if (ClearcasePlugin.isUseQuickRefresh()) {
 						Map map = new TreeMap();
-
+						List fileResources = new ArrayList();
+						
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							monitor.subTask("Collecting members for: " + resource.getName());
 							checkCanceled(monitor);
 							if (resource.getType() == IResource.FILE) {
-								// Only work on directories
-								resource = resource.getParent();
+								fileResources.add(resource);
+								continue;
 							}
 							if (ClearcaseProvider.getClearcaseProvider(resource) == null) {
 								// Skip resource if it has no ClearCase provider
@@ -62,11 +63,22 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 							}
 						}
 
+						// Refresh directories using quick refresh
 						iterator = result.iterator();
+						// Don't iterate, just pick the ClearCase provider from the first element
 						if (iterator.hasNext()) {
 							ClearcaseProvider clearcaseProvider = ClearcaseProvider.getClearcaseProvider((IResource) iterator.next());
 							clearcaseProvider.refreshRecursive((IResource[]) result.toArray(new IResource[0]), subMonitor(monitor));
 							checkCanceled(monitor);
+						}
+						
+						// Refresh files using normal refresh
+						iterator = fileResources.iterator();
+						while (iterator.hasNext()) {
+							IResource resource = (IResource) iterator.next();
+							checkCanceled(monitor);
+							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+							provider.refresh(resource, false);
 						}
 
 					} else {
@@ -74,7 +86,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 							IResource resource = resources[i];
 							checkCanceled(monitor);
 							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-							provider.refreshRecursive(resource, subMonitor(monitor), ClearcasePlugin.isUseQuickRefresh());
+							provider.refresh(resource, false);
 						}
 					}
 				} finally {
