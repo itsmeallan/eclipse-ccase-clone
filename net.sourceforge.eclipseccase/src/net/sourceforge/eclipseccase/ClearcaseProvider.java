@@ -849,10 +849,14 @@ public class ClearcaseProvider extends RepositoryProvider {
 						/* Yes=0 No=1 Cancel=2 */
 						if (returncode == 0) {
 							// Yes continue checking out.
+							int flags = ClearCase.RECURSIVE;
+							if (ClearcasePlugin.isKeepChangesAfterUncheckout()) {
+								flags |= ClearCase.KEEP;
+							}
+
 							ClearcasePlugin.getEngine().uncheckout(
 									new String[] { resource.getLocation()
-											.toOSString() },
-									ClearCase.RECURSIVE | ClearCase.KEEP, null);
+											.toOSString() }, flags, null);
 							monitor.worked(40);
 							updateState(resource, IResource.DEPTH_ZERO,
 									new SubProgressMonitor(monitor, 10));
