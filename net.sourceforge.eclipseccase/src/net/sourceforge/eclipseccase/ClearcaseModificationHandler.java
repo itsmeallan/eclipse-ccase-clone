@@ -23,7 +23,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.core.TeamException;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * A simple file modification handler for the ClearCase integration.
@@ -135,20 +137,17 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 		if (ClearcasePlugin.isCheckoutAutoNever()) {
 			return CANCEL;
 		}
-
+		
 		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
-
-			MessageDialog checkoutQuestion = new MessageDialog(null,
-					"Checkout", null, "Do you really want to checkout?",
-					MessageDialog.QUESTION, new String[] { "Yes", "No",
-							"Cancel" }, 0);
-			int returncode = checkoutQuestion.open();
+			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
+			getDisplay().syncExec(checkoutQuestion);
+			int returncode = checkoutQuestion.getResult();
 			/* Yes=0 No=1 Cancel=2 */
 			if (returncode == 1) {
-				return CANCEL;
+				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID, "Checkout operation failed, operation was cancelled by user.");
 			} else if (returncode == 2) {
 				// Cancel option.
-				return CANCEL;
+				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID, "Checkout operation failed, operation was cancelled by user");
 			}
 			// Yes continue checking out.
 		}
@@ -183,6 +182,32 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 		return OK;
 	}
 
+	private Display getDisplay() {
+		Display display = PlatformUI.getWorkbench().getDisplay();
+		if (display == null) {
+			display = Display.getDefault();
+		}
+		return display;
+	}
+
+	private class CheckoutQuestionRunnable implements Runnable {
+
+		private int dialogResult;
+		
+		public void run() {
+			MessageDialog checkoutQuestion = new MessageDialog(getDisplay().getActiveShell(),
+					"Checkout", null, "Do you really want to checkout?",
+					MessageDialog.QUESTION, new String[] { "Yes", "No",
+							"Cancel" }, 0);
+			dialogResult = checkoutQuestion.open();
+		}
+		
+		public int getResult() {
+			return dialogResult;
+		}
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
