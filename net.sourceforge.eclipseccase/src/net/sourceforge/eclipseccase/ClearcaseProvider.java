@@ -21,7 +21,6 @@ import java.util.List;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
-import net.sourceforge.clearcase.ClearCaseInterface;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -428,7 +427,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				ClearCaseElementState state = ClearcasePlugin.getEngine().move(
 						source.getLocation().toOSString(),
 						destination.getLocation().toOSString(), getComment(),
-						ClearCase.FORCE, null);
+						ClearCase.FORCE | getCheckoutType(), null);
 				monitor.worked(40);
 				StateCacheFactory.getInstance().remove(source);
 				updateState(source.getParent(), IResource.DEPTH_ZERO,
@@ -478,15 +477,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 			monitor.worked(2);
 			if (!elementState.isCheckedOut() && !elementState.isLink()) {
 				String[] element = { parent };
-				// TODO: In old we used
-				// ClearcasePlugin.isReservedCheckoutsAlways(). How to handle
-				// that.
 				ClearCaseElementState[] elementState2 = ClearcasePlugin
-						.getEngine().checkout(element, getComment(), 0, null);
-				// ClearCaseInterface.Status ccStatus = ClearcasePlugin
-				// .getEngine().checkout(parent, getComment(),
-				// ClearcasePlugin.isReservedCheckoutsAlways(),
-				// true);
+						.getEngine().checkout(element, getComment(), getCheckoutType(),
+								null);
 
 				monitor.worked(4);
 				if (!flag)
@@ -1130,23 +1123,11 @@ public class ClearcaseProvider extends RepositoryProvider {
 					monitor.subTask("Checking out " + resource.getName());
 					ClearCaseElementState[] state = null;
 
-					boolean reserved = ClearcasePlugin
-							.isReservedCheckoutsAlways()
-							|| ClearcasePlugin.isReservedCheckoutsIfPossible();
-					if (!reserved) {
-
-						// unreserved
-						state = ClearcasePlugin.getEngine().checkout(
-								new String[] { resource.getLocation()
-										.toOSString() }, getComment(),
-								ClearCase.UNRESERVED | ClearCase.PTIME, null);
-					} else {
-						// reserved
-						state = ClearcasePlugin.getEngine().checkout(
-								new String[] { resource.getLocation()
-										.toOSString() }, getComment(),
-								ClearCase.RESERVED | ClearCase.PTIME, null);
-					}
+					state = ClearcasePlugin.getEngine()
+							.checkout(
+									new String[] { resource.getLocation()
+											.toOSString() }, getComment(),
+									getCheckoutType() | ClearCase.PTIME, null);
 
 					monitor.worked(20);
 
@@ -1547,5 +1528,15 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 
 		return version.substring(firstBackSlash, lastBackSlash + 1);
+	}
+
+	private int getCheckoutType() {
+		if (ClearcasePlugin.isReservedCheckoutsAlways()) {
+			return ClearCase.RESERVED;
+		} else if (ClearcasePlugin.isReservedCheckoutsIfPossible()) {
+			return ClearCase.RESERVED_IF_POSSIBLE;
+		} else {
+			return ClearCase.UNRESERVED;
+		}
 	}
 }
