@@ -21,6 +21,8 @@ import java.util.List;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
+import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.clearcase.utils.Os;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -1005,11 +1007,18 @@ public class ClearcaseProvider extends RepositoryProvider {
 							// TODO: Add simple Merge
 							// getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
-							String latestVersion = branchName + "LATEST";
+							String latestVersion = resource.getLocation().toOSString()+"@@"+branchName + "LATEST";
 							ClearcasePlugin.getEngine().merge(
 									resource.getLocation().toOSString(),
 									new String[] { latestVersion },
 									ClearCase.GRAPHICAL);
+							//Now it should be ok to checkin.
+							
+							ClearcasePlugin.getEngine().checkin(
+									new String[] { resource.getLocation()
+											.toOSString() }, getComment(),
+									ClearCase.PTIME, null);
+								
 							break;
 
 						default:
