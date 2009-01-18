@@ -993,27 +993,17 @@ public class ClearcaseProvider extends RepositoryProvider {
 									null);
 							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
-							result = new Status(
-									IStatus.ERROR,
-									ID,
-									TeamException.NOT_CHECKED_IN,
-									MessageFormat
-											.format(
-													Messages
-															.getString("ClearcasePlugin.error.checkin.mergeneeded"),
-													new Object[] { cce
-															.getElements() }),
-									null);
-							// TODO: Add simple Merge
+							//Only support for: To merge the latest version with your checkout
 							// getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
 							String latestVersion = resource.getLocation().toOSString()+"@@"+branchName + "LATEST";
+							//TODO: merge method void but state is set to MERGED when ok. Need handling for this.
 							ClearcasePlugin.getEngine().merge(
 									resource.getLocation().toOSString(),
 									new String[] { latestVersion },
 									ClearCase.GRAPHICAL);
 							//Now it should be ok to checkin.
-							
+							//TODO: Check if merge was successful then checkin. if not clean up.
 							ClearcasePlugin.getEngine().checkin(
 									new String[] { resource.getLocation()
 											.toOSString() }, getComment(),
