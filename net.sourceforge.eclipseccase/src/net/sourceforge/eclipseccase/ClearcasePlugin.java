@@ -753,7 +753,7 @@ public class ClearcasePlugin extends Plugin {
 				IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
 				true);
 		pref.setDefault(IClearcasePreferenceConstants.COMMENT_ESCAPE, false);
-		pref.setDefault(IClearcasePreferenceConstants.QUICK_REFRESH, false);
+		pref.setDefault(IClearcasePreferenceConstants.QUICK_REFRESH, true);
 		pref.setDefault(IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY,
 				Job.DECORATE);
 		pref.setDefault(
