@@ -323,21 +323,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				.getPredecessorVersion();
 	}
 
-	/**
-	 * Returns the name of the view for the specified resource.
-	 * 
-	 * As the underlying ClearCase operation only operates on directories, this
-	 * method uses the parent of the resource if the resource type is of type
-	 * {@link IResource#FILE}
-	 * 
-	 * @param resource
-	 *            The resource to get the view name for.
-	 * @return The name of the view.
-	 */
 	public String getViewName(IResource resource) {
-		if (resource.getType() == IResource.FILE) {
-			resource = resource.getParent();
-		}
 		return ClearcasePlugin.getEngine().getViewName(
 				resource.getLocation().toOSString());
 	}
