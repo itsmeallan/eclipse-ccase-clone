@@ -15,7 +15,9 @@ package net.sourceforge.eclipseccase;
 import java.io.IOException;
 import java.io.Serializable;
 
+import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
+import net.sourceforge.clearcase.ClearCaseInterface;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -338,7 +340,11 @@ public class StateCache implements Serializable {
 
 					ClearCaseElementState newState = ClearcasePlugin
 							.getEngine().getElementState(osPath);
-
+					//Fix for Bug 2509230.
+					String viewName = ClearcasePlugin.getEngine().getViewName(osPath);
+					ClearCaseElementState viewType = ClearcasePlugin.getEngine().getViewType(viewName,osPath);
+					
+					
 					if (newState != null) {
 
 						boolean newHasRemote = newState.isElement();
@@ -357,7 +363,7 @@ public class StateCache implements Serializable {
 						changed |= newIsCheckedOut != this.isCheckedOut();
 						setFlag(CHECKED_OUT, newIsCheckedOut);
 
-						boolean newIsSnapShot = newState.isInSnapShotView();
+						boolean newIsSnapShot = viewType.isInSnapShotView();
 						changed |= newIsSnapShot != this.isSnapShot();
 						setFlag(SNAPSHOT, newIsSnapShot);
 
@@ -366,11 +372,6 @@ public class StateCache implements Serializable {
 						setFlag(HIJACKED, newIsHijacked);
 
 						boolean newIsEdited = false;
-//						if (newHasRemote && !newIsCheckedOut) {
-//							ClearcasePlugin.getEngine().findCheckouts(
-//									new String[] { osPath }, ClearCase.DEFAULT,
-//									null);
-//						}
 						changed |= newIsEdited != this.isEdited();
 						setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 
