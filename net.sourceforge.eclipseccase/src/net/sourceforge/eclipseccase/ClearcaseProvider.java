@@ -480,8 +480,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 			if (!elementState.isCheckedOut() && !elementState.isLink()) {
 				String[] element = { parent };
 				ClearCaseElementState[] elementState2 = ClearcasePlugin
-						.getEngine().checkout(element, getComment(), getCheckoutType(),
-								null);
+						.getEngine().checkout(element, getComment(),
+								getCheckoutType(), null);
 
 				monitor.worked(4);
 				if (!flag)
@@ -993,22 +993,27 @@ public class ClearcaseProvider extends RepositoryProvider {
 									null);
 							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
-							//Only support for: To merge the latest version with your checkout
+							// Only support for: To merge the latest version
+							// with your checkout
 							// getVersion --> \branch\CHECKEDOUT.
 							String branchName = getBranchName(getVersion(resource));
-							String latestVersion = resource.getLocation().toOSString()+"@@"+branchName + "LATEST";
-							//TODO: merge method void but state is set to MERGED when ok. Need handling for this.
+							String latestVersion = resource.getLocation()
+									.toOSString()
+									+ "@@" + branchName + "LATEST";
+							// TODO: merge method void but state is set to
+							// MERGED when ok. Need handling for this.
 							ClearcasePlugin.getEngine().merge(
 									resource.getLocation().toOSString(),
 									new String[] { latestVersion },
 									ClearCase.GRAPHICAL);
-							//Now it should be ok to checkin.
-							//TODO: Check if merge was successful then checkin. if not clean up.
+							// Now it should be ok to checkin.
+							// TODO: Check if merge was successful then checkin.
+							// if not clean up.
 							ClearcasePlugin.getEngine().checkin(
 									new String[] { resource.getLocation()
 											.toOSString() }, getComment(),
 									ClearCase.PTIME, null);
-								
+
 							break;
 
 						default:
@@ -1121,13 +1126,50 @@ public class ClearcaseProvider extends RepositoryProvider {
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + resource.getName());
 					ClearCaseElementState[] state = null;
+					try {
+						state = ClearcasePlugin.getEngine().checkout(
+								new String[] { resource.getLocation()
+										.toOSString() }, getComment(),
+								getCheckoutType() | ClearCase.PTIME, null);
+					} catch (ClearCaseException cce) {
+						switch (cce.getErrorCode()) {
+						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
+						//Ask if you wan't to check-out unreserved.
+							//TODO: Add dialog code.
+//							PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+//								public void run() {
+//									Shell activeShell = PlatformUI.getWorkbench()
+//											.getDisplay().getActiveShell();
+//									MessageDialog checkoutQuestion = new MessageDialog(
+//											activeShell, "Checkout", null,
+//											"Do you want to check-out unreserved?",
+//											MessageDialog.QUESTION, new String[] { "Yes",
+//													"No", "Cancel" }, 0);
+//									int returncode = checkoutQuestion.open();
+//									/* Yes=0 No=1 Cancel=2 */
+//									if (returncode == 0) {
+//										// Yes continue checking out.
+//										int flags = ClearCase.RECURSIVE;
+//										if (ClearcasePlugin.isKeepChangesAfterUncheckout()) {
+//											flags |= ClearCase.KEEP;
+//										}
+//
+//										ClearcasePlugin.getEngine().uncheckout(
+//												new String[] { resource.getLocation()
+//														.toOSString() }, flags, null);
+//										monitor.worked(40);
+//										updateState(resource, IResource.DEPTH_ZERO,
+//												new SubProgressMonitor(monitor, 10));
+//									}
+//								}
+//							});
+							break;
 
-					state = ClearcasePlugin.getEngine()
-							.checkout(
-									new String[] { resource.getLocation()
-											.toOSString() }, getComment(),
-									getCheckoutType() | ClearCase.PTIME, null);
+						default:
 
+							break;
+						}
+					}
 					monitor.worked(20);
 
 					if (state == null) {
