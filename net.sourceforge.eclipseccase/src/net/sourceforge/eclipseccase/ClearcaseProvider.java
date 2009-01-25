@@ -1052,7 +1052,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	private final class CheckOutOperation implements IRecursiveOperation {
 
-		public IStatus visit(IResource resource, IProgressMonitor monitor) {
+		public IStatus visit(final IResource resource, final IProgressMonitor monitor) {
 			try {
 				monitor.beginTask("Checkin out " + resource.getFullPath(), 100);
 
@@ -1134,35 +1134,31 @@ public class ClearcaseProvider extends RepositoryProvider {
 					} catch (ClearCaseException cce) {
 						switch (cce.getErrorCode()) {
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
-						//Ask if you wan't to check-out unreserved.
-							//TODO: Add dialog code.
-//							PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-//								public void run() {
-//									Shell activeShell = PlatformUI.getWorkbench()
-//											.getDisplay().getActiveShell();
-//									MessageDialog checkoutQuestion = new MessageDialog(
-//											activeShell, "Checkout", null,
-//											"Do you want to check-out unreserved?",
-//											MessageDialog.QUESTION, new String[] { "Yes",
-//													"No", "Cancel" }, 0);
-//									int returncode = checkoutQuestion.open();
-//									/* Yes=0 No=1 Cancel=2 */
-//									if (returncode == 0) {
-//										// Yes continue checking out.
-//										int flags = ClearCase.RECURSIVE;
-//										if (ClearcasePlugin.isKeepChangesAfterUncheckout()) {
-//											flags |= ClearCase.KEEP;
-//										}
-//
-//										ClearcasePlugin.getEngine().uncheckout(
-//												new String[] { resource.getLocation()
-//														.toOSString() }, flags, null);
-//										monitor.worked(40);
-//										updateState(resource, IResource.DEPTH_ZERO,
-//												new SubProgressMonitor(monitor, 10));
-//									}
-//								}
-//							});
+						//Ask if you wan't to check-out unreserved since we only accepted
+						// reserved checkouts.	
+							PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+								public void run() {
+									Shell activeShell = PlatformUI.getWorkbench()
+											.getDisplay().getActiveShell();
+									MessageDialog checkoutQuestion = new MessageDialog(
+											activeShell, "Checkout", null,
+											"Do you want to check-out unreserved?",
+											MessageDialog.QUESTION, new String[] { "Yes",
+													"No", "Cancel" }, 0);
+									int returncode = checkoutQuestion.open();
+									/* Yes=0 No=1 Cancel=2 */
+									if (returncode == 0) {
+										// Yes continue checking out but unreserved.
+										ClearcasePlugin.getEngine().checkout(
+												new String[] { resource.getLocation()
+														.toOSString() }, getComment(),
+												ClearCase.UNRESERVED | ClearCase.PTIME, null);
+										monitor.worked(40);
+										updateState(resource, IResource.DEPTH_ZERO,
+												new SubProgressMonitor(monitor, 10));
+									}
+								}
+							});
 							break;
 
 						default:
