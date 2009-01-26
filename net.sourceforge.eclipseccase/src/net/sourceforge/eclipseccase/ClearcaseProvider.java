@@ -1127,6 +1127,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 					monitor.subTask("Checking out " + resource.getName());
 					ClearCaseElementState[] state = null;
 					try {
+						//IStatus result = OK_STATUS;
 						state = ClearcasePlugin.getEngine().checkout(
 								new String[] { resource.getLocation()
 										.toOSString() }, getComment(),
@@ -1137,12 +1138,13 @@ public class ClearcaseProvider extends RepositoryProvider {
 						//Ask if you wan't to check-out unreserved since we only accepted
 						// reserved checkouts.	
 							PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+								
 								public void run() {
 									Shell activeShell = PlatformUI.getWorkbench()
 											.getDisplay().getActiveShell();
 									MessageDialog checkoutQuestion = new MessageDialog(
 											activeShell, "Checkout", null,
-											"Do you want to check-out unreserved?",
+											"Resource already checked-out reserved.\nDo you want to check-out unreserved?",
 											MessageDialog.QUESTION, new String[] { "Yes",
 													"No", "Cancel" }, 0);
 									int returncode = checkoutQuestion.open();
@@ -1162,16 +1164,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 							break;
 
 						default:
+							result = new Status(
+									IStatus.ERROR,
+									ID,
+									TeamException.UNABLE,
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearcasePlugin.error.checkin.unknown"),
+													new Object[] { cce
+															.getElements() }),
+									null);
 
 							break;
 						}
-					}
-					monitor.worked(20);
-
-					if (state == null) {
-						result = new Status(IStatus.ERROR, ID,
-								TeamException.UNABLE, "Checkout failed: "
-										+ resource.getName(), null);
 					}
 
 				}
