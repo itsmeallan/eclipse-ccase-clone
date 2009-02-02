@@ -916,7 +916,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	}
 
-	private final class CheckInOperation implements IRecursiveOperation {
+	protected final class CheckInOperation implements IRecursiveOperation {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {

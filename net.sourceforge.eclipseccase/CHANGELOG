@@ -1,3 +1,19 @@
+2.1.6
+-----
+Bugs fixed:
+	- 2542641  	 Error message after each dialog with cleardlg preference
+	- 2519610  	 2.1.5: NPE on validateEdit()
+	- 2509232  	 2.1.5 : no error on checkout reserved.
+	- 2509230  	 2.1.5 : update to latest version not working
+	- 2504492  	 2.1.5 version always creates *.keep file on uncheckout
+	- 2503946  	 Team->Add is disabled for view private files
+	- 2501284  	 NPE on java refactor -> rename of class.
+	- 2283678  	 Uncheckout doesn't prompt.
+	- 2261140  	 Add shows all elements in gui as being added.
+	- 2260585  	 Debug printouts?
+	- 2224917  	 Refresh ClearCase Resource states problem
+	- 2219188    Refactor checks out reserved
+	- 2218689  	 Refresh state not working
 2.1.5
 -----
 
