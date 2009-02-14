@@ -29,24 +29,27 @@ public class ClearcaseProviderTest {
 	@Test
 	public void testCheckinSuccess() {
 
-		// Setup
+		//Setup
 		final IResource resourceMock = context.mock(IResource.class,
 				"resource");
+		final StateCacheFactory stateCacheFactoryMock = context.mock(StateCacheFactory.class);
 		ClearcaseProvider provider = new ClearcaseProvider();
 		NullProgressMonitor progressMonitor = new NullProgressMonitor();
 
-		// Expectations
+		//Expectations
 		context.checking(new Expectations() {
 			{
 				one(resourceMock).getFullPath();
 				
-				
 			}
 		});
-
+		//Execute
 		provider.CHECK_IN.visit(resourceMock, progressMonitor);
 
-		// Assert
+		
+		//verify
+        context.assertIsSatisfied();
+
 
 	}
 
