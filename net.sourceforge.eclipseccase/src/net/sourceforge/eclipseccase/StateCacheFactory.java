@@ -703,6 +703,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @param resources
 	 */
 	void refreshState(IResource[] resources, int priority) {
+		// view type is nothing you change. retrive it once for project.
 		StateCacheJob[] jobs = new StateCacheJob[resources.length];
 		for (int i = 0; i < resources.length; i++) {
 			StateCache cache = StateCacheFactory.getInstance()

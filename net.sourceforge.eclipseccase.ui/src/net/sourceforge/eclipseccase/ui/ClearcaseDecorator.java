@@ -567,12 +567,13 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	public void refresh(IResource[] resources) {
 		if (null == resources || resources.length == 0)
 			return;
-
+		//FIXME: I removed this code since it seems to make refresh veeeery slow.....
+		// I will test it and see if it fixes problem with refresh
 		// sometimes is better to fire a global refresh
-		if (resources.length > 200) {
-			refresh();
-			return;
-		}
+//		if (resources.length > 200) {
+//			refresh();
+//			return;
+//		}
 
 		// if deep decoration is disabled, update only the specified resources
 		if (!ClearcaseUIPreferences.decorateFoldersDirty())

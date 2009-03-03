@@ -337,13 +337,13 @@ public class StateCache implements Serializable {
 				// check the global ignores from Team (includes derived
 				// resources)
 				if (!Team.isIgnoredHint(resource)) {
-
+					
 					ClearCaseElementState newState = ClearcasePlugin
 							.getEngine().getElementState(osPath);
 					//Fix for Bug 2509230.
-					String viewName = ClearcasePlugin.getEngine().getViewName(osPath);
-					ClearCaseElementState viewType = ClearcasePlugin.getEngine().getViewType(viewName,osPath);
-					
+//					String viewName = ClearcasePlugin.getEngine().getViewName(osPath);
+//					ClearCaseElementState viewType = ClearcasePlugin.getEngine().getViewType(viewName,osPath);
+//					
 					
 					if (newState != null) {
 
@@ -362,10 +362,12 @@ public class StateCache implements Serializable {
 						boolean newIsCheckedOut = newState.isCheckedOut();
 						changed |= newIsCheckedOut != this.isCheckedOut();
 						setFlag(CHECKED_OUT, newIsCheckedOut);
-
-						boolean newIsSnapShot = viewType.isInSnapShotView();
-						changed |= newIsSnapShot != this.isSnapShot();
-						setFlag(SNAPSHOT, newIsSnapShot);
+						
+						//No need to use this info on element level.
+						//Too costly.
+//						boolean newIsSnapShot = viewType.isInSnapShotView();
+//						changed |= newIsSnapShot != this.isSnapShot();
+//						setFlag(SNAPSHOT, newIsSnapShot);
 
 						boolean newIsHijacked = newState.isHijacked();
 						changed |= newIsHijacked != this.isHijacked();

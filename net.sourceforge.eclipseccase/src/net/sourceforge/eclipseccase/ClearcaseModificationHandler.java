@@ -121,8 +121,8 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 */
 	protected boolean setResourceRefreshing(ClearcaseProvider provider,
 			boolean refreshResource) {
-		boolean old = provider.refreshResources;
-		provider.refreshResources = refreshResource;
+		boolean old = provider.isRefreshResources();
+		provider.setRefreshResources(refreshResource);
 		return old;
 	}
 
