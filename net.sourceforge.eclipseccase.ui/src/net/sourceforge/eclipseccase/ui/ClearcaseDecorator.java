@@ -520,6 +520,7 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 
 	/**
 	 * Update the decorators for every resource in project.
+	 * Used when Associating/Deassociate project.
 	 * 
 	 * @param project
 	 */
@@ -567,6 +568,13 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	public void refresh(IResource[] resources) {
 		if (null == resources || resources.length == 0)
 			return;
+		//Make sure you take into account changes to workspace
+		//not performed outside Eclipse.
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			synchronizeResource(resource,IResource.DEPTH_ZERO);
+		}
+		
 		//FIXME: I removed this code since it seems to make refresh veeeery slow.....
 		// I will test it and see if it fixes problem with refresh
 		// sometimes is better to fire a global refresh
@@ -685,6 +693,22 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	 */
 	final void superFireLabelProviderChanged(LabelProviderChangedEvent event) {
 		super.fireLabelProviderChanged(event);
+	}
+	//TODO:Testing to see if this will help take into
+	//account changes in workspace not within eclipse.
+	/**
+	 * 
+	 * @param resource
+	 * @param depth
+	 */
+	private void synchronizeResource(IResource resource, int depth) {
+		if (!resource.isSynchronized(depth)) {
+			try {
+				resource.refreshLocal(depth, null);
+			} catch (CoreException e) {
+				throw new RuntimeException("Problem refreshing resource " + resource.getLocation(), e);
+			}
+		}
 	}
 
 }
