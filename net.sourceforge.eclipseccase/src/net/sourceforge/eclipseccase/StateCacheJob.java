@@ -13,6 +13,7 @@
 
 package net.sourceforge.eclipseccase;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -140,6 +141,7 @@ class StateCacheJob implements Comparable {
 		if (statusCollector != null) {
 			getStateCache().doUpdate(monitor, statusCollector);
 		} else {
+			getStateCache().getResource().refreshLocal(IResource.DEPTH_ZERO, monitor);
 			getStateCache().doUpdate(monitor);
 		}
 	}
