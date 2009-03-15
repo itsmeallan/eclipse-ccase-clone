@@ -87,7 +87,7 @@ class StateCacheJobQueue extends Job {
 				return Status.OK_STATUS;
 		}
         try {
-            executePendingJobs(monitor);
+            executePendingJobs(monitor,jobManager);
             // if the update was successful then it should not be recorded as
             // interrupted
             interrupted = false;
@@ -106,7 +106,7 @@ class StateCacheJobQueue extends Job {
      * @throws CoreException
      * @throws OperationCanceledException
      */
-    private void executePendingJobs(IProgressMonitor monitor)
+    private void executePendingJobs(IProgressMonitor monitor,IJobManager jobManager)
             throws CoreException, OperationCanceledException {
 
         try {
@@ -132,7 +132,7 @@ class StateCacheJobQueue extends Job {
                     monitor.subTask(Messages
                             .getString("StateCacheJobQueue.task.refresh") //$NON-NLS-1$
                             + job.getStateCache().getResource().getFullPath());
-                    job.execute(new SubProgressMonitor(monitor, 1));
+                    job.execute(new SubProgressMonitor(monitor, 1),jobManager);
                 }
             }
         } finally {

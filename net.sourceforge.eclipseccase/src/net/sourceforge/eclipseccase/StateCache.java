@@ -308,7 +308,7 @@ public class StateCache implements Serializable {
 	 */
 	void doUpdate() {
 		boolean changed = isUninitialized();
-
+		
 		// only synchronize here
 		synchronized (this) {
 
