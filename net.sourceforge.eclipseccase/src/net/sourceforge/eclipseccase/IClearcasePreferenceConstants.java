@@ -135,5 +135,8 @@ public interface IClearcasePreferenceConstants
     /** ClearCase preference */
     String HIDE_REFRESH_STATE_ACTIVITY = ClearcasePlugin.PLUGIN_ID
             + ".refreshState.hide"; //$NON-NLS-1$
+    /** ClearCase preference */
+    String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearcasePlugin.PLUGIN_ID
+            + ".auto.parent.checkin.after.move"; //$NON-NLS-1$
 
 }

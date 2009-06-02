@@ -216,6 +216,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 */
 	public IStatus validateEdit(IFile[] files,
 			FileModificationValidationContext context) {
+		
 		IFile[] readOnlyFiles = getFilesToCheckout(files);
 		if (readOnlyFiles.length == 0)
 			return OK;

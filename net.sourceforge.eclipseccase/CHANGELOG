@@ -1,4 +1,12 @@
+2.1.7
+------
+	- Users-manual.
+Bug fixed:
+	- 2500976 Linux: "Too many open files" on refresh operation
+	- 
+
 2.1.6.1
+-------
 
 Bug fixed:
 	IllegalThreadStateException causing refresh problems.
