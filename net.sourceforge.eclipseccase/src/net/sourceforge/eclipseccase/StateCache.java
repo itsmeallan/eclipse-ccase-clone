@@ -15,7 +15,9 @@ package net.sourceforge.eclipseccase;
 import java.io.IOException;
 import java.io.Serializable;
 
+import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
+import net.sourceforge.clearcase.ClearCaseInterface;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -80,7 +82,7 @@ public class StateCache implements Serializable {
 	private static final int SYM_LINK_TARGET_VALID = 0x40;
 
 	private static final int INSIDE_VIEW = 0x80;
-
+	
 	/**
 	 * Schedules a state update.
 	 * 
@@ -224,13 +226,13 @@ public class StateCache implements Serializable {
 					boolean newIsHijacked = newState.isHijacked();
 					changed |= newIsHijacked != this.isHijacked();
 					setFlag(HIJACKED, newIsHijacked);
-
+					
 					boolean newIsEdited = false;
-					// if (newHasRemote && !newIsCheckedOut) {
-					// ClearcasePlugin.getEngine().findCheckouts(
-					// new String[] { osPath }, ClearCase.DEFAULT,
-					// null);
-					// }
+//					if (newHasRemote && !newIsCheckedOut) {
+//						ClearcasePlugin.getEngine().findCheckouts(
+//								new String[] { osPath }, ClearCase.DEFAULT,
+//								null);
+//					}
 					changed |= newIsEdited != this.isEdited();
 					setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 
@@ -308,21 +310,41 @@ public class StateCache implements Serializable {
 	 */
 	void doUpdate() {
 		boolean changed = isUninitialized();
-		
+
+		IPath location = resource.getLocation();
+		if (location == null) {
+			// resource has been invalidated in the workspace since request was
+			// queued, so ignore update request.
+			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
+				ClearcasePlugin.trace(TRACE_ID,
+						"not updating - invalid resource: " //$NON-NLS-1$
+								+ resource);
+			}
+			return;
+		}
+
 		// only synchronize here
 		synchronized (this) {
+
+			osPath = location.toOSString();
 
 			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
 				ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$//$NON-NLS-2$
 			}
-			if (resource.exists()) {
+
+			if (resource.isAccessible()) {
+
 				// check the global ignores from Team (includes derived
 				// resources)
 				if (!Team.isIgnoredHint(resource)) {
 
 					ClearCaseElementState newState = ClearcasePlugin
 							.getEngine().getElementState(osPath);
-
+					//Fix for Bug 2509230.
+					String viewName = ClearcasePlugin.getEngine().getViewName(osPath);
+					ClearCaseElementState viewType = ClearcasePlugin.getEngine().getViewType(viewName,osPath);
+					
+					
 					if (newState != null) {
 
 						boolean newHasRemote = newState.isElement();
@@ -340,6 +362,10 @@ public class StateCache implements Serializable {
 						boolean newIsCheckedOut = newState.isCheckedOut();
 						changed |= newIsCheckedOut != this.isCheckedOut();
 						setFlag(CHECKED_OUT, newIsCheckedOut);
+
+						boolean newIsSnapShot = viewType.isInSnapShotView();
+						changed |= newIsSnapShot != this.isSnapShot();
+						setFlag(SNAPSHOT, newIsSnapShot);
 
 						boolean newIsHijacked = newState.isHijacked();
 						changed |= newIsHijacked != this.isHijacked();
@@ -392,7 +418,7 @@ public class StateCache implements Serializable {
 				}
 
 			} else {
-				// resource does not exist
+				// resource does not exists
 				flags = 0;
 				version = null;
 				symbolicLinkTarget = null;
@@ -401,10 +427,11 @@ public class StateCache implements Serializable {
 					ClearcasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
 							+ resource);
 				}
-
-				updateTimeStamp = resource.getModificationStamp();
 			}
+
+			updateTimeStamp = resource.getModificationStamp();
 		}
+
 		// fire state change (lock must be released prior)
 		if (changed) {
 			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
@@ -446,6 +473,23 @@ public class StateCache implements Serializable {
 		if (null == resource)
 			return false;
 
+		// performance improve: if not checked out it is not dirty
+		// wrong : it can be hijacked
+		// if (!isCheckedOut()) return false;
+
+		// this is too expensive
+		// try {
+		// return ClearcasePlugin.getEngine().isDifferent(osPath);
+		// } catch (RuntimeException ex) {
+		// ClearcasePlugin.log(IStatus.ERROR,
+		// "Could not determine element dirty state of "
+		// + osPath
+		// + ": "
+		// + (null != ex.getCause() ? ex.getCause()
+		// .getMessage() : ex.getMessage()), ex);
+		// return false;
+		// }
+
 		return resource.getModificationStamp() != updateTimeStamp;
 	}
 
@@ -483,6 +527,32 @@ public class StateCache implements Serializable {
 	 */
 	public String getPredecessorVersion() {
 		String predecessorVersion = null;
+
+		// ClearCaseInterface.Status status = (isHijacked() ?
+		// ClearcasePlugin.getEngine()
+		// .cleartool(
+		//                        "ls " //$NON-NLS-1$
+		// + ClearcaseUtil.quote(resource.getLocation()
+		// .toOSString())) : ClearcasePlugin
+		// .getEngine().cleartool(
+		//                        "describe -fmt %PVn " //$NON-NLS-1$
+		// + ClearcaseUtil.quote(resource.getLocation()
+		// .toOSString())));
+		// if (status.status) {
+		// predecessorVersion = status.message.trim().replace('\\', '/');
+		// if (isHijacked()) {
+		//                int offset = predecessorVersion.indexOf("@@") + 2; //$NON-NLS-1$
+		// int cutoff = predecessorVersion.indexOf("[hijacked]") - 1;
+		// //$NON-NLS-1$
+		// try {
+		// predecessorVersion = predecessorVersion.substring(offset,
+		// cutoff);
+		// } catch (Exception e) {
+		// predecessorVersion = null;
+		// }
+		// }
+		// }
+
 		return predecessorVersion;
 	}
 

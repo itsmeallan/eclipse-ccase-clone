@@ -54,7 +54,7 @@ public class MoveHandler implements IMoveDeleteHook {
 
         if (!failed) {
             synchronized (provider) {
-                provider.setRefreshResources(false);
+                provider.refreshResources = false;
 
                 try {
                     provider.delete(new IResource[] { file }, monitor);
@@ -62,7 +62,7 @@ public class MoveHandler implements IMoveDeleteHook {
                     failed = true;
                     status = ex.getStatus();
                 } finally {
-                    provider.setRefreshResources(true);
+                    provider.refreshResources = true;
                 }
             }
         }
@@ -103,7 +103,7 @@ public class MoveHandler implements IMoveDeleteHook {
 
         if (!failed) {
             synchronized (provider) {
-                provider.setRefreshResources(false);
+                provider.refreshResources = false;
 
                 try {
                     provider.delete(new IResource[] { folder }, monitor);
@@ -111,7 +111,7 @@ public class MoveHandler implements IMoveDeleteHook {
                     failed = true;
                     status = ex.getStatus();
                 } finally {
-                    provider.setRefreshResources(true);
+                    provider.refreshResources = true;
                 }
             }
         }
@@ -162,7 +162,7 @@ public class MoveHandler implements IMoveDeleteHook {
 
         if (!failed) {
             synchronized (provider) {
-                provider.setRefreshResources(false);
+                provider.refreshResources = false;
 
                 try {
                     provider.delete(new IResource[] { project }, monitor);
@@ -170,7 +170,7 @@ public class MoveHandler implements IMoveDeleteHook {
                     failed = true;
                     status = ex.getStatus();
                 } finally {
-                    provider.setRefreshResources(true);
+                    provider.refreshResources = true;
                 }
             }
         }
@@ -235,7 +235,7 @@ private IStatus validateDest(IResource destination, IProgressMonitor monitor)
             return true;
         }
         synchronized (provider) {
-            provider.setRefreshResources(false);
+            provider.refreshResources = false;
 
             try {
                 monitor.beginTask("Moving " + source.getName(), 100);
@@ -270,7 +270,7 @@ private IStatus validateDest(IResource destination, IProgressMonitor monitor)
                 return true;
 
             } finally {
-                provider.setRefreshResources(true);
+                provider.refreshResources = true;
                 monitor.done();
             }
         }
@@ -290,7 +290,7 @@ private IStatus validateDest(IResource destination, IProgressMonitor monitor)
         }
 
         synchronized (provider) {
-            provider.setRefreshResources(false);
+            provider.refreshResources = false;
 
             try {
                 monitor.beginTask("Moving " + source.getName(), 100);
@@ -322,7 +322,7 @@ private IStatus validateDest(IResource destination, IProgressMonitor monitor)
 
                 return true;
             } finally {
-                provider.setRefreshResources(true);
+                provider.refreshResources = true;
                 monitor.done();
             }
         }

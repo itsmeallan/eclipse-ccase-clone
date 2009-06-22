@@ -13,14 +13,9 @@
 
 package net.sourceforge.eclipseccase;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceRuleFactory;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
  * A job for refreshing the state of a resource.
@@ -140,26 +135,11 @@ class StateCacheJob implements Comparable {
 	 * @throws OperationCanceledException
 	 *             if the operation was canceled
 	 */
-	void execute(IProgressMonitor monitor, IJobManager jobManager)
-			throws CoreException, OperationCanceledException {
+	void execute(IProgressMonitor monitor) throws CoreException,
+			OperationCanceledException {
 		if (statusCollector != null) {
 			getStateCache().doUpdate(monitor, statusCollector);
 		} else {
-			//FIXME:Either we implement here or in doUpdate().
-			IResource resource = getStateCache().getResource();
-			ISchedulingRule rule = ClearcasePlugin.getWorkspace()
-					.getRuleFactory().refreshRule(resource);
-			try {
-				jobManager.beginRule(rule, monitor);
-				resource.refreshLocal(IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 1));
-			} catch (CoreException e) {
-				e.printStackTrace();
-
-			} finally {
-				jobManager.endRule(rule);
-			}
-
 			getStateCache().doUpdate(monitor);
 		}
 	}
