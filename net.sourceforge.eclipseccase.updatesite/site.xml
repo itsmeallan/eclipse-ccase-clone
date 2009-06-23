@@ -48,6 +48,9 @@
    <feature url="features/net.sourceforge.eclipseccase_2.1.6.1.jar" id="net.sourceforge.eclipseccase" version="2.1.6.1">
       <category name="eclipse-ccase-33"/>
    </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.1.6.2.jar" id="net.sourceforge.eclipseccase" version="2.1.6.2">
+      <category name="eclipse-ccase-34"/>
+   </feature>
    <category-def name="eclipse-ccase-3" label="Eclipse ClearCase Integration for Eclipse 3.0">
       <description>
          The free and open source Eclipse ClearCase integration for Eclipse 3.x.
@@ -61,4 +64,5 @@
    <category-def name="eclipse-ccase-32" label="Eclipse ClearCase Integration for Eclipse 3.2"/>
    <category-def name="eclipse-ccase-31" label="Eclipse ClearCase Integration for Eclipse 3.1"/>
    <category-def name="eclipse-ccase-33" label="Eclipse ClearCase Integration for Eclipse 3.3"/>
+   <category-def name="eclipse-ccase-34" label="Eclipse ClearCase Integration for Eclipse 3.4"/>
 </site>

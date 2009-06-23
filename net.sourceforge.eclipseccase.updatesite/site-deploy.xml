@@ -78,21 +78,11 @@
 	</target>
 	
 	<target name="deploy-sf-release" depends="init" unless="site.local">
-		<!-- sfutils is not maintained any more. R1C fixes. Have not tested.
-		     file length must be between 20 and 256,000 bytes
-		<sfpublish	releasename="${version}"
-					packagename="eclipse-ccase"
-					packagehidden="no"
-					hidden="no"
-					projectshortname="eclipse-ccase"
-					projectname="Clearcase plugin for Eclipse"
-					username="${user}"
-					password="${password}"
-					releasedate="${release.date}">
-        <filespec file="${feature.eclipseccase.package}" 
-                  filetype="gzip_file" 
-                  processortype="platform_independent"/>
-      </sfpublish>-->
+		<!-- 
+			 scp FILE jsmith@frs.sourceforge.net:uploads
+		-->
+		<scp file="${feature.eclipseccase.package}" todir="eraonel:${password}@frs.sourceforge.net:uploads"/>
+
     </target>
     
 </project>
