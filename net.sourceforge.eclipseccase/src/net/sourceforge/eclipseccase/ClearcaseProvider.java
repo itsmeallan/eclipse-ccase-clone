@@ -403,6 +403,21 @@ public class ClearcaseProvider extends RepositoryProvider {
 		return null;
 	}
 
+	/**
+	 * Before the move operation we check if parent directories are checked out.
+	 * We use that after the move has been performed in clearcase to set
+	 * directories state (co/ci) as prior to move operation. If checkout is need
+	 * then it is performed within the java clearcase package. The checkin is
+	 * however performed within this method since we know the state prior to
+	 * move operation and there is no need to send this information to the
+	 * clearcase package. So an evetual checkin will be performed in this
+	 * method.
+	 * 
+	 * @param source
+	 * @param destination
+	 * @param monitor
+	 * @return result status of the operation.
+	 */
 	public IStatus move(IResource source, IResource destination,
 			IProgressMonitor monitor) {
 		try {
@@ -420,30 +435,47 @@ public class ClearcaseProvider extends RepositoryProvider {
 										new Object[] { source.getFullPath()
 												.toString() }), null);
 			}
-			IStatus result = checkoutParent(source, new SubProgressMonitor(
-					monitor, 10));
-			if (result.isOK())
-				result = checkoutParent(destination, new SubProgressMonitor(
-						monitor, 10));
-			if (result.isOK()) {
-				ClearCaseElementState state = ClearcasePlugin.getEngine().move(
+
+			IStatus result = OK_STATUS;
+
+			// boolean sourceParentCoBeforeOp =
+			// isCheckedOut(source.getParent());
+			// boolean targetParentCoBoforeOp = isCheckedOut(destination
+			// .getParent());
+
+			ClearCaseElementState [] state = null;
+
+			if (ClearcasePlugin.isAutoCheckinParentAfterMoveAllowed()) {
+				state = ClearcasePlugin.getEngine()
+						.move(
+								source.getLocation().toOSString(),
+								destination.getLocation().toOSString(),
+								getComment(),
+								ClearCase.FORCE | ClearCase.CHECKIN
+										| getCheckoutType(), null);
+			} else {
+				state = ClearcasePlugin.getEngine().move(
 						source.getLocation().toOSString(),
 						destination.getLocation().toOSString(), getComment(),
 						ClearCase.FORCE | getCheckoutType(), null);
-				monitor.worked(40);
-				StateCacheFactory.getInstance().remove(source);
-				updateState(source.getParent(), IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 10));
-				updateState(destination.getParent(), IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 10));
-				updateState(destination, IResource.DEPTH_INFINITE,
-						new SubProgressMonitor(monitor, 10));
-				if (!state.isMoved()) {
-					return new Status(IStatus.ERROR, ID, TeamException.UNABLE,
-							"Could not move element: "
-							// + ccStatus.message
-							, null);
-				}
+				
+			}
+			
+			StateCacheFactory.getInstance().remove(source);
+			updateState(source.getParent(), IResource.DEPTH_ZERO,
+					new SubProgressMonitor(monitor, 10));
+			updateState(destination.getParent(), IResource.DEPTH_ZERO,
+					new SubProgressMonitor(monitor, 10));
+			updateState(destination, IResource.DEPTH_INFINITE,
+                    new SubProgressMonitor(monitor, 10));
+			
+			
+			if (!state[0].isMoved()) {
+				return new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Could not move element: "
+						// + ccStatus.message
+						, null);
+
 			}
 			return result;
 		} finally {

@@ -1,15 +1,14 @@
-2.1.7
-------
-	- Users-manual.
-Bug fixed:
-	- 2500976 Linux: "Too many open files" on refresh operation
-	- 
+2.1.6.2
+-------
+
+Bug fixed:  2708750 An exception has been caught while processing the refactoring.
 
 2.1.6.1
 -------
 
 Bug fixed:
 	IllegalThreadStateException causing refresh problems.
+	- 2500976 Linux: "Too many open files" on refresh operation
 
 2.1.6
 -----

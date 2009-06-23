@@ -171,6 +171,7 @@ public class ClearcasePlugin extends Plugin {
 				trace("debugging " + DEBUG_OPTION_STATE_CACHE); //$NON-NLS-1$
 				ClearcasePlugin.DEBUG_STATE_CACHE = true;
 			}
+			
 
 			String[] args = Platform.getCommandLineArgs();
 			for (int i = 0; i < args.length; i++) {
@@ -560,6 +561,13 @@ public class ClearcasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE);
 	}
+	
+	
+	public static boolean isAutoCheckinParentAfterMoveAllowed() {
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE);
+	}
+
 
 	public static int jobQueuePriority() {
 		return getInstance().getPluginPreferences().getInt(
@@ -762,6 +770,8 @@ public class ClearcasePlugin extends Plugin {
 		pref.setDefault(
 				IClearcasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT,
 				true);
+		pref.setDefault(IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE, false);
+
 	}
 
 	/**
