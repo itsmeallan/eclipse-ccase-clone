@@ -526,33 +526,7 @@ public class StateCache implements Serializable {
 	 * @return String
 	 */
 	public String getPredecessorVersion() {
-		String predecessorVersion = null;
-
-		// ClearCaseInterface.Status status = (isHijacked() ?
-		// ClearcasePlugin.getEngine()
-		// .cleartool(
-		//                        "ls " //$NON-NLS-1$
-		// + ClearcaseUtil.quote(resource.getLocation()
-		// .toOSString())) : ClearcasePlugin
-		// .getEngine().cleartool(
-		//                        "describe -fmt %PVn " //$NON-NLS-1$
-		// + ClearcaseUtil.quote(resource.getLocation()
-		// .toOSString())));
-		// if (status.status) {
-		// predecessorVersion = status.message.trim().replace('\\', '/');
-		// if (isHijacked()) {
-		//                int offset = predecessorVersion.indexOf("@@") + 2; //$NON-NLS-1$
-		// int cutoff = predecessorVersion.indexOf("[hijacked]") - 1;
-		// //$NON-NLS-1$
-		// try {
-		// predecessorVersion = predecessorVersion.substring(offset,
-		// cutoff);
-		// } catch (Exception e) {
-		// predecessorVersion = null;
-		// }
-		// }
-		// }
-
+		String predecessorVersion = ClearcasePlugin.getEngine().getPreviousVersion(resource.getLocation().toOSString());
 		return predecessorVersion;
 	}
 
