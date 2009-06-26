@@ -362,10 +362,12 @@ public class StateCache implements Serializable {
 						boolean newIsCheckedOut = newState.isCheckedOut();
 						changed |= newIsCheckedOut != this.isCheckedOut();
 						setFlag(CHECKED_OUT, newIsCheckedOut);
-
+						
+						if(viewType != null){
 						boolean newIsSnapShot = viewType.isInSnapShotView();
 						changed |= newIsSnapShot != this.isSnapShot();
 						setFlag(SNAPSHOT, newIsSnapShot);
+						}
 
 						boolean newIsHijacked = newState.isHijacked();
 						changed |= newIsHijacked != this.isHijacked();
