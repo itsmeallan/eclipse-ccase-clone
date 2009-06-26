@@ -725,17 +725,15 @@ public class ClearcaseProvider extends RepositoryProvider {
 		ClearCaseElementState state = ClearcasePlugin.getEngine().add(
 				resource.getLocation().toOSString(), false, getComment(),
 				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN, null);
-		if (state.isCheckedIn()) {
-			// check-in parent dir
-			String[] dir = { resource.getParent().getLocation().toOSString() };
-			ClearCaseElementState[] stateB = ClearcasePlugin.getEngine()
-					.checkin(dir, comment, 0, null);
-		} else {
+		
+		if(state.isElement()){
+			//Do nothing!
+		}else{
 			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 					"Add failed: " + "Could not add element"
 							+ resource.getName(), null);
 		}
-
+		
 		return result;
 	}
 

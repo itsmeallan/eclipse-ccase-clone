@@ -43,13 +43,10 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
                         monitor.subTask("Executing ClearCase user interface...");
                         ClearDlgHelper.add(resources);
                     } else {
-                        for (int i = 0; i < resources.length; i++) {
-                            IResource resource = resources[i];
                             ClearcaseProvider provider = ClearcaseProvider
-                                    .getClearcaseProvider(resource);
+                                    .getClearcaseProvider(resources[0]);
                             provider.setComment(comment);
                             provider.add(resources, depth, subMonitor(monitor));
-                        }
                     }
                 } finally {
                     monitor.done();
