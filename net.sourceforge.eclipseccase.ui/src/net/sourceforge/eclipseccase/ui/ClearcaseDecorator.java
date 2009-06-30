@@ -408,7 +408,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			// no further decoration
 			return;
 		}
-
+		
+		
 		// Projects may be the view directory containing the VOBS, if so,
 		// they are not decoratable
 		if (p.isViewRoot(resource) || p.isVobRoot(resource)) {
@@ -560,74 +561,37 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		}
 	}
 
-	/**
-	 * Updates the decorators for the specified resources.
-	 * 
-	 * @param resources
-	 */
-	public void refresh(IResource[] resources) {
-		if (null == resources || resources.length == 0)
-			return;
-		//Make sure you take into account changes to workspace
-		//not performed outside Eclipse.
-		for (int i = 0; i < resources.length; i++) {
-			IResource resource = resources[i];
-			synchronizeResource(resource,IResource.DEPTH_ZERO);
-		}
-		
-		//FIXME: I removed this code since it seems to make refresh veeeery slow.....
-		// I will test it and see if it fixes problem with refresh
-		// sometimes is better to fire a global refresh
-//		if (resources.length > 200) {
-//			refresh();
-//			return;
-//		}
+	public void refresh(IResource [] changedResources){
+		Set resourcesToUpdate = new HashSet();
 
-		// if deep decoration is disabled, update only the specified resources
-		if (!ClearcaseUIPreferences.decorateFoldersDirty())
-			fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources));
-		else {
-			// deep decoration is enabled: update parents also
-			final HashSet changedResources = new HashSet(resources.length + 20);
-			for (int i = 0; i < resources.length; i++) {
-				IResource resource = resources[i];
-				changedResources.add(resource);
+		for (int i = 0; i < changedResources.length; i++) {
+			IResource resource = changedResources[i];
 
-				// collect parents
-				IResource parent = resource.getParent();
-				while (null != parent && changedResources.add(parent))
-					parent = parent.getParent();
-
-				// // collect children
-				// if (resource.isAccessible())
-				// {
-				//
-				// try
-				// {
-				// // refresh children
-				// resource.accept(new IResourceVisitor()
-				// {
-				// public boolean visit(IResource child)
-				// throws CoreException
-				// {
-				// return changedresources.add(child);
-				// }
-				// });
-				// }
-				// catch (CoreException ex)
-				// {
-				// ClearcasePlugin.log(IStatus.ERROR,
-				// "Could not access resource: "
-				// + resource.getFullPath().toString(), ex);
-				// }
-				//
-				// }
+			if(!ClearcaseUIPreferences.decorateFoldersDirty()) {
+				addWithParents(resource, resourcesToUpdate);
+			} else {
+				resourcesToUpdate.add(resource);
 			}
+		}
 
-			// fire the change
-			fireLabelProviderChanged(new LabelProviderChangedEvent(this, changedResources.toArray()));
+		fireLabelProviderChanged(new LabelProviderChangedEvent(this, resourcesToUpdate.toArray()));
+
+	}
+	
+	
+	/*
+	 * Add resource and its parents to the List
+	 */
+	 
+	private void addWithParents(IResource resource, Set resources) {
+		IResource current = resource;
+
+		while (current.getType() != IResource.ROOT) {
+			resources.add(current);
+			current = current.getParent();
 		}
 	}
+	
 
 	/*
 	 * (non-Javadoc)
