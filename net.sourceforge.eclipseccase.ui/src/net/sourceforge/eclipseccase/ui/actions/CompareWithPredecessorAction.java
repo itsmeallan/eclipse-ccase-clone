@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
 import java.io.IOException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
@@ -44,11 +46,12 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
+                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
 						if (ClearcasePlugin.isUseCleartool()) {
-							new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(), null, null, null);
+							new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(), null, null, opListener);
 						} else {
 							Runtime.getRuntime().exec(new String[] { "cleardlg", "/diffpred", path });
 						}

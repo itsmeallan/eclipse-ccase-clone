@@ -1,5 +1,15 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
+import org.eclipse.core.runtime.SubProgressMonitor;
+
+import net.sourceforge.eclipseccase.ui.actions.UnHijackAction.UnHijackQuestion;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -16,58 +26,95 @@ import org.eclipse.jface.action.IAction;
  */
 public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 
-    public void execute(IAction action) {
-        IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+	class UndoCheckOutQuestion implements Runnable {
+		private int returncode;
 
-            public void run(IProgressMonitor monitor) throws CoreException {
-                try {
-                    IResource[] resources = getSelectedResources();
-                    beginTask(monitor, "Undoing checkout...", resources.length);
+		public int getReturncode() {
+			return returncode;
+		}
 
-                    if (ClearcasePlugin.isUseClearDlg()) {
-                        monitor
-                                .subTask("Executing ClearCase user interface...");
-                        ClearDlgHelper.uncheckout(resources);
-                    } else {
-                        // Sort resources with directories last so that the
-                        // modification of a
-                        // directory doesn't abort the modification of files
-                        // within
-                        // it.
-                        List resList = Arrays.asList(resources);
-                        Collections
-                                .sort(resList, new DirectoryLastComparator());
+		public void run() {
+			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+			MessageDialog checkoutQuestion = new MessageDialog(activeShell, "Checkout", null, "Do you really want to uncheckout?", MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 
-                        for (int i = 0; i < resources.length; i++) {
-                            IResource resource = resources[i];
-                            ClearcaseProvider provider = ClearcaseProvider
-                                    .getClearcaseProvider(resource);
-                            provider.uncheckout(new IResource[] { resource },
-                                    IResource.DEPTH_ZERO, subMonitor(monitor));
-                        }
-                    }
-                } finally {
-                    monitor.done();
-                }
-            }
-        };
+			returncode = checkoutQuestion.open();
+		}
+	}
 
-        executeInBackground(runnable, "Uncheckout resources from ClearCase");
-    }
+	public void execute(IAction action) {
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
-    public boolean isEnabled() {
-        IResource[] resources = getSelectedResources();
-        if (resources.length == 0) return false;
-        for (int i = 0; i < resources.length; i++) {
-            IResource resource = resources[i];
-            ClearcaseProvider provider = ClearcaseProvider
-                    .getClearcaseProvider(resource);
-            if (provider == null || provider.isUnknownState(resource)
-                    || provider.isIgnored(resource)
-                    || !provider.hasRemote(resource)) return false;
-            if (!provider.isCheckedOut(resource)) return false;
-        }
-        return true;
-    }
+			public void run(IProgressMonitor monitor) throws CoreException {
+				try {
+					IResource[] resources = getSelectedResources();
+					beginTask(monitor, "Undoing checkout...", resources.length);
+
+					if (ClearcasePlugin.isUseClearDlg()) {
+						monitor.subTask("Executing ClearCase user interface...");
+						ClearDlgHelper.uncheckout(resources);
+					} else {
+
+						UndoCheckOutQuestion question = new UndoCheckOutQuestion();
+
+						PlatformUI.getWorkbench().getDisplay().syncExec(question);
+
+						/* Yes=0 No=1 Cancel=2 */
+						if (question.getReturncode() == 0) {
+							// Sort resources with directories last so that the
+							// modification of a
+							// directory doesn't abort the modification of files
+							// within
+							// it.
+							List resList = Arrays.asList(resources);
+							Collections.sort(resList, new DirectoryLastComparator());
+
+							Vector<IResource> parents = new Vector<IResource>();
+							
+
+                        	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+							for (int i = 0; i < resources.length; i++) {
+								IResource resource = resources[i];
+								ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+                                provider.setOperationListener(opListener);
+								provider.uncheckout(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
+								
+								// update parent status only once
+								if(!parents.contains(resource.getParent()))
+								{
+									parents.add(resource.getParent());
+								}
+							}
+							
+							for(IResource resource:parents)
+							{
+								ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+                                provider.setOperationListener(opListener);
+								provider.updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(monitor, 10));
+							}
+						}
+					}
+				} finally {
+					monitor.done();
+				}
+			}
+		};
+
+		executeInBackground(runnable, "Uncheckout resources from ClearCase");
+	}
+
+	public boolean isEnabled() {
+		IResource[] resources = getSelectedResources();
+		if (resources.length == 0)
+			return false;
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+				return false;
+			if (!provider.isCheckedOut(resource))
+				return false;
+		}
+		return true;
+	}
 
 }

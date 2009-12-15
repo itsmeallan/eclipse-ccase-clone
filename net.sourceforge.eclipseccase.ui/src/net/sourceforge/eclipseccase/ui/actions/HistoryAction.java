@@ -1,5 +1,17 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.views.HistoryView;
+
+import net.sourceforge.eclipseccase.views.ConfigSpecView;
+import org.eclipse.ui.PlatformUI;
+
+import java.util.Vector;
+
+import net.sourceforge.clearcase.ElementHistory;
+
+import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseInterface;
+
 import java.io.IOException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
@@ -17,7 +29,8 @@ import org.eclipse.ui.IActionDelegate;
  */
 public class HistoryAction extends ClearcaseWorkspaceAction
 {
-
+	IResource[] resources = null;
+	private HistoryView view = null;
     /**
      * {@inheritDoc
      */
@@ -40,17 +53,32 @@ public class HistoryAction extends ClearcaseWorkspaceAction
      * @see IActionDelegate#run(IAction)
      */
     public void execute(IAction action)
-    {IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+    {
+    	resources = getSelectedResources();
+		try {
+			view = (HistoryView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.HistoryView");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+    	
+    	
+    	IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 		public void run(IProgressMonitor monitor) throws CoreException {
 			try {
-				 IResource[] resources = getSelectedResources();
-                 for (int i = 0; i < resources.length; i++)
+				 if(resources != null && resources.length > 0)
                  {
-                     IResource resource = resources[i];
+                     IResource resource = resources[0];
                      String path = resource.getLocation().toOSString();
                      if (ClearcasePlugin.isUseCleartool())
                      {
-                         new CommandLauncher().execute(new CleartoolCommandLine("lshistory").addOption("-graphical").addElement(path).create(),null,null,null);
+                    	 ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
+                    	 Vector<ElementHistory> result = cci.getElementHistory(path);
+
+                    	 view.setHistoryInformation(resources[0], result);
+
+                    	// new CommandLauncher().execute(new CleartoolCommandLine("lshistory").addOption("-graphical").addElement(path).create(),null,null,null);
                      }
                      else
                      {

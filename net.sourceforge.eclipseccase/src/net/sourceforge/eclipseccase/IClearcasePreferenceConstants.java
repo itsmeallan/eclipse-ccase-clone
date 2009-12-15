@@ -92,6 +92,11 @@ public interface IClearcasePreferenceConstants
             + ".preventRefreshChildren"; //$NON-NLS-1$
 
     /** ClearCase preference */
+    String CLEARCASE_PRIMARY_GROUP = ClearcasePlugin.PLUGIN_ID
+            + ".clearcasePrimaryGroup"; //$NON-NLS-1$
+
+    
+    /** ClearCase preference */
     String USE_CLEARDLG = ClearcasePlugin.PLUGIN_ID
             + ".useClearDlg"; //$NON-NLS-1$
 

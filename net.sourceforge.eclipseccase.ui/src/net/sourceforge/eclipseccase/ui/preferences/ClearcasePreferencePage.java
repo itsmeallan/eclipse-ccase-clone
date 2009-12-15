@@ -13,6 +13,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
+
+import org.eclipse.jface.preference.StringFieldEditor;
+
 import org.eclipse.core.runtime.jobs.Job;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -76,9 +79,14 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	protected void createFieldEditors() {
 
 		// general settings
+		addField(new  StringFieldEditor(CLEARCASE_PRIMARY_GROUP, PreferenceMessages.getString("Preferences.General.ClearCasePrimaryGroup"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+		
+		
 		addField(new BooleanFieldEditor(WIP_REFRESH_CHILDREN_PREVENT, PreferenceMessages.getString("Preferences.General.RefreshChildren"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
-
+		
+		
 		addField(new BooleanFieldEditor(IGNORE_NEW, PreferenceMessages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 

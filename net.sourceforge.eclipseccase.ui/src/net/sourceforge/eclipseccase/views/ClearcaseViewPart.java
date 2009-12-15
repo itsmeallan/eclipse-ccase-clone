@@ -12,6 +12,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
+
+import org.eclipse.ui.views.navigator.ResourceComparator;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,8 +52,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.IElementCollector;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
-import org.eclipse.ui.views.navigator.ResourceSorter;
-
+ 
 /**
  * Base class for views showing ClearCase elements.
  * 
@@ -99,8 +101,8 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
      * 
      * @see org.eclipse.ui.views.navigator.ResourceNavigator#setSorter(org.eclipse.ui.views.navigator.ResourceSorter)
      */
-    public void setSorter(ResourceSorter sorter) {
-        super.setSorter(new ResourceSorter(sorter.getCriteria()) {
+    public void setComparator(ResourceComparator comparator) {
+        super.setComparator(new ResourceComparator(comparator.getCriteria()) {
 
             /*
              * (non-Javadoc)
@@ -127,7 +129,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements
             }
 
             protected int compareNames(IResource resource1, IResource resource2) {
-                return collator.compare(resource1.getFullPath().toString(),
+                return getComparator().compare(resource1.getFullPath().toString(),
                         resource2.getFullPath().toString());
             }
         });

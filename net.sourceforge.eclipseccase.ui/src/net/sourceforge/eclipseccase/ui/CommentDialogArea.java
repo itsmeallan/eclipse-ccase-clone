@@ -75,6 +75,8 @@ public class CommentDialogArea extends DialogArea {
 				}
 			}
 		});
+		
+		text.setText(comment);
 		text.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
@@ -178,6 +180,15 @@ public class CommentDialogArea extends DialogArea {
 		if (comment != null && comment.length() > 0)
 			finished();
 		return comment;
+	}
+	
+	/**
+	 * Returns the comment.
+	 * 
+	 * @return String
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 	private void finished() {

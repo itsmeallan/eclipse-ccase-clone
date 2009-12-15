@@ -1,5 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.views.ConfigSpecView;
+import org.eclipse.ui.PlatformUI;
+
 import java.io.IOException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
@@ -22,50 +25,38 @@ public class FindCheckOutsAction extends ClearcaseWorkspaceAction {
 	 * {@inheritDoc}
 	 */
 	public boolean isEnabled() {
-		// workaround for bug 960292
-		if (!Os.isFamily(Os.WINDOWS))
-			return false;
+		boolean bRes = true;
 
 		IResource[] resources = getSelectedResources();
-		if (resources.length == 0)
-			return false;
-		for (int i = 0; i < resources.length; i++) {
-			IResource resource = resources[i];
-			if (resource.getType() == IResource.FILE)
-				return false;
-
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
-				return false;
+		if (resources.length != 0)
+		{
+			for (int i = 0; (i < resources.length) && (bRes); i++)
+			{
+				IResource resource = resources[i];
+				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+					bRes = false;
+			}
 		}
-		return true;
+		else
+		{
+			bRes = false;
+		}
+
+		return bRes;
 	}
 
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void execute(IAction action) {
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				try {
-					IResource[] resources = getSelectedResources();
-					for (int i = 0; i < resources.length; i++) {
-						IResource resource = resources[i];
-						String path = resource.getLocation().toOSString();
-						if (ClearcasePlugin.isUseCleartool()) {
-							new CommandLauncher().execute(new CleartoolCommandLine("lscheckout").addOption("-graphical").addElement(path).create(), null, null, null);
-						} else {
-							Runtime.getRuntime().exec(new String[] { "clearfindco", resource.getLocation().toOSString() });
-						}
-					}
-				} catch (IOException ex) {
-				} finally {
-					monitor.done();
-				}
-			}
-		};
-
-		executeInBackground(runnable, "Find checkouts");
+		try {
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.CheckoutsView");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }

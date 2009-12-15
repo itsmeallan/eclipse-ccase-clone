@@ -211,12 +211,15 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	 * 
 	 * @param decoration
 	 */
-	private static void decorateCheckedOut(IDecoration decoration) {
+	private static void decorateCheckedOut(IDecoration decoration, String version) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateCheckedOut"); //$NON-NLS-1$
 		decoration.addOverlay(IMG_DESC_CHECKED_OUT);
 		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
+
+		if (ClearcaseUIPreferences.decorateElementsWithVersionInfo() && null != version)
+			decoration.addSuffix("  " + version); //$NON-NLS-1$
 	}
 
 	/**
@@ -251,13 +254,15 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	 * 
 	 * @param decoration
 	 */
-	private static void decorateHijacked(IDecoration decoration) {
+	private static void decorateHijacked(IDecoration decoration, String version) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateHijacked"); //$NON-NLS-1$
 		if (ClearcaseUIPreferences.decorateHijackedElements())
 			decoration.addOverlay(IMG_DESC_HIJACKED);
 		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix())
 			decoration.addPrefix(ClearcaseUI.getTextPrefixHijacked());
+		if (ClearcaseUIPreferences.decorateElementsWithVersionInfo() && null != version)
+			decoration.addSuffix("  " + version); //$NON-NLS-1$
 	}
 
 	/**
@@ -433,13 +438,13 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			return;
 		} else if (p.isCheckedOut(resource)) {
 			// check out
-			decorateCheckedOut(decoration);
+			decorateCheckedOut(decoration,  p.getVersion(resource));
 
 			// no further decoration
 			return;
 		} else if (p.isHijacked(resource)) {
 			// hijacked
-			decorateHijacked(decoration);
+			decorateHijacked(decoration,  p.getVersion(resource));
 
 			// no further decoration
 			return;

@@ -6,7 +6,7 @@ Requires: Eclipse 3.0 and all projects and features in workspace.
 Note: Build has to be done manually because we should test after build if
       it is usable and everything works.
       
-Note 2:  Error starting modern compiler. Make sure eclipse is started with  jdk 1.6.  
+Note 2:  Error starting modern compiler. Make sure eclipse is started with    
       
 0.5 run build.xml in net.sourceforge.clearcase project.      
 

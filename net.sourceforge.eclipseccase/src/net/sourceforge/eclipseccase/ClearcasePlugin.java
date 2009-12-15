@@ -529,7 +529,17 @@ public class ClearcasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
 	}
-
+	
+	/**
+	 * Gets the preference value for <code>CLEARCASE_PRIMARY_GROUP</code>.
+	 * 
+	 * @return the CLEARCASE_PRIMARY_GROUP name
+	 */
+	public static String getClearcasePrimaryGroup(){
+		return getInstance().getPluginPreferences().getString(
+				IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
+	}
+	
 	public static boolean isCheckinIdenticalAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.CHECKIN_IDENTICAL);
@@ -731,6 +741,13 @@ public class ClearcasePlugin extends Plugin {
 		pref.setDefault(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
 				true);
+		
+		String sClearcasePrimaryGroup = System.getenv("CLEARCASE_PRIMARY_GROUP");
+		if (sClearcasePrimaryGroup == null)  sClearcasePrimaryGroup = "";
+		pref.setDefault(
+				IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
+				sClearcasePrimaryGroup);
+		
 		pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
 		pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
 		pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);

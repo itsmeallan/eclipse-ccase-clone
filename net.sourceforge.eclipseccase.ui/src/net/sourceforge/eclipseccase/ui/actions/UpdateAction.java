@@ -1,6 +1,8 @@
 
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -20,11 +22,13 @@ public class UpdateAction extends ClearcaseWorkspaceAction
                 {
                     IResource[] resources = getSelectedResources();
                     beginTask(monitor, "Updating...", resources.length);
+                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
                     for (int i = 0; i < resources.length; i++)
                     {
                         IResource resource = resources[i];
                         ClearcaseProvider provider = ClearcaseProvider
                                 .getClearcaseProvider(resource);
+                        provider.setOperationListener(opListener);
                         provider.get(new IResource[]{resource},
                                 IResource.DEPTH_ZERO, subMonitor(monitor));
                     }

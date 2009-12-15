@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +59,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
                         Collections
                                 .sort(resList, new DirectoryLastComparator());
 
+                    	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
                         for (int i = 0; i < resources.length; i++) {
                             IResource resource = resources[i];
                             ClearcaseProvider provider = ClearcaseProvider
@@ -65,6 +68,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
                             // TODO: investigate null here 
                             if (null != provider) {
                                 provider.setComment(comment);
+                                provider.setOperationListener(opListener);
                                 provider.checkout(new IResource[] { resource },
                                         depth, subMonitor(monitor));
                             }

@@ -12,6 +12,8 @@ public class CheckoutsView extends ClearcaseViewPart {
 	private static final String SETTING_HIDE_CHECKOUTS = "hideCheckouts";
 
 	private static final String SETTING_HIDE_NEW_ELEMENTS = "hideNewElements";
+	
+	private static final String SETTING_HIDE_HIJACKED_ELEMENTS = "hideHijackedElements";
 
 	private static final String DIALOG_SETTINGS_STORE = "CheckoutsView";
 
@@ -37,10 +39,14 @@ public class CheckoutsView extends ClearcaseViewPart {
 		if (provider.isCheckedOut(resource))
 			return !hideCheckouts();
 
+		// show Hijacked files if enabled		
+		if (provider.isHijacked(resource))
+			return !hideHijackedElements();
+		
 		// show new elements if enabled
 		if (!provider.hasRemote(resource))
 			return !hideNewElements();
-
+		
 		// hide all other
 		return false;
 	}
@@ -83,6 +89,27 @@ public class CheckoutsView extends ClearcaseViewPart {
 		}
 	}
 
+
+	/**
+	 * Indicates if hijacked should not be shown.
+	 * 
+	 * @return
+	 */
+	public boolean hideHijackedElements() {
+		return settings.getBoolean(SETTING_HIDE_HIJACKED_ELEMENTS);
+	}
+
+	/**
+	 * @param hide
+	 */
+	public void setHideHijackedElements(boolean hide) {
+		if (hideHijackedElements() != hide) {
+			settings.put(SETTING_HIDE_HIJACKED_ELEMENTS, hide);
+			refresh();
+		}
+	}
+	
+	
 	/**
 	 * Creates a new instance.
 	 */

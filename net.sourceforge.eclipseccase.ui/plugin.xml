@@ -79,101 +79,145 @@
                value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
          </filter>
          <action
-               label="Uncheckout"
+               class="net.sourceforge.eclipseccase.ui.actions.UnHijackAction"
+               icon="icons/full/unhijack.png"
+               id="net.sourceforge.eclipseccase.popups.unhijack"
+               label="UnHi&amp;jack"
+               menubarPath="team.main/group1">
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.UndoCheckOutAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.uncheckout">
+               icon="icons/full/uncheckout.png"
+               id="net.sourceforge.eclipseccase.popups.uncheckout"
+               label="Uncheckout"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Checkin"
                class="net.sourceforge.eclipseccase.ui.actions.CheckInAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.checkin">
+               icon="icons/full/checkin.png"
+               id="net.sourceforge.eclipseccase.popups.checkin"
+               label="Checkin"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Refresh State"
                class="net.sourceforge.eclipseccase.ui.actions.RefreshStateAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.refresh">
+               icon="icons/full/refresh_state.png"
+               id="net.sourceforge.eclipseccase.popups.refresh"
+               label="Refresh State"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Checkout"
                class="net.sourceforge.eclipseccase.ui.actions.CheckOutAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.checkout">
+               icon="icons/full/checkout.png"
+               id="net.sourceforge.eclipseccase.popups.checkout"
+               label="Checkout"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Update"
                class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.update">
+               icon="icons/full/update.png"
+               id="net.sourceforge.eclipseccase.popups.update"
+               label="Update File"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Add"
                class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.add">
+               icon="icons/full/add.png"
+               id="net.sourceforge.eclipseccase.popups.add"
+               label="Add"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Delete"
                class="net.sourceforge.eclipseccase.ui.actions.DeleteAction"
-               menubarPath="team.main/group1"
-               id="net.sourceforge.eclipseccase.popups.delete">
+               icon="icons/full/delete.png"
+               id="net.sourceforge.eclipseccase.popups.delete"
+               label="Delete"
+               menubarPath="team.main/group1">
          </action>
          <action
-               label="Version Tree"
                class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
-               menubarPath="team.main/group2"
-               id="net.sourceforge.eclipseccase.popups.versiontree">
+               icon="icons/full/tree.png"
+               id="net.sourceforge.eclipseccase.popups.versiontree"
+               label="Version Tree (external tool)"
+               menubarPath="team.main/group2">
          </action>
          <action
-               label="Update (External)"
                class="net.sourceforge.eclipseccase.ui.actions.ExternalUpdateAction"
-               menubarPath="team.main/group2"
-               id="net.sourceforge.eclipseccase.popups.externalupdate">
+               icon="icons/full/database_refresh.png"
+               id="net.sourceforge.eclipseccase.popups.externalupdate"
+               label="Update (Work Area)"
+               menubarPath="team.main/group2">
          </action>
          <action
-               label="History"
                class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
-               menubarPath="team.main/group2"
-               id="net.sourceforge.eclipseccase.popups.history">
+               icon="icons/full/history.png"
+               id="net.sourceforge.eclipseccase.popups.history"
+               label="&amp;History"
+               menubarPath="team.main/group2">
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
+               icon="icons/full/diff.png"
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor"
                label="Compare with predecessor"
-               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
-               menubarPath="team.main/group2"
-               id="net.sourceforge.eclipseccase.popups.comparepredecessor">
+               menubarPath="team.main/group2">
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
+               icon="icons/full/diff.png"
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor2"
                label="Predecessor"
-               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
-               menubarPath="compareWithMenu/compareWithGroup"
-               id="net.sourceforge.eclipseccase.popups.comparepredecessor2">
+               menubarPath="compareWithMenu/compareWithGroup">
          </action>
          <action
-               label="Find checkouts"
                class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
-               menubarPath="team.main/group2"
-               id="net.sourceforge.eclipseccase.popups.findcheckouts">
-            <enablement>
-               <and>
-                  <pluginState
-                        value="activated"
-                        id="net.sourceforge.eclipseccase">
-                  </pluginState>
-                  <systemProperty
-                        name="osgi.os"
-                        value="win32">
-                  </systemProperty>
-               </and>
-            </enablement>
+               icon="icons/full/find.png"
+               id="net.sourceforge.eclipseccase.popups.findcheckouts"
+               label="Find Private Files"
+               menubarPath="team.main/group2">
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-               label="Cancel pending refreshes"
                class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
-               menubarPath="team.main/group3"
-               id="net.sourceforge.eclipseccase.popups.cancelRefreshes">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+               icon="icons/full/cancel.png"
+               id="net.sourceforge.eclipseccase.popups.cancelRefreshes"
+               label="Cancel pending refreshes"
+               menubarPath="team.main/group3">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.GetConfigSpecAction"
+               icon="icons/full/get.png"
+               id="net.sourceforge.eclipseccase.popups.getConfigSpec"
+               label="Get &amp;Config Spec"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.MkBrTypeAction"
+               icon="icons/full/branch.png"
+               id="net.sourceforge.eclipseccase.popups.mkbrtype"
+               label="Make &amp;Branch Type"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.FindMergeAction"
+               icon="icons/full/findMerge.png"
+               id="net.sourceforge.eclipseccase.popups.findmerge"
+               label="Find Merge (Rebase external tool)"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
+               icon="icons/full/history.png"
+               id="net.sourceforge.eclipseccase.popups.history"
+               label="&amp;Clearcase History"
+               menubarPath="compareWithMenu/compareWithGroup">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
+               icon="icons/full/tree.png"
+               id="net.sourceforge.eclipseccase.popups.versiontree"
+               label="Version Tree (external tool)"
+               menubarPath="compareWithMenu/compareWithGroup">
          </action>
       </objectContribution>
    </extension>
@@ -200,11 +244,12 @@
             </separator>
          </menu>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-               label="Dissociat&amp;e project"
                class="net.sourceforge.eclipseccase.ui.actions.DissociateProjectAction"
-               menubarPath="eclipseccase_menu/projectGroup"
-               id="net.sourceforge.eclipseccase.ui.actionset.dissociate">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
+               icon="icons/full/plugin_delete.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.dissociate"
+               label="Dissociat&amp;e project"
+               menubarPath="eclipseccase_menu/projectGroup">
             <enablement>
                <and>
                   <objectState
@@ -219,11 +264,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.associate"
-               label="A&amp;ssociate project"
                class="net.sourceforge.eclipseccase.ui.actions.AssociateProjectAction"
-               menubarPath="eclipseccase_menu/projectGroup"
-               id="net.sourceforge.eclipseccase.ui.actionset.associate">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.associate"
+               icon="icons/full/plugin_add.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.associate"
+               label="A&amp;ssociate project"
+               menubarPath="eclipseccase_menu/projectGroup">
             <enablement>
                <and>
                   <objectState
@@ -240,10 +286,11 @@
             </enablement>
          </action>
          <action
-               label="Activate p&amp;lugin"
                class="net.sourceforge.eclipseccase.ui.actions.ActivatePluginAction"
-               menubarPath="eclipseccase_menu/projectGroup"
-               id="net.sourceforge.eclipseccase.ui.actionset.activate">
+               icon="icons/full/connect.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.activate"
+               label="Activate p&amp;lugin"
+               menubarPath="eclipseccase_menu/projectGroup">
             <enablement>
                <not>
                   <pluginState
@@ -254,11 +301,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.update"
-               label="Upda&amp;te"
                class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.update">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.update"
+               icon="icons/full/update.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.update"
+               label="Upda&amp;te File"
+               menubarPath="eclipseccase_menu/group1">
             <enablement>
                <pluginState
                      value="activated"
@@ -267,11 +315,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.delete"
-               label="&amp;Delete"
                class="net.sourceforge.eclipseccase.ui.actions.DeleteAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.delete">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.delete"
+               icon="icons/full/delete.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.delete"
+               label="&amp;Delete"
+               menubarPath="eclipseccase_menu/group1">
             <enablement>
                <pluginState
                      value="activated"
@@ -280,11 +329,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.add"
-               label="&amp;Add"
                class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.add">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.add"
+               icon="icons/full/add.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.add"
+               label="&amp;Add"
+               menubarPath="eclipseccase_menu/group1">
             <enablement>
                <pluginState
                      value="activated"
@@ -293,11 +343,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.refresh"
-               label="&amp;Refresh state"
                class="net.sourceforge.eclipseccase.ui.actions.RefreshStateAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.refresh">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.refresh"
+               icon="icons/full/refresh_state.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.refresh"
+               label="&amp;Refresh state"
+               menubarPath="eclipseccase_menu/group1">
             <enablement>
                <pluginState
                      value="activated"
@@ -306,50 +357,12 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
-               label="&amp;Uncheckout"
-               class="net.sourceforge.eclipseccase.ui.actions.UndoCheckOutAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.uncheckout">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.checkin"
-               label="Check&amp;in"
-               class="net.sourceforge.eclipseccase.ui.actions.CheckInAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.checkin">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.checkout"
-               label="Check&amp;out"
-               class="net.sourceforge.eclipseccase.ui.actions.CheckOutAction"
-               menubarPath="eclipseccase_menu/group1"
-               id="net.sourceforge.eclipseccase.ui.actionset.checkout">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-               label="Update (E&amp;xternal)"
                class="net.sourceforge.eclipseccase.ui.actions.ExternalUpdateAction"
-               menubarPath="eclipseccase_menu/group2"
-               id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+               icon="icons/full/database_refresh.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+               label="Update (&amp;Work Area)"
+               menubarPath="eclipseccase_menu/group2">
             <enablement>
                <pluginState
                      value="activated"
@@ -358,30 +371,32 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-               label="&amp;Find checkouts"
                class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+               icon="icons/full/find.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+               label="&amp;Find Private Files"
                menubarPath="eclipseccase_menu/group2"
-               id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts">
+               toolbarPath="Normal/additions"
+               tooltip="Find Private Files">
             <enablement>
                <and>
                   <pluginState
                         value="activated"
                         id="net.sourceforge.eclipseccase">
                   </pluginState>
-                  <systemProperty
-                        name="osgi.os"
-                        value="win32">
-                  </systemProperty>
                </and>
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.history"
-               label="&amp;History"
                class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.history"
+               icon="icons/full/history.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.history"
+               label="&amp;History"
                menubarPath="eclipseccase_menu/group2"
-               id="net.sourceforge.eclipseccase.ui.actionset.history">
+               toolbarPath="Normal/additions"
+               tooltip="History">
             <enablement>
                <pluginState
                      value="activated"
@@ -390,11 +405,14 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-               label="&amp;Version Tree"
                class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+               icon="icons/full/tree.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+               label="&amp;Version Tree (external tool)"
                menubarPath="eclipseccase_menu/group2"
-               id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
+               toolbarPath="Normal/additions"
+               tooltip="Version Tree">
             <enablement>
                <pluginState
                      value="activated"
@@ -403,11 +421,14 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-               label="&amp;Compare with predecessor"
                class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+               icon="icons/full/diff.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+               label="&amp;Compare with predecessor"
                menubarPath="eclipseccase_menu/group2"
-               id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
+               toolbarPath="Normal/additions"
+               tooltip="Compare With Predecessor">
             <enablement>
                <pluginState
                      value="activated"
@@ -416,15 +437,124 @@
             </enablement>
          </action>
          <action
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-               label="Cancel &amp;pending refreshes"
                class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
-               menubarPath="eclipseccase_menu/group3"
-               id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+               icon="icons/full/cancel.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+               label="Cancel &amp;pending refreshes"
+               menubarPath="eclipseccase_menu/group3">
             <enablement>
                <pluginState
                      value="activated"
                      id="net.sourceforge.eclipseccase.ui.pluginState1">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.GetConfigSpecAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
+               icon="icons/full/get.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
+               label="Get &amp;Config Spec"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="Get Config Spec">
+            <enablement>
+               <pluginState
+                     id="net.sourceforge.eclipseccase"
+                     value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.MkBrTypeAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
+               icon="icons/full/branch.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
+               label="Make &amp;Branch Type"
+               menubarPath="eclipseccase_menu/group2">
+            <enablement>
+               <pluginState
+                     id="net.sourceforge.eclipseccase"
+                     value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.FindMergeAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.findmerge"
+               icon="icons/full/findMerge.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.findmerge"
+               label="Find &amp;Merge (Rebase external tool)"
+               menubarPath="eclipseccase_menu/group2">
+            <enablement>
+               <pluginState
+                     id="net.sourceforge.eclipseccase"
+                     value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.UnHijackAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.unhijack"
+               icon="icons/full/unhijack.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.unhijack"
+               label="UnHi&amp;jack"
+               menubarPath="eclipseccase_menu/group1"
+               toolbarPath="Normal/additions"
+               tooltip="Un Hijack a Hijacked file">
+            <enablement>
+               <pluginState
+                     id="net.sourceforge.eclipseccase"
+                     value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.UndoCheckOutAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+               icon="icons/full/uncheckout.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+               label="&amp;Uncheckout"
+               menubarPath="eclipseccase_menu/group1"
+               toolbarPath="Normal/additions"
+               tooltip="Uncheckout File/Directory">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.CheckInAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.checkin"
+               icon="icons/full/checkin.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.checkin"
+               label="Check&amp;in"
+               menubarPath="eclipseccase_menu/group1"
+               toolbarPath="Normal/additions"
+               tooltip="Checkin File/Directory">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.CheckOutAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.checkout"
+               icon="icons/full/checkout.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.checkout"
+               label="Check&amp;out"
+               menubarPath="eclipseccase_menu/group1"
+               toolbarPath="Normal/additions"
+               tooltip="Checkout File/Directory">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
                </pluginState>
             </enablement>
          </action>
@@ -511,7 +641,7 @@
       </command>
       <command
             name="History"
-            description="Opens the clearcase hostory browser on the selected resources (external tool)"
+            description="Opens the clearcase history browser on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
@@ -532,6 +662,30 @@
             description="Cancels all pending refresh state jobs"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes">
+      </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.category"
+            description="Get Config Spec"
+            id="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
+            name="Get &amp;Config Spec">
+      </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.category"
+            description="Make Branch Type"
+            id="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
+            name="Make Branch Type">
+      </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.category"
+            description="Find Merge (Rebase external tool)"
+            id="net.sourceforge.eclipseccase.ui.actionset.findmerge"
+            name="Find Merge (Rebase external tool)">
+      </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.category"
+            description="UnHijack an Hijacked file"
+            id="net.sourceforge.eclipseccase.ui.actionset.unhijack"
+            name="UnHijack">
       </command>
    </extension>
    <extension
@@ -571,11 +725,25 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Clearcase Checkouts"
-            icon="icons/full/contents.gif"
+            name="Clearcase Private Files"
+            icon="icons/full/clearcase.png"
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
             id="net.sourceforge.eclipseccase.views.CheckoutsView">
+      </view>
+      <view
+            category="org.eclipse.team.ui"
+            class="net.sourceforge.eclipseccase.views.ConfigSpecView"
+            icon="icons/full/clearcase.png"
+            id="net.sourceforge.eclipseccase.views.ConfigSpecView"
+            name="ClearCase ConfigSpec">
+      </view>
+      <view
+            category="org.eclipse.team.ui"
+            class="net.sourceforge.eclipseccase.views.HistoryView"
+            icon="icons/full/history.png"
+            id="net.sourceforge.eclipseccase.views.HistoryView"
+            name="ClearCase History">
       </view>
    </extension>
    <extension
@@ -698,6 +866,50 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Alt+C Alt+Z">
       </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+G">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+B">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findmerge"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+M">
+      </key>
+      <key
+            commandId="net.sourceforge.eclipseccase.ui.actionset.unhijack"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Alt+J">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory"
+            icon="icons/full/clearcase.png"
+            label="Test ClearCase">
+      </consoleFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consolePageParticipants">
+      <consolePageParticipant
+            class="net.sourceforge.eclipseccase.ui.console.ClearCaseConsolePageParticipant"
+            id="net.sourceforge.eclipseccase.ui.console.clearCaseConsolePageParticipant">
+         <enablement>
+            <instanceof
+                  value="net.sourceforge.eclipseccase.ui.console.ClearCaseConsole">
+            </instanceof>
+         </enablement>
+      </consolePageParticipant>
    </extension>
 
 </plugin>

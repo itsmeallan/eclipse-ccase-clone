@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
 import java.util.Arrays;
 
 import net.sourceforge.eclipseccase.ClearcasePlugin;
@@ -49,7 +51,7 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                 public void run(IProgressMonitor monitor) throws CoreException {
 
                     try {
-                        IResource[] resources = getSelectedResources();
+                    	IResource[] resources = getSelectedResources();
                         if (resources.length > 0) {
                             beginTask(monitor, "Checking in...",
                                     resources.length);
@@ -59,6 +61,8 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                                         .subTask("Executing ClearCase user interface...");
                                 ClearDlgHelper.checkin(resources);
                             } else {
+                            	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+                            	
                                 // Sort resources with directories last so that
                                 // the
                                 // modification of a
@@ -73,6 +77,7 @@ public class CheckInAction extends ClearcaseWorkspaceAction {
                                     ClearcaseProvider provider = ClearcaseProvider
                                             .getClearcaseProvider(resource);
                                     provider.setComment(comment);
+                                    provider.setOperationListener(opListener);
                                     provider.checkin(
                                             new IResource[] { resource },
                                             depth, subMonitor(monitor));

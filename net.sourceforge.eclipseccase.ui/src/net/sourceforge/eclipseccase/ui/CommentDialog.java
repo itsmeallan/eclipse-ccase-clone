@@ -26,6 +26,20 @@ public class CommentDialog extends Dialog {
 		commentDialogArea = new CommentDialogArea(this, null);
 		this.title = dialogTitle;
 	}
+	
+	/**
+	 * Creates a new CommentDialog instance.
+	 * 
+	 * @param parentShell
+	 * @param dialogTitle
+	 * @param commentStart
+	 */
+	public CommentDialog(Shell parentShell, String dialogTitle, String commentStart) {
+		super(parentShell);
+		commentDialogArea = new CommentDialogArea(this, null);
+		commentDialogArea.setComment(commentStart);
+		this.title = dialogTitle;
+	}
 
 	Button recursiveButton;
 

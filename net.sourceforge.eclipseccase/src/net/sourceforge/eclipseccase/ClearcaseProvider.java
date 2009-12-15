@@ -22,6 +22,7 @@ import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.clearcase.utils.Os;
 
 import org.eclipse.core.resources.IContainer;
@@ -39,6 +40,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -62,6 +64,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 	CheckInOperation CHECK_IN = new CheckInOperation();
 
 	CheckOutOperation CHECKOUT = new CheckOutOperation();
+	
+	UnHijackOperation UNHIJACK = new UnHijackOperation();
 
 	AddOperation ADD = new AddOperation();
 
@@ -75,9 +79,18 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	public static final Status OK_STATUS = new Status(IStatus.OK, ID,
 			TeamException.OK, "OK", null); //$NON-NLS-1$
+	public static final Status FAILED_STATUS = new Status(IStatus.ERROR, ID,
+			TeamException.UNABLE, "FAILED", null); //$NON-NLS-1$
 
 	public static final IStatus CANCEL_STATUS = Status.CANCEL_STATUS;
 
+
+	boolean refreshResources = true;
+
+	private OperationListener opListener = null;
+
+	
+	
 	public ClearcaseProvider() {
 		super();
 	}
@@ -86,6 +99,17 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	DeleteOperation DELETE = new DeleteOperation();
 
+	/**
+     * Checks if the monitor has been canceled.
+     * @param monitor
+     */
+    protected static void checkCanceled(IProgressMonitor monitor)
+    {
+        if(null != monitor && monitor.isCanceled()) throw new OperationCanceledException();
+    }
+	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -118,8 +142,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 			return null;
 		RepositoryProvider provider = RepositoryProvider.getProvider(resource
 				.getProject());
-		if (provider instanceof ClearcaseProvider)
+		if (provider instanceof ClearcaseProvider){
+			((ClearcaseProvider)provider).opListener = null;
 			return (ClearcaseProvider) provider;
+		}
 		else
 			return null;
 	}
@@ -139,6 +165,15 @@ public class ClearcaseProvider extends RepositoryProvider {
 			IProgressMonitor progress) throws TeamException {
 		try {
 			execute(CHECKOUT, resources, depth, progress);
+		} finally {
+			setComment("");
+		}
+	}
+	
+	public void unhijack(IResource[] resources, int depth,
+			IProgressMonitor progress) throws TeamException {
+		try {
+			execute(UNHIJACK, resources, depth, progress);
 		} finally {
 			setComment("");
 		}
@@ -452,12 +487,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 								destination.getLocation().toOSString(),
 								getComment(),
 								ClearCase.FORCE | ClearCase.CHECKIN
-										| getCheckoutType(), null);
+										| getCheckoutType(), opListener);
 			} else {
 				state = ClearcasePlugin.getEngine().move(
 						source.getLocation().toOSString(),
 						destination.getLocation().toOSString(), getComment(),
-						ClearCase.FORCE | getCheckoutType(), null);
+						ClearCase.FORCE | getCheckoutType(), opListener);
 				
 			}
 			
@@ -513,7 +548,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				String[] element = { parent };
 				ClearCaseElementState[] elementState2 = ClearcasePlugin
 						.getEngine().checkout(element, getComment(),
-								getCheckoutType(), null);
+								getCheckoutType(), opListener);
 
 				monitor.worked(4);
 				if (!flag)
@@ -532,10 +567,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 	}
 
-	boolean refreshResources = true;
-
 	// Notifies decorator that state has changed for an element
-	void updateState(IResource resource, int depth, IProgressMonitor monitor) {
+	public void updateState(IResource resource, int depth, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Refreshing " + resource.getFullPath(), 20);
 			if (!refreshResources) {
@@ -613,6 +646,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
+				checkCanceled(monitor);
+				
 				monitor.beginTask("Refreshing State " + resource.getFullPath(),
 						10);
 				// probably overkill/expensive to do it here - should do it
@@ -724,7 +759,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 		ClearCaseElementState state = ClearcasePlugin.getEngine().add(
 				resource.getLocation().toOSString(), false, getComment(),
-				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN, null);
+				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN, opListener);
 		
 		if(state.isElement()){
 			//Do nothing!
@@ -732,6 +767,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 					"Add failed: " + "Could not add element"
 							+ resource.getName(), null);
+		}
+
+		if (result.isOK())
+		{
+			state = ClearcasePlugin.getEngine().
+						setGroup(resource.getLocation().toOSString(), 
+								ClearcasePlugin.getClearcasePrimaryGroup(),
+								opListener);
+			
+			if (!state.isElement()) {
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Chgrp failed: " + "Could not change group element"
+								+ resource.getName(), null);
+			}
 		}
 		
 		return result;
@@ -770,12 +819,28 @@ public class ClearcaseProvider extends RepositoryProvider {
 			// Now time to create the original directory in
 			// clearcase.
 			ClearCaseElementState state = ClearcasePlugin.getEngine().add(
-					resource.getLocation().toOSString(), true, getComment(), 0,
-					null);
+					resource.getLocation().toOSString(), true, getComment(), 
+					ClearCase.MASTER, opListener);
 			if (!state.isElement()) {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Add failed: " + "Could not add element"
 								+ resource.getName(), null);
+			}
+			
+			
+			
+			if (result.isOK())
+			{
+				state = ClearcasePlugin.getEngine().
+							setGroup(resource.getLocation().toOSString(), 
+									ClearcasePlugin.getClearcasePrimaryGroup(),
+									opListener);
+				
+				if (!state.isElement()) {
+					result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+							"Chgrp failed: " + "Could not change group element"
+									+ resource.getName(), null);
+				}
 			}
 
 			// Now move back the content of tmp to original.
@@ -804,8 +869,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 			ClearCaseElementState[] stateB = ClearcasePlugin.getEngine()
 					.checkin(parentResource, comment, 0,
+					opListener);
+			
 
-					null);
 			// hasRemote checks if element is a clearcase element.
 			// if(stateB[0].isCheckedOut()){
 			//			
@@ -860,35 +926,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 											.toString() }), null);
 				}
 				IStatus result = OK_STATUS;
-				// TODO:eraonel Test it.
-				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-					public void run() {
-						Shell activeShell = PlatformUI.getWorkbench()
-								.getDisplay().getActiveShell();
-						MessageDialog checkoutQuestion = new MessageDialog(
-								activeShell, "Checkout", null,
-								"Do you really want to uncheckout?",
-								MessageDialog.QUESTION, new String[] { "Yes",
-										"No", "Cancel" }, 0);
-						int returncode = checkoutQuestion.open();
-						/* Yes=0 No=1 Cancel=2 */
-						if (returncode == 0) {
-							// Yes continue checking out.
-							int flags = ClearCase.RECURSIVE;
-							if (ClearcasePlugin.isKeepChangesAfterUncheckout()) {
-								flags |= ClearCase.KEEP;
-							}
+							
+				// Yes continue checking out.
+				int flags = ClearCase.RECURSIVE;
+				if (ClearcasePlugin.isKeepChangesAfterUncheckout()) {
+					flags |= ClearCase.KEEP;
+				}
 
-							ClearcasePlugin.getEngine().uncheckout(
-									new String[] { resource.getLocation()
-											.toOSString() }, flags, null);
-							monitor.worked(40);
-							updateState(resource, IResource.DEPTH_ZERO,
-									new SubProgressMonitor(monitor, 10));
-						}
-					}
-				});
+				ClearcasePlugin.getEngine().uncheckout(
+						new String[] { resource.getLocation()
+								.toOSString() }, flags, opListener);
+				monitor.worked(40);
+				updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(monitor, 10));
 
+				
 				// if (!status.status) {
 				// result = new Status(IStatus.ERROR, ID,
 				// TeamException.UNABLE, "Uncheckout failed: "
@@ -928,7 +979,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 							.delete(
 									new String[] { resource.getLocation()
 											.toOSString() }, getComment(),
-									ClearCase.RECURSIVE | ClearCase.KEEP, null);
+									ClearCase.RECURSIVE | ClearCase.KEEP, opListener);
 					monitor.worked(40);
 					updateState(resource, IResource.DEPTH_INFINITE,
 							new SubProgressMonitor(monitor, 10));
@@ -984,14 +1035,14 @@ public class ClearcaseProvider extends RepositoryProvider {
 							.checkin(
 									new String[] { resource.getLocation()
 											.toOSString() }, getComment(),
-									ClearCase.PTIME | ClearCase.IDENTICAL, null);
+									ClearCase.PTIME | ClearCase.IDENTICAL, opListener);
 				} else {
 
 					try {
 						ClearcasePlugin.getEngine().checkin(
 								new String[] { resource.getLocation()
 										.toOSString() }, getComment(),
-								ClearCase.PTIME, null);
+								ClearCase.PTIME, opListener);
 					} catch (ClearCaseException cce) {
 						// check error
 						switch (cce.getErrorCode()) {
@@ -1042,7 +1093,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 							ClearcasePlugin.getEngine().checkin(
 									new String[] { resource.getLocation()
 											.toOSString() }, getComment(),
-									ClearCase.PTIME, null);
+									ClearCase.PTIME, opListener);
 
 							break;
 
@@ -1126,7 +1177,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 					ClearcasePlugin.getEngine()
 							.update(
 									new String[] { resource.getLocation()
-											.toOSString() }, comment, 0, null);
+											.toOSString() }, comment, 0, opListener);
 					// if (state[0] == null) {
 					// result = new Status(IStatus.ERROR, ID,
 					// TeamException.UNABLE,
@@ -1139,7 +1190,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 					// ClearcasePlugin.getEngine()
 					// .update(
 					// new String[] { resource.getLocation()
-					// .toOSString() }, comment, 0, null);
+					// .toOSString() }, comment, 0, opListener);
 					// if (state[0] == null) {
 					// result = new Status(IStatus.ERROR, ID,
 					// TeamException.UNABLE,
@@ -1161,7 +1212,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 						state = ClearcasePlugin.getEngine().checkout(
 								new String[] { resource.getLocation()
 										.toOSString() }, getComment(),
-								getCheckoutType() | ClearCase.PTIME, null);
+								getCheckoutType() | ClearCase.PTIME | 
+								(isHijacked(resource) ? ClearCase.HIJACKED : ClearCase.NONE), opListener);
 					} catch (ClearCaseException cce) {
 						switch (cce.getErrorCode()) {
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
@@ -1184,7 +1236,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 										ClearcasePlugin.getEngine().checkout(
 												new String[] { resource.getLocation()
 														.toOSString() }, getComment(),
-												ClearCase.UNRESERVED | ClearCase.PTIME, null);
+												ClearCase.UNRESERVED | ClearCase.PTIME, opListener);
 										monitor.worked(40);
 										updateState(resource, IResource.DEPTH_ZERO,
 												new SubProgressMonitor(monitor, 10));
@@ -1216,6 +1268,81 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// update state
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
+				return result;
+			} finally {
+				monitor.done();
+			}
+		}
+	}
+	
+	private final class UnHijackOperation implements IRecursiveOperation {
+
+		public IStatus visit(final IResource resource, final IProgressMonitor monitor) {
+			try {
+				monitor.beginTask("Checkin out " + resource.getFullPath(), 100);
+
+				// Sanity check - can't checkout something that is not part of
+				// clearcase
+				if (!isHijacked(resource)) {
+					return new Status(
+							IStatus.WARNING,
+							ID,
+							TeamException.NOT_AUTHORIZED,
+							MessageFormat
+							.format(
+									"Resource \"{0}\" is not a Hijacked ClearCase element!",
+									new Object[] { resource
+											.getFullPath().toString() }),
+											null);
+				}
+
+				IStatus result = OK_STATUS;
+
+
+				try{
+					/* remove existing xx.keep file*/
+					File keep = new File(resource.getLocation().toOSString() + ".keep");
+					if(keep.exists())
+					{
+						keep.delete();
+					}
+
+					/* rename existing xx.keep file*/
+					keep = new File(resource.getLocation().toOSString());
+					if(keep.exists())
+					{
+						keep.renameTo(new File(resource.getLocation().toOSString() + ".keep"));
+					}
+				}catch(Exception e)
+				{
+					result = FAILED_STATUS;
+				}
+				monitor.worked(20);
+
+
+
+				if (result == OK_STATUS) {
+					// update if necessary
+					if (ClearcasePlugin.isCheckoutLatest() && isSnapShot(resource)) {
+						monitor.subTask("Updating " + resource.getName());
+
+						// ClearCaseElementState[] state =
+						// ClearcasePlugin.getEngine()
+						// .update(
+						// new String[] { resource.getLocation()
+						// .toOSString() }, comment, 0, opListener);
+						ClearcasePlugin.getEngine()
+						.update(
+								new String[] { resource.getLocation()
+										.toOSString() }, comment, 0, opListener);
+					}
+				}
+				monitor.worked(20);
+
+				// update state
+				updateState(resource.getParent(), IResource.DEPTH_ONE,
+						new SubProgressMonitor(monitor, 10));
+
 				return result;
 			} finally {
 				monitor.done();
@@ -1611,5 +1738,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 		} else {
 			return ClearCase.UNRESERVED;
 		}
+	}
+
+
+
+	public void setOperationListener(OperationListener opListener) {
+		// TODO Auto-generated method stub
+		this.opListener  = opListener;
 	}
 }

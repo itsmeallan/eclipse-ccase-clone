@@ -12,6 +12,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
+
 import org.eclipse.jface.viewers.*;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.progress.DeferredTreeContentManager;

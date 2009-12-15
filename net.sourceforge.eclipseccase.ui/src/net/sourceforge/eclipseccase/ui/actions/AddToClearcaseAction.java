@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
@@ -39,6 +41,7 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
                 try {
                     IResource[] resources = getSelectedResources();
                     beginTask(monitor, "Adding...", resources.length);
+                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
                     if (ClearcasePlugin.isUseClearDlg()) {
                         monitor.subTask("Executing ClearCase user interface...");
                         ClearDlgHelper.add(resources);
@@ -46,6 +49,7 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
                             ClearcaseProvider provider = ClearcaseProvider
                                     .getClearcaseProvider(resources[0]);
                             provider.setComment(comment);
+                            provider.setOperationListener(opListener);
                             provider.add(resources, depth, subMonitor(monitor));
                     }
                 } finally {

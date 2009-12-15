@@ -26,6 +26,8 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	private Action hideCheckouts;
 
 	private Action hideNewElements;
+	
+	private Action hideHijackedElements;
 
 	/*
 	 * (non-Javadoc)
@@ -37,6 +39,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 		IMenuManager submenu = new MenuManager("Hide...");
 		menu.add(submenu);
 		submenu.add(hideCheckouts);
+		submenu.add(hideHijackedElements);
 		submenu.add(hideNewElements);
 		menu.add(new Separator());
 
@@ -58,6 +61,15 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 
 		};
 		hideCheckouts.setToolTipText("Hide checked out elements");
+		hideHijackedElements = new Action("Hijacked elements") {
+			public void run() {
+				getCheckoutsView().setHideHijackedElements(!getCheckoutsView().hideHijackedElements());
+			}
+
+		};
+		hideHijackedElements.setToolTipText("Hide Hijacked elements");
+		
+
 		hideNewElements = new Action("new elements") {
 			public void run() {
 				getCheckoutsView().setHideNewElements(!getCheckoutsView().hideNewElements());
@@ -83,6 +95,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 		super.updateActionBars();
 
 		hideCheckouts.setChecked(getCheckoutsView().hideCheckouts());
+		hideHijackedElements.setChecked(getCheckoutsView().hideHijackedElements());
 		hideNewElements.setChecked(getCheckoutsView().hideNewElements());
 	}
 }

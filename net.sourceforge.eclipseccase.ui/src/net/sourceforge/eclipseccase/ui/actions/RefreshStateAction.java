@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
+import org.eclipse.core.runtime.SubProgressMonitor;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
@@ -21,10 +25,11 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Refreshing state...", resources.length);
 
+                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					if (ClearcasePlugin.isUseQuickRefresh()) {
 						Map map = new TreeMap();
 						List fileResources = new ArrayList();
-						
+
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							monitor.subTask("Collecting members for: " + resource.getName());
@@ -68,27 +73,63 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 						// Don't iterate, just pick the ClearCase provider from the first element
 						if (iterator.hasNext()) {
 							ClearcaseProvider clearcaseProvider = ClearcaseProvider.getClearcaseProvider((IResource) iterator.next());
+							clearcaseProvider.setOperationListener(opListener);
 							clearcaseProvider.refreshRecursive((IResource[]) result.toArray(new IResource[0]), subMonitor(monitor));
 							checkCanceled(monitor);
 						}
-						
+
 						// Refresh files using normal refresh
 						iterator = fileResources.iterator();
 						while (iterator.hasNext()) {
 							IResource resource = (IResource) iterator.next();
 							checkCanceled(monitor);
 							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+                            provider.setOperationListener(opListener);
 							provider.refresh(resource, false);
 						}
 
-					} else {
+					} 
+					else {
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							checkCanceled(monitor);
 							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+                            provider.setOperationListener(opListener);
 							provider.refresh(resource, false);
 						}
 					}
+					
+					
+//					else { // very long but works well
+//						Vector<IResource> resourcesToUpdate = new Vector<IResource>();
+//
+//						for(IResource resource : resources)
+//						{
+//							monitor.subTask("Collecting members for: " + resource.getName());
+//							checkCanceled(monitor);
+//
+//							if(!(resourcesToUpdate.contains(resource) || resourcesToUpdate.contains(resource.getParent())))
+//							{
+//								resourcesToUpdate.add(resource);
+//							}
+//						}
+//
+//						for(IResource resource : resourcesToUpdate)
+//						{
+//							monitor.subTask("Collecting members for: " + resource.getName());
+//							checkCanceled(monitor);
+//
+//							ClearcaseProvider clearcaseProvider = ClearcaseProvider.getClearcaseProvider(resource);
+//
+//							if(clearcaseProvider != null)
+//							{
+//								clearcaseProvider.updateState(resource, IResource.DEPTH_INFINITE,
+//										new SubProgressMonitor(monitor, 10));
+//							}
+//							checkCanceled(monitor);
+//						}
+//					}
+
 				} finally {
 					monitor.done();
 				}
