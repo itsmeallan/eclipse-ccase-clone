@@ -16,7 +16,9 @@ package net.sourceforge.eclipseccase;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -59,6 +61,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 	/** trace id */
 	private static final String TRACE_ID_IS_IGNORED = "ClearcaseProvider#isIgnored"; //$NON-NLS-1$
 
+	private static Map<String, String> viewLookupTable;
+
+	private static Map<String, Boolean> snapshotViewLookupTable;
+
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
 	CheckInOperation CHECK_IN = new CheckInOperation();
@@ -90,6 +96,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	public ClearcaseProvider() {
 		super();
+		viewLookupTable = new Hashtable<String, String>(200);
+		snapshotViewLookupTable = new Hashtable<String, Boolean>(30); 
 	}
 
 	UpdateOperation UPDATE = new UpdateOperation();
@@ -353,9 +361,29 @@ public class ClearcaseProvider extends RepositoryProvider {
 				.getPredecessorVersion();
 	}
 
-	public String getViewName(IResource resource) {
-		return ClearcasePlugin.getEngine().getViewName(
-				resource.getLocation().toOSString());
+	public static String getViewName(IResource resource) {
+		// assume that a complete project is inside one view
+		String path = resource.getProject().getLocation().toOSString();
+		String res = viewLookupTable.get(path);
+		if (res == null) {
+			// use the originally given resource for the cleartool query
+			res = ClearcasePlugin.getEngine().getViewName(resource.getLocation().toOSString());
+			viewLookupTable.put(path, res);
+		}
+		return res;
+	}
+
+	public static String getViewName(final StateCache cache) {
+		return getViewName(cache.getPath());
+	}
+
+	public static String getViewName(final String path) {
+		String res = viewLookupTable.get(path);
+		if (res == null) {
+			res = ClearcasePlugin.getEngine().getViewName(path);
+			viewLookupTable.put(path, res);
+		}
+		return res;
 	}
 
 	/**
@@ -365,8 +393,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 *            The resource inside a view.
 	 * @return "dynamic" or "snapshot"
 	 */
-	public String getViewType(IResource resource) {
-		return ClearcasePlugin.getEngine().getViewType(getViewName(resource));
+	public static String getViewType(IResource resource) {
+		return isSnapshotView(getViewName(resource)) ? ClearCaseInterface.VIEW_TYPE_SNAPSHOT
+				: ClearCaseInterface.VIEW_TYPE_DYNAMIC;
+	}
+
+	public static boolean isSnapshotView(final String viewName) {
+		Boolean res = snapshotViewLookupTable.get(viewName);
+		if (res == null) {
+			String viewtype = ClearcasePlugin.getEngine().getViewType(viewName);
+			res = (viewtype.equals(ClearCaseInterface.VIEW_TYPE_SNAPSHOT) ? true
+					: false);
+			snapshotViewLookupTable.put(viewName, res);
+		}
+		return res;
 	}
 
 	/**
@@ -685,11 +725,11 @@ public class ClearcaseProvider extends RepositoryProvider {
 								IResource foundResource = resources[i];
 								ClearcaseProvider provider = ClearcaseProvider
 										.getClearcaseProvider(foundResource);
-								if (null != provider)
-								{
+								if (null != provider) {
 									StateCacheFactory.getInstance().get(
 											foundResource).updateAsync(false);
-									// after the target is updated, we must update the
+									// after the target is updated, we must
+									// update the
 									// symlink itself again :-(
 									cache.updateAsync(false);
 								}
@@ -921,7 +961,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 							TeamException.NOT_CHECKED_OUT,
 							MessageFormat.format(
 									"Resource \"{0}\" is not checked out!",
-									new Object[] { targetElement.getPath() }), null);
+									new Object[] { targetElement.getPath() }),
+							null);
 				}
 				IStatus result = OK_STATUS;
 
@@ -932,8 +973,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 				}
 
 				ClearcasePlugin.getEngine().uncheckout(
-						new String[] { targetElement.getPath() },
-						flags, opListener);
+						new String[] { targetElement.getPath() }, flags,
+						opListener);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
@@ -1025,22 +1066,22 @@ public class ClearcaseProvider extends RepositoryProvider {
 							TeamException.NOT_CHECKED_OUT,
 							MessageFormat.format(
 									"Resource \"{0}\" is not checked out!",
-									new Object[] { targetElement.getPath() }), null);
+									new Object[] { targetElement.getPath() }),
+							null);
 				}
 				IStatus result = OK_STATUS;
 
 				if (ClearcasePlugin.isCheckinIdenticalAllowed()) {
-					ClearcasePlugin.getEngine()
-							.checkin(
-									new String[] { targetElement.getPath() }, getComment(),
-									ClearCase.PTIME | ClearCase.IDENTICAL,
-									opListener);
+					ClearcasePlugin.getEngine().checkin(
+							new String[] { targetElement.getPath() },
+							getComment(),
+							ClearCase.PTIME | ClearCase.IDENTICAL, opListener);
 				} else {
 
 					try {
 						ClearcasePlugin.getEngine().checkin(
-								new String[] { targetElement.getPath() }, getComment(),
-								ClearCase.PTIME, opListener);
+								new String[] { targetElement.getPath() },
+								getComment(), ClearCase.PTIME, opListener);
 					} catch (ClearCaseException cce) {
 						// check error
 						switch (cce.getErrorCode()) {
@@ -1089,8 +1130,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 							// TODO: Check if merge was successful then checkin.
 							// if not clean up.
 							ClearcasePlugin.getEngine().checkin(
-									new String[] { targetElement.getPath() }, getComment(),
-									ClearCase.PTIME, opListener);
+									new String[] { targetElement.getPath() },
+									getComment(), ClearCase.PTIME, opListener);
 
 							break;
 
@@ -1160,7 +1201,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 					return new Status(IStatus.OK, ID,
 							TeamException.NOT_CHECKED_IN, MessageFormat.format(
 									"Resource \"{0}\" is already checked out!",
-									new Object[] { targetElement.getPath() }), null);
+									new Object[] { targetElement.getPath() }),
+							null);
 				}
 
 				IStatus result = OK_STATUS;
@@ -1250,7 +1292,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 												ClearcasePlugin
 														.getEngine()
 														.checkout(
-																new String[] { targetElement.getPath() },
+																new String[] { targetElement
+																		.getPath() },
 																getComment(),
 																ClearCase.UNRESERVED
 																		| ClearCase.PTIME,

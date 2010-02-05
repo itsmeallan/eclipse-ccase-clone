@@ -331,11 +331,11 @@ public class StateCache implements Serializable {
 
 					ClearCaseElementState newState = ClearcasePlugin
 							.getEngine().getElementState(osPath);
+
 					// Fix for Bug 2509230.
-					String viewName = ClearcasePlugin.getEngine().getViewName(
-							osPath);
-					ClearCaseElementState viewType = ClearcasePlugin
-							.getEngine().getViewType(viewName, osPath);
+					boolean isInsideSnapshotView = ClearcaseProvider
+							.isSnapshotView(ClearcaseProvider
+									.getViewName(resource));
 
 					if (newState != null) {
 
@@ -359,11 +359,8 @@ public class StateCache implements Serializable {
 							setFlag(CHECKED_OUT, newIsCheckedOut);
 						}
 
-						if (viewType != null) {
-							boolean newIsSnapShot = viewType.isInSnapShotView();
-							changed |= newIsSnapShot != this.isSnapShot();
-							setFlag(SNAPSHOT, newIsSnapShot);
-						}
+						changed |= isInsideSnapshotView != this.isSnapShot();
+						setFlag(SNAPSHOT, isInsideSnapshotView);
 
 						boolean newIsHijacked = newState.isHijacked();
 						changed |= newIsHijacked != this.isHijacked();
@@ -431,10 +428,11 @@ public class StateCache implements Serializable {
 	}
 
 	/**
-	 * Update all internal values of the StateCache by examining
-	 * the corresponding symlink target.
+	 * Update all internal values of the StateCache by examining the
+	 * corresponding symlink target.
 	 * 
-	 * @param targetPath string representation of symlink target
+	 * @param targetPath
+	 *            string representation of symlink target
 	 * @return true if internal state has changed
 	 */
 	private boolean updateSymlinkState(String targetPath) {
@@ -451,15 +449,12 @@ public class StateCache implements Serializable {
 		// TODO calculate checkout state of target (Achim 2010 2 5)
 		boolean targetIsCheckedOut = false; // newState.isCheckedOut();
 		// get our provider
-		ClearcaseProvider p = ClearcaseProvider
-				.getClearcaseProvider(resource);
+		ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
 		if (p != null) {
-			StateCache target = p
-					.getFinalTargetElement(this);
-			targetIsCheckedOut = (target != null && target
-					.isCheckedOut());
+			StateCache target = p.getFinalTargetElement(this);
+			targetIsCheckedOut = (target != null && target.isCheckedOut());
 		} else {
-			newIsTargetValid=false;
+			newIsTargetValid = false;
 		}
 		changed |= targetIsCheckedOut != this.isCheckedOut();
 		setFlag(CHECKED_OUT, targetIsCheckedOut);
