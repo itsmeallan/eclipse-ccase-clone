@@ -68,6 +68,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
  * </ul>
  * 
  * @author Tobias Sodergren
+ * @contributions Achim Bursian
  * 
  */
 public class ClearcaseElementStatusCollector {
@@ -184,22 +185,29 @@ public class ClearcaseElementStatusCollector {
 			String viewName, Set<String> queriedViews, IProgressMonitor monitor) {
 
 		if (!queriedViews.contains(viewName)) {
-			monitor.subTask("View private: " + viewName);
-
-			ClearCaseElementState[] viewLSPrivateList = ClearcasePlugin
-					.getEngine().getViewLSPrivateList(viewName, null);
-			if (null == viewLSPrivateList) {
-				throw new RuntimeException(
-						"Could not get view private file information from view: "
-								+ viewName);
-			}
-			for (int i = 0; i < viewLSPrivateList.length; i++) {
-				ClearCaseElementState element = viewLSPrivateList[i];
-				elementStates.put(element.element, element);
-			}
+			// Achim 2010-02-05: for dynamic views, this makes no sense.
+			// the lspriv command returns the pathes in view extended 
+			// notation, which is useless for us. And we check all elements with
+			// a "cleartool ls" anyway, so the state cache gets updated
+			// correctly.
+//			monitor.subTask("View private: " + viewName);
+//
+//			ClearCaseElementState[] viewLSPrivateList = ClearcasePlugin
+//					.getEngine().getViewLSPrivateList(viewName, null);
+//			if (null == viewLSPrivateList) {
+//				throw new RuntimeException(
+//						"Could not get view private file information from view: "
+//								+ viewName);
+//			}
+//			for (int i = 0; i < viewLSPrivateList.length; i++) {
+//				ClearCaseElementState element = viewLSPrivateList[i];
+//				elementStates.put(element.element, element);
+//			}
 			queriedViews.add(viewName);
 
-			addCheckedOutFiles(viewName, monitor, resources[0].getLocation());
+			// Achim 2010-02-05: for dynamic views, this makes no sense.
+			// (see above)
+//			addCheckedOutFiles(viewName, monitor, resources[0].getLocation());
 
 		}
 
@@ -328,7 +336,7 @@ public class ClearcaseElementStatusCollector {
 		if (resource instanceof IFile) {
 			resource = resource.getParent();
 		}
-		
+
 		// Check the resource itself if it is in ClearCase.
 		if (isResourceInClearcase(resource)) {
 			result.add(resource);
@@ -398,8 +406,12 @@ public class ClearcaseElementStatusCollector {
 					ClearCase.OUTSIDE_VOB);
 		}
 
-		return new ClearCaseElementState(stateCache.getPath(),
-				ClearCase.CHECKED_IN | ClearCase.IS_ELEMENT);
+		// abu: we must ask the engine for the real state and put
+		// the result into the elementStates cache
+		ClearCaseElementState elementState = ClearcasePlugin.getEngine()
+				.getElementState(path);
+		elementStates.put(path, elementState);
+		return elementState;
 	}
 
 	private void trace(String message) {

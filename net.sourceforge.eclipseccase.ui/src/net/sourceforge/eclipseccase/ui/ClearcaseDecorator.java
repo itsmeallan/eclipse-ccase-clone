@@ -269,11 +269,14 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	 * Adds decoration for links.
 	 * 
 	 * @param decoration
+	 * @param isLinkTargetCheckedOut
 	 */
-	private static void decorateLink(IDecoration decoration, String linkTarget, boolean isValidLinkTarget) {
+	private static void decorateLink(IDecoration decoration, String linkTarget, boolean isValidLinkTarget, boolean isLinkTargetCheckedOut) {
 		if (ClearcaseUI.DEBUG_DECORATION)
 			ClearcaseUI.trace(DECORATOR, "  decorateLink"); //$NON-NLS-1$
-		if (isValidLinkTarget)
+		if (isLinkTargetCheckedOut)
+			decoration.addOverlay(IMG_DESC_CHECKED_OUT);
+		else if (isValidLinkTarget)
 			decoration.addOverlay(IMG_DESC_LINK);
 		else
 			decoration.addOverlay(IMG_DESC_LINK_WARNING);
@@ -413,8 +416,7 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			// no further decoration
 			return;
 		}
-		
-		
+
 		// Projects may be the view directory containing the VOBS, if so,
 		// they are not decoratable
 		if (p.isViewRoot(resource) || p.isVobRoot(resource)) {
@@ -427,30 +429,34 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (resource.getType() == IResource.PROJECT)
 			decorateViewName(decoration, p.getViewName(resource));
 
+		// performance optimisation: get the StateCache only once:
+		StateCache cache = p.getCache(resource); 
+
 		/*
 		 * test the different states
 		 */
-		if (resource.getType() != IResource.PROJECT && !p.hasRemote(resource)) {
+		if (resource.getType() != IResource.PROJECT && !cache.hasRemote()) {
 			// decorate new elements not added to ClearCase
 			decorateNew(decoration);
 
 			// no further decoration
 			return;
-		} else if (p.isCheckedOut(resource)) {
-			// check out
-			decorateCheckedOut(decoration,  p.getVersion(resource));
-
-			// no further decoration
-			return;
-		} else if (p.isHijacked(resource)) {
-			// hijacked
-			decorateHijacked(decoration,  p.getVersion(resource));
-
-			// no further decoration
-			return;
-		} else if (p.isSymbolicLink(resource)) {
+		} else if (cache.isSymbolicLink()) {
 			// symbolic link
-			decorateLink(decoration, p.getSymbolicLinkTarget(resource), p.isSymbolicLinkTargetValid(resource));
+			decorateLink(decoration, cache.getSymbolicLinkTarget(), cache.isSymbolicLinkTargetValid(), 
+					cache.isCheckedOut());
+
+			// no further decoration
+			return;
+		} else if (cache.isCheckedOut()) {
+			// check out
+			decorateCheckedOut(decoration, cache.getVersion());
+
+			// no further decoration
+			return;
+		} else if (cache.isHijacked()) {
+			// hijacked
+			decorateHijacked(decoration, cache.getVersion());
 
 			// no further decoration
 			return;
@@ -460,8 +466,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 
 			switch (dirty) {
 			case STATE_CLEAN:
-				if (p.hasRemote(resource)) {
-					if (p.isEdited(resource))
+				if (cache.hasRemote()) {
+					if (cache.isEdited())
 						// the resource is edited by someone else
 						decorateEdited(decoration);
 					else
@@ -525,8 +531,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	}
 
 	/**
-	 * Update the decorators for every resource in project.
-	 * Used when Associating/Deassociate project.
+	 * Update the decorators for every resource in project. Used when
+	 * Associating/Deassociate project.
 	 * 
 	 * @param project
 	 */
@@ -566,13 +572,13 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		}
 	}
 
-	public void refresh(IResource [] changedResources){
+	public void refresh(IResource[] changedResources) {
 		Set resourcesToUpdate = new HashSet();
 
 		for (int i = 0; i < changedResources.length; i++) {
 			IResource resource = changedResources[i];
 
-			if(!ClearcaseUIPreferences.decorateFoldersDirty()) {
+			if (!ClearcaseUIPreferences.decorateFoldersDirty()) {
 				addWithParents(resource, resourcesToUpdate);
 			} else {
 				resourcesToUpdate.add(resource);
@@ -582,12 +588,11 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		fireLabelProviderChanged(new LabelProviderChangedEvent(this, resourcesToUpdate.toArray()));
 
 	}
-	
-	
+
 	/*
 	 * Add resource and its parents to the List
 	 */
-	 
+
 	private void addWithParents(IResource resource, Set resources) {
 		IResource current = resource;
 
@@ -596,7 +601,6 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			current = current.getParent();
 		}
 	}
-	
 
 	/*
 	 * (non-Javadoc)
@@ -663,8 +667,9 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	final void superFireLabelProviderChanged(LabelProviderChangedEvent event) {
 		super.fireLabelProviderChanged(event);
 	}
-	//TODO:Testing to see if this will help take into
-	//account changes in workspace not within eclipse.
+
+	// TODO:Testing to see if this will help take into
+	// account changes in workspace not within eclipse.
 	/**
 	 * 
 	 * @param resource

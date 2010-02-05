@@ -15,9 +15,7 @@ package net.sourceforge.eclipseccase;
 import java.io.IOException;
 import java.io.Serializable;
 
-import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
-import net.sourceforge.clearcase.ClearCaseInterface;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -82,7 +80,7 @@ public class StateCache implements Serializable {
 	private static final int SYM_LINK_TARGET_VALID = 0x40;
 
 	private static final int INSIDE_VIEW = 0x80;
-	
+
 	/**
 	 * Schedules a state update.
 	 * 
@@ -216,8 +214,12 @@ public class StateCache implements Serializable {
 					setFlag(SYM_LINK, newIsSymbolicLink);
 
 					boolean newIsCheckedOut = newState.isCheckedOut();
-					changed |= newIsCheckedOut != this.isCheckedOut();
-					setFlag(CHECKED_OUT, newIsCheckedOut);
+					if (!newIsSymbolicLink) {
+						// for symlinks the checkout state is calculated
+						// later
+						changed |= newIsCheckedOut != this.isCheckedOut();
+						setFlag(CHECKED_OUT, newIsCheckedOut);
+					}
 
 					boolean newIsSnapShot = newState.isInSnapShotView();
 					changed |= newIsSnapShot != this.isSnapShot();
@@ -226,13 +228,13 @@ public class StateCache implements Serializable {
 					boolean newIsHijacked = newState.isHijacked();
 					changed |= newIsHijacked != this.isHijacked();
 					setFlag(HIJACKED, newIsHijacked);
-					
+
 					boolean newIsEdited = false;
-//					if (newHasRemote && !newIsCheckedOut) {
-//						ClearcasePlugin.getEngine().findCheckouts(
-//								new String[] { osPath }, ClearCase.DEFAULT,
-//								null);
-//					}
+					// if (newHasRemote && !newIsCheckedOut) {
+					// ClearcasePlugin.getEngine().findCheckouts(
+					// new String[] { osPath }, ClearCase.DEFAULT,
+					// null);
+					// }
 					changed |= newIsEdited != this.isEdited();
 					setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
 
@@ -242,19 +244,7 @@ public class StateCache implements Serializable {
 					this.version = newVersion;
 
 					if (newIsSymbolicLink) {
-						String newTarget = newState.linkTarget;
-						if (null != newTarget && newTarget.trim().length() == 0)
-							newTarget = null;
-						changed |= null == newTarget ? null != this.symbolicLinkTarget
-								: !newTarget.equals(this.symbolicLinkTarget);
-						this.symbolicLinkTarget = newTarget;
-
-						boolean newIsTargetValid = false; // true
-						changed = changed
-								|| newIsTargetValid != this
-										.isSymbolicLinkTargetValid();
-						setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
-
+						changed |= updateSymlinkState(newState.linkTarget);
 					} else if (null != this.symbolicLinkTarget) {
 						this.symbolicLinkTarget = null;
 						setFlag(SYM_LINK_TARGET_VALID, false);
@@ -306,7 +296,8 @@ public class StateCache implements Serializable {
 	}
 
 	/**
-	 * Updates the state.
+	 * Updates the state. Calls the engine's getElementState() (which execs
+	 * cleartool)
 	 */
 	void doUpdate() {
 		boolean changed = isUninitialized();
@@ -340,11 +331,12 @@ public class StateCache implements Serializable {
 
 					ClearCaseElementState newState = ClearcasePlugin
 							.getEngine().getElementState(osPath);
-					//Fix for Bug 2509230.
-					String viewName = ClearcasePlugin.getEngine().getViewName(osPath);
-					ClearCaseElementState viewType = ClearcasePlugin.getEngine().getViewType(viewName,osPath);
-					
-					
+					// Fix for Bug 2509230.
+					String viewName = ClearcasePlugin.getEngine().getViewName(
+							osPath);
+					ClearCaseElementState viewType = ClearcasePlugin
+							.getEngine().getViewType(viewName, osPath);
+
 					if (newState != null) {
 
 						boolean newHasRemote = newState.isElement();
@@ -360,13 +352,17 @@ public class StateCache implements Serializable {
 						setFlag(SYM_LINK, newIsSymbolicLink);
 
 						boolean newIsCheckedOut = newState.isCheckedOut();
-						changed |= newIsCheckedOut != this.isCheckedOut();
-						setFlag(CHECKED_OUT, newIsCheckedOut);
-						
-						if(viewType != null){
-						boolean newIsSnapShot = viewType.isInSnapShotView();
-						changed |= newIsSnapShot != this.isSnapShot();
-						setFlag(SNAPSHOT, newIsSnapShot);
+						if (!newIsSymbolicLink) {
+							// for symlinks the checkout state is calculated
+							// later
+							changed |= newIsCheckedOut != this.isCheckedOut();
+							setFlag(CHECKED_OUT, newIsCheckedOut);
+						}
+
+						if (viewType != null) {
+							boolean newIsSnapShot = viewType.isInSnapShotView();
+							changed |= newIsSnapShot != this.isSnapShot();
+							setFlag(SNAPSHOT, newIsSnapShot);
 						}
 
 						boolean newIsHijacked = newState.isHijacked();
@@ -383,21 +379,7 @@ public class StateCache implements Serializable {
 						this.version = newVersion;
 
 						if (newIsSymbolicLink) {
-							String newTarget = newState.linkTarget;
-							if (null != newTarget
-									&& newTarget.trim().length() == 0)
-								newTarget = null;
-							changed |= null == newTarget ? null != this.symbolicLinkTarget
-									: !newTarget
-											.equals(this.symbolicLinkTarget);
-							this.symbolicLinkTarget = newTarget;
-
-							boolean newIsTargetValid = false; // true
-							changed = changed
-									|| newIsTargetValid != this
-											.isSymbolicLinkTargetValid();
-							setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
-
+							changed |= updateSymlinkState(newState.linkTarget);
 						} else if (null != this.symbolicLinkTarget) {
 							this.symbolicLinkTarget = null;
 							setFlag(SYM_LINK_TARGET_VALID, false);
@@ -446,6 +428,45 @@ public class StateCache implements Serializable {
 				ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
+	}
+
+	/**
+	 * Update all internal values of the StateCache by examining
+	 * the corresponding symlink target.
+	 * 
+	 * @param targetPath string representation of symlink target
+	 * @return true if internal state has changed
+	 */
+	private boolean updateSymlinkState(String targetPath) {
+		boolean changed = false;
+		if (null != targetPath && targetPath.trim().length() == 0)
+			targetPath = null;
+		changed |= (null == targetPath) ? (null != this.symbolicLinkTarget)
+				: (!targetPath.equals(this.symbolicLinkTarget));
+		this.symbolicLinkTarget = targetPath;
+
+		// TODO calculate IsTargetValid state of symlink (Achim 2010 2 5)
+		boolean newIsTargetValid = true;
+
+		// TODO calculate checkout state of target (Achim 2010 2 5)
+		boolean targetIsCheckedOut = false; // newState.isCheckedOut();
+		// get our provider
+		ClearcaseProvider p = ClearcaseProvider
+				.getClearcaseProvider(resource);
+		if (p != null) {
+			StateCache target = p
+					.getFinalTargetElement(this);
+			targetIsCheckedOut = (target != null && target
+					.isCheckedOut());
+		} else {
+			newIsTargetValid=false;
+		}
+		changed |= targetIsCheckedOut != this.isCheckedOut();
+		setFlag(CHECKED_OUT, targetIsCheckedOut);
+
+		changed |= newIsTargetValid != this.isSymbolicLinkTargetValid();
+		setFlag(SYM_LINK_TARGET_VALID, newIsTargetValid);
+		return changed;
 	}
 
 	/**
@@ -528,7 +549,8 @@ public class StateCache implements Serializable {
 	 * @return String
 	 */
 	public String getPredecessorVersion() {
-		String predecessorVersion = ClearcasePlugin.getEngine().getPreviousVersion(resource.getLocation().toOSString());
+		String predecessorVersion = ClearcasePlugin.getEngine()
+				.getPreviousVersion(resource.getLocation().toOSString());
 		return predecessorVersion;
 	}
 
