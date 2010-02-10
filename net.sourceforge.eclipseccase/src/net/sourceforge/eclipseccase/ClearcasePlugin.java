@@ -143,6 +143,10 @@ public class ClearcasePlugin extends Plugin {
 	private static final String DEBUG_OPTION_STATE_CACHE = ClearcasePlugin.PLUGIN_ID
 			+ "/debug/stateCache"; //$NON-NLS-1$
 
+	/** debug option */
+	private static final String DEBUG_OPTION_SUBPROCESS = ClearcasePlugin.PLUGIN_ID
+			+ "/debug/subprocess"; //$NON-NLS-1$
+
 	/** indicates if debugging is enabled */
 	public static boolean DEBUG = false;
 
@@ -170,6 +174,11 @@ public class ClearcasePlugin extends Plugin {
 			if (getDebugOption(DEBUG_OPTION_STATE_CACHE)) {
 				trace("debugging " + DEBUG_OPTION_STATE_CACHE); //$NON-NLS-1$
 				ClearcasePlugin.DEBUG_STATE_CACHE = true;
+			}
+			
+			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
+				trace("debugging " + DEBUG_OPTION_SUBPROCESS); //$NON-NLS-1$
+				ClearcasePlugin.getEngine().setDebugLevel(100);
 			}
 			
 
@@ -695,7 +704,7 @@ public class ClearcasePlugin extends Plugin {
 					if (DEBUG)
 						trace("using default engine"); //$NON-NLS-1$
 					clearcaseImpl = ClearCase
-							.createInterface(ClearCase.INTERFACE_CLI);
+							.createInterface(ClearCase.INTERFACE_CLI_SP);
 				}
 			}
 			return clearcaseImpl;

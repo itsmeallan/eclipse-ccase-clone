@@ -109,7 +109,8 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		// use cleartool option only available on windows
 		BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL, PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL));
-		useCleartool.setEnabled(ClearcasePlugin.isWindows(), getFieldEditorParent(GENERAL));
+		// TODO Achim: misused for testing
+//		useCleartool.setEnabled(ClearcasePlugin.isWindows(), getFieldEditorParent(GENERAL));
 		addField(useCleartool);
 
 		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
