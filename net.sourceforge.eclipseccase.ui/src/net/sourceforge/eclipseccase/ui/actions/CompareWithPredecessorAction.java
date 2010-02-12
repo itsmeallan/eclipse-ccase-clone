@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.clearcase.commandline.ICommandLauncher;
+
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 
 import java.io.IOException;
@@ -19,23 +21,21 @@ import org.eclipse.ui.IActionDelegate;
  */
 public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isEnabled()  
-    {
-        IResource[] resources = getSelectedResources();
-        if (resources.length == 0)
-            return false;
-        for (int i = 0; i < resources.length; i++)
-        {
-            IResource resource = resources[i];
-            ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-            if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
-                return false;
-        }
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isEnabled() {
+		IResource[] resources = getSelectedResources();
+		if (resources.length == 0)
+			return false;
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+				return false;
+		}
+		return true;
+	}
 
 	/**
 	 * @see IActionDelegate#run(IAction)
@@ -46,25 +46,27 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
-                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+					//mike: don't know how this is used.
+					//ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
-						if (ClearcasePlugin.isUseCleartool()) {
-							new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addOption("-pred").addElement(path).create(), null, null, opListener);
+						if (!ClearcasePlugin.isUseClearDlg()) {
+							ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
+							p.compareWithPredecessor(path);
 						} else {
 							Runtime.getRuntime().exec(new String[] { "cleardlg", "/diffpred", path });
 						}
 					}
-				} catch (IOException ex) {
 
+				} catch (IOException ex) {
 				} finally {
 					monitor.done();
 				}
+
 			}
 		};
 		executeInBackground(runnable, "Compare With Predecessor");
 
 	}
-
 }
