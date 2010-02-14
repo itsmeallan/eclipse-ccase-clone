@@ -54,7 +54,8 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * The ClearCase repository provider.
+ * The ClearCase repository provider. Layer to clearcase
+ * java api.
  */
 public class ClearcaseProvider extends RepositoryProvider {
 
@@ -360,7 +361,13 @@ public class ClearcaseProvider extends RepositoryProvider {
 		return StateCacheFactory.getInstance().get(resource)
 				.getPredecessorVersion();
 	}
-
+	
+	public void compareWithPredecessor(String element){
+	 ClearcasePlugin.getEngine().compareWithPredecessor(element);
+	
+	}
+			
+	
 	public static String getViewName(IResource resource) {
 		// assume that a complete project is inside one view
 		String path = resource.getProject().getLocation().toOSString();
