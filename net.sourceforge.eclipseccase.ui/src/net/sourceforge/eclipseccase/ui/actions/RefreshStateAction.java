@@ -31,7 +31,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 						checkCanceled(monitor);
 						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						provider.setOperationListener(opListener);
-						provider.refresh(resource);
+						provider.refreshRecursive(resource, new SubProgressMonitor(monitor,1));
 					}
 
 				} finally {
