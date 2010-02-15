@@ -9,7 +9,7 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
- *     Tobias Sodergren - added preferences for quick refresh and job priority
+ *     Tobias Sodergren - added preferences for job priority
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
@@ -98,10 +98,6 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 		addField(new BooleanFieldEditor(PRESERVE_TIMES, PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
-
-		BooleanFieldEditor quickRefresh = new BooleanFieldEditor(QUICK_REFRESH, PreferenceMessages.getString("Preferences.General.QuickRefresh"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL));
-		addField(quickRefresh);
 
 		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));

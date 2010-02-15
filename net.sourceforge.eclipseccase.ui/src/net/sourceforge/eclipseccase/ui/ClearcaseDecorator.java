@@ -9,7 +9,6 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
- *     Tobias Sodergren - added quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
@@ -413,6 +412,11 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			// unknown state
 			decorateUnknown(decoration);
 
+			// getting the StateCache schedules an async update
+			if (ClearcaseUI.DEBUG_DECORATION)
+				ClearcaseUI.trace(DECORATOR, " schedule refresh for " + resource.getFullPath().toString()); //$NON-NLS-1$
+			StateCache cache = p.getCache(resource); 
+
 			// no further decoration
 			return;
 		}
@@ -548,27 +552,6 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources.toArray()));
 		} catch (CoreException e) {
 			handleException(e);
-		}
-	}
-
-	public void refreshUsingStatusCollector(IProject[] projects, IProgressMonitor monitor) {
-		final ClearcaseElementStatusCollector statusCollector = StateCacheFactory.getInstance().getStatusCollector(projects);
-		statusCollector.collectRefreshStatus(monitor);
-		final List resources = new ArrayList();
-		for (int i = 0; i < projects.length; i++) {
-			IProject project = projects[i];
-			try {
-				project.accept(new IResourceVisitor() {
-					public boolean visit(IResource resource) {
-						StateCacheFactory.getInstance().getUsingStatusCollector(resource, statusCollector);
-						resources.add(resource);
-						return true;
-					}
-				});
-				fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources.toArray()));
-			} catch (CoreException e) {
-				handleException(e);
-			}
 		}
 	}
 

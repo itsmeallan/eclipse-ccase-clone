@@ -9,7 +9,6 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *     Gunnar Wagenknecht - reworked to Eclipse 3.0 API and code clean-up
- *     Tobias Sodergren - Added preferences for quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -25,12 +24,15 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.eclipseccase.tools.XMLWriter;
+
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.IWorkspace;
@@ -55,6 +57,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -564,16 +567,7 @@ public class ClearcasePlugin extends Plugin {
 	}
 
 	/**
-	 * @return True if quick refresh should be used, false if normal refresh
-	 *         should be used.
-	 */
-	public static boolean isUseQuickRefresh() {
-		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.QUICK_REFRESH);
-	}
-
-	/**
-	 * @return True if quick refresh should traverse the link parent during
+	 * @return True if refresh should traverse the link parent during
 	 *         refresh, which is an optimization for linked directories.
 	 */
 	public static boolean isTestLinkedParentInClearCase() {
@@ -787,7 +781,6 @@ public class ClearcasePlugin extends Plugin {
 				IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
 				true);
 		pref.setDefault(IClearcasePreferenceConstants.COMMENT_ESCAPE, false);
-		pref.setDefault(IClearcasePreferenceConstants.QUICK_REFRESH, true);
 		pref.setDefault(IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY,
 				Job.DECORATE);
 		pref.setDefault(

@@ -9,7 +9,6 @@
  *     Matthew Conway - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
  *     Gunnar Wagenknecht - new features, enhancements and bug fixes
- *     Tobias Sodergren - Added quick refresh
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -25,7 +24,6 @@ import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
-import net.sourceforge.clearcase.utils.Os;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -54,8 +52,7 @@ import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * The ClearCase repository provider. Layer to clearcase
- * java api.
+ * The ClearCase repository provider. Layer to clearcase java api.
  */
 public class ClearcaseProvider extends RepositoryProvider {
 
@@ -98,7 +95,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 	public ClearcaseProvider() {
 		super();
 		viewLookupTable = new Hashtable<String, String>(200);
-		snapshotViewLookupTable = new Hashtable<String, Boolean>(30); 
+		snapshotViewLookupTable = new Hashtable<String, Boolean>(30);
 	}
 
 	UpdateOperation UPDATE = new UpdateOperation();
@@ -191,39 +188,27 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * @throws CoreException
 	 */
 	public void refreshRecursive(IResource resourceToRefresh,
-			IProgressMonitor monitor, boolean quickRefresh)
+			IProgressMonitor monitor)
 			throws CoreException {
 
 		try {
 			monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
 			final List toRefresh = new ArrayList(80);
 			monitor.subTask("collecting members");
-			if (!quickRefresh) {
-				resourceToRefresh.accept(new IResourceVisitor() {
+			resourceToRefresh.accept(new IResourceVisitor() {
 
-					public boolean visit(IResource resource)
-							throws CoreException {
-						if (!Team.isIgnoredHint(resource))
-							toRefresh.add(resource);
-						return true;
-					}
-				});
-				monitor.worked(30);
-				monitor.subTask("scheduling updates");
-			}
-			if (quickRefresh) {
-				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						new IResource[] { resourceToRefresh }, monitor,
-						quickRefresh);
-			} else {
-				if (!toRefresh.isEmpty()) {
-					StateCacheFactory.getInstance()
-							.refreshStateAsyncHighPriority(
-									(IResource[]) toRefresh
-											.toArray(new IResource[toRefresh
-													.size()]), monitor,
-									quickRefresh);
+				public boolean visit(IResource resource) throws CoreException {
+					if (!Team.isIgnoredHint(resource))
+						toRefresh.add(resource);
+					return true;
 				}
+			});
+			monitor.worked(30);
+			monitor.subTask("scheduling updates");
+			if (!toRefresh.isEmpty()) {
+				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
+						(IResource[]) toRefresh.toArray(new IResource[toRefresh
+								.size()]), monitor);
 			}
 			monitor.worked(10);
 		} finally {
@@ -233,7 +218,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	public void refreshRecursive(IResource[] resources, IProgressMonitor monitor) {
 		StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-				resources, monitor, true);
+				resources, monitor);
 	}
 
 	/**
@@ -242,17 +227,8 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * 
 	 * @param resources
 	 */
-	public void refresh(IResource resources, boolean quickRefresh) {
-		if (quickRefresh) {
-			ClearcaseElementStatusCollector statusCollector = StateCacheFactory
-					.getInstance().getStatusCollector(
-							new IResource[] { resources });
-			statusCollector.collectRefreshStatus(null);
-			StateCacheFactory.getInstance().get(resources)
-					.updateAsyncHighPriority(false, statusCollector);
-		} else {
-			StateCacheFactory.getInstance().get(resources).updateAsync(false);
-		}
+	public void refresh(IResource resources) {
+		StateCacheFactory.getInstance().get(resources).updateAsync(false);
 	}
 
 	/*
@@ -361,20 +337,20 @@ public class ClearcaseProvider extends RepositoryProvider {
 		return StateCacheFactory.getInstance().get(resource)
 				.getPredecessorVersion();
 	}
-	
-	public void compareWithPredecessor(String element){
-	 ClearcasePlugin.getEngine().compareWithPredecessor(element);
-	
+
+	public void compareWithPredecessor(String element) {
+		ClearcasePlugin.getEngine().compareWithPredecessor(element);
+
 	}
-			
-	
+
 	public static String getViewName(IResource resource) {
 		// assume that a complete project is inside one view
 		String path = resource.getProject().getLocation().toOSString();
 		String res = viewLookupTable.get(path);
 		if (res == null) {
 			// use the originally given resource for the cleartool query
-			res = ClearcasePlugin.getEngine().getViewName(resource.getLocation().toOSString());
+			res = ClearcasePlugin.getEngine().getViewName(
+					resource.getLocation().toOSString());
 			viewLookupTable.put(path, res);
 		}
 		return res;
@@ -626,7 +602,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 						10));
 			} else {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						new IResource[] { resource }, null, false);
+						new IResource[] { resource }, null);
 			}
 		} catch (CoreException ex) {
 			ClearcasePlugin.log(IStatus.ERROR,

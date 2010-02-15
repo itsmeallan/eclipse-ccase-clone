@@ -57,34 +57,20 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 							message.append("\n");
 						}
 						monitor.worked(5);
-						
-						//TODO: Fix 2803605 No state icons before workspace restart.
-						// If I comment out the code below and only use refreshUsingStatusCollector()
-						// it works nicely.
-						// The only thing that I miss is view name on project folder.
-						
-						//To get correct state for project.
-//						if (!ClearcasePlugin.isUseQuickRefresh()) {
-//							// refresh the decorator
-//							IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-//							if (manager.getEnabled(ClearcaseDecorator.ID)) {
-//								ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
-//								if (activeDecorator != null) {
-//									activeDecorator.refresh(project);
-//								}
-//							}
-//						}
-					}
-					//if (ClearcasePlugin.isUseQuickRefresh()) {
+
+						// TODO: Fix 2803605 No state icons before workspace
+						// restart.
+
+						// To get correct state for project.
 						// refresh the decorator
 						IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
 						if (manager.getEnabled(ClearcaseDecorator.ID)) {
 							ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
 							if (activeDecorator != null) {
-								activeDecorator.refreshUsingStatusCollector(projects, new SubProgressMonitor(monitor, 5 * projects.length));
+								activeDecorator.refresh(project);
 							}
 						}
-					//}
+					}
 					message.append(" with ClearCase");
 				} finally {
 					StateCacheFactory.getInstance().operationEnd();

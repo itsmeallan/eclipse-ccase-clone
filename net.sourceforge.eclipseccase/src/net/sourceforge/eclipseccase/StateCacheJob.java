@@ -8,7 +8,6 @@
  * Contributors:
  *     Gunnar Wagenknecht - initial API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
- *     Tobias Sodergren - added quick refresh
  *******************************************************************************/
 
 package net.sourceforge.eclipseccase;
@@ -36,8 +35,6 @@ class StateCacheJob implements Comparable {
 	/** the priority (higher value means higher priority) */
 	private int priority;
 
-	private ClearcaseElementStatusCollector statusCollector;
-
 	/**
 	 * Creates a new job with default priority.
 	 * 
@@ -46,20 +43,6 @@ class StateCacheJob implements Comparable {
 	 */
 	StateCacheJob(StateCache cache) {
 		this(cache, PRIORITY_DEFAULT);
-	}
-
-	/**
-	 * Creates a new job with default priority.
-	 * 
-	 * @param cache
-	 *            The state cache to refresh.
-	 * @param statusCollector
-	 *            The status collector containing new status for element.
-	 */
-	public StateCacheJob(StateCache cache,
-			ClearcaseElementStatusCollector statusCollector) {
-		this(cache, PRIORITY_DEFAULT);
-		this.statusCollector = statusCollector;
 	}
 
 	/**
@@ -137,11 +120,7 @@ class StateCacheJob implements Comparable {
 	 */
 	void execute(IProgressMonitor monitor) throws CoreException,
 			OperationCanceledException {
-		if (statusCollector != null) {
-			getStateCache().doUpdate(monitor, statusCollector);
-		} else {
-			getStateCache().doUpdate(monitor);
-		}
+		getStateCache().doUpdate(monitor);
 	}
 
 	/*

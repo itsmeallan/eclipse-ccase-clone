@@ -8,7 +8,6 @@
  * 		Matthew Conway - initial API and implementation 
  * 		IBM Corporation - concepts and ideas from Eclipse 
  *      Gunnar Wagenknecht - new features, enhancements and bug fixes
- *      Tobias Sodergren - added quick refresh
  ******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -87,19 +86,7 @@ public class StateCache implements Serializable {
 	 * @param invalidate
 	 */
 	public void updateAsync(boolean invalidate) {
-		updateAsync(invalidate, false, null);
-	}
-
-	/**
-	 * Schedules a state update.
-	 * 
-	 * @param invalidate
-	 * @param statusCollector
-	 *            A status collector containing status for clearcase elements.
-	 */
-	public void updateAsync(boolean invalidate,
-			ClearcaseElementStatusCollector statusCollector) {
-		updateAsync(invalidate, false, statusCollector);
+		updateAsync(invalidate, false);
 	}
 
 	/**
@@ -108,19 +95,7 @@ public class StateCache implements Serializable {
 	 * @param invalidate
 	 */
 	public void updateAsyncHighPriority(boolean invalidate) {
-		updateAsync(invalidate, true, null);
-	}
-
-	/**
-	 * Schedules a state update with a high priority.
-	 * 
-	 * @param invalidate
-	 * @param statusCollector
-	 *            A status collector containing status for clearcase elements.
-	 */
-	public void updateAsyncHighPriority(boolean invalidate,
-			ClearcaseElementStatusCollector statusCollector) {
-		updateAsync(invalidate, true, statusCollector);
+		updateAsync(invalidate, true);
 	}
 
 	/**
@@ -132,8 +107,7 @@ public class StateCache implements Serializable {
 	 *            Collector that is responsible for getting status information
 	 *            for resources.
 	 */
-	private void updateAsync(boolean invalidate, boolean useHighPriority,
-			ClearcaseElementStatusCollector statusCollector) {
+	private void updateAsync(boolean invalidate, boolean useHighPriority) {
 		if (invalidate) {
 			if (!isUninitialized()) {
 				// synchronize access
@@ -146,11 +120,7 @@ public class StateCache implements Serializable {
 			}
 		}
 		StateCacheJob job;
-		if (statusCollector != null) {
-			job = new StateCacheJob(this, statusCollector);
-		} else {
-			job = new StateCacheJob(this);
-		}
+		job = new StateCacheJob(this);
 		job.schedule(useHighPriority ? StateCacheJob.PRIORITY_HIGH
 				: StateCacheJob.PRIORITY_DEFAULT);
 	}
@@ -173,126 +143,6 @@ public class StateCache implements Serializable {
 		} finally {
 			monitor.done();
 		}
-	}
-
-	public void doUpdate(IProgressMonitor monitor,
-			ClearcaseElementStatusCollector statusCollector) {
-		try {
-			monitor
-					.beginTask(
-							Messages.getString("StateCache.updating") + getResource(), 10); //$NON-NLS-1$
-			doUpdate(statusCollector);
-			monitor.worked(10);
-		} finally {
-			monitor.done();
-		}
-	}
-
-	void doUpdate(ClearcaseElementStatusCollector statusCollector) {
-		ClearCaseElementState newState = statusCollector.getElementState(this);
-
-		boolean changed = false;
-
-		if (resource.isAccessible()) {
-
-			// check the global ignores from Team (includes derived
-			// resources)
-			if (!Team.isIgnoredHint(resource)) {
-
-				if (newState != null) {
-
-					boolean newHasRemote = newState.isElement();
-					changed |= newHasRemote != this.hasRemote();
-					setFlag(HAS_REMOTE, newHasRemote);
-
-					boolean newInsideView = !newState.isOutsideVob();
-					changed |= newInsideView != this.isInsideView();
-					setFlag(INSIDE_VIEW, newInsideView);
-
-					boolean newIsSymbolicLink = newState.isLink();
-					changed |= newIsSymbolicLink != this.isSymbolicLink();
-					setFlag(SYM_LINK, newIsSymbolicLink);
-
-					boolean newIsCheckedOut = newState.isCheckedOut();
-					if (!newIsSymbolicLink) {
-						// for symlinks the checkout state is calculated
-						// later
-						changed |= newIsCheckedOut != this.isCheckedOut();
-						setFlag(CHECKED_OUT, newIsCheckedOut);
-					}
-
-					boolean newIsSnapShot = newState.isInSnapShotView();
-					changed |= newIsSnapShot != this.isSnapShot();
-					setFlag(SNAPSHOT, newIsSnapShot);
-
-					boolean newIsHijacked = newState.isHijacked();
-					changed |= newIsHijacked != this.isHijacked();
-					setFlag(HIJACKED, newIsHijacked);
-
-					boolean newIsEdited = false;
-					// if (newHasRemote && !newIsCheckedOut) {
-					// ClearcasePlugin.getEngine().findCheckouts(
-					// new String[] { osPath }, ClearCase.DEFAULT,
-					// null);
-					// }
-					changed |= newIsEdited != this.isEdited();
-					setFlag(CHECKED_OUT_OTHER_VIEW, newIsEdited);
-
-					String newVersion = newState.version;
-					changed |= newVersion == null ? null != this.version
-							: !newVersion.equals(this.version);
-					this.version = newVersion;
-
-					if (newIsSymbolicLink) {
-						changed |= updateSymlinkState(newState.linkTarget);
-					} else if (null != this.symbolicLinkTarget) {
-						this.symbolicLinkTarget = null;
-						setFlag(SYM_LINK_TARGET_VALID, false);
-						changed = true;
-					}
-
-				}// End newState !=null
-
-			} else {
-				// resource is ignored by Team plug-ins
-				flags = 0;
-				version = null;
-				symbolicLinkTarget = null;
-				changed = false;
-				if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-					ClearcasePlugin.trace(TRACE_ID,
-							"resource must be ignored: " //$NON-NLS-1$
-									+ resource);
-				}
-			}
-
-		} else {
-			// resource does not exists
-			flags = 0;
-			version = null;
-			symbolicLinkTarget = null;
-			changed = true;
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
-						+ resource);
-			}
-		}
-
-		updateTimeStamp = resource.getModificationStamp();
-
-		// fire state change (lock must be released prior)
-		if (changed) {
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "updated " + this); //$NON-NLS-1$
-			}
-			StateCacheFactory.getInstance().fireStateChanged(this.resource);
-		} else {
-			// no changes
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-
 	}
 
 	/**

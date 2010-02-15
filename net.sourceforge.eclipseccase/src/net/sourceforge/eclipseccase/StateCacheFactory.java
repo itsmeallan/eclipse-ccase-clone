@@ -8,7 +8,6 @@
  * 		Matthew Conway - initial API and implementation 
  * 		IBM Corporation - concepts and ideas from Eclipse 
  *      Gunnar Wagenknecht - new features, enhancements and bug fixes
- *      Tobias Sodergren - added quick refresh
  ******************************************************************************/
 package net.sourceforge.eclipseccase;
 
@@ -251,25 +250,6 @@ public class StateCacheFactory implements ISaveParticipant,
 			cacheMap.put(resource, cache);
 		}
 		return cache;
-	}
-
-	/**
-	 * Gets the state cache for the specified resource.
-	 * 
-	 * This method updates the cache status using a
-	 * {@link ClearcaseElementStatusCollector} instance.
-	 * 
-	 * @param resource
-	 *            The resource from which to get a {@link StateCache} instance.
-	 * @param statusCollector
-	 *            The status collector with ClearCase status.
-	 * @return A {@link StateCache} instance.
-	 */
-	public StateCache getUsingStatusCollector(IResource resource,
-			ClearcaseElementStatusCollector statusCollector) {
-		StateCache stateCache = getWithNoUpdate(resource);
-		stateCache.updateAsync(false, statusCollector);
-		return stateCache;
 	}
 
 	/**
@@ -661,13 +641,8 @@ public class StateCacheFactory implements ISaveParticipant,
 			}
 		} catch (CoreException e) {
 			ClearcasePlugin.log(IStatus.ERROR,
-					"Unable to do a quick update of resource", e); //$NON-NLS-1$
+					"Unable to do a update of resource", e); //$NON-NLS-1$
 		}
-	}
-
-	public ClearcaseElementStatusCollector getStatusCollector(
-			IResource[] resources) {
-		return new ClearcaseElementStatusCollector(resources);
 	}
 
 	/**
@@ -689,12 +664,8 @@ public class StateCacheFactory implements ISaveParticipant,
 	 *            to refresh.
 	 */
 	void refreshStateAsyncHighPriority(IResource[] resources,
-			IProgressMonitor monitor, boolean quickRefresh) {
-		if (quickRefresh) {
-			quickRefreshState(resources, StateCacheJob.PRIORITY_HIGH, monitor);
-		} else {
-			refreshState(resources, StateCacheJob.PRIORITY_HIGH);
-		}
+			IProgressMonitor monitor) {
+		refreshState(resources, StateCacheJob.PRIORITY_HIGH);
 	}
 
 	/**
@@ -711,19 +682,6 @@ public class StateCacheFactory implements ISaveParticipant,
 			jobs[i] = new StateCacheJob(cache);
 		}
 		getJobQueue().schedule(jobs);
-	}
-
-	private void quickRefreshState(IResource[] resources, int priority,
-			IProgressMonitor monitor) {
-		ClearcaseElementStatusCollector statusCollector = getStatusCollector(resources);
-		statusCollector.collectRefreshStatus(monitor);
-		RecursiveStateCacheJob[] jobs = new RecursiveStateCacheJob[resources.length];
-		for (int i = 0; i < resources.length; i++) {
-			jobs[i] = new RecursiveStateCacheJob(resources[i], statusCollector,
-					priority);
-		}
-		getJobQueue().schedule(jobs);
-
 	}
 
 	/**

@@ -113,11 +113,11 @@ public class ClearDlgHelper {
                     .getClearcaseProvider(resource);
 
             // refresh resource
-            provider.refresh(resource, false);
+            provider.refresh(resource);
 
             // also invalidate state of parent container
             // (some operations my checkout parent)
-            provider.refresh(resource.getParent(), false);
+            provider.refresh(resource.getParent());
         }
     }
 
