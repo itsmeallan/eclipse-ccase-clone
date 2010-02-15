@@ -37,7 +37,7 @@ class StateCacheJobQueue extends Job {
             .getString("StateCacheJobQueue.jobLabel"); //$NON-NLS-1$
 
     /** the default delay */
-    private static final int DEFAULT_DELAY = 100;
+    private static final int DEFAULT_DELAY = 30;
 
     /** the priority buffer */
     private PriorityBuffer priorityQueue;
@@ -86,17 +86,25 @@ class StateCacheJobQueue extends Job {
 			if (systemBundle.getState() == Bundle.STOPPING)
 				return Status.OK_STATUS;
 		}
+        IStatus ret;
         try {
             executePendingJobs(monitor);
             // if the update was successful then it should not be recorded as
             // interrupted
             interrupted = false;
-            return Status.OK_STATUS;
+            ret =  Status.OK_STATUS;
         } catch (OperationCanceledException e) {
-            return Status.CANCEL_STATUS;
+            ret =  Status.CANCEL_STATUS;
         } catch (CoreException sig) {
-            return sig.getStatus();
+            ret =  sig.getStatus();
         }
+        // if we have items left in the queue, reschedule a run
+        synchronized (priorityQueue) {
+            if (!priorityQueue.isEmpty())
+            	scheduleQueueRun();
+        }
+        return ret;
+
     }
 
     /**

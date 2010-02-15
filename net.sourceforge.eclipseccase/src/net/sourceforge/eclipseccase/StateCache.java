@@ -90,15 +90,6 @@ public class StateCache implements Serializable {
 	}
 
 	/**
-	 * Schedules a state update with a high priority.
-	 * 
-	 * @param invalidate
-	 */
-	public void updateAsyncHighPriority(boolean invalidate) {
-		updateAsync(invalidate, true);
-	}
-
-	/**
 	 * Schedules a state update.
 	 * 
 	 * @param invalidate
@@ -114,9 +105,9 @@ public class StateCache implements Serializable {
 				synchronized (this) {
 					updateTimeStamp = IResource.NULL_STAMP;
 				}
-				ClearcasePlugin.trace(TRACE_ID, "invalidating " + this); //$NON-NLS-1$
+				ClearcasePlugin.trace(TRACE_ID, "invalidating " + this.getPath()); //$NON-NLS-1$
 				// fireing state change (the update was forced)
-				StateCacheFactory.getInstance().fireStateChanged(this.resource);
+				//StateCacheFactory.getInstance().fireStateChanged(this.resource);
 			}
 		}
 		StateCacheJob job;

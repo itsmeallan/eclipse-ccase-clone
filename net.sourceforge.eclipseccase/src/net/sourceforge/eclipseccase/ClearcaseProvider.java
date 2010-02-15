@@ -188,8 +188,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 	 * @throws CoreException
 	 */
 	public void refreshRecursive(IResource resourceToRefresh,
-			IProgressMonitor monitor)
-			throws CoreException {
+			IProgressMonitor monitor) throws CoreException {
 
 		try {
 			monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
@@ -223,12 +222,12 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 	/**
 	 * Invalidates the state of the specified resource and only of the specified
-	 * resource
+	 * resource, not recursive
 	 * 
-	 * @param resources
+	 * @param resource
 	 */
-	public void refresh(IResource resources) {
-		StateCacheFactory.getInstance().get(resources).updateAsync(false);
+	public void refresh(IResource resource) {
+		StateCacheFactory.getInstance().get(resource).updateAsync(true);
 	}
 
 	/*
@@ -670,7 +669,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 						10);
 				// probably overkill/expensive to do it here - should do it
 				// on a
-				// case by case basis for eac method that actually changes
+				// case by case basis for each method that actually changes
 				// state
 				StateCache cache = StateCacheFactory.getInstance()
 						.get(resource);
