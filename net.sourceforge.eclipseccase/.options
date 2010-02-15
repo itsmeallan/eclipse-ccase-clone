@@ -4,3 +4,4 @@ net.sourceforge.eclipseccase/debug/plugin = false
 net.sourceforge.eclipseccase/debug/provider = false
 net.sourceforge.eclipseccase/debug/provider/ignoredResources = false
 net.sourceforge.eclipseccase/debug/stateCache = false
+net.sourceforge.eclipseccase/debug/subprocess = false
