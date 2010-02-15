@@ -311,7 +311,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	public boolean isUnknownState(IResource resource) {
-		return StateCacheFactory.getInstance().isUnitialized(resource);
+		return StateCacheFactory.getInstance().isUninitialized(resource);
 	}
 
 	/**

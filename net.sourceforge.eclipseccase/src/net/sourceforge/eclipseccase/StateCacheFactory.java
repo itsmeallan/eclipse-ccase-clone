@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
@@ -66,10 +67,10 @@ public class StateCacheFactory implements ISaveParticipant,
 	private static StateCacheFactory instance = new StateCacheFactory();
 
 	/** maps resources to caches */
-	HashMap cacheMap = new HashMap();
+	Map<IResource, StateCache> cacheMap = new HashMap<IResource, StateCache>();
 
 	/** the listeners */
-	private List listeners = new ArrayList();
+	private List<IResourceStateListener> listeners = new ArrayList<IResourceStateListener>();
 
 	/**
 	 * Hidden constructor.
@@ -147,7 +148,7 @@ public class StateCacheFactory implements ISaveParticipant,
 
 					// fire all pending changes
 					synchronized (queuedEvents) {
-						events = (IResource[]) queuedEvents
+						events = queuedEvents
 								.toArray(new IResource[queuedEvents.size()]);
 						queuedEvents.clear();
 					}
@@ -168,7 +169,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	}
 
 	/** a list of events queued during long running operations */
-	private LinkedList queuedEvents = new LinkedList();
+	private LinkedList<IResource> queuedEvents = new LinkedList<IResource>();
 
 	/** the operation counter */
 	private int operationCounter = 0;
@@ -210,12 +211,9 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @param resource
 	 * @return <code>true</code> if uninitialized
 	 */
-	public boolean isUnitialized(IResource resource) {
-		if (!cacheMap.containsKey(resource))
-			return true;
-
-		StateCache cache = (StateCache) cacheMap.get(resource);
-		return null != cache && cache.isUninitialized();
+	public boolean isUninitialized(IResource resource) {
+		StateCache cache = cacheMap.get(resource);
+		return null == cache || cache.isUninitialized();
 	}
 
 	/**
@@ -225,7 +223,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @return the state cache for the specified resource
 	 */
 	public synchronized StateCache get(IResource resource) {
-		StateCache cache = (StateCache) cacheMap.get(resource);
+		StateCache cache = cacheMap.get(resource);
 		if (cache == null) {
 			cache = new StateCache(resource);
 			cacheMap.put(resource, cache);
@@ -244,7 +242,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @return A {@link StateCache} instance.
 	 */
 	public StateCache getWithNoUpdate(IResource resource) {
-		StateCache cache = (StateCache) cacheMap.get(resource);
+		StateCache cache = cacheMap.get(resource);
 		if (cache == null) {
 			cache = new StateCache(resource);
 			cacheMap.put(resource, cache);
@@ -416,12 +414,12 @@ public class StateCacheFactory implements ISaveParticipant,
 
 		// create XML writer
 		XMLWriter writer = new XMLWriter(os);
-		Set knownResource = cacheMap.keySet();
+		Set<IResource> knownResource = cacheMap.keySet();
 
 		// get and sort resources
-		IResource[] resources = (IResource[]) knownResource
+		IResource[] resources = knownResource
 				.toArray(new IResource[knownResource.size()]);
-		Arrays.sort(resources, new Comparator() {
+		Arrays.sort(resources, new Comparator<Object>() {
 
 			public int compare(Object o1, Object o2) {
 				return ((IResource) o1).getFullPath().toString().compareTo(
@@ -430,7 +428,7 @@ public class StateCacheFactory implements ISaveParticipant,
 		});
 
 		// start root tag
-		HashMap attributes = new HashMap(1);
+		HashMap<String, String> attributes = new HashMap<String, String>(1);
 		attributes.put(ATTR_VERSION, STATE_CACHE_VERSION);
 		writer.startTag(TAG_STATES, attributes, true);
 
@@ -439,11 +437,11 @@ public class StateCacheFactory implements ISaveParticipant,
 			IResource resource = resources[i];
 			// only persist state of initialized, existing and non derived
 			// resources
-			if (isUnitialized(resource) || !resource.exists()
+			if (isUninitialized(resource) || !resource.exists()
 					|| resource.isDerived())
 				continue;
 			StateCache cache = get(resource);
-			attributes = new HashMap(5);
+			attributes = new HashMap<String, String>(5);
 			attributes.put(ATTR_PATH, resource.getFullPath().toString());
 			attributes.put(ATTR_STATE, Integer.toString(cache.flags));
 			attributes.put(ATTR_TIME_STAMP, Long
@@ -600,7 +598,7 @@ public class StateCacheFactory implements ISaveParticipant,
 						.getAffectedChildren();
 
 				// determine resources to refresh
-				final List toRefresh = new ArrayList();
+				final List<IResource> toRefresh = new ArrayList<IResource>();
 
 				for (int i = 0; i < projectDeltas.length; i++) {
 					IResourceDelta projectDelta = projectDeltas[i];
@@ -635,8 +633,8 @@ public class StateCacheFactory implements ISaveParticipant,
 				}
 
 				if (!toRefresh.isEmpty()) {
-					refreshStateAsync((IResource[]) toRefresh
-							.toArray(new IResource[toRefresh.size()]));
+					refreshStateAsync(toRefresh.toArray(new IResource[toRefresh
+							.size()]));
 				}
 			}
 		} catch (CoreException e) {
@@ -714,7 +712,7 @@ public class StateCacheFactory implements ISaveParticipant,
 			// .toDebugString());
 
 			// only refresh if current state is not checked out
-			return !getInstance().isUnitialized(resource)
+			return !getInstance().isUninitialized(resource)
 					&& !getInstance().get(resource).isCheckedOut();
 		}
 
