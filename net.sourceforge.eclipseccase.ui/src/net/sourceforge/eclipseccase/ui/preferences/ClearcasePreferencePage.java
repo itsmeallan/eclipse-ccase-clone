@@ -13,7 +13,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -79,38 +78,37 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	protected void createFieldEditors() {
 
 		// general settings
-		addField(new  StringFieldEditor(CLEARCASE_PRIMARY_GROUP, PreferenceMessages.getString("Preferences.General.ClearCasePrimaryGroup"), //$NON-NLS-1$
+		addField(new StringFieldEditor(CLEARCASE_PRIMARY_GROUP, PreferenceMessages.getString("Preferences.General.ClearCasePrimaryGroup"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
-		
-		
+
 		addField(new BooleanFieldEditor(WIP_REFRESH_CHILDREN_PREVENT, PreferenceMessages.getString("Preferences.General.RefreshChildren"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
-		
-		
-		addField(new BooleanFieldEditor(IGNORE_NEW, PreferenceMessages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL)));
+
+		//		addField(new BooleanFieldEditor(IGNORE_NEW, PreferenceMessages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$
+		// getFieldEditorParent(GENERAL)));
 
 		addField(new BooleanFieldEditor(HIDE_REFRESH_STATE_ACTIVITY, PreferenceMessages.getString("Preferences.General.HideRefreshStateActivity"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
-		addField(new BooleanFieldEditor(RECURSIVE, PreferenceMessages.getString("Preferences.General.Recursive"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL)));
+		//		addField(new BooleanFieldEditor(RECURSIVE, PreferenceMessages.getString("Preferences.General.Recursive"), //$NON-NLS-1$
+		// getFieldEditorParent(GENERAL)));
 
-		addField(new BooleanFieldEditor(PRESERVE_TIMES, PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL)));
+		//		addField(new BooleanFieldEditor(PRESERVE_TIMES, PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
+		// getFieldEditorParent(GENERAL)));
 
-		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL)));
+		//		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
+		// getFieldEditorParent(GENERAL)));
 
 		// use cleartool option only available on windows
 		BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL, PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL));
 		// TODO Achim: misused for testing
-//		useCleartool.setEnabled(ClearcasePlugin.isWindows(), getFieldEditorParent(GENERAL));
+		// useCleartool.setEnabled(ClearcasePlugin.isWindows(),
+		// getFieldEditorParent(GENERAL));
 		addField(useCleartool);
 
-		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
-				ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));
+		//		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
+		// ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));
 
 		addField(new RadioGroupFieldEditor(JOB_QUEUE_PRIORITY, PreferenceMessages.getString("Preferences.General.JobQueuePriority"), 1, //$NON-NLS-1$
 				PRIORITIES, getFieldEditorParent(GENERAL), true));
@@ -135,16 +133,16 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new RadioGroupFieldEditor(CHECKOUT_AUTO, PreferenceMessages.getString("Preferences.Source.CheckoutAuto"), //$NON-NLS-1$
 				3, ALWAYS_NEVER_PROMPT, getFieldEditorParent(SOURCE_MANAGEMENT), true));
 
-		addField(new BooleanFieldEditor(AUTO_PARENT_CHECKIN_AFTER_MOVE,PreferenceMessages.getString("Preferences.Source.AutoParentCheckinAfterMove"),getFieldEditorParent(SOURCE_MANAGEMENT)));
-		
+		addField(new BooleanFieldEditor(AUTO_PARENT_CHECKIN_AFTER_MOVE, PreferenceMessages.getString("Preferences.Source.AutoParentCheckinAfterMove"), getFieldEditorParent(SOURCE_MANAGEMENT)));
+
 		addField(new BooleanFieldEditor(CHECKIN_IDENTICAL, PreferenceMessages.getString("Preferences.Source.CheckinIdentical"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new BooleanFieldEditor(KEEP_CHANGES_AFTER_UNCHECKOUT, PreferenceMessages.getString("Preferences.Source.KeepChangesAfterUncheckout"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
-		
-		addField(new BooleanFieldEditor(ADD_WITH_CHECKIN, PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
-				getFieldEditorParent(SOURCE_MANAGEMENT)));
+
+		//		addField(new BooleanFieldEditor(ADD_WITH_CHECKIN, PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
+		// getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
@@ -169,11 +167,11 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(COMMENT_CHECKOUT_NEVER_ON_AUTO, PreferenceMessages.getString("Preferences.Comments.CommentCheckoutNeverOnAuto"), //$NON-NLS-1$ 
 				getFieldEditorParent(COMMENTS)));
 
-		addField(new BooleanFieldEditor(COMMENT_ADD_NEVER_ON_AUTO, PreferenceMessages.getString("Preferences.Comments.CommentAddNeverOnAuto"), //$NON-NLS-1$ 
-				getFieldEditorParent(COMMENTS)));
+		//		addField(new BooleanFieldEditor(COMMENT_ADD_NEVER_ON_AUTO, PreferenceMessages.getString("Preferences.Comments.CommentAddNeverOnAuto"), //$NON-NLS-1$ 
+		// getFieldEditorParent(COMMENTS)));
 
-		addField(new BooleanFieldEditor(COMMENT_ESCAPE, PreferenceMessages.getString("Preferences.Comments.CommentEscapeXml"), //$NON-NLS-1$
-				getFieldEditorParent(COMMENTS)));
+		//		addField(new BooleanFieldEditor(COMMENT_ESCAPE, PreferenceMessages.getString("Preferences.Comments.CommentEscapeXml"), //$NON-NLS-1$
+		// getFieldEditorParent(COMMENTS)));
 	}
 
 	/*
