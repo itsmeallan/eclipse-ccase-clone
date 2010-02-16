@@ -223,14 +223,10 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @return the state cache for the specified resource
 	 */
 	public synchronized StateCache get(IResource resource) {
-		StateCache cache = cacheMap.get(resource);
-		if (cache == null) {
-			cache = new StateCache(resource);
-			cacheMap.put(resource, cache);
-			// schedule update if necessary
-			if (isInitialized() && cache.isUninitialized())
-				cache.updateAsync(false);
-		}
+		StateCache cache = getWithNoUpdate(resource);
+		// schedule update if necessary
+		if (isInitialized() && cache.isUninitialized())
+			cache.updateAsync(false);
 		return cache;
 	}
 

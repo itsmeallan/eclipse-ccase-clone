@@ -14,6 +14,7 @@ package net.sourceforge.eclipseccase;
 import java.io.IOException;
 import java.io.Serializable;
 
+import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 
 import org.eclipse.core.resources.IResource;
@@ -105,9 +106,10 @@ public class StateCache implements Serializable {
 				synchronized (this) {
 					updateTimeStamp = IResource.NULL_STAMP;
 				}
-				ClearcasePlugin.trace(TRACE_ID, "invalidating " + this.getPath()); //$NON-NLS-1$
+				ClearcasePlugin.trace(TRACE_ID,
+						"invalidating " + this.getPath()); //$NON-NLS-1$
 				// fireing state change (the update was forced)
-				//StateCacheFactory.getInstance().fireStateChanged(this.resource);
+				// StateCacheFactory.getInstance().fireStateChanged(this.resource);
 			}
 		}
 		StateCacheJob job;
@@ -169,9 +171,34 @@ public class StateCache implements Serializable {
 				// check the global ignores from Team (includes derived
 				// resources)
 				if (!Team.isIgnoredHint(resource)) {
+					ClearCaseElementState newState = null;
 
-					ClearCaseElementState newState = ClearcasePlugin
-							.getEngine().getElementState(osPath);
+					if (ClearcasePlugin.isRefreshChildrenPrevented()) {
+						IResource parent = resource.getParent();
+						StateCache parentCache = StateCacheFactory
+								.getInstance().getWithNoUpdate(parent);
+						if (!parentCache.isUninitialized()
+								&& !parentCache.hasRemote()) {
+							// parent is no CC element, so don't call CC for
+							// state
+							newState = new ClearCaseElementState(osPath,
+									ClearCase.VIEW_PRIVATE);
+						}
+						if (parentCache.isUninitialized()) {
+							// schedule a high priority refresh, so that further
+							// elements of same parent get a real result from
+							// cache
+							// TODO check, does this really work?
+							StateCacheFactory.getInstance().refreshState(
+									new IResource[] { parent },
+									StateCacheJob.PRIORITY_HIGH);
+						}
+					}
+
+					if (null == newState) {
+						newState = ClearcasePlugin.getEngine().getElementState(
+								osPath);
+					}
 
 					// Fix for Bug 2509230.
 					boolean isInsideSnapshotView = ClearcaseProvider
