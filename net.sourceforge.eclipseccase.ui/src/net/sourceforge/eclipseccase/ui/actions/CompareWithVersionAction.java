@@ -1,10 +1,5 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-
-import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
-import net.sourceforge.clearcase.commandline.CommandLauncher;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -19,10 +14,10 @@ import org.eclipse.ui.IActionDelegate;
 public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 
 	private IResource element = null;
+
 	private String versionA = null;
+
 	private String versionB = null;
-
-
 
 	public void setElement(IResource element) {
 		this.element = element;
@@ -39,14 +34,10 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isEnabled()  
-	{
-		if (element != null)
-		{
+	public boolean isEnabled() {
+		if (element != null) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(element);
-			if (provider != null && !provider.isUnknownState(element) && 
-					!provider.isIgnored(element) && provider.hasRemote(element))
-			{
+			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.hasRemote(element)) {
 				return true;
 			}
 		}
@@ -63,23 +54,19 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					String path = element.getLocation().toOSString();
-					
+
 					String v1 = path;
-					if(versionA != null)
-					{
+					if (versionA != null) {
 						v1 = v1 + "@@" + versionA;
 					}
 
 					String v2 = path;
-					if(versionB != null)
-					{
+					if (versionB != null) {
 						v2 = v2 + "@@" + versionB;
 					}
+					ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(element);
+					p.compareWithVersion(v1, v2);
 
-                	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-					if (ClearcasePlugin.isUseCleartool()) {
-						new CommandLauncher().execute(new CleartoolCommandLine("diff").addOption("-graphical").addElement(v1).addElement(v2).create(), null, null, opListener);
-					} 
 				} catch (Exception ex) {
 
 				} finally {
@@ -87,7 +74,7 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 				}
 			}
 		};
-		executeInBackground(runnable, "Compare With History");
+		executeInBackground(runnable, "Compare With Another version");
 
 	}
 

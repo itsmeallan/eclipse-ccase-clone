@@ -341,6 +341,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 		ClearcasePlugin.getEngine().compareWithPredecessor(element);
 
 	}
+	
+	public void compareWithVersion(String element1, String element2){
+		ClearcasePlugin.getEngine().compareWithVersion(element1, element2);
+	}
 
 	public static String getViewName(IResource resource) {
 		// assume that a complete project is inside one view
