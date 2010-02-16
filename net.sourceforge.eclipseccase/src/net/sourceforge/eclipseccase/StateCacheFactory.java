@@ -696,8 +696,7 @@ public class StateCacheFactory implements ISaveParticipant,
 
 		int interestingChangeFlags = IResourceDelta.CONTENT
 				| IResourceDelta.SYNC | IResourceDelta.REPLACED
-				| IResourceDelta.DESCRIPTION | IResourceDelta.OPEN
-				| IResourceDelta.TYPE;
+				| IResourceDelta.OPEN | IResourceDelta.TYPE;
 
 		if (delta.getKind() == IResourceDelta.ADDED
 				|| (delta.getKind() == IResourceDelta.CHANGED && 0 != (delta
@@ -707,9 +706,16 @@ public class StateCacheFactory implements ISaveParticipant,
 			// .println(((org.eclipse.core.internal.events.ResourceDelta) delta)
 			// .toDebugString());
 
-			// only refresh if current state is not checked out
-			return !getInstance().isUninitialized(resource)
-					&& !getInstance().get(resource).isCheckedOut();
+			// (old: only refresh if current state is not checked out)
+			// return !getInstance().isUninitialized(resource)
+			// && !getInstance().get(resource).isCheckedOut();
+			// NO: this prevents refresh if resource was checked in
+			// outside Eclipse.
+
+			// Returning true causes a state update whenever
+			// the file is edited and saved inside Eclipse, too. That's not
+			// nice, but acceptable
+			return true;
 		}
 
 		// System.out.println("ignored: " + delta);
