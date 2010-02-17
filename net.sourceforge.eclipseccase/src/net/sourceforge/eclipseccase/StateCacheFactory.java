@@ -788,7 +788,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @param resource
 	 */
 	void ensureInitialized(IResource resource) {
-		StateCache cache = get(resource);
+		StateCache cache = getWithNoUpdate(resource);
 		if (cache.isUninitialized())
 			cache.doUpdate();
 	}

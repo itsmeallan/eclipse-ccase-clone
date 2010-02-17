@@ -347,6 +347,9 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	public static String getViewName(IResource resource) {
+		if (resource == null || resource.getProject() == null) {
+			return "";
+		}
 		// assume that a complete project is inside one view
 		String path = resource.getProject().getLocation().toOSString();
 		String res = viewLookupTable.get(path);

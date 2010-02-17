@@ -18,6 +18,7 @@ import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -164,6 +165,9 @@ public class StateCache implements Serializable {
 
 			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
 				ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$//$NON-NLS-2$
+				ClearcasePlugin.trace("[StateCache] update in thread: "
+						+ Thread.currentThread().getName()
+						+ " ID=" + Thread.currentThread().getId()); //$NON-NLS-1$
 			}
 
 			if (resource.isAccessible()) {
@@ -175,23 +179,28 @@ public class StateCache implements Serializable {
 
 					if (ClearcasePlugin.isRefreshChildrenPrevented()) {
 						IResource parent = resource.getParent();
-						StateCache parentCache = StateCacheFactory
-								.getInstance().getWithNoUpdate(parent);
-						if (!parentCache.isUninitialized()
-								&& !parentCache.hasRemote()) {
-							// parent is no CC element, so don't call CC for
-							// state
-							newState = new ClearCaseElementState(osPath,
-									ClearCase.VIEW_PRIVATE);
-						}
-						if (parentCache.isUninitialized()) {
-							// schedule a high priority refresh, so that further
-							// elements of same parent get a real result from
-							// cache
-							// TODO check, does this really work?
-							StateCacheFactory.getInstance().refreshState(
-									new IResource[] { parent },
-									StateCacheJob.PRIORITY_HIGH);
+						if (null != parent
+								&& !(parent instanceof IWorkspaceRoot)) {
+							StateCache parentCache = StateCacheFactory
+									.getInstance().getWithNoUpdate(parent);
+							if (!parentCache.isUninitialized()
+									&& !parentCache.hasRemote()) {
+								// parent is no CC element, so don't call CC for
+								// state
+								newState = new ClearCaseElementState(osPath,
+										ClearCase.VIEW_PRIVATE);
+							}
+							if (parentCache.isUninitialized()) {
+								// schedule a high priority refresh, so that
+								// further
+								// elements of same parent get a real result
+								// from
+								// cache
+								// TODO check, does this really work?
+								StateCacheFactory.getInstance().refreshState(
+										new IResource[] { parent },
+										StateCacheJob.PRIORITY_HIGH);
+							}
 						}
 					}
 

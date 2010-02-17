@@ -1,5 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sourceforge.eclipseccase.StateCache;
+
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
+
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -27,19 +35,15 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 	 * (non-Javadoc) Method declared on IDropActionDelegate
 	 */
 	public void execute(IAction action) {
-		final StringBuffer message = new StringBuffer();
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IProject[] projects = getSelectedProjects();
-					monitor.beginTask("Associating with ClearCase", 10 * projects.length);
-
-					if (projects.length == 1)
-						message.append("Associated project ");
-					else
-						message.append("Associated projects:\n");
+					// each project gets 200 ticks
+					monitor.setTaskName("Associating projects with ClearCase");
+					monitor.beginTask("", 200 * projects.length);
 
 					StateCacheFactory.getInstance().operationBegin();
 
@@ -49,17 +53,30 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 						StateCacheFactory.getInstance().remove(project);
 						StateCacheFactory.getInstance().fireStateChanged(project);
 
-						if (projects.length > 1) {
-							message.append("- ");
+						// first, get list of resources
+						final List<IResource> resources = new ArrayList<IResource>();
+						try {
+							project.accept(new IResourceVisitor() {
+								public boolean visit(IResource resource) {
+									resources.add(resource);
+									return true;
+								}
+							});
+						} catch (CoreException e) {
 						}
-						message.append(project.getName());
-						if (projects.length > 1) {
-							message.append("\n");
+						// now we know how much to do, create a
+						// SubProgressMonitor
+						SubProgressMonitor submonitor = new SubProgressMonitor(monitor, 200);
+						monitor.subTask("Scanning project " + project.getName());
+						// 10 for activeDecorator.refresh()
+						submonitor.beginTask(project.getName(), resources.size() + 10);
+						for (IResource res : resources) {
+							ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(res);
+							if (p != null) {
+								p.ensureInitialized(res);
+							}
+							submonitor.worked(1);
 						}
-						monitor.worked(5);
-
-						// TODO: Fix 2803605 No state icons before workspace
-						// restart.
 
 						// To get correct state for project.
 						// refresh the decorator
@@ -70,8 +87,8 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 								activeDecorator.refresh(project);
 							}
 						}
+						submonitor.done();
 					}
-					message.append(" with ClearCase");
 				} finally {
 					StateCacheFactory.getInstance().operationEnd();
 					monitor.done();
@@ -80,8 +97,6 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 		};
 
 		executeInForeground(runnable, PROGRESS_DIALOG, "Associating with ClearCase");
-
-		MessageDialog.openInformation(getShell(), "Clearcase Plugin", message.toString());
 	}
 
 	public boolean isEnabled() {
