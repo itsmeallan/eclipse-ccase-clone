@@ -346,6 +346,12 @@ public class ClearcasePlugin extends Plugin {
 						IClearcasePreferenceConstants.CHECKOUT_AUTO));
 	}
 
+	public static void setCheckoutAutoAlways() {
+		getInstance().getPluginPreferences().setValue(
+				IClearcasePreferenceConstants.CHECKOUT_AUTO,
+				IClearcasePreferenceConstants.ALWAYS);
+	}
+
 	/**
 	 * Returns the preference value for <code>CHECKOUT_AUTO</code>.
 	 * 
@@ -355,6 +361,12 @@ public class ClearcasePlugin extends Plugin {
 		return IClearcasePreferenceConstants.NEVER.equals(getInstance()
 				.getPluginPreferences().getString(
 						IClearcasePreferenceConstants.CHECKOUT_AUTO));
+	}
+
+	public static void setCheckoutAutoNever() {
+		getInstance().getPluginPreferences().setValue(
+				IClearcasePreferenceConstants.CHECKOUT_AUTO,
+				IClearcasePreferenceConstants.NEVER);
 	}
 
 	/**

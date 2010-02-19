@@ -22,7 +22,9 @@ import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.PlatformUI;
@@ -141,8 +143,13 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
-			/* Yes=0 No=1 */
-			if (returncode != 0)
+			if (checkoutQuestion.isRemember()) {
+				if (returncode == IDialogConstants.YES_ID)
+					ClearcasePlugin.setCheckoutAutoAlways();
+				else if (returncode == IDialogConstants.NO_ID)
+					ClearcasePlugin.setCheckoutAutoNever();
+			}
+			if (returncode != IDialogConstants.YES_ID)
 				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
 						"Checkout operation failed, operation was cancelled by user.");
 		}
@@ -187,19 +194,29 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	private class CheckoutQuestionRunnable implements Runnable {
 
 		private int dialogResult;
+		private boolean remember;
 
 		public void run() {
-			MessageDialog checkoutQuestion = new MessageDialog(
+			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(
 					getDisplay().getActiveShell(),
 					"ClearCase Checkout",
 					null,
 					"File must be checked out to edit.\n\nProceed with checkout?",
-					MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
-			dialogResult = checkoutQuestion.open();
+					MessageDialog.QUESTION, new String[] {
+							IDialogConstants.YES_LABEL,
+							IDialogConstants.NO_LABEL }, 0,
+					"Remember my decision", false);
+			checkoutQuestion.open();
+			dialogResult = checkoutQuestion.getReturnCode();
+			remember = checkoutQuestion.getToggleState();
 		}
 
 		public int getResult() {
 			return dialogResult;
+		}
+
+		public boolean isRemember() {
+			return remember;
 		}
 
 	}
