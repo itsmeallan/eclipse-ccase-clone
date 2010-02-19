@@ -93,7 +93,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 				readOnlys.add(iFile);
 			}
 		}
-		return (IFile[]) readOnlys.toArray(new IFile[readOnlys.size()]);
+		return readOnlys.toArray(new IFile[readOnlys.size()]);
 	}
 
 	/**
@@ -141,14 +141,10 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
-			/* Yes=0 No=1 Cancel=2 */
-			if (returncode == 1)
+			/* Yes=0 No=1 */
+			if (returncode != 0)
 				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
 						"Checkout operation failed, operation was cancelled by user.");
-			else if (returncode == 2)
-				// Cancel option.
-				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
-						"Checkout operation failed, operation was cancelled by user");
 		}
 
 		ClearcaseProvider provider = getProvider(files);
@@ -193,10 +189,12 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 		private int dialogResult;
 
 		public void run() {
-			MessageDialog checkoutQuestion = new MessageDialog(getDisplay()
-					.getActiveShell(), "Checkout", null,
-					"Do you really want to checkout?", MessageDialog.QUESTION,
-					new String[] { "Yes", "No", "Cancel" }, 0);
+			MessageDialog checkoutQuestion = new MessageDialog(
+					getDisplay().getActiveShell(),
+					"ClearCase Checkout",
+					null,
+					"File must be checked out to edit.\n\nProceed with checkout?",
+					MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 			dialogResult = checkoutQuestion.open();
 		}
 
