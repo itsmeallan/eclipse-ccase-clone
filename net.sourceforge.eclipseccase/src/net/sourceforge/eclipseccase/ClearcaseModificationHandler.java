@@ -86,7 +86,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	protected IFile[] getFilesToCheckout(IFile[] files) {
 
 		// collect files that need to be checked out
-		List readOnlys = new ArrayList();
+		List<IFile> readOnlys = new ArrayList<IFile>();
 		for (int i = 0; i < files.length; i++) {
 			IFile iFile = files[i];
 			if (needsCheckout(iFile)) {
