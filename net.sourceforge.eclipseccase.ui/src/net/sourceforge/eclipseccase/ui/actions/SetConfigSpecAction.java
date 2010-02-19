@@ -1,64 +1,54 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsole;
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory;
-
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-
-import net.sourceforge.eclipseccase.views.ConfigSpecView;
-
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
-
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ui.console.*;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import org.eclipse.core.resources.IResource;
-
-import java.lang.reflect.InvocationTargetException;
 import org.eclipse.jface.action.IAction;
 
 /**
  * @author fbelouin
- *
+ * 
  */
 public class SetConfigSpecAction extends ClearcaseWorkspaceAction {
 	private IResource resource = null;
+
 	private String configSpecTxt = null;
-	
+
 	/**
 	 * {@inheritDoc
 	 */
-	public boolean isEnabled() 
-	{
+	@Override
+	public boolean isEnabled() {
 		boolean bRes = true;
 
-		if (resource != null)
-		{
+		if (resource != null) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource)) {
 				bRes = false;
-		}
-		else
-		{
+			}
+		} else {
 			bRes = false;
 		}
 
 		return bRes;
 
 	}
-	
+
+	@Override
 	public void execute(IAction action) throws InvocationTargetException, InterruptedException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 
 				monitor.done();
-				if(resource != null)
-				{
+				if (resource != null) {
 					try {
 						File f = new File("/tmp/configSpec" + Integer.toString(this.hashCode()) + ".tmp");
 						if (f.exists()) {
@@ -91,7 +81,7 @@ public class SetConfigSpecAction extends ClearcaseWorkspaceAction {
 	public void setResource(IResource resource) {
 		this.resource = resource;
 	}
-	
+
 	public void setConfigSpecTxt(String configSpecTxt) {
 		this.configSpecTxt = configSpecTxt;
 	}

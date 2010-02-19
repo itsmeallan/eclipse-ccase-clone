@@ -1,12 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.clearcase.commandline.ICommandLauncher;
-
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-
 import java.io.IOException;
-import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
-import net.sourceforge.clearcase.commandline.CommandLauncher;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
@@ -24,6 +18,7 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isEnabled() {
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0)
@@ -40,14 +35,16 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
+	@Override
 	public void execute(IAction action) {
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
-					//mike: don't know how this is used.
-					//ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+					// mike: don't know how this is used.
+					// ConsoleOperationListener opListener = new
+					// ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();

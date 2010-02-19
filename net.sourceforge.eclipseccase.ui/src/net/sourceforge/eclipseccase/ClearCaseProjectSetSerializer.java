@@ -25,8 +25,10 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.team.core.IProjectSetSerializer#asReference(org.eclipse.core.resources.IProject[],
-	 *      java.lang.Object, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see
+	 * org.eclipse.team.core.IProjectSetSerializer#asReference(org.eclipse.core
+	 * .resources.IProject[], java.lang.Object,
+	 * org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public String[] asReference(IProject[] providerProjects, Object context, IProgressMonitor monitor) throws TeamException {
 		ArrayList references = new ArrayList(providerProjects.length);
@@ -52,9 +54,10 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.team.core.IProjectSetSerializer#addToWorkspace(java.lang.String[],
-	 *      java.lang.String, java.lang.Object,
-	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 * @see
+	 * org.eclipse.team.core.IProjectSetSerializer#addToWorkspace(java.lang.
+	 * String[], java.lang.String, java.lang.Object,
+	 * org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public IProject[] addToWorkspace(String[] referenceStrings, String filename, Object context, IProgressMonitor monitor) throws TeamException {
 		final int size = referenceStrings.length;
@@ -68,12 +71,13 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			String version = tokenizer.nextToken();
 			if (!VERSION.equals(version)) {
 				// Bail out, this is a newer version
-				if (null != shell)
+				if (null != shell) {
 					shell.getDisplay().syncExec(new Runnable() {
 						public void run() {
 							MessageDialog.openError(shell, "Import Error", "The project set was created with an older version of the Clear Case plugin and can not be used any more.");
 						}
 					});
+				}
 				return null;
 			}
 			projects[i] = ResourcesPlugin.getWorkspace().getRoot().getProject(tokenizer.nextToken());
@@ -119,12 +123,14 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			final String vobRoot = openDirectoryDialog(shell, "ClearCase View Directory", "Please select the folder containing the vobs with the projects to import (your View directory/drive on Windows and the 'vobs' directory on UNIX.");
 			if (null != vobRoot) {
 				WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+					@Override
 					public void execute(IProgressMonitor progressMonitor) throws InterruptedException, InvocationTargetException {
 						progressMonitor.beginTask("", 1000 * num[0]); //$NON-NLS-1$
 						try {
 							for (int i = 0; i < size; i++)
-								if (null != projects[i] && null != vobs[i] && null != vobRelativePathes[i])
+								if (null != projects[i] && null != vobs[i] && null != vobRelativePathes[i]) {
 									createProject(projects[i], vobRoot, vobs[i], vobRelativePathes[i], new SubProgressMonitor(progressMonitor, 1000));
+								}
 						} catch (TeamException e) {
 							throw new InvocationTargetException(e);
 						} finally {
@@ -143,8 +149,9 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 				}
 				List result = new ArrayList();
 				for (int i = 0; i < projects.length; i++)
-					if (projects[i] != null)
+					if (projects[i] != null) {
 						result.add(projects[i]);
+					}
 				return (IProject[]) result.toArray(new IProject[result.size()]);
 			}
 		}
@@ -185,10 +192,11 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			}
 
 			// If it is under the root use the default location
-			if (workspace.getRoot().getLocation().isPrefixOf(newProjectLocation))
+			if (workspace.getRoot().getLocation().isPrefixOf(newProjectLocation)) {
 				description.setLocation(null);
-			else
+			} else {
 				description.setLocation(newProjectLocation);
+			}
 
 			// Bring the project into the workspace
 			project.create(description, new SubProgressMonitor(monitor, 400));
@@ -215,20 +223,23 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 		monitor.beginTask("Scrubbing project", 100);
 		try {
 			if (project != null && project.exists()) {
-				if (!project.isOpen())
+				if (!project.isOpen()) {
 					project.open(new SubProgressMonitor(monitor, 10));
+				}
 
 				monitor.subTask("Scrubbing local project");
 
-				if (RepositoryProvider.getProvider(project) != null)
+				if (RepositoryProvider.getProvider(project) != null) {
 					RepositoryProvider.unmap(project);
+				}
 
 				project.delete(false, true, new SubProgressMonitor(monitor, 80));
 			} else if (project != null) {
 				// Make sure there is no directory in the local file system.
 				File location = new File(project.getParent().getLocation().toFile(), project.getName());
-				if (location.exists())
+				if (location.exists()) {
 					deepDelete(location);
+				}
 			}
 		} catch (TeamException e) {
 			throw e;
@@ -270,8 +281,9 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	private static void deepDelete(File resource) {
 		if (resource.isDirectory()) {
 			File[] fileList = resource.listFiles();
-			for (int i = 0; i < fileList.length; i++)
+			for (int i = 0; i < fileList.length; i++) {
 				deepDelete(fileList[i]);
+			}
 		}
 		resource.delete();
 	}

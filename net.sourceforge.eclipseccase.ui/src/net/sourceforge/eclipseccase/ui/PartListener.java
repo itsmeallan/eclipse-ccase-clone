@@ -44,8 +44,9 @@ class PartListener implements IPartListener2, IWindowListener {
 	private void refreshResource(IResource resource) {
 		if (null != resource) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (null != provider)
+			if (null != provider) {
 				provider.refresh(resource);
+			}
 		}
 	}
 
@@ -64,7 +65,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partActivated(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partActivated(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partActivated(IWorkbenchPartReference ref) {
 		// TODO should we refresh here?
@@ -74,7 +76,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partBroughtToTop(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partBroughtToTop(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partBroughtToTop(IWorkbenchPartReference ref) {
 		// TODO should we refresh here?
@@ -84,7 +87,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partClosed(IWorkbenchPartReference ref) {
 		// nothing
@@ -93,7 +97,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partDeactivated(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partDeactivated(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partDeactivated(IWorkbenchPartReference ref) {
 		// nothing
@@ -102,7 +107,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partOpened(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partOpened(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partOpened(IWorkbenchPartReference ref) {
 		refreshResource(ref.getPart(false));
@@ -111,7 +117,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partHidden(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partHidden(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partHidden(IWorkbenchPartReference ref) {
 		// nothing
@@ -120,7 +127,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partVisible(IWorkbenchPartReference ref) {
 		// TODO should we refresh here?
@@ -130,7 +138,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IPartListener2#partInputChanged(org.eclipse.ui.IWorkbenchPartReference)
+	 * @seeorg.eclipse.ui.IPartListener2#partInputChanged(org.eclipse.ui.
+	 * IWorkbenchPartReference)
 	 */
 	public void partInputChanged(IWorkbenchPartReference ref) {
 		refreshResource(ref.getPart(false));
@@ -139,7 +148,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWindowListener#windowActivated(org.eclipse.ui.IWorkbenchWindow)
+	 * @seeorg.eclipse.ui.IWindowListener#windowActivated(org.eclipse.ui.
+	 * IWorkbenchWindow)
 	 */
 	public void windowActivated(IWorkbenchWindow window) {
 		window.getPartService().addPartListener(this);
@@ -148,7 +158,8 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWindowListener#windowDeactivated(org.eclipse.ui.IWorkbenchWindow)
+	 * @seeorg.eclipse.ui.IWindowListener#windowDeactivated(org.eclipse.ui.
+	 * IWorkbenchWindow)
 	 */
 	public void windowDeactivated(IWorkbenchWindow window) {
 		window.getPartService().removePartListener(this);
@@ -157,7 +168,9 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWindowListener#windowClosed(org.eclipse.ui.IWorkbenchWindow)
+	 * @see
+	 * org.eclipse.ui.IWindowListener#windowClosed(org.eclipse.ui.IWorkbenchWindow
+	 * )
 	 */
 	public void windowClosed(IWorkbenchWindow window) {
 		window.getPartService().removePartListener(this);
@@ -166,7 +179,9 @@ class PartListener implements IPartListener2, IWindowListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWindowListener#windowOpened(org.eclipse.ui.IWorkbenchWindow)
+	 * @see
+	 * org.eclipse.ui.IWindowListener#windowOpened(org.eclipse.ui.IWorkbenchWindow
+	 * )
 	 */
 	public void windowOpened(IWorkbenchWindow window) {
 		// nothing

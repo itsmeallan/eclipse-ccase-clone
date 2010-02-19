@@ -50,6 +50,7 @@ public class CommentDialogArea extends DialogArea {
 		comments = ClearcasePlugin.getInstance().getPreviousComments();
 	}
 
+	@Override
 	public Control createArea(Composite parent) {
 		Composite composite = createGrabbingComposite(parent, 1);
 		initializeDialogUnits(composite);
@@ -75,7 +76,7 @@ public class CommentDialogArea extends DialogArea {
 				}
 			}
 		});
-		
+
 		text.setText(comment);
 		text.addModifyListener(new ModifyListener() {
 
@@ -100,10 +101,12 @@ public class CommentDialogArea extends DialogArea {
 
 		previousCommentsCombo.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int index = previousCommentsCombo.getSelectionIndex();
-				if (index != -1)
+				if (index != -1) {
 					text.setText(comments[index]);
+				}
 			}
 		});
 
@@ -116,8 +119,9 @@ public class CommentDialogArea extends DialogArea {
 	private void initializeValues() {
 
 		// populate the previous comment list
-		for (int i = 0; i < comments.length; i++)
+		for (int i = 0; i < comments.length; i++) {
 			previousCommentsCombo.add(flattenText(comments[i]));
+		}
 
 		// We don't want to have an initial selection
 		// (see bug 32078: http://bugs.eclipse.org/bugs/show_bug.cgi?id=32078)
@@ -136,8 +140,9 @@ public class CommentDialogArea extends DialogArea {
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 			if (c == '\r' || c == '\n') {
-				if (!skipAdjacentLineSeparator)
+				if (!skipAdjacentLineSeparator) {
 					buffer.append("/");
+				}
 				skipAdjacentLineSeparator = true;
 			} else {
 				buffer.append(c);
@@ -177,11 +182,12 @@ public class CommentDialogArea extends DialogArea {
 	 * @return String
 	 */
 	public String getComment() {
-		if (comment != null && comment.length() > 0)
+		if (comment != null && comment.length() > 0) {
 			finished();
+		}
 		return comment;
 	}
-	
+
 	/**
 	 * Returns the comment.
 	 * 
@@ -193,7 +199,8 @@ public class CommentDialogArea extends DialogArea {
 
 	private void finished() {
 		// if there is a comment, remember it
-		if (comment.length() > 0)
+		if (comment.length() > 0) {
 			ClearcasePlugin.getInstance().addComment(comment);
+		}
 	}
 }

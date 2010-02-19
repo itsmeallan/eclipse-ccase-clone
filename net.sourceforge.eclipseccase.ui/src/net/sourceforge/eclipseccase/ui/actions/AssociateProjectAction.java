@@ -2,29 +2,13 @@ package net.sourceforge.eclipseccase.ui.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sourceforge.eclipseccase.StateCache;
-
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.jface.viewers.LabelProviderChangedEvent;
-
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-
-import org.eclipse.core.runtime.SubProgressMonitor;
-
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.PlatformUI;
@@ -34,6 +18,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 	/**
 	 * (non-Javadoc) Method declared on IDropActionDelegate
 	 */
+	@Override
 	public void execute(IAction action) {
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -99,6 +84,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 		executeInForeground(runnable, PROGRESS_DIALOG, "Associating with ClearCase");
 	}
 
+	@Override
 	public boolean isEnabled() {
 		IProject[] projects = getSelectedProjects();
 		if (projects.length == 0)
@@ -118,6 +104,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 	 * @see
 	 * org.eclipse.team.internal.ui.actions.TeamAction#getSelectedProjects()
 	 */
+	@Override
 	protected IProject[] getSelectedProjects() {
 		return super.getSelectedProjects();
 	}
@@ -128,6 +115,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearcaseWorkspaceAction#
 	 * getSchedulingRule()
 	 */
+	@Override
 	protected ISchedulingRule getSchedulingRule() {
 		// we run on the workspace root
 		return ResourcesPlugin.getWorkspace().getRoot();

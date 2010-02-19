@@ -20,10 +20,10 @@ import org.eclipse.core.resources.IResource;
  */
 public interface IResourceStateListener {
 
-    /**
-     * The ClearCase state of the specified resource has changed.
-     * 
-     * @param resources
-     */
-    void resourceStateChanged(IResource[] resources);
+	/**
+	 * The ClearCase state of the specified resource has changed.
+	 * 
+	 * @param resources
+	 */
+	void resourceStateChanged(IResource[] resources);
 }

@@ -33,8 +33,8 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 	private boolean listenerAdded = false;
 
 	/**
-	 * The underlying core runtime preference store; <code>null</code> if it
-	 * has not been initialized yet.
+	 * The underlying core runtime preference store; <code>null</code> if it has
+	 * not been initialized yet.
 	 */
 	private Preferences prefs = null;
 
@@ -79,8 +79,9 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 			this.prefs.addPropertyChangeListener(new Preferences.IPropertyChangeListener() {
 
 				public void propertyChange(Preferences.PropertyChangeEvent event) {
-					if (!silentRunning)
+					if (!silentRunning) {
 						firePropertyChangeEvent(event.getProperty(), event.getOldValue(), event.getNewValue());
+					}
 				}
 			});
 			this.listenerAdded = true;
@@ -93,10 +94,11 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 	 * @return the underlying preference store
 	 */
 	private Preferences getPrefs() {
-		if (prefs == null)
+		if (prefs == null) {
 			// although we try to ensure initialization is done eagerly,
 			// this cannot be guaranteed, so ensure it is done here
 			initialize();
+		}
 		return prefs;
 	}
 
@@ -132,8 +134,9 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 		SafeRunner.run(new SafeRunnable(JFaceResources.getString("PreferenceStore.changeError")) { //$NON-NLS-1$
 
 					public void run() {
-						for (int i = 0; i < list.length; i++)
+						for (int i = 0; i < list.length; i++) {
 							((IPropertyChangeListener) list[i]).propertyChange(event);
+						}
 					}
 				});
 

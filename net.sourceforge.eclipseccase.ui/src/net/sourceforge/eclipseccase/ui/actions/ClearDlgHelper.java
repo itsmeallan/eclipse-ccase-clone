@@ -24,108 +24,104 @@ import org.eclipse.team.core.TeamException;
  */
 public class ClearDlgHelper {
 
-    private static final String _UNCHECKOUT = "/uncheckout"; //$NON-NLS-1$
+	private static final String _UNCHECKOUT = "/uncheckout"; //$NON-NLS-1$
 
-    private static final String _CHECKOUT = "/checkout"; //$NON-NLS-1$
+	private static final String _CHECKOUT = "/checkout"; //$NON-NLS-1$
 
-    private static final String _CHECKIN = "/checkin"; //$NON-NLS-1$
+	private static final String _CHECKIN = "/checkin"; //$NON-NLS-1$
 
-    private static final String _ADDTOSRC = "/addtosrc"; //$NON-NLS-1$
+	private static final String _ADDTOSRC = "/addtosrc"; //$NON-NLS-1$
 
-    /**
-     * Adds the specified resources.
-     * 
-     * @param resources
-     * @throws TeamException
-     */
-    public static void add(IResource[] resources) throws TeamException {
-        // execute cleardlg
-        perform(_ADDTOSRC, resources);
-    }
+	/**
+	 * Adds the specified resources.
+	 * 
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void add(IResource[] resources) throws TeamException {
+		// execute cleardlg
+		perform(_ADDTOSRC, resources);
+	}
 
-    /**
-     * Checkin the specified resources.
-     * 
-     * @param resources
-     * @throws TeamException
-     */
-    public static void checkin(IResource[] resources) throws TeamException {
-        // execute cleardlg
-        perform(_CHECKIN, resources);
-    }
+	/**
+	 * Checkin the specified resources.
+	 * 
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void checkin(IResource[] resources) throws TeamException {
+		// execute cleardlg
+		perform(_CHECKIN, resources);
+	}
 
-    /**
-     * Checkout the specified resources.
-     * 
-     * @param resources
-     * @throws TeamException
-     */
-    public static void checkout(IResource[] resources) throws TeamException {
-        // execute cleardlg
-        perform(_CHECKOUT, resources);
-    }
+	/**
+	 * Checkout the specified resources.
+	 * 
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void checkout(IResource[] resources) throws TeamException {
+		// execute cleardlg
+		perform(_CHECKOUT, resources);
+	}
 
-    /**
-     * Uncheckout the specified resources.
-     * 
-     * @param resources
-     * @throws TeamException
-     */
-    public static void uncheckout(IResource[] resources) throws TeamException {
-        // execute cleardlg
-        perform(_UNCHECKOUT, resources);
-    }
+	/**
+	 * Uncheckout the specified resources.
+	 * 
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void uncheckout(IResource[] resources) throws TeamException {
+		// execute cleardlg
+		perform(_UNCHECKOUT, resources);
+	}
 
-    /**
-     * Adds the specified resources.
-     * 
-     * @param operation
-     * @param resources
-     * @throws TeamException
-     */
-    public static void perform(String operation, IResource[] resources)
-            throws TeamException {
-        // prepare command
-        CommandLine cleardlg = new CleardlgCommandLine(operation);
+	/**
+	 * Adds the specified resources.
+	 * 
+	 * @param operation
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void perform(String operation, IResource[] resources) throws TeamException {
+		// prepare command
+		CommandLine cleardlg = new CleardlgCommandLine(operation);
 
-        // append files
-        for (int i = 0; i < resources.length; i++) {
-            IResource resource = resources[i];
-            cleardlg.addElement(resource.getLocation().toOSString());
-        }
+		// append files
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			cleardlg.addElement(resource.getLocation().toOSString());
+		}
 
-        // execute cleardlg
-        CommandLauncher launcher = new CommandLauncher();
-        launcher.execute(cleardlg.create(), null,null, null);
+		// execute cleardlg
+		CommandLauncher launcher = new CommandLauncher();
+		launcher.execute(cleardlg.create(), null, null, null);
 
-            int returnValue = launcher.getExitValue();
-            if (0 != returnValue && returnValue != resources.length)
-                    throw new TeamException("Execution of cleardlg "
-                            + operation + " failed (process returned: "
-                            + returnValue + ")!");
-//            throw new TeamException("Execution of cleardlg " + operation
-//                    + " failed: " + e.getMessage(), e);
+		int returnValue = launcher.getExitValue();
+		if (0 != returnValue && returnValue != resources.length)
+			throw new TeamException("Execution of cleardlg " + operation + " failed (process returned: " + returnValue + ")!");
+		// throw new TeamException("Execution of cleardlg " + operation
+		// + " failed: " + e.getMessage(), e);
 
-        // refresh resources
-        for (int i = 0; i < resources.length; i++) {
-            IResource resource = resources[i];
-            ClearcaseProvider provider = ClearcaseProvider
-                    .getClearcaseProvider(resource);
+		// refresh resources
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 
-            // refresh resource
-            provider.refresh(resource);
+			// refresh resource
+			provider.refresh(resource);
 
-            // also invalidate state of parent container
-            // (some operations my checkout parent)
-            provider.refresh(resource.getParent());
-        }
-    }
+			// also invalidate state of parent container
+			// (some operations my checkout parent)
+			provider.refresh(resource.getParent());
+		}
+	}
 
-    /**
-     * No instance necessary.
-     */
-    private ClearDlgHelper() {
-        super();
-    }
+	/**
+	 * No instance necessary.
+	 */
+	private ClearDlgHelper() {
+		super();
+	}
 
 }

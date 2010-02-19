@@ -56,6 +56,7 @@ public class ClearCaseOperation extends TeamOperation {
 	 * 
 	 * @see org.eclipse.team.ui.TeamOperation#canRunAsJob()
 	 */
+	@Override
 	protected boolean canRunAsJob() {
 		return runAsJob;
 	}
@@ -65,6 +66,7 @@ public class ClearCaseOperation extends TeamOperation {
 	 * 
 	 * @see org.eclipse.team.ui.TeamOperation#getJobName()
 	 */
+	@Override
 	protected String getJobName() {
 		if (null == jobName)
 			return super.getJobName();
@@ -77,6 +79,7 @@ public class ClearCaseOperation extends TeamOperation {
 	 * 
 	 * @see org.eclipse.team.ui.TeamOperation#getSchedulingRule()
 	 */
+	@Override
 	protected ISchedulingRule getSchedulingRule() {
 		return rule;
 	}
@@ -86,6 +89,7 @@ public class ClearCaseOperation extends TeamOperation {
 	 * 
 	 * @see org.eclipse.team.ui.TeamOperation#isPostponeAutobuild()
 	 */
+	@Override
 	protected boolean isPostponeAutobuild() {
 		return true;
 	}
@@ -93,7 +97,9 @@ public class ClearCaseOperation extends TeamOperation {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core.runtime.IProgressMonitor)
+	 * @see
+	 * org.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core
+	 * .runtime.IProgressMonitor)
 	 */
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {

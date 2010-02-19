@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
- * This dialog displays a list of <code>IResource</code>s and asks the user
- * to confirm loosing all changed to them.
+ * This dialog displays a list of <code>IResource</code>s and asks the user to
+ * confirm loosing all changed to them.
  * <p>
  * This concrete dialog class can be instantiated as is. It is not intended to
  * be subclassed.
@@ -64,6 +64,7 @@ public class ConfirmLostModifiedResourcesDialog extends MessageDialog {
 		this(parentShell, TITLE, MESSAGE, modifiedResources);
 	}
 
+	@Override
 	protected Control createCustomArea(Composite parent) {
 		fList = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		fList.setContentProvider(new ListContentProvider());
@@ -84,6 +85,7 @@ public class ConfirmLostModifiedResourcesDialog extends MessageDialog {
 	 * 
 	 * @see org.eclipse.jface.dialogs.Dialog#close()
 	 */
+	@Override
 	public boolean close() {
 		if (null != workbenchLabelProvider) {
 			workbenchLabelProvider.dispose();

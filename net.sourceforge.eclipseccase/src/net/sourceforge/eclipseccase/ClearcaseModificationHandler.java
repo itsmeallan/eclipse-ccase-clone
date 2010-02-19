@@ -134,32 +134,30 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 */
 	private IStatus checkout(final IFile[] files) {
 
-		if (ClearcasePlugin.isCheckoutAutoNever()) {
+		if (ClearcasePlugin.isCheckoutAutoNever())
 			return CANCEL;
-		}
-		
+
 		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
 			/* Yes=0 No=1 Cancel=2 */
-			if (returncode == 1) {
-				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID, "Checkout operation failed, operation was cancelled by user.");
-			} else if (returncode == 2) {
+			if (returncode == 1)
+				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
+						"Checkout operation failed, operation was cancelled by user.");
+			else if (returncode == 2)
 				// Cancel option.
-				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID, "Checkout operation failed, operation was cancelled by user");
-			}
-			// Yes continue checking out.
+				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
+						"Checkout operation failed, operation was cancelled by user");
 		}
 
 		ClearcaseProvider provider = getProvider(files);
 
 		// check for provider
-		if (null == provider) {
+		if (null == provider)
 			return new Status(IStatus.ERROR, ClearcaseProvider.ID,
 					TeamException.NOT_CHECKED_OUT, "No ClearCase resources!",
 					new IllegalStateException("Provider is null!"));
-		}
 
 		// checkout
 		try {
@@ -193,27 +191,30 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	private class CheckoutQuestionRunnable implements Runnable {
 
 		private int dialogResult;
-		
+
 		public void run() {
-			MessageDialog checkoutQuestion = new MessageDialog(getDisplay().getActiveShell(),
-					"Checkout", null, "Do you really want to checkout?",
-					MessageDialog.QUESTION, new String[] { "Yes", "No",
-							"Cancel" }, 0);
+			MessageDialog checkoutQuestion = new MessageDialog(getDisplay()
+					.getActiveShell(), "Checkout", null,
+					"Do you really want to checkout?", MessageDialog.QUESTION,
+					new String[] { "Yes", "No", "Cancel" }, 0);
 			dialogResult = checkoutQuestion.open();
 		}
-		
+
 		public int getResult() {
 			return dialogResult;
 		}
-		
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.core.resources.team.FileModificationValidator#validateEdit(org.eclipse.core.resources.IFile[],
-	 *      org.eclipse.core.resources.team.FileModificationValidationContext)
+	 * @see
+	 * org.eclipse.core.resources.team.FileModificationValidator#validateEdit
+	 * (org.eclipse.core.resources.IFile[],
+	 * org.eclipse.core.resources.team.FileModificationValidationContext)
 	 */
+	@Override
 	public IStatus validateEdit(IFile[] files,
 			FileModificationValidationContext context) {
 		IFile[] readOnlyFiles = getFilesToCheckout(files);
@@ -225,8 +226,11 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.core.resources.IFileModificationValidator#validateSave(org.eclipse.core.resources.IFile)
+	 * @see
+	 * org.eclipse.core.resources.IFileModificationValidator#validateSave(org
+	 * .eclipse.core.resources.IFile)
 	 */
+	@Override
 	public IStatus validateSave(IFile file) {
 		if (!needsCheckout(file))
 			return OK;

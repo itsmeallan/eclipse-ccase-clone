@@ -1,63 +1,51 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import org.eclipse.jface.window.Window;
-
-import org.eclipse.swt.widgets.Display;
-
-import org.eclipse.jface.dialogs.InputDialog;
-
-import org.eclipse.ui.PlatformUI;
-
+import java.lang.reflect.InvocationTargetException;
+import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.views.ConfigSpecView;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-
-import net.sourceforge.eclipseccase.views.ConfigSpecView;
-
-
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import org.eclipse.core.resources.IResource;
-
-import java.lang.reflect.InvocationTargetException;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.ui.PlatformUI;
 
 public class GetConfigSpecAction extends ClearcaseWorkspaceAction {
 	private ConfigSpecView view = null;
+
 	private IResource[] resources = null;
+
 	/**
 	 * {@inheritDoc
 	 */
-	public boolean isEnabled() 
-	{
+	@Override
+	public boolean isEnabled() {
 		boolean bRes = true;
 
 		IResource[] resources = getSelectedResources();
-		if (resources.length != 0)
-		{
-			for (int i = 0; (i < resources.length) && (bRes); i++)
-			{
+		if (resources.length != 0) {
+			for (int i = 0; (i < resources.length) && (bRes); i++) {
 				IResource resource = resources[i];
 				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource)) {
 					bRes = false;
+				}
 			}
-		}
-		else
-		{
+		} else {
 			bRes = false;
 		}
 
 		return bRes;
 
 	}
+
+	@Override
 	public void execute(IAction action) throws InvocationTargetException, InterruptedException {
 		resources = getSelectedResources();
 
 		try {
 			view = (ConfigSpecView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.ConfigSpecView");
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -66,15 +54,11 @@ public class GetConfigSpecAction extends ClearcaseWorkspaceAction {
 
 				monitor.done();
 				try {
-					if(resources != null && resources.length != 0)
-					{
+					if (resources != null && resources.length != 0) {
 						view.loadConfigSpec(resources[0]);
 					}
-				} 
-				catch(Exception e)
-				{
-				}
-				finally {
+				} catch (Exception e) {
+				} finally {
 				}
 			}
 		};

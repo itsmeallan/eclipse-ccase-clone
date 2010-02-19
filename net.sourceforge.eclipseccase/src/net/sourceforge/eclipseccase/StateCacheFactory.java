@@ -96,8 +96,9 @@ public class StateCacheFactory implements ISaveParticipant,
 	public void addStateChangeListerer(IResourceStateListener listener) {
 		if (null != listener) {
 			synchronized (listeners) {
-				if (!listeners.contains(listener))
+				if (!listeners.contains(listener)) {
 					listeners.add(listener);
+				}
 			}
 		}
 	}
@@ -225,8 +226,9 @@ public class StateCacheFactory implements ISaveParticipant,
 	public synchronized StateCache get(IResource resource) {
 		StateCache cache = getWithNoUpdate(resource);
 		// schedule update if necessary
-		if (isInitialized() && cache.isUninitialized())
+		if (isInitialized() && cache.isUninitialized()) {
 			cache.updateAsync(false);
+		}
 		return cache;
 	}
 
@@ -434,18 +436,21 @@ public class StateCacheFactory implements ISaveParticipant,
 			// only persist state of initialized, existing and non derived
 			// resources
 			if (isUninitialized(resource) || !resource.exists()
-					|| resource.isDerived())
+					|| resource.isDerived()) {
 				continue;
+			}
 			StateCache cache = get(resource);
 			attributes = new HashMap<String, String>(5);
 			attributes.put(ATTR_PATH, resource.getFullPath().toString());
 			attributes.put(ATTR_STATE, Integer.toString(cache.flags));
 			attributes.put(ATTR_TIME_STAMP, Long
 					.toString(cache.updateTimeStamp));
-			if (null != cache.version)
+			if (null != cache.version) {
 				attributes.put(ATTR_VERSION, cache.version);
-			if (null != cache.symbolicLinkTarget)
+			}
+			if (null != cache.symbolicLinkTarget) {
 				attributes.put(ATTR_SYMLINK_TARGET, cache.symbolicLinkTarget);
+			}
 			writer.startAndEndTag(TAG_RESOURCE, attributes, true);
 		}
 
@@ -512,6 +517,7 @@ public class StateCacheFactory implements ISaveParticipant,
 			 * org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
 			 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
 			 */
+			@Override
 			public void startElement(String uri, String localName,
 					String qName, Attributes attributes) throws SAXException {
 
@@ -602,8 +608,9 @@ public class StateCacheFactory implements ISaveParticipant,
 					// filter only shared projects
 					if (RepositoryProvider.isShared((IProject) projectDelta
 							.getResource())) {
-						if (!isAffectedBy(rootDelta))
+						if (!isAffectedBy(rootDelta)) {
 							continue;
+						}
 
 						projectDelta.accept(new IResourceDeltaVisitor() {
 
@@ -700,23 +707,11 @@ public class StateCacheFactory implements ISaveParticipant,
 
 		if (delta.getKind() == IResourceDelta.ADDED
 				|| (delta.getKind() == IResourceDelta.CHANGED && 0 != (delta
-						.getFlags() & interestingChangeFlags))) {
-
-			// System.out
-			// .println(((org.eclipse.core.internal.events.ResourceDelta) delta)
-			// .toDebugString());
-
-			// (old: only refresh if current state is not checked out)
-			// return !getInstance().isUninitialized(resource)
-			// && !getInstance().get(resource).isCheckedOut();
-			// NO: this prevents refresh if resource was checked in
-			// outside Eclipse.
-
+						.getFlags() & interestingChangeFlags)))
 			// Returning true causes a state update whenever
 			// the file is edited and saved inside Eclipse, too. That's not
 			// nice, but acceptable
 			return true;
-		}
 
 		// System.out.println("ignored: " + delta);
 		return false;
@@ -752,9 +747,8 @@ public class StateCacheFactory implements ISaveParticipant,
 									// leaf
 									// delta
 									// nodes
-									&& (delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
+									&& (delta.getFlags() & ~IResourceDelta.MARKERS) != 0)
 								throw new FoundRelevantDeltaException();
-							}
 						}
 						return true;
 					}
@@ -789,8 +783,9 @@ public class StateCacheFactory implements ISaveParticipant,
 	 */
 	void ensureInitialized(IResource resource) {
 		StateCache cache = getWithNoUpdate(resource);
-		if (cache.isUninitialized())
+		if (cache.isUninitialized()) {
 			cache.doUpdate();
+		}
 	}
 
 	/**

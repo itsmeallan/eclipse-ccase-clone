@@ -37,12 +37,14 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	 * 
 	 * @see org.eclipse.ui.views.navigator.MainActionGroup#makeActions()
 	 */
+	@Override
 	protected void makeActions() {
 		super.makeActions();
 
 		refreshAction = new Action(Messages.getString("ClearcaseViewActionGroup.refresh.name"), ClearcaseImages //$NON-NLS-1$
 				.getImageDescriptor(ClearcaseImages.IMG_REFRESH)) {
 
+			@Override
 			public void run() {
 				getClearcaseView().refresh();
 			}
@@ -58,8 +60,11 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.views.navigator.MainActionGroup#fillActionBars(org.eclipse.ui.IActionBars)
+	 * @see
+	 * org.eclipse.ui.views.navigator.MainActionGroup#fillActionBars(org.eclipse
+	 * .ui.IActionBars)
 	 */
+	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		IMenuManager menu = actionBars.getMenuManager();
 		menu.add(showInNavigatorAction);
@@ -77,8 +82,11 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.views.navigator.MainActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
+	 * @see
+	 * org.eclipse.ui.views.navigator.MainActionGroup#fillContextMenu(org.eclipse
+	 * .jface.action.IMenuManager)
 	 */
+	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		menu.add(showInNavigatorAction);
 		menu.add(new Separator());
@@ -89,8 +97,11 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.views.navigator.MainActionGroup#runDefaultAction(org.eclipse.jface.viewers.IStructuredSelection)
+	 * @see
+	 * org.eclipse.ui.views.navigator.MainActionGroup#runDefaultAction(org.eclipse
+	 * .jface.viewers.IStructuredSelection)
 	 */
+	@Override
 	public void runDefaultAction(IStructuredSelection selection) {
 		showInNavigatorAction.selectionChanged(selection);
 		showInNavigatorAction.run();
@@ -108,6 +119,7 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	 * 
 	 * @see org.eclipse.ui.views.navigator.MainActionGroup#updateActionBars()
 	 */
+	@Override
 	public void updateActionBars() {
 		super.updateActionBars();
 

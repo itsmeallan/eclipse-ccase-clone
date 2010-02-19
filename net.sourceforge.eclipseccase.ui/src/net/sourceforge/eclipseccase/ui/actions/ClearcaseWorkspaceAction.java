@@ -20,19 +20,16 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public abstract class ClearcaseWorkspaceAction extends ClearcaseAction
-{
-    /**
-     * Executes the specified runnable in the background.
-     * 
-     * @param runnable
-     * @param jobName
-     * @param problemMessage
-     */
-	protected void executeInBackground(IWorkspaceRunnable runnable,
-			String jobName) {
-		ClearCaseOperation operation = new ClearCaseOperation(getTargetPart(),
-				getSchedulingRule(), runnable, true, jobName);
+public abstract class ClearcaseWorkspaceAction extends ClearcaseAction {
+	/**
+	 * Executes the specified runnable in the background.
+	 * 
+	 * @param runnable
+	 * @param jobName
+	 * @param problemMessage
+	 */
+	protected void executeInBackground(IWorkspaceRunnable runnable, String jobName) {
+		ClearCaseOperation operation = new ClearCaseOperation(getTargetPart(), getSchedulingRule(), runnable, true, jobName);
 		try {
 			operation.run();
 		} catch (InvocationTargetException ex) {
@@ -42,21 +39,19 @@ public abstract class ClearcaseWorkspaceAction extends ClearcaseAction
 		}
 	}
 
-    /**
+	/**
 	 * Executes the specified runnable in the background.
 	 * 
 	 * @param runnable
 	 * @param jobName
 	 * @param problemMessage
 	 */
-	protected void executeInForeground(final IWorkspaceRunnable runnable,
-			int progressKind, String problemMessage) {
+	protected void executeInForeground(final IWorkspaceRunnable runnable, int progressKind, String problemMessage) {
 		StateCacheFactory.getInstance().interruptPendingRefreshes();
 		run(new WorkspaceModifyOperation(getSchedulingRule()) {
 
-			protected void execute(IProgressMonitor monitor)
-					throws CoreException, InvocationTargetException,
-					InterruptedException {
+			@Override
+			protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
 				runnable.run(monitor);
 			}
 
@@ -64,7 +59,7 @@ public abstract class ClearcaseWorkspaceAction extends ClearcaseAction
 		StateCacheFactory.getInstance().resumePendingRefreshes();
 	}
 
-    /**
+	/**
 	 * Returns the scheduling rule.
 	 * 
 	 * 

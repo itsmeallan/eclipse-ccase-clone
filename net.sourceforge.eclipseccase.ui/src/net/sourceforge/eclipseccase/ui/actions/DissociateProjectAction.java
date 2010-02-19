@@ -3,16 +3,11 @@ package net.sourceforge.eclipseccase.ui.actions;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.PlatformUI;
@@ -22,6 +17,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 	/**
 	 * (non-Javadoc) Method declared on IDropActionDelegate
 	 */
+	@Override
 	public void execute(IAction action) {
 		final StringBuffer message = new StringBuffer();
 
@@ -33,10 +29,11 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 					IProject[] projects = getSelectedProjects();
 					monitor.beginTask("Dissociating from ClearCase", 10 * projects.length);
 
-					if (projects.length == 1)
+					if (projects.length == 1) {
 						message.append("Dissociated project ");
-					else
+					} else {
 						message.append("Dissociated projects: \n");
+					}
 
 					StateCacheFactory.getInstance().operationBegin();
 					StateCacheFactory.getInstance().cancelPendingRefreshes();
@@ -47,8 +44,9 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 						RepositoryProvider.unmap(project);
 						StateCacheFactory.getInstance().remove(project);
 						StateCacheFactory.getInstance().fireStateChanged(project);
-						if (i > 1)
+						if (i > 1) {
 							message.append(", ");
+						}
 						message.append(project.getName());
 						if (projects.length > 1) {
 							message.append("\n");
@@ -79,6 +77,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 		// .toString());
 	}
 
+	@Override
 	public boolean isEnabled() {
 		IProject[] projects = getSelectedProjects();
 		if (projects.length == 0)
@@ -98,6 +97,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 	 * @see
 	 * org.eclipse.team.internal.ui.actions.TeamAction#getSelectedProjects()
 	 */
+	@Override
 	protected IProject[] getSelectedProjects() {
 		return super.getSelectedProjects();
 	}
@@ -108,6 +108,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearcaseWorkspaceAction#
 	 * getSchedulingRule()
 	 */
+	@Override
 	protected ISchedulingRule getSchedulingRule() {
 		// we run on the workspace root
 		return ResourcesPlugin.getWorkspace().getRoot();

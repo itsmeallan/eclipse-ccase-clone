@@ -93,6 +93,7 @@ public class ElementPropertyPage extends PropertyPage {
 	/**
 	 * @see PreferencePage#createContents(Composite)
 	 */
+	@Override
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -123,24 +124,31 @@ public class ElementPropertyPage extends PropertyPage {
 
 	protected void performRefresh() {
 		StateCache cache = StateCacheFactory.getInstance().get((IResource) getElement());
-		if (versionLabelValue != null)
+		if (versionLabelValue != null) {
 			versionLabelValue.setText(cache.getVersion());
-		if (predecessorVersionValue != null)
+		}
+		if (predecessorVersionValue != null) {
 			predecessorVersionValue.setText(cache.getPredecessorVersion());
-		if (checkedOutValue != null)
+		}
+		if (checkedOutValue != null) {
 			checkedOutValue.setSelection(cache.isCheckedOut());
-		if (hijackedValue != null)
+		}
+		if (hijackedValue != null) {
 			hijackedValue.setSelection(cache.isHijacked());
+		}
 	}
 
+	@Override
 	public void dispose() {
 		super.dispose();
 	}
 
+	@Override
 	protected void contributeButtons(Composite parent) {
 		Button refreshButton = new Button(parent, SWT.PUSH);
 		refreshButton.setText("Refresh");
 		refreshButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				performRefresh();
 			}

@@ -1,16 +1,10 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-
-import org.eclipse.core.runtime.SubProgressMonitor;
-
-import java.util.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.Team;
 
@@ -18,6 +12,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 	/*
 	 * Method declared on IActionDelegate.
 	 */
+	@Override
 	public void execute(IAction action) {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(final IProgressMonitor monitor) throws CoreException {
@@ -31,7 +26,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 						checkCanceled(monitor);
 						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
 						provider.setOperationListener(opListener);
-						provider.refreshRecursive(resource, new SubProgressMonitor(monitor,1));
+						provider.refreshRecursive(resource, new SubProgressMonitor(monitor, 1));
 					}
 
 				} finally {
@@ -43,6 +38,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 		executeInBackground(runnable, "Refreshing state");
 	}
 
+	@Override
 	public boolean isEnabled() {
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0)

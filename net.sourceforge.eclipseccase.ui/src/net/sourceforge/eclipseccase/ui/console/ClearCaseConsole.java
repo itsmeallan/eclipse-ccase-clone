@@ -1,25 +1,12 @@
 package net.sourceforge.eclipseccase.ui.console;
 
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.console.IConsoleView;
-
-import org.eclipse.swt.widgets.Display;
-
-import org.eclipse.ui.PlatformUI;
-
-import org.eclipse.swt.graphics.Color;
-
-import org.eclipse.jface.util.PropertyChangeEvent;
-
-import org.eclipse.jface.util.IPropertyChangeListener;
-
 import org.eclipse.jface.resource.JFaceResources;
-
-import org.eclipse.ui.console.MessageConsoleStream;
-
-import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.*;
+import org.eclipse.ui.console.*;
 
 public class ClearCaseConsole extends MessageConsole implements IPropertyChangeListener {
 	public static final String CLEARCASE_CONSOLE_TYPE = "net.sourceforge.eclipseccase.ui.console.ClearCaseConsole";
@@ -39,8 +26,8 @@ public class ClearCaseConsole extends MessageConsole implements IPropertyChangeL
 
 		this.setTabWidth(2);
 
-		this.out =  this.newMessageStream();
-		this.err =  this.newMessageStream();
+		this.out = this.newMessageStream();
+		this.err = this.newMessageStream();
 		this.info = this.newMessageStream();
 
 		this.loadPreferences();
@@ -78,25 +65,26 @@ public class ClearCaseConsole extends MessageConsole implements IPropertyChangeL
 	}
 
 	public void show() {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable(){
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				try{
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();//obtain the active page
+				try {
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();// obtain
+																												// the
+																												// active
+																												// page
 					String id = IConsoleConstants.ID_CONSOLE_VIEW;
 					IConsoleView view = (IConsoleView) page.showView(id);
-					view.display(ClearCaseConsole.this);		   
-				}
-				catch(PartInitException e)
-				{
+					view.display(ClearCaseConsole.this);
+				} catch (PartInitException e) {
 				}
 			}
 		});
 	}
 
 	public void clear() {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable(){
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				ClearCaseConsole.this.clearConsole();   
+				ClearCaseConsole.this.clearConsole();
 			}
 		});
 	}

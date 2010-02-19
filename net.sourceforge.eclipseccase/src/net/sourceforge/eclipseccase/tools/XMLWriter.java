@@ -21,169 +21,159 @@ import java.util.HashMap;
 /**
  * A simple XML writer.
  */
-public class XMLWriter extends PrintWriter
-{
+public class XMLWriter extends PrintWriter {
 
-    protected int tab;
+	protected int tab;
 
-    /* constants */
-    protected static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //$NON-NLS-1$
+	/* constants */
+	protected static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"; //$NON-NLS-1$
 
-    /**
-     * Creates a new instance.
-     * 
-     * @param output
-     * @throws UnsupportedEncodingException
-     */
-    public XMLWriter(OutputStream output) throws UnsupportedEncodingException {
-        super(new OutputStreamWriter(output, "UTF8")); //$NON-NLS-1$
-        tab = 0;
-        println(XML_VERSION);
-    }
+	/**
+	 * Creates a new instance.
+	 * 
+	 * @param output
+	 * @throws UnsupportedEncodingException
+	 */
+	public XMLWriter(OutputStream output) throws UnsupportedEncodingException {
+		super(new OutputStreamWriter(output, "UTF8")); //$NON-NLS-1$
+		tab = 0;
+		println(XML_VERSION);
+	}
 
-    /**
-     * @param name
-     */
-    public void endTag(String name)
-    {
-        tab--;
-        printTag('/' + name, null);
-    }
+	/**
+	 * @param name
+	 */
+	public void endTag(String name) {
+		tab--;
+		printTag('/' + name, null);
+	}
 
-    /**
-     * @param name
-     * @param value
-     */
-    public void printSimpleTag(String name, Object value)
-    {
-        if (value != null)
-        {
-            printTag(name, null, true, false);
-            print(getEscaped(String.valueOf(value)));
-            printTag('/' + name, null, false, true);
-        }
-    }
+	/**
+	 * @param name
+	 * @param value
+	 */
+	public void printSimpleTag(String name, Object value) {
+		if (value != null) {
+			printTag(name, null, true, false);
+			print(getEscaped(String.valueOf(value)));
+			printTag('/' + name, null, false, true);
+		}
+	}
 
-    /**
-     * prints tabulation
-     */
-    public void printTabulation()
-    {
-        for (int i = 0; i < tab; i++)
-            super.print('\t');
-    }
+	/**
+	 * prints tabulation
+	 */
+	public void printTabulation() {
+		for (int i = 0; i < tab; i++) {
+			super.print('\t');
+		}
+	}
 
-    private void printTag(String name, HashMap parameters)
-    {
-        printTag(name, parameters, true, true);
-    }
+	private void printTag(String name, HashMap parameters) {
+		printTag(name, parameters, true, true);
+	}
 
-    private void printTag(String name, HashMap parameters, boolean printTab,
-            boolean newLine)
-    {
-        printTag(name, parameters, printTab, newLine, false);
-    }
+	private void printTag(String name, HashMap parameters, boolean printTab,
+			boolean newLine) {
+		printTag(name, parameters, printTab, newLine, false);
+	}
 
-    private void printTag(String name, HashMap parameters, boolean printTab,
-            boolean newLine, boolean end)
-    {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<"); //$NON-NLS-1$
-        sb.append(name);
-        if (parameters != null)
-                for (Enumeration enumeration = Collections.enumeration(parameters
-                        .keySet()); enumeration.hasMoreElements();)
-                {
-                    sb.append(" "); //$NON-NLS-1$
-                    String key = (String) enumeration.nextElement();
-                    sb.append(key);
-                    sb.append("=\""); //$NON-NLS-1$
-                    sb.append(getEscaped(String.valueOf(parameters.get(key))));
-                    sb.append("\""); //$NON-NLS-1$
-                }
-        if (end) sb.append('/');
-        sb.append(">"); //$NON-NLS-1$
-        if (printTab) printTabulation();
-        if (newLine)
-            println(sb.toString());
-        else
-            print(sb.toString());
-    }
+	private void printTag(String name, HashMap parameters, boolean printTab,
+			boolean newLine, boolean end) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<"); //$NON-NLS-1$
+		sb.append(name);
+		if (parameters != null) {
+			for (Enumeration enumeration = Collections.enumeration(parameters
+					.keySet()); enumeration.hasMoreElements();) {
+				sb.append(" "); //$NON-NLS-1$
+				String key = (String) enumeration.nextElement();
+				sb.append(key);
+				sb.append("=\""); //$NON-NLS-1$
+				sb.append(getEscaped(String.valueOf(parameters.get(key))));
+				sb.append("\""); //$NON-NLS-1$
+			}
+		}
+		if (end) {
+			sb.append('/');
+		}
+		sb.append(">"); //$NON-NLS-1$
+		if (printTab) {
+			printTabulation();
+		}
+		if (newLine) {
+			println(sb.toString());
+		} else {
+			print(sb.toString());
+		}
+	}
 
-    /**
-     * @param name
-     * @param parameters
-     */
-    public void startTag(String name, HashMap parameters)
-    {
-        startTag(name, parameters, true);
-    }
+	/**
+	 * @param name
+	 * @param parameters
+	 */
+	public void startTag(String name, HashMap parameters) {
+		startTag(name, parameters, true);
+	}
 
-    /**
-     * @param name
-     * @param parameters
-     * @param newLine
-     */
-    public void startTag(String name, HashMap parameters, boolean newLine)
-    {
-        printTag(name, parameters, true, newLine);
-        tab++;
-    }
+	/**
+	 * @param name
+	 * @param parameters
+	 * @param newLine
+	 */
+	public void startTag(String name, HashMap parameters, boolean newLine) {
+		printTag(name, parameters, true, newLine);
+		tab++;
+	}
 
-    /**
-     * @param name
-     * @param parameters
-     * @param newLine
-     */
-    public void startAndEndTag(String name, HashMap parameters, boolean newLine)
-    {
-        printTag(name, parameters, true, true, true);
-    }
+	/**
+	 * @param name
+	 * @param parameters
+	 * @param newLine
+	 */
+	public void startAndEndTag(String name, HashMap parameters, boolean newLine) {
+		printTag(name, parameters, true, true, true);
+	}
 
-    private static void appendEscapedChar(StringBuffer buffer, char c)
-    {
-        String replacement = getReplacement(c);
-        if (replacement != null)
-        {
-            buffer.append('&');
-            buffer.append(replacement);
-            buffer.append(';');
-        } else
-        {
-            buffer.append(c);
-        }
-    }
+	private static void appendEscapedChar(StringBuffer buffer, char c) {
+		String replacement = getReplacement(c);
+		if (replacement != null) {
+			buffer.append('&');
+			buffer.append(replacement);
+			buffer.append(';');
+		} else {
+			buffer.append(c);
+		}
+	}
 
-    /**
-     * @param s
-     * @return
-     */
-    public static String getEscaped(String s)
-    {
-        StringBuffer result = new StringBuffer(s.length() + 10);
-        for (int i = 0; i < s.length(); ++i)
-            appendEscapedChar(result, s.charAt(i));
-        return result.toString();
-    }
+	/**
+	 * @param s
+	 * @return
+	 */
+	public static String getEscaped(String s) {
+		StringBuffer result = new StringBuffer(s.length() + 10);
+		for (int i = 0; i < s.length(); ++i) {
+			appendEscapedChar(result, s.charAt(i));
+		}
+		return result.toString();
+	}
 
-    private static String getReplacement(char c)
-    {
-        // Encode special XML characters into the equivalent character
-        // references.
-        // These five are defined by default for all XML documents.
-        switch (c)
-        {
-        case '<':
-            return "lt"; //$NON-NLS-1$
-        case '>':
-            return "gt"; //$NON-NLS-1$
-        case '"':
-            return "quot"; //$NON-NLS-1$
-        case '\'':
-            return "apos"; //$NON-NLS-1$
-        case '&':
-            return "amp"; //$NON-NLS-1$
-        }
-        return null;
-    }
+	private static String getReplacement(char c) {
+		// Encode special XML characters into the equivalent character
+		// references.
+		// These five are defined by default for all XML documents.
+		switch (c) {
+		case '<':
+			return "lt"; //$NON-NLS-1$
+		case '>':
+			return "gt"; //$NON-NLS-1$
+		case '"':
+			return "quot"; //$NON-NLS-1$
+		case '\'':
+			return "apos"; //$NON-NLS-1$
+		case '&':
+			return "amp"; //$NON-NLS-1$
+		}
+		return null;
+	}
 }

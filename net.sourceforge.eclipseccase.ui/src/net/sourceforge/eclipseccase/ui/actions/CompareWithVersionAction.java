@@ -34,12 +34,12 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isEnabled() {
 		if (element != null) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(element);
-			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.hasRemote(element)) {
+			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.hasRemote(element))
 				return true;
-			}
 		}
 
 		return false;
@@ -48,6 +48,7 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
+	@Override
 	public void execute(IAction action) {
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {

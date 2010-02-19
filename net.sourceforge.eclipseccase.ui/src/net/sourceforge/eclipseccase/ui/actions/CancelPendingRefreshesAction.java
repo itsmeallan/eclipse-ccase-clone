@@ -32,6 +32,7 @@ public class CancelPendingRefreshesAction extends ActionDelegate implements IObj
 		super();
 	}
 
+	@Override
 	public void dispose() {
 		shell = null;
 	}
@@ -41,29 +42,35 @@ public class CancelPendingRefreshesAction extends ActionDelegate implements IObj
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
+	 * @seeorg.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
+	 * IWorkbenchWindow)
 	 */
 	public void init(IWorkbenchWindow window) {
 		this.shell = window.getShell();
 	}
 
+	@Override
 	public void run(IAction action) {
 		if (MessageDialog.openQuestion(shell, "Clearcase Plugin", "Do you want to cancel all pending state refreshes?")) {
 			StateCacheFactory.getInstance().cancelPendingRefreshes();
-			if (action != null)
+			if (action != null) {
 				action.setEnabled(false);
+			}
 		}
 	}
 
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-		if (action != null)
+		if (action != null) {
 			action.setEnabled(null != shell && ClearcasePlugin.getInstance().hasPendingRefreshes());
+		}
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		this.shell = targetPart.getSite().getShell();
-		if (action != null && shell == null)
+		if (action != null && shell == null) {
 			action.setEnabled(false);
+		}
 	}
 
 }

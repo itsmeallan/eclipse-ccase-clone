@@ -164,7 +164,7 @@ public class StateCache implements Serializable {
 			osPath = location.toOSString();
 
 			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$//$NON-NLS-2$
+				ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$
 				ClearcasePlugin.trace("[StateCache] update in thread: "
 						+ Thread.currentThread().getName()
 						+ " ID=" + Thread.currentThread().getId()); //$NON-NLS-1$
@@ -299,7 +299,7 @@ public class StateCache implements Serializable {
 		} else {
 			// no changes
 			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ //$NON-NLS-2$
+				ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ 
 			}
 		}
 	}
@@ -314,8 +314,9 @@ public class StateCache implements Serializable {
 	 */
 	private boolean updateSymlinkState(String targetPath) {
 		boolean changed = false;
-		if (null != targetPath && targetPath.trim().length() == 0)
+		if (null != targetPath && targetPath.trim().length() == 0) {
 			targetPath = null;
+		}
 		changed |= (null == targetPath) ? (null != this.symbolicLinkTarget)
 				: (!targetPath.equals(this.symbolicLinkTarget));
 		this.symbolicLinkTarget = targetPath;
@@ -519,6 +520,7 @@ public class StateCache implements Serializable {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		StringBuffer toString = new StringBuffer("StateCache "); //$NON-NLS-1$
 		toString.append(resource);
@@ -536,14 +538,17 @@ public class StateCache implements Serializable {
 				toString.append(")]"); //$NON-NLS-1$
 			}
 
-			if (isCheckedOut())
+			if (isCheckedOut()) {
 				toString.append(" [CHECKED OUT]"); //$NON-NLS-1$
+			}
 
-			if (isHijacked())
+			if (isHijacked()) {
 				toString.append(" [HIJACKED]"); //$NON-NLS-1$
+			}
 
-			if (isSnapShot())
+			if (isSnapShot()) {
 				toString.append(" [SNAPSHOT]"); //$NON-NLS-1$
+			}
 		} else {
 			toString.append("invalid"); //$NON-NLS-1$
 		}
@@ -556,6 +561,7 @@ public class StateCache implements Serializable {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		if (null == resource)
 			return 0;
@@ -568,6 +574,7 @@ public class StateCache implements Serializable {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -630,10 +637,11 @@ public class StateCache implements Serializable {
 	 * @param value
 	 */
 	void setFlag(int flag, boolean value) {
-		if (value)
+		if (value) {
 			flags |= flag;
-		else
+		} else {
 			flags &= ~flag;
+		}
 	}
 
 }

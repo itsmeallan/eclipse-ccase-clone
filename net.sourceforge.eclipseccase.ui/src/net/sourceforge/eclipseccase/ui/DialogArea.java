@@ -53,8 +53,9 @@ public abstract class DialogArea {
 	 * @param listener
 	 */
 	public void addPropertyChangeListener(IPropertyChangeListener listener) {
-		if (!listeners.contains(listener))
+		if (!listeners.contains(listener)) {
 			listeners.add(listener);
+		}
 	}
 
 	/**
@@ -75,8 +76,8 @@ public abstract class DialogArea {
 	}
 
 	/**
-	 * Code copied from <code>org.eclipse.jface.dialogs.Dialog</code> to
-	 * obtain a FontMetrics.
+	 * Code copied from <code>org.eclipse.jface.dialogs.Dialog</code> to obtain
+	 * a FontMetrics.
 	 * 
 	 * @param control
 	 *            a control from which to obtain the current font

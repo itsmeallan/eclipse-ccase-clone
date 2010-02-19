@@ -1,22 +1,21 @@
 package net.sourceforge.eclipseccase.ui.console;
 
+import net.sourceforge.clearcase.events.OperationListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import net.sourceforge.clearcase.events.OperationListener;
-
 public class ConsoleOperationListener implements OperationListener {
-	
+
 	private IProgressMonitor monitor = null;
+
 	private ClearCaseConsole console = null;
 
-	public ConsoleOperationListener(IProgressMonitor monitor)
-	{
+	public ConsoleOperationListener(IProgressMonitor monitor) {
 		this.monitor = monitor;
 		console = ClearCaseConsoleFactory.getClearCaseConsole();
 		console.show();
-		console.clear();		
+		console.clear();
 	}
-	
+
 	public void finishedOperation() {
 	}
 
@@ -35,11 +34,10 @@ public class ConsoleOperationListener implements OperationListener {
 		console.err.println(msg);
 	}
 
-	public void printInfo(String msg)
-	{
+	public void printInfo(String msg) {
 		console.info.println(msg);
 	}
-	
+
 	public void startedOperation(int amountOfWork) {
 	}
 

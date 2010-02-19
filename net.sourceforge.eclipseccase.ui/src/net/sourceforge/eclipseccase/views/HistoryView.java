@@ -1,53 +1,43 @@
 package net.sourceforge.eclipseccase.views;
 
+import java.util.Vector;
+import net.sourceforge.clearcase.ElementHistory;
 import net.sourceforge.eclipseccase.ui.actions.CompareWithVersionAction;
-
-import org.eclipse.jface.action.IAction;
-
 import net.sourceforge.eclipseccase.ui.actions.VersionTreeAction;
-
 import org.eclipse.core.resources.IResource;
-
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-
-import org.eclipse.swt.events.SelectionEvent;
-
+import org.eclipse.jface.action.IAction;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
-
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-
-import net.sourceforge.clearcase.ElementHistory;
-
-import java.util.Vector;
-
-import org.eclipse.swt.SWT;
-
-import org.eclipse.swt.widgets.TableItem;
-
-import org.eclipse.swt.widgets.TableColumn;
-
-import org.eclipse.swt.layout.GridData;
-
-import org.eclipse.swt.widgets.Table;
-
-import org.eclipse.swt.widgets.Composite;
-
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class HistoryView extends ViewPart {
 	private Table historyTable;
+
 	private Label elementLabel;
+
 	private IResource element = null;
+
 	private Vector<ElementHistory> elemHistory = null;
+
 	private Action versionTreeAction;
+
 	private Action compareAction;
+
 	private Action openAction;
+
 	private Menu historyMenu;
+
 	MenuItem versionTreeItem;
+
 	MenuItem compareMenuItem;
 
+	@Override
 	public void createPartControl(Composite parent) {
 		Group historyGroup = new Group(parent, SWT.BORDER_SOLID);
 		historyGroup.setLayout(new GridLayout(1, false));
@@ -88,74 +78,69 @@ public class HistoryView extends ViewPart {
 		label.setWidth(200);
 		comment.setWidth(400);
 
-		historyMenu = new Menu(parent.getShell(),  SWT.POP_UP);
-		compareMenuItem = new MenuItem(historyMenu,	SWT.PUSH);
+		historyMenu = new Menu(parent.getShell(), SWT.POP_UP);
+		compareMenuItem = new MenuItem(historyMenu, SWT.PUSH);
 		compareMenuItem.setText("Compare with...");
-		compareMenuItem.addSelectionListener(new SelectionAdapter(){
+		compareMenuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				compare();
 			}
 		});
 		compareMenuItem.setEnabled(false);
 
-
-		versionTreeItem = new MenuItem(historyMenu,	SWT.PUSH);
-		versionTreeItem.setText("Show Version Tree");		
-		versionTreeItem.addSelectionListener(new SelectionAdapter(){
+		versionTreeItem = new MenuItem(historyMenu, SWT.PUSH);
+		versionTreeItem.setText("Show Version Tree");
+		versionTreeItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				versionTree();
 			}
 		});
 		versionTreeItem.setEnabled(false);
 
-
 		historyTable.setMenu(historyMenu);
 
+		historyTable.addSelectionListener(new SelectionAdapter() {
 
-		historyTable.addSelectionListener(new SelectionAdapter(){
-
+			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(historyTable.getSelectionCount() == 1)
-				{
+				if (historyTable.getSelectionCount() == 1) {
 					compareMenuItem.setText("Compare Active with selected");
 					compareMenuItem.setEnabled(true);
 					compareAction.setEnabled(true);
-				}
-				else if(historyTable.getSelectionCount() == 2)
-				{
+				} else if (historyTable.getSelectionCount() == 2) {
 					compareMenuItem.setText("Compare selected versions");
 					compareMenuItem.setEnabled(true);
 					compareAction.setEnabled(true);
-				}
-				else
-				{
+				} else {
 					compareMenuItem.setText("Compare with...");
 					compareMenuItem.setEnabled(false);
 					compareAction.setEnabled(false);
 				}
 			}
 
-
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				System.out.println("select default");
 			}
 		});
 
-
-
-
 		compareAction = new Action() {
+			@Override
 			public void run() {
 				compare();
 			}
 		};
 
 		versionTreeAction = new Action() {
+			@Override
 			public void run() {
 				versionTree();
 			}
 		};
 		openAction = new Action() {
+			@Override
 			public void run() {
 				open();
 			}
@@ -168,32 +153,29 @@ public class HistoryView extends ViewPart {
 		versionTreeAction.setToolTipText("Open Version Tree");
 		versionTreeAction.setEnabled(false);
 
-
-
 		getViewSite().getActionBars().getToolBarManager().add(compareAction);
 		getViewSite().getActionBars().getToolBarManager().add(versionTreeAction);
 		getViewSite().getActionBars().getToolBarManager().update(true);
 
-	}		        
+	}
 
+	@Override
 	public void setFocus() {
-
 
 	}
 
-	public void setHistoryInformation(IResource element, Vector<ElementHistory> history)
-	{
+	public void setHistoryInformation(IResource element, Vector<ElementHistory> history) {
 		this.element = element;
 		this.elemHistory = history;
 
 		historyTable.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				historyTable.removeAll();
-				if(HistoryView.this.element != null)
+				if (HistoryView.this.element != null) {
 					elementLabel.setText(HistoryView.this.element.getLocation().toOSString());
-				for (ElementHistory elem : elemHistory)
-				{
-					String [] row = new String [5];
+				}
+				for (ElementHistory elem : elemHistory) {
+					String[] row = new String[5];
 
 					row[0] = elem.getDate();
 					row[1] = elem.getuser();
@@ -201,11 +183,11 @@ public class HistoryView extends ViewPart {
 					row[3] = elem.getLabel();
 					row[4] = elem.getComment();
 
-					TableItem rowItem = new TableItem(historyTable,SWT.NONE);
+					TableItem rowItem = new TableItem(historyTable, SWT.NONE);
 					rowItem.setText(row);
 				}
 
-				historyTable.update();		
+				historyTable.update();
 				versionTreeAction.setEnabled(true);
 				versionTreeItem.setEnabled(true);
 				getViewSite().getActionBars().getToolBarManager().update(true);
@@ -213,36 +195,27 @@ public class HistoryView extends ViewPart {
 		});
 	}
 
-
-
-	private void open()
-	{
+	private void open() {
 
 	}
 
-	private void versionTree()
-	{
+	private void versionTree() {
 		VersionTreeAction action = new VersionTreeAction();
 		action.setResource(element);
-		action.execute((IAction)null);
+		action.execute((IAction) null);
 	}
 
-	private void compare()
-	{
-		if(historyTable.getSelectionCount() == 1 || historyTable.getSelectionCount() == 2)
-		{
+	private void compare() {
+		if (historyTable.getSelectionCount() == 1 || historyTable.getSelectionCount() == 2) {
 			CompareWithVersionAction action = new CompareWithVersionAction();
 			action.setElement(element);
-			if(historyTable.getSelectionCount() == 1)
-			{
+			if (historyTable.getSelectionCount() == 1) {
 				action.setVersionA(historyTable.getSelection()[0].getText(2));
-			}
-			else if(historyTable.getSelectionCount() == 2)
-			{
+			} else if (historyTable.getSelectionCount() == 2) {
 				action.setVersionA(historyTable.getSelection()[0].getText(2));
 				action.setVersionB(historyTable.getSelection()[1].getText(2));
 			}
-			action.execute((IAction)null);
+			action.execute((IAction) null);
 		}
 	}
 

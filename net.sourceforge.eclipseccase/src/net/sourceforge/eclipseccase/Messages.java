@@ -17,31 +17,32 @@ import java.util.ResourceBundle;
 
 /**
  * Class for accessing the resource bundle with message strings.
- *
+ * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
 public class Messages {
 
-    private static final String BUNDLE_NAME = "net.sourceforge.eclipseccase.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "net.sourceforge.eclipseccase.messages";//$NON-NLS-1$
 
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-            .getBundle(BUNDLE_NAME);
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
+			.getBundle(BUNDLE_NAME);
 
-    private Messages() {
-        // hidden
-    }
+	private Messages() {
+		// hidden
+	}
 
-    /**
-     * Returns the string for the specified key.
-     * @param key
-     * @return the string for the specified key
-     */
-    public static String getString(String key) {
-        // TODO Auto-generated method stub
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
+	/**
+	 * Returns the string for the specified key.
+	 * 
+	 * @param key
+	 * @return the string for the specified key
+	 */
+	public static String getString(String key) {
+		// TODO Auto-generated method stub
+		try {
+			return RESOURCE_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
+		}
+	}
 }

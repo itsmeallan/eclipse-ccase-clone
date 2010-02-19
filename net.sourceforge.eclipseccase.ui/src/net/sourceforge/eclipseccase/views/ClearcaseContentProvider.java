@@ -12,7 +12,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
-
 import org.eclipse.jface.viewers.*;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.progress.DeferredTreeContentManager;
@@ -28,12 +27,14 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
-	 *      java.lang.Object, java.lang.Object)
+	 * @see
+	 * org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface
+	 * .viewers.Viewer, java.lang.Object, java.lang.Object)
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (viewer instanceof AbstractTreeViewer)
+		if (viewer instanceof AbstractTreeViewer) {
 			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer);
+		}
 	}
 
 	public boolean hasChildren(Object element) {
@@ -48,7 +49,9 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
+	 * @see
+	 * org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.
+	 * Object)
 	 */
 	public Object[] getChildren(Object element) {
 		if (element instanceof ClearcaseViewRoot) {
@@ -70,14 +73,17 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	 * @param root
 	 */
 	public void cancelJobs(ClearcaseViewRoot root) {
-		if (manager != null)
+		if (manager != null) {
 			manager.cancel(root);
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
+	 * @see
+	 * org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object
+	 * )
 	 */
 	public Object getParent(Object element) {
 		return null;
@@ -86,7 +92,9 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+	 * @see
+	 * org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java
+	 * .lang.Object)
 	 */
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);

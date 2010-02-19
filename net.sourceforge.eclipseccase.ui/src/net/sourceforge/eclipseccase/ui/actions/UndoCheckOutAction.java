@@ -1,24 +1,17 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-
-import org.eclipse.core.runtime.SubProgressMonitor;
-
-import net.sourceforge.eclipseccase.ui.actions.UnHijackAction.UnHijackQuestion;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-
 import java.util.*;
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * @author conwaym To change this generated comment edit the template variable
@@ -41,6 +34,7 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 		}
 	}
 
+	@Override
 	public void execute(IAction action) {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
@@ -69,26 +63,23 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 							Collections.sort(resList, new DirectoryLastComparator());
 
 							Vector<IResource> parents = new Vector<IResource>();
-							
 
-                        	ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+							ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 							for (int i = 0; i < resources.length; i++) {
 								IResource resource = resources[i];
 								ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-                                provider.setOperationListener(opListener);
+								provider.setOperationListener(opListener);
 								provider.uncheckout(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
-								
+
 								// update parent status only once
-								if(!parents.contains(resource.getParent()))
-								{
+								if (!parents.contains(resource.getParent())) {
 									parents.add(resource.getParent());
 								}
 							}
-							
-							for(IResource resource:parents)
-							{
+
+							for (IResource resource : parents) {
 								ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-                                provider.setOperationListener(opListener);
+								provider.setOperationListener(opListener);
 								provider.updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(monitor, 10));
 							}
 						}
@@ -102,6 +93,7 @@ public class UndoCheckOutAction extends ClearcaseWorkspaceAction {
 		executeInBackground(runnable, "Uncheckout resources from ClearCase");
 	}
 
+	@Override
 	public boolean isEnabled() {
 		IResource[] resources = getSelectedResources();
 		if (resources.length == 0)

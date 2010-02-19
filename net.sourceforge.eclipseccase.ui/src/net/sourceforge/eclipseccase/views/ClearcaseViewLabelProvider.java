@@ -17,9 +17,11 @@ public class ClearcaseViewLabelProvider extends WorkbenchLabelProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.model.WorkbenchLabelProvider#decorateText(java.lang.String,
-	 *      java.lang.Object)
+	 * @see
+	 * org.eclipse.ui.model.WorkbenchLabelProvider#decorateText(java.lang.String
+	 * , java.lang.Object)
 	 */
+	@Override
 	protected String decorateText(String input, Object element) {
 		if (element instanceof IResource)
 			return ((IResource) element).getFullPath().toString();

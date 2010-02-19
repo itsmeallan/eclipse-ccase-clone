@@ -34,9 +34,10 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.progress.IDeferredWorkbenchAdapter#fetchDeferredChildren(java.lang.Object,
-	 *      org.eclipse.jface.progress.IElementCollector,
-	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 * @see
+	 * org.eclipse.ui.progress.IDeferredWorkbenchAdapter#fetchDeferredChildren
+	 * (java.lang.Object, org.eclipse.jface.progress.IElementCollector,
+	 * org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void fetchDeferredChildren(Object object, IElementCollector collector, IProgressMonitor monitor) {
 		try {
@@ -49,8 +50,9 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 					IResource resource = (IResource) adaptables[i].getAdapter(IResource.class);
 					if (null != resource) {
 						IProject project = resource.getProject();
-						if (null != project && !projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project))
+						if (null != project && !projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project)) {
 							projectsToSearch.add(project);
+						}
 					}
 				}
 			} else {
@@ -59,8 +61,9 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 				projectsToSearch = new ArrayList(projects.length);
 				for (int i = 0; i < projects.length; i++) {
 					IProject project = projects[i];
-					if (!projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project))
+					if (!projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project)) {
 						projectsToSearch.add(project);
+					}
 				}
 			}
 
@@ -93,7 +96,9 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.progress.IDeferredWorkbenchAdapter#getRule(java.lang.Object)
+	 * @see
+	 * org.eclipse.ui.progress.IDeferredWorkbenchAdapter#getRule(java.lang.Object
+	 * )
 	 */
 	public ISchedulingRule getRule(Object object) {
 		return ResourcesPlugin.getWorkspace().getRoot();
@@ -111,7 +116,9 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object)
+	 * @see
+	 * org.eclipse.ui.model.IWorkbenchAdapter#getImageDescriptor(java.lang.Object
+	 * )
 	 */
 	public ImageDescriptor getImageDescriptor(Object object) {
 		return getWorkspaceWorkbenchAdapter().getImageDescriptor(object);

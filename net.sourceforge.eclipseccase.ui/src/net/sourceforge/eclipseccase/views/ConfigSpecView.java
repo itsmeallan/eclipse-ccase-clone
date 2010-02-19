@@ -1,53 +1,27 @@
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.swt.graphics.Font;
-
-import org.eclipse.jface.resource.JFaceResources;
-
-import org.eclipse.jface.resource.FontRegistry;
-
-import org.eclipse.ui.themes.ITheme;
-
-import org.eclipse.ui.themes.IThemeManager;
-
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.console.IConsoleView;
-
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsole;
-
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory;
-
-import org.eclipse.jface.action.IAction;
-
-import net.sourceforge.eclipseccase.ui.actions.SetConfigSpecAction;
-
-import org.eclipse.swt.layout.GridData;
-
-import org.eclipse.swt.widgets.Label;
-
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Group;
-
-import org.eclipse.swt.events.ModifyEvent;
-
-import org.eclipse.swt.events.ModifyListener;
-
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
-
+import net.sourceforge.eclipseccase.ui.actions.SetConfigSpecAction;
+import net.sourceforge.eclipseccase.ui.console.ClearCaseConsole;
+import net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory;
 import org.eclipse.core.resources.IResource;
-
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-
-import org.eclipse.swt.widgets.Composite;
-
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 
 public class ConfigSpecView extends ViewPart {
 
@@ -71,6 +45,7 @@ public class ConfigSpecView extends ViewPart {
 
 	private Label configSpecLabel;
 
+	@Override
 	public void createPartControl(Composite parent) {
 
 		bConfigSpecModified = false;
@@ -111,17 +86,20 @@ public class ConfigSpecView extends ViewPart {
 
 		// Refresh Button
 		refreshAction = new Action() {
+			@Override
 			public void run() {
 				refresh();
 			}
 		};
 
 		saveAction = new Action() {
+			@Override
 			public void run() {
 				save();
 			}
 		};
 		clearAction = new Action() {
+			@Override
 			public void run() {
 				clear();
 			}
@@ -136,18 +114,18 @@ public class ConfigSpecView extends ViewPart {
 		clearAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/clear.gif"));
 		clearAction.setToolTipText("Clear");
 
-
 		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 		ITheme currentTheme = themeManager.getCurrentTheme();
-		 
+
 		FontRegistry fontRegistry = currentTheme.getFontRegistry();
-		Font font = fontRegistry.get(JFaceResources.TEXT_FONT);		
-		
+		Font font = fontRegistry.get(JFaceResources.TEXT_FONT);
+
 		configSpec.setFont(font);
-		
+
 		focusOnConfigSpec();
 	}
 
+	@Override
 	public void setFocus() {
 	}
 
@@ -159,8 +137,6 @@ public class ConfigSpecView extends ViewPart {
 			refresh();
 		}
 	}
-
-
 
 	private void focusOnConfigSpec() {
 		configSpec.getDisplay().asyncExec(new Runnable() {
@@ -220,24 +196,18 @@ public class ConfigSpecView extends ViewPart {
 		getViewSite().getActionBars().getToolBarManager().update(true);
 		configSpecTxt = configSpec.getText();
 
-
-
 		SetConfigSpecAction saveAction = new SetConfigSpecAction();
 		saveAction.setResource(this.resource);
 		saveAction.setConfigSpecTxt(configSpecTxt);
 
-		try
-		{
-			saveAction.execute((IAction)null);
+		try {
+			saveAction.execute((IAction) null);
 			bConfigSpecModified = false;
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
 			console.err.println("A Problem occurs while updating Config Spec.\n" + e.getMessage());
 			console.show();
-		}
-		finally {
+		} finally {
 		}
 
 	}

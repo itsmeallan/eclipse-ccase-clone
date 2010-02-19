@@ -26,7 +26,7 @@ public class CommentDialog extends Dialog {
 		commentDialogArea = new CommentDialogArea(this, null);
 		this.title = dialogTitle;
 	}
-	
+
 	/**
 	 * Creates a new CommentDialog instance.
 	 * 
@@ -70,6 +70,7 @@ public class CommentDialog extends Dialog {
 	/**
 	 * @see Dialog#createDialogArea(Composite)
 	 */
+	@Override
 	protected Control createDialogArea(Composite parent) {
 		getShell().setText(title);
 		Composite composite = new Composite(parent, SWT.NULL);
@@ -79,8 +80,9 @@ public class CommentDialog extends Dialog {
 		commentDialogArea.createArea(composite);
 		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty() == CommentDialogArea.OK_REQUESTED)
+				if (event.getProperty() == CommentDialogArea.OK_REQUESTED) {
 					okPressed();
+				}
 			}
 		});
 
@@ -107,6 +109,7 @@ public class CommentDialog extends Dialog {
 	 * 
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
 	 */
+	@Override
 	protected void okPressed() {
 		super.okPressed();
 	}

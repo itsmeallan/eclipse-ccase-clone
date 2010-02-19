@@ -26,108 +26,111 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 
-    /** the parent */
-    final Composite parent;
+	/** the parent */
+	final Composite parent;
 
-    /** the slaves */
-    ArrayList slaves = new ArrayList();
+	/** the slaves */
+	ArrayList slaves = new ArrayList();
 
-    /** the enabled state */
-    boolean enabled = true;
-    
-    /**
-     * @param text_prefix_decoration
-     * @param string
-     * @param fieldEditorParent
-     */
-    public MasterBooleanFieldEditor(String text_prefix_decoration,
-            String string, Composite fieldEditorParent) {
-        super(text_prefix_decoration, string, fieldEditorParent);
-        parent = fieldEditorParent;
-    }
+	/** the enabled state */
+	boolean enabled = true;
 
-    /**
-     * Adds a slave editor to control.
-     * 
-     * @param slave
-     */
-    public void addSlave(FieldEditor slave) {
-        slaves.add(slave);
-        slave.setEnabled(getBooleanValue(), parent);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoad()
-     */
-    protected void doLoad() {
-
-        // call super
-        super.doLoad();
-
-        updateSlaves();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoadDefault()
-     */
-    protected void doLoadDefault() {
-
-        // call super
-        super.doLoadDefault();
-
-        updateSlaves();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.preference.FieldEditor#fireValueChanged(java.lang.String,
-     *      java.lang.Object, java.lang.Object)
-     */
-    protected void fireValueChanged(String property, Object oldValue,
-            Object newValue) {
-        if (VALUE.equals(property)) {
-            updateSlaves();
-        }
-        super.fireValueChanged(property, oldValue, newValue);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.preference.BooleanFieldEditor#setEnabled(boolean,
-     *      org.eclipse.swt.widgets.Composite)
-     */
-    public void setEnabled(boolean enabled, Composite parent) {
-
-        // call super
-        super.setEnabled(enabled, parent);
-
-        this.enabled = enabled;
-        updateSlaves();
-    }
-
-    private void updateSlaves() {
-	boolean enable = enabled && getBooleanValue();
-	for (int i = 0; i < slaves.size(); i++) {
-
-	    Object e = slaves.get(i);
-	    FieldEditor fe = (FieldEditor) e;
-	    String name = fe.getPreferenceName();
-	    String imageccelelmentback = ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND;
-	    if (name.equals(imageccelelmentback) && enable) {
-		FileFieldEditor fed = ((FileFieldEditor) fe);
-		fed.setEmptyStringAllowed(false);
-
-	    } else if (name.equals(imageccelelmentback) && !enable) {
-		FileFieldEditor fed = ((FileFieldEditor) fe);
-		fed.setEmptyStringAllowed(true);
-	    }
-	    fe.setEnabled(enable, parent);
+	/**
+	 * @param text_prefix_decoration
+	 * @param string
+	 * @param fieldEditorParent
+	 */
+	public MasterBooleanFieldEditor(String text_prefix_decoration, String string, Composite fieldEditorParent) {
+		super(text_prefix_decoration, string, fieldEditorParent);
+		parent = fieldEditorParent;
 	}
-    }
+
+	/**
+	 * Adds a slave editor to control.
+	 * 
+	 * @param slave
+	 */
+	public void addSlave(FieldEditor slave) {
+		slaves.add(slave);
+		slave.setEnabled(getBooleanValue(), parent);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoad()
+	 */
+	@Override
+	protected void doLoad() {
+
+		// call super
+		super.doLoad();
+
+		updateSlaves();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.BooleanFieldEditor#doLoadDefault()
+	 */
+	@Override
+	protected void doLoadDefault() {
+
+		// call super
+		super.doLoadDefault();
+
+		updateSlaves();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.jface.preference.FieldEditor#fireValueChanged(java.lang.String
+	 * , java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	protected void fireValueChanged(String property, Object oldValue, Object newValue) {
+		if (VALUE.equals(property)) {
+			updateSlaves();
+		}
+		super.fireValueChanged(property, oldValue, newValue);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.preference.BooleanFieldEditor#setEnabled(boolean,
+	 * org.eclipse.swt.widgets.Composite)
+	 */
+	@Override
+	public void setEnabled(boolean enabled, Composite parent) {
+
+		// call super
+		super.setEnabled(enabled, parent);
+
+		this.enabled = enabled;
+		updateSlaves();
+	}
+
+	private void updateSlaves() {
+		boolean enable = enabled && getBooleanValue();
+		for (int i = 0; i < slaves.size(); i++) {
+
+			Object e = slaves.get(i);
+			FieldEditor fe = (FieldEditor) e;
+			String name = fe.getPreferenceName();
+			String imageccelelmentback = ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND;
+			if (name.equals(imageccelelmentback) && enable) {
+				FileFieldEditor fed = ((FileFieldEditor) fe);
+				fed.setEmptyStringAllowed(false);
+
+			} else if (name.equals(imageccelelmentback) && !enable) {
+				FileFieldEditor fed = ((FileFieldEditor) fe);
+				fed.setEmptyStringAllowed(true);
+			}
+			fe.setEnabled(enable, parent);
+		}
+	}
 }

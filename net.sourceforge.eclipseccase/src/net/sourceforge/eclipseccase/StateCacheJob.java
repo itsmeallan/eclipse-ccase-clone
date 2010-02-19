@@ -71,17 +71,15 @@ class StateCacheJob implements Comparable {
 		// use priority delta
 		int priorityDelta = this.priority - other.priority;
 
-		if (priorityDelta > 0) {
+		if (priorityDelta > 0)
 			// our priority is higher than the other priority
 			// we are greater than the other
 			return 1;
-		}
 
-		if (priorityDelta < 0) {
+		if (priorityDelta < 0)
 			// our priority is smaller than the other priority
 			// we are lesser than the other
 			return -1;
-		}
 
 		// equal priority
 		return 0;
@@ -128,6 +126,7 @@ class StateCacheJob implements Comparable {
 	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 
 		if (null == getStateCache())
@@ -141,6 +140,7 @@ class StateCacheJob implements Comparable {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 
 		if (this == obj)

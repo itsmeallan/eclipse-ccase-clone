@@ -14,19 +14,18 @@ package net.sourceforge.eclipseccase;
 
 import org.eclipse.core.resources.team.ResourceRuleFactory;
 
-
 /**
- * A resource rule factory for clearcase operations. 
- *
+ * A resource rule factory for clearcase operations.
+ * 
  * @author Gunnar Wagenknecht (gunnar@wagenknecht.org)
  */
 class ClearcaseResourceRuleFactory extends ResourceRuleFactory {
 
-    /**
-     * Creates a new instance.
-     */
-    ClearcaseResourceRuleFactory() {
-        super();
-    }
+	/**
+	 * Creates a new instance.
+	 */
+	ClearcaseResourceRuleFactory() {
+		super();
+	}
 
 }

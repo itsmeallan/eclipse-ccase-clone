@@ -178,12 +178,11 @@ public class ClearcasePlugin extends Plugin {
 				trace("debugging " + DEBUG_OPTION_STATE_CACHE); //$NON-NLS-1$
 				ClearcasePlugin.DEBUG_STATE_CACHE = true;
 			}
-			
+
 			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
 				trace("debugging " + DEBUG_OPTION_SUBPROCESS); //$NON-NLS-1$
 				ClearcasePlugin.getEngine().setDebugLevel(100);
 			}
-			
 
 			String[] args = Platform.getCommandLineArgs();
 			for (int i = 0; i < args.length; i++) {
@@ -204,7 +203,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	static boolean getDebugOption(String optionId) {
 		String option = Platform.getDebugOption(optionId);
-		return option != null ? Boolean.valueOf(option).booleanValue() : false; //$NON-NLS-1$
+		return option != null ? Boolean.valueOf(option).booleanValue() : false;
 	}
 
 	/**
@@ -541,17 +540,17 @@ public class ClearcasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
 	}
-	
+
 	/**
 	 * Gets the preference value for <code>CLEARCASE_PRIMARY_GROUP</code>.
 	 * 
 	 * @return the CLEARCASE_PRIMARY_GROUP name
 	 */
-	public static String getClearcasePrimaryGroup(){
+	public static String getClearcasePrimaryGroup() {
 		return getInstance().getPluginPreferences().getString(
 				IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
 	}
-	
+
 	public static boolean isCheckinIdenticalAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.CHECKIN_IDENTICAL);
@@ -567,20 +566,18 @@ public class ClearcasePlugin extends Plugin {
 	}
 
 	/**
-	 * @return True if refresh should traverse the link parent during
-	 *         refresh, which is an optimization for linked directories.
+	 * @return True if refresh should traverse the link parent during refresh,
+	 *         which is an optimization for linked directories.
 	 */
 	public static boolean isTestLinkedParentInClearCase() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE);
 	}
-	
-	
+
 	public static boolean isAutoCheckinParentAfterMoveAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE);
 	}
-
 
 	public static int jobQueuePriority() {
 		return getInstance().getPluginPreferences().getInt(
@@ -646,8 +643,9 @@ public class ClearcasePlugin extends Plugin {
 			}
 
 			// remove existing comment (avoid duplicates)
-			if (previousComments.contains(comment))
+			if (previousComments.contains(comment)) {
 				previousComments.remove(comment);
+			}
 
 			// insert the comment as the first element
 			previousComments.addFirst(comment);
@@ -687,16 +685,19 @@ public class ClearcasePlugin extends Plugin {
 	public ClearCaseInterface getClearcase() throws CoreException {
 		try {
 			if (clearcaseImpl == null) {
-				if (DEBUG)
+				if (DEBUG) {
 					trace("initializing clearcase engine"); //$NON-NLS-1$
+				}
 				if (isUseCleartool()) {
-					if (DEBUG)
+					if (DEBUG) {
 						trace("using cleartool engine"); //$NON-NLS-1$
+					}
 					clearcaseImpl = ClearCase
 							.createInterface(ClearCase.INTERFACE_CLI);
 				} else {
-					if (DEBUG)
+					if (DEBUG) {
 						trace("using default engine"); //$NON-NLS-1$
+					}
 					clearcaseImpl = ClearCase
 							.createInterface(ClearCase.INTERFACE_CLI_SP);
 				}
@@ -735,6 +736,7 @@ public class ClearcasePlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
 	 */
+	@Override
 	protected void initializeDefaultPluginPreferences() {
 		Preferences pref = getPluginPreferences();
 
@@ -744,13 +746,15 @@ public class ClearcasePlugin extends Plugin {
 		pref.setDefault(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
 				true);
-		
-		String sClearcasePrimaryGroup = System.getenv("CLEARCASE_PRIMARY_GROUP");
-		if (sClearcasePrimaryGroup == null)  sClearcasePrimaryGroup = "";
-		pref.setDefault(
-				IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
+
+		String sClearcasePrimaryGroup = System
+				.getenv("CLEARCASE_PRIMARY_GROUP");
+		if (sClearcasePrimaryGroup == null) {
+			sClearcasePrimaryGroup = "";
+		}
+		pref.setDefault(IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
 				sClearcasePrimaryGroup);
-		
+
 		pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
 		pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
 		pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
@@ -789,7 +793,9 @@ public class ClearcasePlugin extends Plugin {
 		pref.setDefault(
 				IClearcasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT,
 				true);
-		pref.setDefault(IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE, false);
+		pref.setDefault(
+				IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE,
+				false);
 
 	}
 
@@ -870,8 +876,9 @@ public class ClearcasePlugin extends Plugin {
 									if (null != comment) {
 										comment = new String(BASE64_DECODER
 												.decodeBuffer(comment), UTF_8);
-										if (!previousComments.contains(comment))
+										if (!previousComments.contains(comment)) {
 											previousComments.addLast(comment);
+										}
 									}
 								}
 							}
@@ -929,7 +936,7 @@ public class ClearcasePlugin extends Plugin {
 	private void saveCommentHistory() throws CoreException {
 		IPath pluginStateLocation = getStateLocation();
 		File tempFile = pluginStateLocation.append(COMMENT_HIST_FILE + ".tmp") //$NON-NLS-1$
-				.toFile(); //$NON-NLS-1$
+				.toFile();
 		File histFile = pluginStateLocation.append(COMMENT_HIST_FILE).toFile();
 		try {
 			XMLWriter writer = new XMLWriter(new BufferedOutputStream(
@@ -943,13 +950,12 @@ public class ClearcasePlugin extends Plugin {
 				histFile.delete();
 			}
 			boolean renamed = tempFile.renameTo(histFile);
-			if (!renamed) {
+			if (!renamed)
 				throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
 						TeamException.UNABLE, MessageFormat.format(Messages
 								.getString("ClearcasePlugin.error.renameFile"), //$NON-NLS-1$
 								new Object[] { tempFile.getAbsolutePath() }),
 						null));
-			}
 		} catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
 					TeamException.UNABLE, MessageFormat.format(Messages
@@ -964,6 +970,7 @@ public class ClearcasePlugin extends Plugin {
 	 * @see
 	 * org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
@@ -978,6 +985,7 @@ public class ClearcasePlugin extends Plugin {
 		Job processSavedState = new Job(Messages
 				.getString("savedState.jobName")) { //$NON-NLS-1$
 
+			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -994,8 +1002,9 @@ public class ClearcasePlugin extends Plugin {
 									.addSaveParticipant(ClearcasePlugin.this,
 											cacheFactory);
 							if (savedState != null) {
-								if (DEBUG)
+								if (DEBUG) {
 									trace("loading saved state"); //$NON-NLS-1$
+								}
 								cacheFactory.load(savedState);
 								// the event type coming from the saved state is
 								// always POST_AUTO_BUILD
@@ -1027,6 +1036,7 @@ public class ClearcasePlugin extends Plugin {
 	 * @see
 	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 
@@ -1052,10 +1062,11 @@ public class ClearcasePlugin extends Plugin {
 	private void writeCommentHistory(XMLWriter writer) throws IOException {
 		synchronized (previousComments) {
 			writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
-			for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++)
+			for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++) {
 				writer.printSimpleTag(ELEMENT_COMMENT, BASE64_ENCODER
 						.encode(((String) previousComments.get(i))
 								.getBytes(UTF_8)));
+			}
 			writer.endTag(ELEMENT_COMMENT_HISTORY);
 		}
 	}

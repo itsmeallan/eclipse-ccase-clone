@@ -62,7 +62,7 @@ import java.util.NoSuchElementException;
  * 
  * @since Commons Collections 2.1
  * @version $Revision$ $Date$
- *
+ * 
  * @author Avalon
  * @author Berin Loritsch
  * @author Jeff Turner
@@ -70,45 +70,49 @@ import java.util.NoSuchElementException;
  * @author Stephen Colebourne
  */
 public class BufferUnderflowException extends NoSuchElementException {
-    private static final long serialVersionUID = 4054570024234606028L;
-    /** The root cause throwable */
-    private final Throwable throwable;
+	private static final long serialVersionUID = 4054570024234606028L;
+	/** The root cause throwable */
+	private final Throwable throwable;
 
-    /**
-     * Constructs a new <code>BufferUnderflowException</code>.
-     */
-    public BufferUnderflowException() {
-        super();
-        throwable = null;
-    }
+	/**
+	 * Constructs a new <code>BufferUnderflowException</code>.
+	 */
+	public BufferUnderflowException() {
+		super();
+		throwable = null;
+	}
 
-    /** 
-     * Construct a new <code>BufferUnderflowException</code>.
-     * 
-     * @param message  the detail message for this exception
-     */
-    public BufferUnderflowException(String message) {
-        this(message, null);
-    }
+	/**
+	 * Construct a new <code>BufferUnderflowException</code>.
+	 * 
+	 * @param message
+	 *            the detail message for this exception
+	 */
+	public BufferUnderflowException(String message) {
+		this(message, null);
+	}
 
-    /** 
-     * Construct a new <code>BufferUnderflowException</code>.
-     * 
-     * @param message  the detail message for this exception
-     * @param exception  the root cause of the exception
-     */
-    public BufferUnderflowException(String message, Throwable exception) {
-        super(message);
-        throwable = exception;
-    }
+	/**
+	 * Construct a new <code>BufferUnderflowException</code>.
+	 * 
+	 * @param message
+	 *            the detail message for this exception
+	 * @param exception
+	 *            the root cause of the exception
+	 */
+	public BufferUnderflowException(String message, Throwable exception) {
+		super(message);
+		throwable = exception;
+	}
 
-    /**
-     * Gets the root cause of the exception.
-     *
-     * @return the root cause
-     */
-    public final Throwable getCause() {
-        return throwable;
-    }
-    
+	/**
+	 * Gets the root cause of the exception.
+	 * 
+	 * @return the root cause
+	 */
+	@Override
+	public final Throwable getCause() {
+		return throwable;
+	}
+
 }

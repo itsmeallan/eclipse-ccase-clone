@@ -13,14 +13,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import org.eclipse.jface.preference.StringFieldEditor;
-
-import org.eclipse.core.runtime.jobs.Job;
-
 import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.*;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -75,6 +71,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 * org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors
 	 * ()
 	 */
+	@Override
 	protected void createFieldEditors() {
 
 		// general settings
@@ -179,6 +176,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 * 
 	 * @see org.eclipse.jface.preference.IPreferencePage#performOk()
 	 */
+	@Override
 	public boolean performOk() {
 		if (super.performOk()) {
 			ClearcasePlugin.getInstance().resetClearcase();
@@ -194,6 +192,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 * net.sourceforge.eclipseccase.ui.preferences.TabFieldEditorPreferencePage
 	 * #getCategories()
 	 */
+	@Override
 	protected String[] getCategories() {
 		return CATEGORIES;
 	}
@@ -204,6 +203,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 * @seenet.sourceforge.eclipseccase.ui.preferences.
 	 * FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
 	 */
+	@Override
 	protected String getDescription(String category) {
 		if (GENERAL.equals(category))
 			return PreferenceMessages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$

@@ -17,24 +17,29 @@ public class ActivatePluginAction extends ActionDelegate implements IObjectActio
 		super();
 	}
 
+	@Override
 	public void dispose() {
 	}
 
 	public void init(IWorkbenchWindow window) {
 	}
 
+	@Override
 	public void run(IAction action) {
 		MessageDialog.openInformation(ClearcaseUI.getInstance().getWorkbench().getActiveWorkbenchWindow().getShell(), "Clearcase Plugin", "The Clearcase plugin has been activated");
-		if (action != null)
+		if (action != null) {
 			action.setEnabled(false);
+		}
 	}
 
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (action != null && firstTime) {
 			firstTime = false;
 			action.setEnabled(true);
-		} else
+		} else {
 			action.setEnabled(false);
+		}
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {

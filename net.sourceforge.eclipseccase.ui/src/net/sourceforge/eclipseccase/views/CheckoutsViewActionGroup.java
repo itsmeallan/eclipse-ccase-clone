@@ -26,14 +26,17 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	private Action hideCheckouts;
 
 	private Action hideNewElements;
-	
+
 	private Action hideHijackedElements;
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#fillActionBars(org.eclipse.ui.IActionBars)
+	 * @see
+	 * net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#fillActionBars
+	 * (org.eclipse.ui.IActionBars)
 	 */
+	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		IMenuManager menu = actionBars.getMenuManager();
 		IMenuManager submenu = new MenuManager("Hide...");
@@ -49,12 +52,15 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#makeActions()
+	 * @see
+	 * net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#makeActions()
 	 */
+	@Override
 	protected void makeActions() {
 		super.makeActions();
 
 		hideCheckouts = new Action("checkouts") {
+			@Override
 			public void run() {
 				getCheckoutsView().setHideCheckouts(!getCheckoutsView().hideCheckouts());
 			}
@@ -62,15 +68,16 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 		};
 		hideCheckouts.setToolTipText("Hide checked out elements");
 		hideHijackedElements = new Action("Hijacked elements") {
+			@Override
 			public void run() {
 				getCheckoutsView().setHideHijackedElements(!getCheckoutsView().hideHijackedElements());
 			}
 
 		};
 		hideHijackedElements.setToolTipText("Hide Hijacked elements");
-		
 
 		hideNewElements = new Action("new elements") {
+			@Override
 			public void run() {
 				getCheckoutsView().setHideNewElements(!getCheckoutsView().hideNewElements());
 			}
@@ -91,6 +98,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	 * 
 	 * @see org.eclipse.ui.views.navigator.MainActionGroup#updateActionBars()
 	 */
+	@Override
 	public void updateActionBars() {
 		super.updateActionBars();
 
