@@ -90,29 +90,30 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		}
 
 		private ImageDescriptor getElementBackgroundImage() {
-			if (!customClearCaseElementsBackground.getBooleanValue())
-				return IMG_DESC_ELEMENT_BG;
+			// if (!customClearCaseElementsBackground.getBooleanValue())
+			return IMG_DESC_ELEMENT_BG;
 
-			String customImage = imageClearCaseElementsBackground.getStringValue();
-			if (null == customImage || customImage.trim().length() == 0)
-				return ImageDescriptor.getMissingImageDescriptor();
-
-			if (!(customImage.toLowerCase().endsWith(".gif") //$NON-NLS-1$
-					|| customImage.toLowerCase().endsWith(".jpg") //$NON-NLS-1$
-			|| customImage.toLowerCase().endsWith(".png"))) //$NON-NLS-1$
-				return ImageDescriptor.getMissingImageDescriptor();
-
-			// create image
-			File imageFile = new File(customImage);
-			if (imageFile.canRead()) {
-				try {
-					return ImageDescriptor.createFromURL(imageFile.toURL());
-				} catch (MalformedURLException e) {
-					// ignore
-				}
-			}
-			// ensure image is not null
-			return ImageDescriptor.getMissingImageDescriptor();
+			// String customImage =
+			// imageClearCaseElementsBackground.getStringValue();
+			// if (null == customImage || customImage.trim().length() == 0)
+			// return ImageDescriptor.getMissingImageDescriptor();
+			//
+			//			if (!(customImage.toLowerCase().endsWith(".gif") //$NON-NLS-1$
+			//					|| customImage.toLowerCase().endsWith(".jpg") //$NON-NLS-1$
+			//			|| customImage.toLowerCase().endsWith(".png"))) //$NON-NLS-1$
+			// return ImageDescriptor.getMissingImageDescriptor();
+			//
+			// // create image
+			// File imageFile = new File(customImage);
+			// if (imageFile.canRead()) {
+			// try {
+			// return ImageDescriptor.createFromURL(imageFile.toURL());
+			// } catch (MalformedURLException e) {
+			// // ignore
+			// }
+			// }
+			// // ensure image is not null
+			// return ImageDescriptor.getMissingImageDescriptor();
 		}
 
 		public Font getFont(Object element) {
@@ -147,9 +148,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 					overlay = IMG_DESC_CHECKED_IN;
 				}
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			} else if (element.equals(PREVIEW_FOLDER)) {
 				// checked in
 				// dirty (has view private and checked in)
@@ -159,9 +160,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 					overlay = IMG_DESC_CHECKED_IN;
 				}
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			} else if (element.equals(PREVIEW_VIEWPRIVATE_TXT)) {
 				// view private
 				if (decorateViewPrivate.getBooleanValue()) {
@@ -173,9 +174,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 					overlay = IMG_DESC_EDITED;
 				}
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			} else if (element.equals(PREVIEW_UNKNOWNSTATE_TXT)) {
 				// unknown state
 				if (decorateUnknown.getBooleanValue()) {
@@ -187,9 +188,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 					overlay = IMG_DESC_CHECKED_IN;
 				}
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			} else if (element.equals(PREVIEW_CHECKEDOUT_JAVA)) {
 				// checked out
 				overlay = IMG_DESC_CHECKED_OUT;
@@ -199,16 +200,16 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 					overlay = IMG_DESC_HIJACKED;
 				}
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			} else if (element.equals(PREVIEW_LINKED_FOLDER)) {
 				// linked
 				overlay = IMG_DESC_LINK;
 				// background
-				if (decorateClearCaseElements.getBooleanValue()) {
-					background = getElementBackgroundImage();
-				}
+				// if (decorateClearCaseElements.getBooleanValue()) {
+				// background = getElementBackgroundImage();
+				// }
 			}
 
 			if (null == overlay && null == background)
@@ -415,11 +416,11 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 
 	BooleanFieldEditor addViewInfoToProjects;
 
-	MasterBooleanFieldEditor customClearCaseElementsBackground;
+	// MasterBooleanFieldEditor customClearCaseElementsBackground;
 
 	BooleanFieldEditor decorateCheckedIn;
 
-	MasterBooleanFieldEditor decorateClearCaseElements;
+	// MasterBooleanFieldEditor decorateClearCaseElements;
 
 	BooleanFieldEditor decorateEdited;
 
@@ -438,7 +439,7 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	/** Cache for folder images that have been overlayed with sample CVS icons */
 	Map imageCache;
 
-	FileFieldEditor imageClearCaseElementsBackground;
+	// FileFieldEditor imageClearCaseElementsBackground;
 
 	StringFieldEditor prefixCheckedInResources;
 
@@ -493,18 +494,18 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 
 		// image decoration
 
-		decorateClearCaseElements = new MasterBooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.clearCaseElements"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
-		addField(decorateClearCaseElements);
+		//		decorateClearCaseElements = new MasterBooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.clearCaseElements"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		// addField(decorateClearCaseElements);
 
-		customClearCaseElementsBackground = new MasterBooleanFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, PreferenceMessages.getString("DecoratorPreferencePage.customClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
-		decorateClearCaseElements.addSlave(customClearCaseElementsBackground);
-		addField(customClearCaseElementsBackground);
+		//		customClearCaseElementsBackground = new MasterBooleanFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, PreferenceMessages.getString("DecoratorPreferencePage.customClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		// decorateClearCaseElements.addSlave(customClearCaseElementsBackground);
+		// addField(customClearCaseElementsBackground);
 
-		imageClearCaseElementsBackground = new FileFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND, PreferenceMessages.getString("DecoratorPreferencePage.imageClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
-		imageClearCaseElementsBackground.setFileExtensions(new String[] { "*.gif;*.jpg;*.png" }); //$NON-NLS-1$
-		imageClearCaseElementsBackground.setEmptyStringAllowed(true);
-		customClearCaseElementsBackground.addSlave(imageClearCaseElementsBackground);
-		addField(imageClearCaseElementsBackground);
+		//		imageClearCaseElementsBackground = new FileFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND, PreferenceMessages.getString("DecoratorPreferencePage.imageClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		//		imageClearCaseElementsBackground.setFileExtensions(new String[] { "*.gif;*.jpg;*.png" }); //$NON-NLS-1$
+		// imageClearCaseElementsBackground.setEmptyStringAllowed(true);
+		// customClearCaseElementsBackground.addSlave(imageClearCaseElementsBackground);
+		// addField(imageClearCaseElementsBackground);
 
 		decorateCheckedIn = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedIn"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		addField(decorateCheckedIn);

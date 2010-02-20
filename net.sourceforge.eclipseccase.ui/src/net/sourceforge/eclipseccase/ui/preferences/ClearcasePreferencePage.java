@@ -108,6 +108,9 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		//		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
 		// ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));
 
+		addField(new BooleanFieldEditor(USE_CLEARDLG, PreferenceMessages.getString("Preferences.Source.ClearDlg"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+
 		addField(new RadioGroupFieldEditor(JOB_QUEUE_PRIORITY, PreferenceMessages.getString("Preferences.General.JobQueuePriority"), 1, //$NON-NLS-1$
 				PRIORITIES, getFieldEditorParent(GENERAL), true));
 
@@ -143,9 +146,6 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		// getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
-				getFieldEditorParent(SOURCE_MANAGEMENT)));
-
-		addField(new BooleanFieldEditor(USE_CLEARDLG, PreferenceMessages.getString("Preferences.Source.ClearDlg"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new RadioGroupFieldEditor(IClearcasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, //$NON-NLS-1$ 
