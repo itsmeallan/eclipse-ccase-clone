@@ -167,10 +167,15 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 			synchronized (provider) {
 				boolean refreshing = setResourceRefreshing(provider, false);
 				try {
+					if (ClearcasePlugin.isUseClearDlg()) {
+						ClearDlgHelper.checkout(files);
+					}
 					for (int i = 0; i < files.length; i++) {
 						IFile file = files[i];
-						provider.checkout(new IFile[] { file },
-								IResource.DEPTH_ZERO, null);
+						if (!ClearcasePlugin.isUseClearDlg()) {
+							provider.checkout(new IFile[] { file },
+									IResource.DEPTH_ZERO, null);
+						}
 						file.refreshLocal(IResource.DEPTH_ZERO, null);
 					}
 				} finally {

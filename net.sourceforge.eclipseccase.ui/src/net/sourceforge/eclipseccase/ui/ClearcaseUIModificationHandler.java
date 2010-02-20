@@ -12,9 +12,10 @@
 
 package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.eclipseccase.ClearDlgHelper;
+
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
-import net.sourceforge.eclipseccase.ui.actions.ClearDlgHelper;
 import net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferenceStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;

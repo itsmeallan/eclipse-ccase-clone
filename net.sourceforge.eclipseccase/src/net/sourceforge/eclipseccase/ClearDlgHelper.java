@@ -10,10 +10,9 @@
  *     IBM Corporation - concepts and ideas from Eclipse
  *******************************************************************************/
 
-package net.sourceforge.eclipseccase.ui.actions;
+package net.sourceforge.eclipseccase;
 
 import net.sourceforge.clearcase.commandline.*;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.team.core.TeamException;
 
