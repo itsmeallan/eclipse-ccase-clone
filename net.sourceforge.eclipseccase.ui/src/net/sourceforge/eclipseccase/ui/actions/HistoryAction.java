@@ -1,9 +1,9 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.io.IOException;
+import net.sourceforge.eclipseccase.ClearcasePlugin;
+
 import java.util.Vector;
 import net.sourceforge.clearcase.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.views.HistoryView;
 import org.eclipse.core.resources.IResource;
@@ -24,6 +24,7 @@ public class HistoryAction extends ClearcaseWorkspaceAction {
 
 	/**
 	 * {@inheritDoc
+
 	 */
 	@Override
 	public boolean isEnabled() {
@@ -57,19 +58,14 @@ public class HistoryAction extends ClearcaseWorkspaceAction {
 					if (resources != null && resources.length > 0) {
 						IResource resource = resources[0];
 						String path = resource.getLocation().toOSString();
-						if (ClearcasePlugin.isUseCleartool()) {
-							ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
-							Vector<ElementHistory> result = cci.getElementHistory(path);
 
-							view.setHistoryInformation(resources[0], result);
-
-							// new CommandLauncher().execute(new
-							// CleartoolCommandLine("lshistory").addOption("-graphical").addElement(path).create(),null,null,null);
-						} else {
-							Runtime.getRuntime().exec(new String[] { "clearhistory", resource.getLocation().toOSString() });
-						}
+						// ClearCaseInterface cci =
+						// ClearCase.createInterface(ClearCase.INTERFACE_CLI);
+						ClearCaseInterface cci = ClearcasePlugin.getEngine();
+						Vector<ElementHistory> result = cci.getElementHistory(path);
+						view.setHistoryInformation(resources[0], result);
 					}
-				} catch (IOException ex) {
+				} catch (Exception e) {
 
 				} finally {
 					monitor.done();

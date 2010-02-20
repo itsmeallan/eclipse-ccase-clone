@@ -96,13 +96,14 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		//		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
 		// getFieldEditorParent(GENERAL)));
 
+		// TODO: mike 20100220 remove isUseCleartool().
 		// use cleartool option only available on windows
-		BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL, PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
-				getFieldEditorParent(GENERAL));
+		//		BooleanFieldEditor useCleartool = new BooleanFieldEditor(USE_CLEARTOOL, PreferenceMessages.getString("Preferences.General.UseCleartool"), //$NON-NLS-1$
+		// getFieldEditorParent(GENERAL));
 		// TODO Achim: misused for testing
 		// useCleartool.setEnabled(ClearcasePlugin.isWindows(),
 		// getFieldEditorParent(GENERAL));
-		addField(useCleartool);
+		// addField(useCleartool);
 
 		//		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
 		// ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));

@@ -26,6 +26,7 @@ public class VersionTreeAction extends ClearcaseWorkspaceAction {
 
 	/**
 	 * {@inheritDoc
+
 	 */
 	@Override
 	public boolean isEnabled() {
@@ -67,20 +68,13 @@ public class VersionTreeAction extends ClearcaseWorkspaceAction {
 						} else {
 							workingDir = new File(resource.getLocation().toOSString()).getParentFile();
 						}
-
-						if (ClearcasePlugin.isUseCleartool()) {
-							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-							if (provider.isHijacked(resource)) {
-								new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path + "@@/").create(), workingDir, null, opListener);
-							} else {
-								new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path).create(), workingDir, null, opListener);
-							}
+						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+						if (provider.isHijacked(resource)) {
+							new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path + "@@/").create(), workingDir, null, opListener);
 						} else {
-							Runtime.getRuntime().exec(new String[] { "clearvtree", resource.getLocation().toOSString() });
-
+							new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path).create(), workingDir, null, opListener);
 						}
 					}
-				} catch (IOException ex) {
 
 				} finally {
 					monitor.done();

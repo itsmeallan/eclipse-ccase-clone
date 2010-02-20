@@ -517,9 +517,20 @@ public class ClearcasePlugin extends Plugin {
 	 * 
 	 * @return the preference value
 	 */
-	public static boolean isUseCleartool() {
+	// mike: 20100220 remove isUseCleartool.
+	// public static boolean isUseCleartool() {
+	// return getInstance().getPluginPreferences().getBoolean(
+	// IClearcasePreferenceConstants.USE_CLEARTOOL);
+	// }
+
+	/**
+	 * Returns the preference value for <code>USE_SINGLE_PROCESS</code>.
+	 * 
+	 * @return the preference value
+	 */
+	public static boolean isUseSingleProcess() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.USE_CLEARTOOL);
+				IClearcasePreferenceConstants.USE_SINGLE_PROCESS);
 	}
 
 	/**
@@ -700,19 +711,22 @@ public class ClearcasePlugin extends Plugin {
 				if (DEBUG) {
 					trace("initializing clearcase engine"); //$NON-NLS-1$
 				}
-				if (isUseCleartool()) {
-					if (DEBUG) {
-						trace("using cleartool engine"); //$NON-NLS-1$
-					}
-					clearcaseImpl = ClearCase
-							.createInterface(ClearCase.INTERFACE_CLI);
-				} else {
+				// TODO:mike: 20100220 remove of isCleartool(). Added
+				// isUseSingleProcess()
+				if (isUseSingleProcess()) {
 					if (DEBUG) {
 						trace("using default engine"); //$NON-NLS-1$
 					}
 					clearcaseImpl = ClearCase
 							.createInterface(ClearCase.INTERFACE_CLI_SP);
+				} else {
+					if (DEBUG) {
+						trace("using old cleartool process"); //$NON-NLS-1$
+					}
+					clearcaseImpl = ClearCase
+							.createInterface(ClearCase.INTERFACE_CLI);
 				}
+
 			}
 			return clearcaseImpl;
 		} catch (ClearCaseException e) {
@@ -753,8 +767,10 @@ public class ClearcasePlugin extends Plugin {
 		Preferences pref = getPluginPreferences();
 
 		// General preferences
-		pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
-				!isWindows());
+		// TODO:mike 2010 Remove isUseCleartool()
+		// pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
+		// !isWindows());
+		pref.setDefault(IClearcasePreferenceConstants.USE_SINGLE_PROCESS, true);
 		pref.setDefault(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
 				true);

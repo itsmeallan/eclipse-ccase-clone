@@ -4,7 +4,6 @@ import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.eclipseccase.ClearcaseProvider;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
-import net.sourceforge.eclipseccase.views.ConfigSpecView;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -19,8 +18,6 @@ import org.eclipse.ui.PlatformUI;
 public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
 
 	private IResource[] resources = null;
-
-	private ConfigSpecView view = null;
 
 	@Override
 	public boolean isEnabled() {
@@ -50,7 +47,7 @@ public class ExternalUpdateAction extends ClearcaseWorkspaceAction {
 		resources = getSelectedResources();
 
 		try {
-			view = (ConfigSpecView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.ConfigSpecView");
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.ConfigSpecView");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

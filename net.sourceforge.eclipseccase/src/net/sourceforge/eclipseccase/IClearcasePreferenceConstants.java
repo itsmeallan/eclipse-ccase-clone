@@ -65,9 +65,12 @@ public interface IClearcasePreferenceConstants {
 
 	/** common preference */
 	String SAVE_DIRTY_EDITORS = ClearcasePlugin.PLUGIN_ID + ".saveDirtyEditors"; //$NON-NLS-1$
+	// TODO:mike 2010 remove isUseCleartool()
+	// /** ClearCase preference */
+	//	String USE_CLEARTOOL = ClearcasePlugin.PLUGIN_ID + ".useCleartool"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String USE_CLEARTOOL = ClearcasePlugin.PLUGIN_ID + ".useCleartool"; //$NON-NLS-1$
+	String USE_SINGLE_PROCESS = ClearcasePlugin.PLUGIN_ID + ".useSingleProcess"; //$NON-NLS-1$
 
 	/** ClearCase preference */
 	String WIP_REFRESH_CHILDREN_PREVENT = ClearcasePlugin.PLUGIN_ID
