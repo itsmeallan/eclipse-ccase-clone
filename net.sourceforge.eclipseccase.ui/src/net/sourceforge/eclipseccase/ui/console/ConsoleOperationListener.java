@@ -12,7 +12,6 @@ public class ConsoleOperationListener implements OperationListener {
 	public ConsoleOperationListener(IProgressMonitor monitor) {
 		this.monitor = monitor;
 		console = ClearCaseConsoleFactory.getClearCaseConsole();
-		console.show();
 		console.clear();
 	}
 
@@ -32,6 +31,7 @@ public class ConsoleOperationListener implements OperationListener {
 
 	public void printErr(String msg) {
 		console.err.println(msg);
+		console.show();
 	}
 
 	public void printInfo(String msg) {

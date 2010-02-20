@@ -4,12 +4,15 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.eclipse.ui.console.*;
 
 public class ClearCaseConsole extends MessageConsole implements IPropertyChangeListener {
 	public static final String CLEARCASE_CONSOLE_TYPE = "net.sourceforge.eclipseccase.ui.console.ClearCaseConsole";
+
+	private static final String PREF_CONSOLE_FONT = "pref_console_font"; //$NON-NLS-1$
 
 	public MessageConsoleStream out;
 
@@ -62,16 +65,19 @@ public class ClearCaseConsole extends MessageConsole implements IPropertyChangeL
 		if (tmp != null && !tmp.equals(this.out.getColor())) {
 			tmp.dispose();
 		}
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				Font f = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme().getFontRegistry().get(PREF_CONSOLE_FONT);
+				setFont(f);
+			}
+		});
 	}
 
 	public void show() {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();// obtain
-																												// the
-																												// active
-																												// page
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					String id = IConsoleConstants.ID_CONSOLE_VIEW;
 					IConsoleView view = (IConsoleView) page.showView(id);
 					view.display(ClearCaseConsole.this);

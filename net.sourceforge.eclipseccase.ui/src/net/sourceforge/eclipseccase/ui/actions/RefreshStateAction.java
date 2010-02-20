@@ -1,7 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.*;
@@ -20,12 +19,10 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Refreshing state...", resources.length);
 
-					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						checkCanceled(monitor);
 						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-						provider.setOperationListener(opListener);
 						provider.refreshRecursive(resource, new SubProgressMonitor(monitor, 1));
 					}
 
