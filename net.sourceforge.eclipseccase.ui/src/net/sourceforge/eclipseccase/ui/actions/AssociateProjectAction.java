@@ -61,12 +61,14 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 								p.ensureInitialized(res);
 							}
 							submonitor.worked(1);
+							if (submonitor.isCanceled())
+								break;
 						}
 
 						// To get correct state for project.
 						// refresh the decorator
 						IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-						if (manager.getEnabled(ClearcaseDecorator.ID)) {
+						if (manager.getEnabled(ClearcaseDecorator.ID) && ! submonitor.isCanceled()) {
 							ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
 							if (activeDecorator != null) {
 								activeDecorator.refresh(project);
