@@ -711,8 +711,7 @@ public class ClearcasePlugin extends Plugin {
 				if (DEBUG) {
 					trace("initializing clearcase engine"); //$NON-NLS-1$
 				}
-				// TODO:mike: 20100220 remove of isCleartool(). Added
-				// isUseSingleProcess()
+
 				if (isUseSingleProcess()) {
 					if (DEBUG) {
 						trace("using default engine"); //$NON-NLS-1$
@@ -767,9 +766,6 @@ public class ClearcasePlugin extends Plugin {
 		Preferences pref = getPluginPreferences();
 
 		// General preferences
-		// TODO:mike 2010 Remove isUseCleartool()
-		// pref.setDefault(IClearcasePreferenceConstants.USE_CLEARTOOL,
-		// !isWindows());
 		pref.setDefault(IClearcasePreferenceConstants.USE_SINGLE_PROCESS, true);
 		pref.setDefault(
 				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,

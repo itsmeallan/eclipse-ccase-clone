@@ -1088,7 +1088,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 									null);
 							break;
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
-							// FIXME:Add message here.
 							result = new Status(
 									IStatus.ERROR,
 									ID,
@@ -1804,7 +1803,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	public void setOperationListener(OperationListener opListener) {
-		// TODO Auto-generated method stub
 		this.opListener = opListener;
 	}
 
