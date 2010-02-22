@@ -236,8 +236,10 @@ public class ClearcaseUI extends AbstractUIPlugin {
 
 		// objects
 		createImageDescriptor(reg, ClearcaseImages.IMG_QUESTIONABLE_OVR);
+		createImageDescriptor(reg, ClearcaseImages.IMG_CHECKEDOUT_OVR);
 		createImageDescriptor(reg, ClearcaseImages.IMG_EDITED_OVR);
 		createImageDescriptor(reg, ClearcaseImages.IMG_UNKNOWN_OVR);
+		createImageDescriptor(reg, ClearcaseImages.IMG_DERIVEDOBJECT_OVR);
 		createImageDescriptor(reg, ClearcaseImages.IMG_LINK_OVR);
 		createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING_OVR);
 		createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED_OVR);

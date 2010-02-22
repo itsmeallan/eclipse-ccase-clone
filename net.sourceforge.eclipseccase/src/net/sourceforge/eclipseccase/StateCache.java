@@ -81,6 +81,8 @@ public class StateCache implements Serializable {
 	private static final int SYM_LINK_TARGET_VALID = 0x40;
 
 	private static final int INSIDE_VIEW = 0x80;
+	
+	private static final int DERIVED_OBJECT = 0x100;
 
 	/**
 	 * Schedules a state update.
@@ -228,6 +230,10 @@ public class StateCache implements Serializable {
 						changed |= newIsSymbolicLink != this.isSymbolicLink();
 						setFlag(SYM_LINK, newIsSymbolicLink);
 
+						boolean newIsDerivedObject = newState.isDerivedObject();
+						changed |= newIsDerivedObject != this.isDerivedObject();
+						setFlag(DERIVED_OBJECT, newIsDerivedObject);
+						
 						boolean newIsCheckedOut = newState.isCheckedOut();
 						if (!newIsSymbolicLink) {
 							// for symlinks the checkout state is calculated
@@ -595,6 +601,10 @@ public class StateCache implements Serializable {
 		return getFlag(SYM_LINK);
 	}
 
+	public boolean isDerivedObject() {
+		return getFlag(DERIVED_OBJECT);
+	}
+	
 	/**
 	 * Returns the symbolicLinkTarget.
 	 * 

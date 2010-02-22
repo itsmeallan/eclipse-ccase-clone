@@ -64,6 +64,9 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	public static final String DECORATE_VIEW_PRIVATE_ELEMENTS = _PREFIX_DECORATOR + "elements.viewPrivate"; //$NON-NLS-1$
 
 	/** decorator preference */
+	public static final String DECORATE_DERIVED_OBJECTS = _PREFIX_DECORATOR + "elements.derivedobjects"; //$NON-NLS-1$
+	
+	/** decorator preference */
 	public static final String IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM = _PREFIX_DECORATOR + "elements.image.background.custom"; //$NON-NLS-1$
 
 	/** decorator preference */
@@ -191,6 +194,15 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	}
 
 	/**
+	 * Indicates if Derived Objects should be decorated.
+	 * 
+	 * @return <code>true</code> if enabled, <code>false</code> otherwise
+	 */
+	public static boolean decorateDerivedObjects() {
+		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_DERIVED_OBJECTS);
+	}
+	
+	/**
 	 * Returns the plugin preferences.
 	 * 
 	 * @return the plugin preferences
@@ -234,6 +246,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 		defaults.putBoolean(DECORATE_EDITED_ELEMENTS, true);
 		defaults.putBoolean(DECORATE_UNKNOWN_ELEMENTS, true);
 		defaults.putBoolean(DECORATE_HIJACKED_ELEMENTS, true);
+		defaults.putBoolean(DECORATE_DERIVED_OBJECTS, true);
 
 		// default image locations
 		defaults.putBoolean(IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, false);

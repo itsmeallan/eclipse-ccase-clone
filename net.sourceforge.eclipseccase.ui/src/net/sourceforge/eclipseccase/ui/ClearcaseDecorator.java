@@ -84,6 +84,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 
 	private static ImageDescriptor IMG_DESC_UNKNOWN_STATE;
 
+	private static ImageDescriptor IMG_DESC_DERIVED_OBJECT;
+
 	/** internal state constant */
 	private static final int STATE_CLEAN = 0;
 
@@ -96,10 +98,11 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	static {
 		IMG_DESC_DIRTY = new CachedImageDescriptor(TeamImages.getImageDescriptor(ISharedImages.IMG_DIRTY_OVR));
 		IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamImages.getImageDescriptor(ISharedImages.IMG_CHECKEDIN_OVR));
-		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamImages.getImageDescriptor(ISharedImages.IMG_CHECKEDOUT_OVR));
+		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
 		IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE_OVR));
 		IMG_DESC_EDITED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_EDITED_OVR));
 		IMG_DESC_UNKNOWN_STATE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
+		IMG_DESC_DERIVED_OBJECT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DERIVEDOBJECT_OVR));
 		IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_OVR));
 		IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING_OVR));
 		IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
@@ -306,6 +309,21 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 	}
 
 	/**
+	 * Adds decoration for derived objects.
+	 * 
+	 * @param decoration
+	 * @param isLinkTargetCheckedOut
+	 */
+	private static void decorateDerivedObject(IDecoration decoration, String version) {
+		if (ClearcaseUI.DEBUG_DECORATION) {
+			ClearcaseUI.trace(DECORATOR, "  decorateDerivedObject"); //$NON-NLS-1$
+		}
+		if (ClearcaseUIPreferences.decorateDerivedObjects()) {
+			decoration.addOverlay(IMG_DESC_DERIVED_OBJECT);
+		}
+	}
+
+	/**
 	 * Adds decoration for new state.
 	 * 
 	 * @param decoration
@@ -494,6 +512,10 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 			// check out
 			decorateCheckedOut(decoration, cache.getVersion());
 
+			// no further decoration
+			return;
+		} else if (cache.isDerivedObject()) {
+			decorateDerivedObject(decoration, cache.getVersion());
 			// no further decoration
 			return;
 		} else if (cache.isHijacked()) {

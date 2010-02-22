@@ -12,6 +12,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import net.sourceforge.eclipseccase.ui.ClearcaseImages;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -50,7 +52,7 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 			if (parentElement == ResourcesPlugin.getWorkspace().getRoot())
 				return new String[] { PREVIEW_PROJECT };
 			else if (parentElement.equals(PREVIEW_PROJECT))
-				return new String[] { PREVIEW_FOLDER, PREVIEW_LINKED_FOLDER, PREVIEW_CHECKEDIN_TXT, PREVIEW_CHECKEDOUT_JAVA, PREVIEW_EDITEDSOMEWHERE_JAVA, PREVIEW_IGNORED_TXT, PREVIEW_HIJACKEDARCHIVE_ZIP, PREVIEW_UNKNOWNSTATE_TXT, PREVIEW_VIEWPRIVATE_TXT };
+				return new String[] { PREVIEW_FOLDER, PREVIEW_LINKED_FOLDER, PREVIEW_CHECKEDIN_TXT, PREVIEW_CHECKEDOUT_JAVA, PREVIEW_EDITEDSOMEWHERE_JAVA, PREVIEW_DERIVED_OBJECT, PREVIEW_IGNORED_TXT, PREVIEW_HIJACKEDARCHIVE_ZIP, PREVIEW_UNKNOWNSTATE_TXT, PREVIEW_VIEWPRIVATE_TXT };
 			else if (parentElement.equals(PREVIEW_FOLDER))
 				return new String[] { PREVIEW_CHECKEDIN_TXT, PREVIEW_EDITEDSOMEWHERE_JAVA, PREVIEW_VIEWPRIVATE_TXT };
 			else
@@ -194,6 +196,10 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 			} else if (element.equals(PREVIEW_CHECKEDOUT_JAVA)) {
 				// checked out
 				overlay = IMG_DESC_CHECKED_OUT;
+			} else if (element.equals(PREVIEW_DERIVED_OBJECT)) {
+				if (decorateDerivedObjects.getBooleanValue()) {
+					overlay = IMG_DESC_DERIVED_OBJECT;
+				}
 			} else if (element.equals(PREVIEW_HIJACKEDARCHIVE_ZIP)) {
 				// hijacked
 				if (decorateHijacked.getBooleanValue()) {
@@ -341,6 +347,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	static final ImageDescriptor IMG_DESC_CHECKED_IN;
 
 	/** cached descriptor */
+	static final ImageDescriptor IMG_DESC_DERIVED_OBJECT;
+
+	/** cached descriptor */
 	static final ImageDescriptor IMG_DESC_CHECKED_OUT;
 
 	/** cached descriptor */
@@ -399,13 +408,16 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 
 	private static final String PREVIEW_VIEWPRIVATE_TXT = PreferenceMessages.getString("DecoratorPreferencePage.preview.viewPrivateFile"); //$NON-NLS-1$
 
+	private static final String PREVIEW_DERIVED_OBJECT = PreferenceMessages.getString("DecoratorPreferencePage.preview.derivedObject"); //$NON-NLS-1$
+
 	static {
 		IMG_DESC_DIRTY = new CachedImageDescriptor(TeamImages.getImageDescriptor(org.eclipse.team.ui.ISharedImages.IMG_DIRTY_OVR));
 		IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamImages.getImageDescriptor(org.eclipse.team.ui.ISharedImages.IMG_CHECKEDIN_OVR));
-		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(TeamImages.getImageDescriptor(org.eclipse.team.ui.ISharedImages.IMG_CHECKEDOUT_OVR));
+		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
 		IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE_OVR));
 		IMG_DESC_EDITED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_EDITED_OVR));
 		IMG_DESC_UNKNOWN_STATE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
+		IMG_DESC_DERIVED_OBJECT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DERIVEDOBJECT_OVR));
 		IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_OVR));
 		IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING_OVR));
 		IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
@@ -419,6 +431,8 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	// MasterBooleanFieldEditor customClearCaseElementsBackground;
 
 	BooleanFieldEditor decorateCheckedIn;
+
+	BooleanFieldEditor decorateDerivedObjects;
 
 	// MasterBooleanFieldEditor decorateClearCaseElements;
 
@@ -520,6 +534,10 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		decorateViewPrivate = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_VIEW_PRIVATE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.viewPrivate"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
 		addField(decorateViewPrivate);
+
+		decorateDerivedObjects = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_DERIVED_OBJECTS, PreferenceMessages.getString("DecoratorPreferencePage.derivedObjects"), //$NON-NLS-1$
+				getFieldEditorParent(CAT_IMAGES));
+		addField(decorateDerivedObjects);
 
 		decorateUnknown = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.unknown"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
