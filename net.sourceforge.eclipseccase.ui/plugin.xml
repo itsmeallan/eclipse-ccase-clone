@@ -79,6 +79,34 @@
                value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
          </filter>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
+               icon="icons/full/update.png"
+               id="net.sourceforge.eclipseccase.popups.update"
+               label="Update File"
+               menubarPath="team.main/group1">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.DeleteAction"
+               icon="icons/full/delete.png"
+               id="net.sourceforge.eclipseccase.popups.delete"
+               label="Delete"
+               menubarPath="team.main/group1">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
+               icon="icons/full/add.png"
+               id="net.sourceforge.eclipseccase.popups.add"
+               label="Add"
+               menubarPath="team.main/group1">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.RefreshStateAction"
+               icon="icons/full/refresh_state.png"
+               id="net.sourceforge.eclipseccase.popups.refresh"
+               label="Refresh State"
+               menubarPath="team.main/group1">
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.UnHijackAction"
                icon="icons/full/unhijack.png"
                id="net.sourceforge.eclipseccase.popups.unhijack"
@@ -100,13 +128,6 @@
                menubarPath="team.main/group1">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.RefreshStateAction"
-               icon="icons/full/refresh_state.png"
-               id="net.sourceforge.eclipseccase.popups.refresh"
-               label="Refresh State"
-               menubarPath="team.main/group1">
-         </action>
-         <action
                class="net.sourceforge.eclipseccase.ui.actions.CheckOutAction"
                icon="icons/full/checkout.png"
                id="net.sourceforge.eclipseccase.popups.checkout"
@@ -114,52 +135,17 @@
                menubarPath="team.main/group1">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
-               icon="icons/full/update.png"
-               id="net.sourceforge.eclipseccase.popups.update"
-               label="Update File"
-               menubarPath="team.main/group1">
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
-               icon="icons/full/add.png"
-               id="net.sourceforge.eclipseccase.popups.add"
-               label="Add"
-               menubarPath="team.main/group1">
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.DeleteAction"
-               icon="icons/full/delete.png"
-               id="net.sourceforge.eclipseccase.popups.delete"
-               label="Delete"
-               menubarPath="team.main/group1">
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
-               icon="icons/full/tree.png"
-               id="net.sourceforge.eclipseccase.popups.versiontree"
-               label="Version Tree (external tool)"
-               menubarPath="team.main/group2">
-         </action>
-         <action
                class="net.sourceforge.eclipseccase.ui.actions.ExternalUpdateAction"
                icon="icons/full/database_refresh.png"
                id="net.sourceforge.eclipseccase.popups.externalupdate"
-               label="Update (Work Area)"
+               label="Update Work Area"
                menubarPath="team.main/group2">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
-               icon="icons/full/history.png"
-               id="net.sourceforge.eclipseccase.popups.history"
-               label="&amp;History"
-               menubarPath="team.main/group2">
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
-               icon="icons/full/diff.png"
-               id="net.sourceforge.eclipseccase.popups.comparepredecessor"
-               label="Compare with predecessor"
+               class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
+               icon="icons/full/find.png"
+               id="net.sourceforge.eclipseccase.popups.findcheckouts"
+               label="Find Private Files"
                menubarPath="team.main/group2">
          </action>
          <action
@@ -168,13 +154,6 @@
                id="net.sourceforge.eclipseccase.popups.comparepredecessor2"
                label="Predecessor"
                menubarPath="compareWithMenu/compareWithGroup">
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
-               icon="icons/full/find.png"
-               id="net.sourceforge.eclipseccase.popups.findcheckouts"
-               label="Find Private Files"
-               menubarPath="team.main/group2">
          </action>
          <action
                class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
@@ -202,7 +181,28 @@
                class="net.sourceforge.eclipseccase.ui.actions.FindMergeAction"
                icon="icons/full/findMerge.png"
                id="net.sourceforge.eclipseccase.popups.findmerge"
-               label="Find Merge (Rebase external tool)"
+               label="Find Merge (Rebase, external tool)"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
+               icon="icons/full/history.png"
+               id="net.sourceforge.eclipseccase.popups.history"
+               label="&amp;History"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
+               icon="icons/full/tree.png"
+               id="net.sourceforge.eclipseccase.popups.versiontree"
+               label="Version Tree (external tool)"
+               menubarPath="team.main/group2">
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
+               icon="icons/full/diff.png"
+               id="net.sourceforge.eclipseccase.popups.comparepredecessor"
+               label="Compare with predecessor (external tool)"
                menubarPath="team.main/group2">
          </action>
          <action
@@ -361,7 +361,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
                icon="icons/full/database_refresh.png"
                id="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-               label="Update (&amp;Work Area)"
+               label="Update &amp;Work Area"
                menubarPath="eclipseccase_menu/group2">
             <enablement>
                <pluginState
@@ -386,54 +386,6 @@
                         id="net.sourceforge.eclipseccase">
                   </pluginState>
                </and>
-            </enablement>
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.history"
-               icon="icons/full/history.png"
-               id="net.sourceforge.eclipseccase.ui.actionset.history"
-               label="&amp;History"
-               menubarPath="eclipseccase_menu/group2"
-               toolbarPath="Normal/additions"
-               tooltip="History">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-               icon="icons/full/tree.png"
-               id="net.sourceforge.eclipseccase.ui.actionset.versiontree"
-               label="&amp;Version Tree (external tool)"
-               menubarPath="eclipseccase_menu/group2"
-               toolbarPath="Normal/additions"
-               tooltip="Version Tree">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
-            </enablement>
-         </action>
-         <action
-               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-               icon="icons/full/diff.png"
-               id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-               label="&amp;Compare with predecessor"
-               menubarPath="eclipseccase_menu/group2"
-               toolbarPath="Normal/additions"
-               tooltip="Compare With Predecessor">
-            <enablement>
-               <pluginState
-                     value="activated"
-                     id="net.sourceforge.eclipseccase">
-               </pluginState>
             </enablement>
          </action>
          <action
@@ -485,12 +437,60 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.findmerge"
                icon="icons/full/findMerge.png"
                id="net.sourceforge.eclipseccase.ui.actionset.findmerge"
-               label="Find &amp;Merge (Rebase external tool)"
+               label="Find &amp;Merge (Rebase, external tool)"
                menubarPath="eclipseccase_menu/group2">
             <enablement>
                <pluginState
                      id="net.sourceforge.eclipseccase"
                      value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.history"
+               icon="icons/full/history.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.history"
+               label="&amp;History"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="History">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.VersionTreeAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+               icon="icons/full/tree.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+               label="&amp;Version Tree (external tool)"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="Version Tree (external tool)">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
+               class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+               icon="icons/full/diff.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+               label="&amp;Compare with predecessor (external tool)"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="Compare With Predecessor (external tool)">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
                </pluginState>
             </enablement>
          </action>
@@ -629,7 +629,7 @@
       </command>
       <command
             name="Version Tree"
-            description="Opens the clearcase version tree browser on the slected resources (external tool)"
+            description="Opens the clearcase version tree browser on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
