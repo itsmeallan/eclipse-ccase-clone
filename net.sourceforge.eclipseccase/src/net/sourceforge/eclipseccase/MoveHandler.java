@@ -34,7 +34,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean deleteFile(IResourceTree tree, IFile file, int updateFlags,
 			IProgressMonitor monitor) {
 		if (provider.isIgnored(file) || file.isLinked()
-				|| !provider.hasRemote(file)) {
+				|| !provider.isClearcaseElement(file)) {
 			tree.standardDeleteFile(file, updateFlags, monitor);
 			return true;
 		}
@@ -83,7 +83,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean deleteFolder(IResourceTree tree, IFolder folder,
 			int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(folder) || folder.isLinked()
-				|| !provider.hasRemote(folder)) {
+				|| !provider.isClearcaseElement(folder)) {
 			tree.standardDeleteFolder(folder, updateFlags, monitor);
 			return true;
 		}
@@ -132,7 +132,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	 */
 	public boolean deleteProject(IResourceTree tree, IProject project,
 			int updateFlags, IProgressMonitor monitor) {
-		if (provider.isIgnored(project) || !provider.hasRemote(project)) {
+		if (provider.isIgnored(project) || !provider.isClearcaseElement(project)) {
 			tree.standardDeleteProject(project, updateFlags, monitor);
 			return true;
 		}
@@ -190,12 +190,12 @@ public class MoveHandler implements IMoveDeleteHook {
 		IStatus status = new Status(IStatus.OK, ClearcaseProvider.ID,
 				TeamException.OK, "OK", null);
 		IContainer destParent = destination.getParent();
-		if (!provider.hasRemote(destParent)) {
+		if (!provider.isClearcaseElement(destParent)) {
 			if (ClearcasePlugin.isAddAuto()) {
 				try {
 					LinkedList toAdd = new LinkedList();
 					while (null != destParent
-							&& !provider.hasRemote(destParent)) {
+							&& !provider.isClearcaseElement(destParent)) {
 						if (destParent.getType() == IResource.ROOT)
 							// workspace root should be in ClearCase
 							throw new TeamException(
@@ -226,7 +226,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean moveFile(IResourceTree tree, IFile source,
 			IFile destination, int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(source) || source.isLinked()
-				|| !provider.hasRemote(source)) {
+				|| !provider.isClearcaseElement(source)) {
 			tree.standardMoveFile(source, destination, updateFlags
 					| IResource.SHALLOW, monitor);
 			return true;
@@ -281,7 +281,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean moveFolder(IResourceTree tree, IFolder source,
 			IFolder destination, int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(source) || source.isLinked()
-				|| !provider.hasRemote(source)) {
+				|| !provider.isClearcaseElement(source)) {
 			tree.standardMoveFolder(source, destination, updateFlags
 					| IResource.SHALLOW, monitor);
 			return true;

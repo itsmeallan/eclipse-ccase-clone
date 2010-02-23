@@ -73,7 +73,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 				provider.ensureInitialized(file);
 
 				// needs checkout if file is managed
-				return provider.hasRemote(file);
+				return provider.isClearcaseElement(file);
 			}
 		}
 		return false;

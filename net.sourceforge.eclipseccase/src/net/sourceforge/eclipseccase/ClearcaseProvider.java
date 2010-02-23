@@ -319,10 +319,10 @@ public class ClearcaseProvider extends RepositoryProvider {
 	}
 
 	/**
-	 * @see SimpleAccessOperations#hasRemote(IResource)
+	 * @see SimpleAccessOperations#isClearcaseElement(IResource)
 	 */
-	public boolean hasRemote(IResource resource) {
-		return StateCacheFactory.getInstance().get(resource).hasRemote();
+	public boolean isClearcaseElement(IResource resource) {
+		return StateCacheFactory.getInstance().get(resource).isClearcaseElement();
 	}
 
 	/*
@@ -487,7 +487,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 			monitor.beginTask("Moving " + source.getFullPath() + " to "
 					+ destination.getFullPath(), 100);
 			// Sanity check - can't move something that is not part of clearcase
-			if (!hasRemote(source))
+			if (!isClearcaseElement(source))
 				return new Status(
 						IStatus.ERROR,
 						ID,
@@ -552,7 +552,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 			// filesystem
 			// parent if the workspace is not itself in clearcase
 			boolean flag = resource instanceof IProject
-					&& !hasRemote(resource.getParent());
+					&& !isClearcaseElement(resource.getParent());
 			if (flag) {
 				parent = resource.getLocation().toFile().getParent().toString();
 			} else {
@@ -746,7 +746,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 						"Adding " + resource.getFullPath().toString(), 100);
 				IStatus result;
 				// Sanity check - can't add something that already is under VC
-				if (hasRemote(resource))
+				if (isClearcaseElement(resource))
 					// return status with severity OK
 					return new Status(
 							IStatus.OK,
@@ -764,7 +764,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				// When resource is a project, try checkout its parent, and if
 				// that fails,
 				// then neither project nor workspace is in clearcase.
-				if (resource instanceof IProject || hasRemote(parent)) {
+				if (resource instanceof IProject || isClearcaseElement(parent)) {
 					result = checkoutParent(resource, new SubProgressMonitor(
 							monitor, 10));
 				} else {
@@ -903,18 +903,6 @@ public class ClearcaseProvider extends RepositoryProvider {
 			ClearcasePlugin.getEngine().checkin(parentResource, comment, 0,
 					opListener);
 
-			// hasRemote checks if element is a clearcase element.
-			// if(stateB[0].isCheckedOut()){
-			//			
-			// result = new Status(
-			// IStatus.ERROR,
-			// ID,
-			// TeamException.UNABLE,
-			// "Add failed: "
-			// + "Could not check-in directory"
-			// + resource.getName(), null);
-			// }
-
 		} catch (CoreException ce) {
 			System.out.println("We got an exception!");
 			ce.printStackTrace();
@@ -935,7 +923,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't process something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.hasRemote())
+				if (targetElement == null || !targetElement.isClearcaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
@@ -991,7 +979,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				monitor.beginTask("Deleting " + resource.getFullPath(), 100);
 				// Sanity check - can't delete something that is not part of
 				// clearcase
-				if (!hasRemote(resource))
+				if (!isClearcaseElement(resource))
 					return new Status(
 							IStatus.ERROR,
 							ID,
@@ -1037,7 +1025,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't check in something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.hasRemote())
+				if (targetElement == null || !targetElement.isClearcaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
@@ -1169,7 +1157,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't checkout something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.hasRemote())
+				if (targetElement == null || !targetElement.isClearcaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
@@ -1405,7 +1393,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 
 				// Sanity check - can't update something that is not part of
 				// clearcase
-				if (!hasRemote(resource))
+				if (!isClearcaseElement(resource))
 					return new Status(
 							IStatus.ERROR,
 							ID,
@@ -1629,7 +1617,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 		}
 
 		// never ignore handled resources
-		if (hasRemote(resource))
+		if (isClearcaseElement(resource))
 			return false;
 
 		// never ignore workspace root
@@ -1720,7 +1708,7 @@ public class ClearcaseProvider extends RepositoryProvider {
 		 * structures where a project is the view directory containing the vobs
 		 */
 		return null != resource && resource.getType() == IResource.PROJECT
-				&& !hasRemote(resource);
+				&& !isClearcaseElement(resource);
 	}
 
 	/**

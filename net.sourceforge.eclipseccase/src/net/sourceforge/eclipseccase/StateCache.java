@@ -66,7 +66,7 @@ public class StateCache implements Serializable {
 
 	// flags
 
-	private static final int HAS_REMOTE = 0x1;
+	private static final int IS_ELEMENT = 0x1;
 
 	private static final int CHECKED_OUT = 0x2;
 
@@ -186,7 +186,7 @@ public class StateCache implements Serializable {
 							StateCache parentCache = StateCacheFactory
 									.getInstance().getWithNoUpdate(parent);
 							if (!parentCache.isUninitialized()
-									&& !parentCache.hasRemote()) {
+									&& !parentCache.isClearcaseElement()) {
 								// parent is no CC element, so don't call CC for
 								// state
 								newState = new ClearCaseElementState(osPath,
@@ -218,9 +218,9 @@ public class StateCache implements Serializable {
 
 					if (newState != null) {
 
-						boolean newHasRemote = newState.isElement();
-						changed |= newHasRemote != this.hasRemote();
-						setFlag(HAS_REMOTE, newHasRemote);
+						boolean newIsElement = newState.isElement();
+						changed |= newIsElement != this.isClearcaseElement();
+						setFlag(IS_ELEMENT, newIsElement);
 
 						boolean newInsideView = !newState.isOutsideVob();
 						changed |= newInsideView != this.isInsideView();
@@ -353,8 +353,8 @@ public class StateCache implements Serializable {
 	 * 
 	 * @return Returns a boolean
 	 */
-	public boolean hasRemote() {
-		return getFlag(HAS_REMOTE);
+	public boolean isClearcaseElement() {
+		return getFlag(IS_ELEMENT);
 	}
 
 	/**
@@ -533,9 +533,9 @@ public class StateCache implements Serializable {
 		toString.append(": "); //$NON-NLS-1$
 		if (isUninitialized()) {
 			toString.append("not initialized"); //$NON-NLS-1$
-		} else if (!hasRemote()) {
+		} else if (!isClearcaseElement()) {
 			toString.append("no clearcase element"); //$NON-NLS-1$
-		} else if (hasRemote()) {
+		} else if (isClearcaseElement()) {
 			toString.append(version);
 
 			if (isSymbolicLink()) {
