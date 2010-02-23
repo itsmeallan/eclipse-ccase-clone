@@ -52,9 +52,9 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 			if (parentElement == ResourcesPlugin.getWorkspace().getRoot())
 				return new String[] { PREVIEW_PROJECT };
 			else if (parentElement.equals(PREVIEW_PROJECT))
-				return new String[] { PREVIEW_FOLDER, PREVIEW_LINKED_FOLDER, PREVIEW_CHECKEDIN_TXT, PREVIEW_CHECKEDOUT_JAVA, PREVIEW_EDITEDSOMEWHERE_JAVA, PREVIEW_DERIVED_OBJECT, PREVIEW_IGNORED_TXT, PREVIEW_HIJACKEDARCHIVE_ZIP, PREVIEW_UNKNOWNSTATE_TXT, PREVIEW_VIEWPRIVATE_TXT };
+				return new String[] { PREVIEW_CHECKEDIN_TXT, PREVIEW_CHECKEDOUT_JAVA, PREVIEW_LINKED_FOLDER, PREVIEW_DERIVED_OBJECT, PREVIEW_IGNORED_TXT, PREVIEW_HIJACKEDARCHIVE_ZIP, PREVIEW_UNKNOWNSTATE_TXT, PREVIEW_VIEWPRIVATE_TXT };
 			else if (parentElement.equals(PREVIEW_FOLDER))
-				return new String[] { PREVIEW_CHECKEDIN_TXT, PREVIEW_EDITEDSOMEWHERE_JAVA, PREVIEW_VIEWPRIVATE_TXT };
+				return new String[] { PREVIEW_CHECKEDIN_TXT, PREVIEW_VIEWPRIVATE_TXT };
 			else
 				return new Object[0];
 		}
@@ -528,8 +528,8 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		decorateCheckedIn = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedIn"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		addField(decorateCheckedIn);
 
-		decorateEdited = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.edited"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
-		addField(decorateEdited);
+		// decorateEdited = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.edited"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		// addField(decorateEdited);
 
 		decorateHijacked = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_HIJACKED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.hijacked"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
@@ -577,10 +577,10 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(prefixViewPrivateResources);
 		decorateElementStatesWithTextPrefix.addSlave(prefixViewPrivateResources);
 
-		prefixResourcesEditedBySomeoneElse = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesEditedBySomeoneElse"), 4, //$NON-NLS-1$
-				getFieldEditorParent(CAT_TEXT));
-		addField(prefixResourcesEditedBySomeoneElse);
-		decorateElementStatesWithTextPrefix.addSlave(prefixResourcesEditedBySomeoneElse);
+		//		prefixResourcesEditedBySomeoneElse = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesEditedBySomeoneElse"), 4, //$NON-NLS-1$
+		// getFieldEditorParent(CAT_TEXT));
+		// addField(prefixResourcesEditedBySomeoneElse);
+		// decorateElementStatesWithTextPrefix.addSlave(prefixResourcesEditedBySomeoneElse);
 
 		prefixResourcesWithUnknownState = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesWithUnknownState"), 4, //$NON-NLS-1$
 				getFieldEditorParent(CAT_TEXT));
