@@ -56,7 +56,9 @@ public class FindMergeAction extends ClearcaseWorkspaceAction {
 							workingDir = new File(resource.getLocation().toOSString()).getParentFile();
 						}
 
-						new CommandLauncher().execute(new CleartoolCommandLine("findmerge").addOption("-graphical").create(), workingDir, null, new ConsoleOperationListener(monitor));
+						CommandLauncher launcher = new CommandLauncher();
+						launcher.setAutoReturn(3); // FIXME: use CC Provider API
+						launcher.execute(new CleartoolCommandLine("findmerge").addOption("-graphical").create(), workingDir, null, new ConsoleOperationListener(monitor));
 					}
 				} catch (Exception e) {
 				} finally {
