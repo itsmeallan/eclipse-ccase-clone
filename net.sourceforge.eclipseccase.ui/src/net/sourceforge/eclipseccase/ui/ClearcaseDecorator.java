@@ -86,6 +86,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 
 	private static ImageDescriptor IMG_DESC_DERIVED_OBJECT;
 
+	private static ImageDescriptor IMG_DESC_ELEMENT_BG;
+
 	/** internal state constant */
 	private static final int STATE_CLEAN = 0;
 
@@ -106,6 +108,7 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_OVR));
 		IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING_OVR));
 		IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
+		IMG_DESC_ELEMENT_BG = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_ELEMENT_BG));
 	}
 
 	/**
@@ -163,9 +166,9 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 					}
 
 					// test if new
-					if (decorateNew && !p.hasRemote(childResource)) {
+					if (decorateNew && !p.isClearcaseElement(childResource)) {
 						if (ClearcaseUI.DEBUG_DECORATION) {
-							ClearcaseUI.trace(DECORATOR, "  is dirty: child without remote"); //$NON-NLS-1$
+							ClearcaseUI.trace(DECORATOR, "  is dirty: view-priv child"); //$NON-NLS-1$
 						}
 						throw CORE_DIRTY_EXCEPTION;
 					}
@@ -213,6 +216,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateCheckedIn"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		decoration.addOverlay(IMG_DESC_CHECKED_IN);
 	}
 
@@ -225,6 +230,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateCheckedOut"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		decoration.addOverlay(IMG_DESC_CHECKED_OUT);
 		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix()) {
 			decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
@@ -244,6 +251,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateDirty"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		decoration.addOverlay(IMG_DESC_DIRTY);
 		if (ClearcaseUIPreferences.decorateElementStatesWithTextPrefix()) {
 			decoration.addPrefix(ClearcaseUI.getTextPrefixDirty());
@@ -259,6 +268,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateEdited"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		if (ClearcaseUIPreferences.decorateEditedElements()) {
 			decoration.addOverlay(IMG_DESC_EDITED);
 		}
@@ -276,6 +287,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateHijacked"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		if (ClearcaseUIPreferences.decorateHijackedElements()) {
 			decoration.addOverlay(IMG_DESC_HIJACKED);
 		}
@@ -297,6 +310,8 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearcaseUI.DEBUG_DECORATION) {
 			ClearcaseUI.trace(DECORATOR, "  decorateLink"); //$NON-NLS-1$
 		}
+		if (ClearcaseUIPreferences.decorateClearCaseElements())
+			decoration.addOverlay(IMG_DESC_ELEMENT_BG, IDecoration.TOP_LEFT + IDecoration.UNDERLAY);
 		if (isLinkTargetCheckedOut) {
 			decoration.addOverlay(IMG_DESC_CHECKED_OUT);
 		} else if (isValidLinkTarget) {
@@ -496,7 +511,7 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 		/*
 		 * test the different states
 		 */
-		if (resource.getType() != IResource.PROJECT && !cache.hasRemote()) {
+		if (resource.getType() != IResource.PROJECT && !cache.isClearcaseElement()) {
 			// decorate new elements not added to ClearCase
 			decorateNew(decoration);
 
@@ -530,7 +545,7 @@ public class ClearcaseDecorator extends LabelProvider implements ILightweightLab
 
 			switch (dirty) {
 			case STATE_CLEAN:
-				if (cache.hasRemote()) {
+				if (cache.isClearcaseElement()) {
 					if (cache.isEdited()) {
 						// the resource is edited by someone else
 						decorateEdited(decoration);
