@@ -38,7 +38,7 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 	public boolean isEnabled() {
 		if (element != null) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(element);
-			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.hasRemote(element))
+			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.isClearcaseElement(element))
 				return true;
 		}
 

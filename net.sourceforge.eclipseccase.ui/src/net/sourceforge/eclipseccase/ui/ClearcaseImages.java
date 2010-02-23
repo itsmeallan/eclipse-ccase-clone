@@ -34,7 +34,7 @@ public class ClearcaseImages {
 
 	public static final String IMG_REFRESH_DISABLED = "refresh_disabled.gif"; //$NON-NLS-1$
 
-	public static final String IMG_ELEMENT_BG = "element_BG.gif"; //$NON-NLS-1$
+	public static final String IMG_ELEMENT_BG = "element_bg.gif"; //$NON-NLS-1$
 
 	/**
 	 * @param string

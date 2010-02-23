@@ -55,7 +55,7 @@ public class ElementPropertyPage extends PropertyPage {
 		IResource resource = (IResource) getElement();
 		StateCache cache = StateCacheFactory.getInstance().get(resource);
 
-		if (cache.hasRemote()) {
+		if (cache.isClearcaseElement()) {
 			Label versionLabel = new Label(composite, SWT.NONE);
 			versionLabel.setText("Version:");
 			versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
@@ -85,8 +85,8 @@ public class ElementPropertyPage extends PropertyPage {
 			}
 			performRefresh();
 		} else {
-			Label notRemoteLabel = new Label(composite, SWT.NONE);
-			notRemoteLabel.setText("The selected resource is not a clearcase element");
+			Label noElementLabel = new Label(composite, SWT.NONE);
+			noElementLabel.setText("The selected resource is not a clearcase element");
 		}
 	}
 

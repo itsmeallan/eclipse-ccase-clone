@@ -31,7 +31,7 @@ public class SetConfigSpecAction extends ClearcaseWorkspaceAction {
 
 		if (resource != null) {
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource)) {
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource)) {
 				bRes = false;
 			}
 		} else {

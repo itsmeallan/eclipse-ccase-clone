@@ -34,7 +34,7 @@ public class HistoryAction extends ClearcaseWorkspaceAction {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.hasRemote(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
 				return false;
 		}
 		return true;

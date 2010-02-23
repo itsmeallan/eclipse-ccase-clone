@@ -83,16 +83,16 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
 			// Projects may be the view directory containing the VOBS, if so,
 			// don't want to be able to add em, or any resource diretcly under
 			// them
-			if (resource.getType() == IResource.PROJECT && !provider.hasRemote(resource)) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for project without remote: " + resource);
+			if (resource.getType() == IResource.PROJECT && !provider.isClearcaseElement(resource)) {
+				ClearcasePlugin.debug(DEBUG_ID, "disabled for project outside CC: " + resource);
 				return false;
 			}
-			if (resource.getParent().getType() == IResource.PROJECT && !provider.hasRemote(resource.getParent())) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because parent is project without remote: " + resource.getParent());
+			if (resource.getParent().getType() == IResource.PROJECT && !provider.isClearcaseElement(resource.getParent())) {
+				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because parent is project outside CC: " + resource.getParent());
 				return false;
 			}
-			if (provider.hasRemote(resource)) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because already has remote");
+			if (provider.isClearcaseElement(resource)) {
+				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because it already is CC element");
 				return false;
 			}
 		}

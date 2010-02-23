@@ -47,7 +47,7 @@ public class CheckoutsView extends ClearcaseViewPart {
 			return !hideHijackedElements();
 
 		// show new elements if enabled
-		if (!provider.hasRemote(resource))
+		if (!provider.isClearcaseElement(resource))
 			return !hideNewElements();
 
 		// hide all other
