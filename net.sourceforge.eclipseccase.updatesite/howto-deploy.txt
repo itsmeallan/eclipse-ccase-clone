@@ -1,28 +1,31 @@
-HowTo Deploy Release and Updatesite
-===================================
+Make a new release of Plug-in
+=============================
 
-Requires: Eclipse 3.0 and all projects and features in workspace. 
 
-Note: Build has to be done manually because we should test after build if
-      it is usable and everything works.
+Prerequesites:
+
+- Eclipse 3.5
+- jdk 1.5.0 (check plugin.xml)   
       
-Note 2:  Error starting modern compiler. Make sure eclipse is started with    
-      
-0.5 run build.xml in net.sourceforge.clearcase project.      
+##################### Steps ####################
 
-0. ensure same version number for all features and plugins
-   (check feature.xml and plugin.xml files). 
-   - Make change  project.version in build.xml and
-     and in META-INF/MANIFEST.MF file.
-   - Make change in, plugin.xml, in eclipseccase ( core ).
-   - Make change in, plugin.xml, in eclipseccase ( ui ).
-   - Make change in, feature.xml, in eclipseccase ( feature).
+1. Set version in clearcase project and build.xml
+
+ <property name="project.version" value="net.sourceforge.clearcase_2.2.0.v201002231500"/>
+ 
+ 2. Build project manually. Use target  'dist'.     
+
+3. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
+   Use same as in step 1.
+
+
    
-1. Update CHANGELOG.txt in eclipseccase project.
-   And releasenotes.txt in eclipseccase.feature project.   
+4. Update CHANGELOG.txt in eclipseccase-project.
+   New heading stating the new version number.
+   Same releasenotes.txt in eclipseccase.feature-project.   
 
 
-2. update version numbers in site.xml ( Use Feature editor).
+5. update version numbers in site.xml ( Use Feature editor).
     
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
