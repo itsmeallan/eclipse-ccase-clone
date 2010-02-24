@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/powermock-easymock-junit-1.3.5/junit-4.7.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/net.sourceforge.eclipseccase"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/net.sourceforge.clearcase"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
