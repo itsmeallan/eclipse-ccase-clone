@@ -40,7 +40,7 @@ Install manually
 Run with enhanced refresh
 -------------------------
 
-Window --> Preferences --> Team --> Clearcase --> Use quick refresh.
+Window --> Preferences --> Team --> ClearCase --> Use quick refresh.
 
 Known Issues
 ------------
