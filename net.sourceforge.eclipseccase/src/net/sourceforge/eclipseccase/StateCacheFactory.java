@@ -303,7 +303,7 @@ public class StateCacheFactory implements ISaveParticipant,
 		int previousSaveNumber = context.getPreviousSaveNumber();
 		String oldFileName = SAVE_FILE_NAME
 				+ Integer.toString(previousSaveNumber);
-		File file = ClearcasePlugin.getInstance().getStateLocation().append(
+		File file = ClearCasePlugin.getInstance().getStateLocation().append(
 				oldFileName).toFile();
 		file.delete();
 	}
@@ -345,7 +345,7 @@ public class StateCacheFactory implements ISaveParticipant,
 				int saveNumber = context.getSaveNumber();
 				String saveFileName = SAVE_FILE_NAME
 						+ Integer.toString(saveNumber);
-				IPath statePath = ClearcasePlugin.getInstance()
+				IPath statePath = ClearCasePlugin.getInstance()
 						.getStateLocation().append(saveFileName);
 
 				// save state cache
@@ -367,7 +367,7 @@ public class StateCacheFactory implements ISaveParticipant,
 				context.needSaveNumber();
 			} catch (IOException ex) {
 				throw new CoreException(new Status(IStatus.WARNING,
-						ClearcasePlugin.PLUGIN_ID, TeamException.IO_FAILED,
+						ClearCasePlugin.PLUGIN_ID, TeamException.IO_FAILED,
 						"Could not persist state cache", ex)); //$NON-NLS-1$
 			}
 			break;
@@ -469,7 +469,7 @@ public class StateCacheFactory implements ISaveParticipant,
 			if (context != null) {
 				String saveFileName = context.lookup(new Path(SAVE_FILE_NAME))
 						.toString();
-				File stateFile = ClearcasePlugin.getInstance()
+				File stateFile = ClearCasePlugin.getInstance()
 						.getStateLocation().append(saveFileName).toFile();
 				if (stateFile.exists()) {
 					try {
@@ -481,7 +481,7 @@ public class StateCacheFactory implements ISaveParticipant,
 				}
 			}
 		} catch (Exception ex) {
-			ClearcasePlugin
+			ClearCasePlugin
 					.log(
 							IStatus.WARNING,
 							"Could not load saved clearcase state cache, resetting cache", //$NON-NLS-1$
@@ -561,8 +561,8 @@ public class StateCacheFactory implements ISaveParticipant,
 									cacheMap.put(resource, cache);
 								}
 
-								if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-									ClearcasePlugin.trace(
+								if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+									ClearCasePlugin.trace(
 											TRACE_STATECACHEFACTORY,
 											"state cache restored: " + cache); //$NON-NLS-1$
 								}
@@ -641,7 +641,7 @@ public class StateCacheFactory implements ISaveParticipant,
 				}
 			}
 		} catch (CoreException e) {
-			ClearcasePlugin.log(IStatus.ERROR,
+			ClearCasePlugin.log(IStatus.ERROR,
 					"Unable to do a update of resource", e); //$NON-NLS-1$
 		}
 	}

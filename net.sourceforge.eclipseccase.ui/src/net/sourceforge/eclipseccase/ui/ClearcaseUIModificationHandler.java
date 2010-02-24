@@ -16,7 +16,7 @@ import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
-import net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferenceStore;
+import net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferenceStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.team.FileModificationValidationContext;
@@ -33,16 +33,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * A Clearcase modification handler that uses the Eclipse UI to show feedback.
+ * A ClearCase modification handler that uses the Eclipse UI to show feedback.
  * <p>
  * This class is not intended to be subclassed, instanciated or called outside
  * the Eclipse ClearCase integration.
  * </p>
  */
-class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
+class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 	/** the preference store */
-	static final IPreferenceStore store = new ClearcasePreferenceStore();
+	static final IPreferenceStore store = new ClearCasePreferenceStore();
 
 	/** the lock to handle concurrent validate edit requests */
 	private final ILock validateEditLock = Platform.getJobManager().newLock();
@@ -51,7 +51,7 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	 * Creates a new instance.
 	 * 
 	 */
-	protected ClearcaseUIModificationHandler() {
+	protected ClearCaseUIModificationHandler() {
 		super();
 	}
 
@@ -63,19 +63,19 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
-		final ClearcaseProvider provider = getProvider(files);
+		final ClearCaseProvider provider = getProvider(files);
 
 		// check for provider
 		if (null == provider) {
-			ClearcasePlugin.log(Messages.getString("ClearcaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
-					new IllegalStateException(Messages.getString("ClearcaseUIModificationHandler.error.noProviderAvailable"))); //$NON-NLS-1$
-			MessageDialog.openError(shell, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
-					Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
+			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
+					new IllegalStateException(Messages.getString("ClearCaseUIModificationHandler.error.noProviderAvailable"))); //$NON-NLS-1$
+			MessageDialog.openError(shell, Messages.getString("ClearCaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
+					Messages.getString("ClearCaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
 			return CANCEL;
 		}
 
-		final boolean useClearDlg = ClearcasePlugin.isUseClearDlg();
-		final boolean askForComment = ClearcasePlugin.isCommentCheckout() && !ClearcasePlugin.isCommentCheckoutNeverOnAuto();
+		final boolean useClearDlg = ClearCasePlugin.isUseClearDlg();
+		final boolean askForComment = ClearCasePlugin.isCommentCheckout() && !ClearCasePlugin.isCommentCheckoutNeverOnAuto();
 
 		try {
 			// use workbench window as preferred runnable context
@@ -107,8 +107,8 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 						synchronized (provider) {
 							boolean refreshing = setResourceRefreshing(provider, false);
 							try {
-								monitor.beginTask(Messages.getString("ClearcaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
-								if (ClearcasePlugin.isUseClearDlg()) {
+								monitor.beginTask(Messages.getString("ClearCaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
+								if (ClearCasePlugin.isUseClearDlg()) {
 									monitor.subTask("Executing ClearCase user interface...");
 									ClearDlgHelper.checkout(files);
 								} else {
@@ -135,10 +135,10 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 				}
 			}, new MultiRule(files));
 		} catch (InvocationTargetException e) {
-			ClearcasePlugin.log(Messages.getString("ClearcaseUIModificationHandler.error.checkout") //$NON-NLS-1$
+			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.checkout") //$NON-NLS-1$
 					+ (null != e.getCause() ? e.getCause().getMessage() : e.getMessage()), null != e.getCause() ? e.getCause() : e);
-			MessageDialog.openError(shell, Messages.getString("ClearcaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
-					Messages.getString("ClearcaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
+			MessageDialog.openError(shell, Messages.getString("ClearCaseUIModificationHandler.errorDialog.title"), //$NON-NLS-1$
+					Messages.getString("ClearCaseUIModificationHandler.errorDialog.message")); //$NON-NLS-1$
 			return CANCEL;
 		} catch (InterruptedException e) {
 			return CANCEL;
@@ -163,7 +163,7 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateEdit
+	 * net.sourceforge.eclipseccase.ClearCaseModificationHandler#validateEdit
 	 * (org.eclipse.core.resources.IFile[],
 	 * org.eclipse.core.resources.team.FileModificationValidationContext)
 	 */
@@ -197,7 +197,7 @@ class ClearcaseUIModificationHandler extends ClearcaseModificationHandler {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.eclipseccase.ClearcaseModificationHandler#validateSave
+	 * net.sourceforge.eclipseccase.ClearCaseModificationHandler#validateSave
 	 * (org.eclipse.core.resources.IFile)
 	 */
 	@Override

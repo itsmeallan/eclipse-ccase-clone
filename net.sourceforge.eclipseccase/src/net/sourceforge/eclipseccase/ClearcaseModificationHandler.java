@@ -36,20 +36,20 @@ import org.eclipse.ui.PlatformUI;
  * instanciated or called outside the Eclipse ClearCase integration.
  * </p>
  */
-public class ClearcaseModificationHandler extends FileModificationValidator {
+public class ClearCaseModificationHandler extends FileModificationValidator {
 
 	/** constant for OK status */
-	protected static final IStatus OK = ClearcaseProvider.OK_STATUS;
+	protected static final IStatus OK = ClearCaseProvider.OK_STATUS;
 
 	/** constant for CANCEL status */
-	protected static final IStatus CANCEL = ClearcaseProvider.CANCEL_STATUS;
+	protected static final IStatus CANCEL = ClearCaseProvider.CANCEL_STATUS;
 
 	/**
-	 * Constructor for ClearcaseModificationHandler.
+	 * Constructor for ClearCaseModificationHandler.
 	 * 
 	 * @param provider
 	 */
-	protected ClearcaseModificationHandler() {
+	protected ClearCaseModificationHandler() {
 		// protected
 	}
 
@@ -63,8 +63,8 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 
 		// writable files don't need to be checked out
 		if (file.isReadOnly()) {
-			ClearcaseProvider provider = ClearcaseProvider
-					.getClearcaseProvider(file);
+			ClearCaseProvider provider = ClearCaseProvider
+					.getClearCaseProvider(file);
 
 			// if there is no provider, it's not a ClearCase file
 			if (null != provider) {
@@ -73,7 +73,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 				provider.ensureInitialized(file);
 
 				// needs checkout if file is managed
-				return provider.isClearcaseElement(file);
+				return provider.isClearCaseElement(file);
 			}
 		}
 		return false;
@@ -99,17 +99,17 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	}
 
 	/**
-	 * Returns the Clearcase Team provider for all files.
+	 * Returns the ClearCase Team provider for all files.
 	 * <p>
 	 * This implementation requires all files to be in the same project.
 	 * </p>
 	 * 
 	 * @param files
-	 * @return the Clearcase Team provider for all files
+	 * @return the ClearCase Team provider for all files
 	 */
-	protected ClearcaseProvider getProvider(IFile[] files) {
+	protected ClearCaseProvider getProvider(IFile[] files) {
 		if (files.length > 0)
-			return ClearcaseProvider.getClearcaseProvider(files[0]);
+			return ClearCaseProvider.getClearCaseProvider(files[0]);
 		return null;
 	}
 
@@ -121,7 +121,7 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 * 
 	 * @return the old value
 	 */
-	protected boolean setResourceRefreshing(ClearcaseProvider provider,
+	protected boolean setResourceRefreshing(ClearCaseProvider provider,
 			boolean refreshResource) {
 		boolean old = provider.refreshResources;
 		provider.refreshResources = refreshResource;
@@ -136,29 +136,29 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 	 */
 	private IStatus checkout(final IFile[] files) {
 
-		if (ClearcasePlugin.isCheckoutAutoNever())
+		if (ClearCasePlugin.isCheckoutAutoNever())
 			return CANCEL;
 
-		if (!ClearcasePlugin.isCheckoutAutoAlways()) {
+		if (!ClearCasePlugin.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
 			if (checkoutQuestion.isRemember()) {
 				if (returncode == IDialogConstants.YES_ID)
-					ClearcasePlugin.setCheckoutAutoAlways();
+					ClearCasePlugin.setCheckoutAutoAlways();
 				else if (returncode == IDialogConstants.NO_ID)
-					ClearcasePlugin.setCheckoutAutoNever();
+					ClearCasePlugin.setCheckoutAutoNever();
 			}
 			if (returncode != IDialogConstants.YES_ID)
-				return new Status(IStatus.CANCEL, ClearcasePlugin.PLUGIN_ID,
+				return new Status(IStatus.CANCEL, ClearCasePlugin.PLUGIN_ID,
 						"Checkout operation failed, operation was cancelled by user.");
 		}
 
-		ClearcaseProvider provider = getProvider(files);
+		ClearCaseProvider provider = getProvider(files);
 
 		// check for provider
 		if (null == provider)
-			return new Status(IStatus.ERROR, ClearcaseProvider.ID,
+			return new Status(IStatus.ERROR, ClearCaseProvider.ID,
 					TeamException.NOT_CHECKED_OUT, "No ClearCase resources!",
 					new IllegalStateException("Provider is null!"));
 
@@ -167,12 +167,12 @@ public class ClearcaseModificationHandler extends FileModificationValidator {
 			synchronized (provider) {
 				boolean refreshing = setResourceRefreshing(provider, false);
 				try {
-					if (ClearcasePlugin.isUseClearDlg()) {
+					if (ClearCasePlugin.isUseClearDlg()) {
 						ClearDlgHelper.checkout(files);
 					}
 					for (int i = 0; i < files.length; i++) {
 						IFile file = files[i];
-						if (!ClearcasePlugin.isUseClearDlg()) {
+						if (!ClearCasePlugin.isUseClearDlg()) {
 							provider.checkout(new IFile[] { file },
 									IResource.DEPTH_ZERO, null);
 						}

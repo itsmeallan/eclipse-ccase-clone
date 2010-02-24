@@ -1,14 +1,14 @@
 package net.sourceforge.eclipseccase.views;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
-import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IDialogSettings;
 
 /**
  * The Checkouts view
  */
-public class CheckoutsView extends ClearcaseViewPart {
+public class CheckoutsView extends ClearCaseViewPart {
 	private static final String SETTING_HIDE_CHECKOUTS = "hideCheckouts";
 
 	private static final String SETTING_HIDE_NEW_ELEMENTS = "hideNewElements";
@@ -24,12 +24,12 @@ public class CheckoutsView extends ClearcaseViewPart {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.eclipseccase.views.ClearcaseViewPart#shouldAdd(org.eclipse
+	 * net.sourceforge.eclipseccase.views.ClearCaseViewPart#shouldAdd(org.eclipse
 	 * .core.resources.IResource)
 	 */
 	@Override
 	protected boolean shouldAdd(IResource resource) {
-		ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+		ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 
 		if (null == provider)
 			return false;
@@ -47,7 +47,7 @@ public class CheckoutsView extends ClearcaseViewPart {
 			return !hideHijackedElements();
 
 		// show new elements if enabled
-		if (!provider.isClearcaseElement(resource))
+		if (!provider.isClearCaseElement(resource))
 			return !hideNewElements();
 
 		// hide all other
@@ -116,7 +116,7 @@ public class CheckoutsView extends ClearcaseViewPart {
 	 */
 	public CheckoutsView() {
 		super();
-		IDialogSettings dialogSettings = ClearcaseUI.getInstance().getDialogSettings();
+		IDialogSettings dialogSettings = ClearCaseUI.getInstance().getDialogSettings();
 		settings = dialogSettings.getSection(DIALOG_SETTINGS_STORE);
 		if (null == settings) {
 			settings = dialogSettings.addNewSection(DIALOG_SETTINGS_STORE);
@@ -126,7 +126,7 @@ public class CheckoutsView extends ClearcaseViewPart {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#makeActions()
+	 * @see net.sourceforge.eclipseccase.views.ClearCaseViewPart#makeActions()
 	 */
 	@Override
 	protected void makeActions() {

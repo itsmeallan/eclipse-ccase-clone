@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -17,7 +17,7 @@ import org.eclipse.ui.IActionDelegate;
 /**
  * Pulls up the clearcase version tree for the element
  */
-public class VersionTreeAction extends ClearcaseWorkspaceAction {
+public class VersionTreeAction extends ClearCaseWorkspaceAction {
 	IResource forceResource = null;
 
 	public void setResource(IResource resource) {
@@ -35,8 +35,8 @@ public class VersionTreeAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 		}
 		return true;
@@ -68,7 +68,7 @@ public class VersionTreeAction extends ClearcaseWorkspaceAction {
 						} else {
 							workingDir = new File(resource.getLocation().toOSString()).getParentFile();
 						}
-						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 						if (provider.isHijacked(resource)) {
 							new CommandLauncher().execute(new CleartoolCommandLine("lsvtree").addOption("-graphical").addElement(path + "@@/").create(), workingDir, null, opListener);
 						} else {

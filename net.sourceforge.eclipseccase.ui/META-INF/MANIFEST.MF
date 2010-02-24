@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: net.sourceforge.eclipseccase.ui; singleton:=true
 Bundle-Version: 2.3.5.0
-Bundle-Activator: net.sourceforge.eclipseccase.ui.ClearcaseUI
+Bundle-Activator: net.sourceforge.eclipseccase.ui.ClearCaseUI
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: net.sourceforge.eclipseccase,

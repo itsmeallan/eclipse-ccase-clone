@@ -3,8 +3,8 @@ package net.sourceforge.eclipseccase.ui.actions;
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
@@ -15,14 +15,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
 
-public class CheckOutAction extends ClearcaseWorkspaceAction {
+public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 	@Override
 	public void execute(IAction action) {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearcasePlugin.isUseClearDlg() && ClearcasePlugin.isCommentCheckout()) {
+		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentCheckout()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Checkout comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -41,7 +41,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Checking out...", resources.length);
 
-					if (ClearcasePlugin.isUseClearDlg()) {
+					if (ClearCasePlugin.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
 					} else {
@@ -56,7 +56,7 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
 						ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
-							ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+							ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 							// fix for 1046462
 							// TODO: investigate null here
 							if (null != provider) {
@@ -81,8 +81,8 @@ public class CheckOutAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 			if (provider.isCheckedOut(resource))
 				return false;

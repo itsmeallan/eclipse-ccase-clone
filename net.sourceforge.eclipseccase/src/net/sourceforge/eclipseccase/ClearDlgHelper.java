@@ -105,7 +105,7 @@ public class ClearDlgHelper {
 		// refresh resources
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 
 			// refresh resource
 			provider.refresh(resource);

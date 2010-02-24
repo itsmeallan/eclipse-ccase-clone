@@ -5,8 +5,8 @@
    <extension
          point="org.eclipse.team.core.repository">
       <repository
-            class="net.sourceforge.eclipseccase.ClearcaseProvider"
-            id="net.sourceforge.eclipseccase.ClearcaseProvider">
+            class="net.sourceforge.eclipseccase.ClearCaseProvider"
+            id="net.sourceforge.eclipseccase.ClearCaseProvider">
       </repository>
    </extension>
 

@@ -12,13 +12,13 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import net.sourceforge.eclipseccase.ui.ClearcaseImages;
+import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 import net.sourceforge.eclipseccase.ui.*;
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator.CachedImageDescriptor;
+import net.sourceforge.eclipseccase.ui.ClearCaseDecorator.CachedImageDescriptor;
 import net.sourceforge.eclipseccase.ui.viewsupport.OverlayIcon;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.preference.*;
@@ -417,15 +417,15 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	static {
 		IMG_DESC_DIRTY = new CachedImageDescriptor(TeamImages.getImageDescriptor(org.eclipse.team.ui.ISharedImages.IMG_DIRTY_OVR));
 		IMG_DESC_CHECKED_IN = new CachedImageDescriptor(TeamImages.getImageDescriptor(org.eclipse.team.ui.ISharedImages.IMG_CHECKEDIN_OVR));
-		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_CHECKEDOUT_OVR));
-		IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_QUESTIONABLE_OVR));
-		IMG_DESC_EDITED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_EDITED_OVR));
-		IMG_DESC_UNKNOWN_STATE = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_UNKNOWN_OVR));
-		IMG_DESC_DERIVED_OBJECT = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_DERIVEDOBJECT_OVR));
-		IMG_DESC_LINK = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_OVR));
-		IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_LINK_WARNING_OVR));
-		IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_HIJACKED_OVR));
-		IMG_DESC_ELEMENT_BG = new CachedImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_ELEMENT_BG));
+		IMG_DESC_CHECKED_OUT = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_CHECKEDOUT_OVR));
+		IMG_DESC_NEW_RESOURCE = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_QUESTIONABLE_OVR));
+		IMG_DESC_EDITED = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_EDITED_OVR));
+		IMG_DESC_UNKNOWN_STATE = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_UNKNOWN_OVR));
+		IMG_DESC_DERIVED_OBJECT = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_DERIVEDOBJECT_OVR));
+		IMG_DESC_LINK = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_LINK_OVR));
+		IMG_DESC_LINK_WARNING = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_LINK_WARNING_OVR));
+		IMG_DESC_HIJACKED = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_HIJACKED_OVR));
+		IMG_DESC_ELEMENT_BG = new CachedImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_ELEMENT_BG));
 	}
 
 	BooleanFieldEditor addVersionInfo;
@@ -491,7 +491,7 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		super();
 
 		// Set the preference store for the preference page.
-		setPreferenceStore(ClearcaseUI.getInstance().getPreferenceStore());
+		setPreferenceStore(ClearCaseUI.getInstance().getPreferenceStore());
 
 		setDescription(PreferenceMessages.getString("DecoratorPreferencePage.description")); //$NON-NLS-1$
 	}
@@ -502,87 +502,87 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	@Override
 	protected void createFieldEditors() {
 		// general
-		dirtyFolders = new MasterBooleanFieldEditor(ClearcaseUIPreferences.DECORATE_FOLDERS_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty"), //$NON-NLS-1$
+		dirtyFolders = new MasterBooleanFieldEditor(ClearCaseUIPreferences.DECORATE_FOLDERS_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_GENERAL));
 		addField(dirtyFolders);
 
-		dirtyFoldersWithViewPrivate = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty.withViewPrivate"), getFieldEditorParent(CAT_GENERAL));//$NON-NLS-1$
+		dirtyFoldersWithViewPrivate = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty.withViewPrivate"), getFieldEditorParent(CAT_GENERAL));//$NON-NLS-1$
 		addField(dirtyFoldersWithViewPrivate);
 		dirtyFolders.addSlave(dirtyFoldersWithViewPrivate);
 
 		// image decoration
 
-		decorateClearCaseElements = new MasterBooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.clearCaseElements"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		decorateClearCaseElements = new MasterBooleanFieldEditor(ClearCaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.clearCaseElements"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		addField(decorateClearCaseElements);
 
-		//		customClearCaseElementsBackground = new MasterBooleanFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, PreferenceMessages.getString("DecoratorPreferencePage.customClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		//		customClearCaseElementsBackground = new MasterBooleanFieldEditor(ClearCaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, PreferenceMessages.getString("DecoratorPreferencePage.customClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		// decorateClearCaseElements.addSlave(customClearCaseElementsBackground);
 		// addField(customClearCaseElementsBackground);
 
-		//		imageClearCaseElementsBackground = new FileFieldEditor(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND, PreferenceMessages.getString("DecoratorPreferencePage.imageClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		//		imageClearCaseElementsBackground = new FileFieldEditor(ClearCaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND, PreferenceMessages.getString("DecoratorPreferencePage.imageClearCaseElementsBackground"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		//		imageClearCaseElementsBackground.setFileExtensions(new String[] { "*.gif;*.jpg;*.png" }); //$NON-NLS-1$
 		// imageClearCaseElementsBackground.setEmptyStringAllowed(true);
 		// customClearCaseElementsBackground.addSlave(imageClearCaseElementsBackground);
 		// addField(imageClearCaseElementsBackground);
 
-		decorateCheckedIn = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedIn"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		decorateCheckedIn = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedIn"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		addField(decorateCheckedIn);
 
-		// decorateEdited = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.edited"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
+		// decorateEdited = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.edited"), getFieldEditorParent(CAT_IMAGES)); //$NON-NLS-1$
 		// addField(decorateEdited);
 
-		decorateHijacked = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_HIJACKED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.hijacked"), //$NON-NLS-1$
+		decorateHijacked = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_HIJACKED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.hijacked"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
 		addField(decorateHijacked);
 
-		decorateViewPrivate = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_VIEW_PRIVATE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.viewPrivate"), //$NON-NLS-1$
+		decorateViewPrivate = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_VIEW_PRIVATE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.viewPrivate"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
 		addField(decorateViewPrivate);
 
-		decorateDerivedObjects = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_DERIVED_OBJECTS, PreferenceMessages.getString("DecoratorPreferencePage.derivedObjects"), //$NON-NLS-1$
+		decorateDerivedObjects = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_DERIVED_OBJECTS, PreferenceMessages.getString("DecoratorPreferencePage.derivedObjects"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
 		addField(decorateDerivedObjects);
 
-		decorateUnknown = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.unknown"), //$NON-NLS-1$
+		decorateUnknown = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.unknown"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_IMAGES));
 		addField(decorateUnknown);
 
 		// text decorations
 
-		addViewInfoToProjects = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_PROJECTS_WITH_VIEW_INFO, PreferenceMessages.getString("DecoratorPreferencePage.addViewInfoToProjects"), //$NON-NLS-1$
+		addViewInfoToProjects = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_PROJECTS_WITH_VIEW_INFO, PreferenceMessages.getString("DecoratorPreferencePage.addViewInfoToProjects"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_TEXT));
 		addField(addViewInfoToProjects);
 
-		addVersionInfo = new BooleanFieldEditor(ClearcaseUIPreferences.DECORATE_ELEMENTS_WITH_VERSION_INFO, PreferenceMessages.getString("DecoratorPreferencePage.appendVersionInfoToResources"), //$NON-NLS-1$
+		addVersionInfo = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_ELEMENTS_WITH_VERSION_INFO, PreferenceMessages.getString("DecoratorPreferencePage.appendVersionInfoToResources"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_TEXT));
 		addField(addVersionInfo);
 
-		decorateElementStatesWithTextPrefix = new MasterBooleanFieldEditor(ClearcaseUIPreferences.DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX, PreferenceMessages.getString("DecoratorPreferencePage.prependResourceNamesWithStateInfoFor"), //$NON-NLS-1$
+		decorateElementStatesWithTextPrefix = new MasterBooleanFieldEditor(ClearCaseUIPreferences.DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX, PreferenceMessages.getString("DecoratorPreferencePage.prependResourceNamesWithStateInfoFor"), //$NON-NLS-1$
 				getFieldEditorParent(CAT_TEXT));
 		addField(decorateElementStatesWithTextPrefix);
 
-		prefixCheckedInResources = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedInResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
+		prefixCheckedInResources = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_CHECKED_IN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.checkedInResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
 		addField(prefixCheckedInResources);
 		decorateElementStatesWithTextPrefix.addSlave(prefixCheckedInResources);
 
-		prefixDirtyResources = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_DIRTY_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.dirtyResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
+		prefixDirtyResources = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_DIRTY_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.dirtyResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
 		addField(prefixDirtyResources);
 		decorateElementStatesWithTextPrefix.addSlave(prefixDirtyResources);
 
-		prefixHijackedResources = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_HIJACKED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.hijackedResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
+		prefixHijackedResources = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_HIJACKED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.hijackedResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
 		addField(prefixHijackedResources);
 		decorateElementStatesWithTextPrefix.addSlave(prefixHijackedResources);
 
-		prefixViewPrivateResources = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.viewPrivateResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
+		prefixViewPrivateResources = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.viewPrivateResources"), 4, getFieldEditorParent(CAT_TEXT));//$NON-NLS-1$
 		addField(prefixViewPrivateResources);
 		decorateElementStatesWithTextPrefix.addSlave(prefixViewPrivateResources);
 
-		//		prefixResourcesEditedBySomeoneElse = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesEditedBySomeoneElse"), 4, //$NON-NLS-1$
+		//		prefixResourcesEditedBySomeoneElse = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesEditedBySomeoneElse"), 4, //$NON-NLS-1$
 		// getFieldEditorParent(CAT_TEXT));
 		// addField(prefixResourcesEditedBySomeoneElse);
 		// decorateElementStatesWithTextPrefix.addSlave(prefixResourcesEditedBySomeoneElse);
 
-		prefixResourcesWithUnknownState = new StringFieldEditor(ClearcaseUIPreferences.TEXT_PREFIX_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesWithUnknownState"), 4, //$NON-NLS-1$
+		prefixResourcesWithUnknownState = new StringFieldEditor(ClearCaseUIPreferences.TEXT_PREFIX_UNKNOWN_ELEMENTS, PreferenceMessages.getString("DecoratorPreferencePage.resourcesWithUnknownState"), 4, //$NON-NLS-1$
 				getFieldEditorParent(CAT_TEXT));
 		addField(prefixResourcesWithUnknownState);
 		decorateElementStatesWithTextPrefix.addSlave(prefixResourcesWithUnknownState);
@@ -679,8 +679,8 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 		if (super.performOk()) {
 			// refresh the decorator
 			IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-			if (manager.getEnabled(ClearcaseDecorator.ID)) {
-				ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
+			if (manager.getEnabled(ClearCaseDecorator.ID)) {
+				ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 				if (activeDecorator != null) {
 					activeDecorator.refresh();
 				}

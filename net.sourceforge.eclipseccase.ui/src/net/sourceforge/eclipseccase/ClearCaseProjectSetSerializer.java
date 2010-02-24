@@ -34,7 +34,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 		ArrayList references = new ArrayList(providerProjects.length);
 		for (int i = 0; i < providerProjects.length; i++) {
 			IProject project = providerProjects[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(project);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(project);
 			if (provider != null) {
 				StringBuffer reference = new StringBuffer();
 				reference.append(VERSION);
@@ -205,7 +205,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			project.open(new SubProgressMonitor(monitor, 400));
 
 			// bind to clear clase plugin
-			RepositoryProvider.map(project, ClearcaseProvider.ID);
+			RepositoryProvider.map(project, ClearCaseProvider.ID);
 			StateCacheFactory.getInstance().remove(project);
 			StateCacheFactory.getInstance().fireStateChanged(project);
 			monitor.worked(100);

@@ -63,13 +63,13 @@ class StateCacheJobQueue extends Job {
 		this.priorityQueue = new PriorityBuffer(80, false);
 
 		// execute as system job if hidden
-		setSystem(ClearcasePlugin.isHideRefreshActivity());
+		setSystem(ClearCasePlugin.isHideRefreshActivity());
 
 		// set priority for long running jobs
-		setPriority(ClearcasePlugin.jobQueuePriority());
+		setPriority(ClearCasePlugin.jobQueuePriority());
 
 		// set the rule to the clearcase engine
-		setRule(ClearcasePlugin.RULE_CLEARCASE_REFRESH);
+		setRule(ClearCasePlugin.RULE_CLEARCASE_REFRESH);
 	}
 
 	/*
@@ -248,7 +248,7 @@ class StateCacheJobQueue extends Job {
 	 */
 	@Override
 	public boolean belongsTo(Object family) {
-		return ClearcasePlugin.FAMILY_CLEARCASE_OPERATION == family;
+		return ClearCasePlugin.FAMILY_CLEARCASE_OPERATION == family;
 	}
 
 	/**
@@ -289,8 +289,8 @@ class StateCacheJobQueue extends Job {
 		case RUNNING:
 			// make sure autobuild doesn't interrupt itself
 			interrupted = jobManager.currentJob() != this;
-			if (interrupted && ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin
+			if (interrupted && ClearCasePlugin.DEBUG_STATE_CACHE) {
+				ClearCasePlugin
 						.trace("[StateCache] update job was interrupted: " + Thread.currentThread().getName()); //$NON-NLS-1$
 				// new Exception().fillInStackTrace().printStackTrace();
 			}

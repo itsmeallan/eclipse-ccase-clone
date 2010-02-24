@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -11,7 +11,7 @@ import org.eclipse.ui.IActionDelegate;
 /**
  * Pulls up the compare with predecessor dialog.
  */
-public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
+public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 
 	private IResource element = null;
 
@@ -37,8 +37,8 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 	@Override
 	public boolean isEnabled() {
 		if (element != null) {
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(element);
-			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.isClearcaseElement(element))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(element);
+			if (provider != null && !provider.isUnknownState(element) && !provider.isIgnored(element) && provider.isClearCaseElement(element))
 				return true;
 		}
 
@@ -65,7 +65,7 @@ public class CompareWithVersionAction extends ClearcaseWorkspaceAction {
 					if (versionB != null) {
 						v2 = v2 + "@@" + versionB;
 					}
-					ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(element);
+					ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
 					p.compareWithVersion(v1, v2);
 
 				} catch (Exception ex) {

@@ -17,11 +17,11 @@ import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.progress.DeferredTreeContentManager;
 
 /**
- * A content provider for the ClearcaseViewPart.
+ * A content provider for the ClearCaseViewPart.
  * 
  * @author Gunnar Wagenknecht (gunnar@wagenknecht.org)
  */
-public class ClearcaseContentProvider implements ITreeContentProvider {
+public class ClearCaseContentProvider implements ITreeContentProvider {
 	DeferredTreeContentManager manager;
 
 	/*
@@ -40,7 +40,7 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		// the + box will always appear, but then disappear
 		// if not needed after you first click on it.
-		if (element instanceof ClearcaseViewRoot)
+		if (element instanceof ClearCaseViewRoot)
 			return true;
 
 		return false;
@@ -54,8 +54,8 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	 * Object)
 	 */
 	public Object[] getChildren(Object element) {
-		if (element instanceof ClearcaseViewRoot) {
-			((ClearcaseViewRoot) element).setWorkingSet(getWorkingSet());
+		if (element instanceof ClearCaseViewRoot) {
+			((ClearCaseViewRoot) element).setWorkingSet(getWorkingSet());
 			if (manager != null) {
 				Object[] children = manager.getChildren(element);
 				if (children != null)
@@ -72,7 +72,7 @@ public class ClearcaseContentProvider implements ITreeContentProvider {
 	 * 
 	 * @param root
 	 */
-	public void cancelJobs(ClearcaseViewRoot root) {
+	public void cancelJobs(ClearCaseViewRoot root) {
 		if (manager != null) {
 			manager.cancel(root);
 		}

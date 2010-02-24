@@ -14,7 +14,7 @@ package net.sourceforge.eclipseccase.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,11 +26,11 @@ import org.eclipse.ui.progress.IDeferredWorkbenchAdapter;
 import org.eclipse.ui.progress.IElementCollector;
 
 /**
- * A generic root element for the <code>ClearcaseViewPart</code>.
+ * A generic root element for the <code>ClearCaseViewPart</code>.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IAdaptable {
+public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IAdaptable {
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,7 +50,7 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 					IResource resource = (IResource) adaptables[i].getAdapter(IResource.class);
 					if (null != resource) {
 						IProject project = resource.getProject();
-						if (null != project && !projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project)) {
+						if (null != project && !projectsToSearch.contains(project) && null != ClearCaseProvider.getClearCaseProvider(project)) {
 							projectsToSearch.add(project);
 						}
 					}
@@ -61,7 +61,7 @@ public abstract class ClearcaseViewRoot implements IDeferredWorkbenchAdapter, IA
 				projectsToSearch = new ArrayList(projects.length);
 				for (int i = 0; i < projects.length; i++) {
 					IProject project = projects[i];
-					if (!projectsToSearch.contains(project) && null != ClearcaseProvider.getClearcaseProvider(project)) {
+					if (!projectsToSearch.contains(project) && null != ClearCaseProvider.getClearCaseProvider(project)) {
 						projectsToSearch.add(project);
 					}
 				}

@@ -13,8 +13,8 @@
 package net.sourceforge.eclipseccase.ui;
 
 import java.util.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ui.preferences.ClearCaseUIPreferences;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -24,22 +24,22 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * UI plugin for the Clearcase plugin.
+ * UI plugin for the ClearCase plugin.
  * 
  * @author Gunnar Wagenknecht
  */
-public class ClearcaseUI extends AbstractUIPlugin {
+public class ClearCaseUI extends AbstractUIPlugin {
 
 	// The shared instance.
-	private static ClearcaseUI plugin;
+	private static ClearCaseUI plugin;
 
 	public static final String PLUGIN_ID = "net.sourceforge.eclipseccase.ui"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_DECORATION = ClearcaseUI.PLUGIN_ID + "/debug/decoration"; //$NON-NLS-1$
+	private static final String DEBUG_OPTION_DECORATION = ClearCaseUI.PLUGIN_ID + "/debug/decoration"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_PLUGIN = ClearcaseUI.PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
+	private static final String DEBUG_OPTION_PLUGIN = ClearCaseUI.PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
 
 	/** indicates if debugging is enabled */
 	public static boolean DEBUG = false;
@@ -48,16 +48,16 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * Configures debug settings.
 	 */
 	static void configureDebugOptions() {
-		if (ClearcaseUI.getInstance().isDebugging()) {
+		if (ClearCaseUI.getInstance().isDebugging()) {
 
 			if (getDebugOption(DEBUG_OPTION_DECORATION)) {
 				trace("debugging " + DEBUG_OPTION_DECORATION); //$NON-NLS-1$
-				ClearcaseUI.DEBUG_DECORATION = true;
+				ClearCaseUI.DEBUG_DECORATION = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_PLUGIN)) {
 				trace("debugging " + DEBUG_OPTION_PLUGIN); //$NON-NLS-1$
-				ClearcaseUI.DEBUG = true;
+				ClearCaseUI.DEBUG = true;
 			}
 		}
 	}
@@ -96,7 +96,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @param message
 	 */
 	public static void trace(String message) {
-		System.out.println("**ClearcaseUI** " + message); //$NON-NLS-1$
+		System.out.println("**ClearCaseUI** " + message); //$NON-NLS-1$
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * 
 	 * @param descriptor
 	 */
-	public ClearcaseUI() {
+	public ClearCaseUI() {
 		super();
 		plugin = this;
 	}
@@ -131,7 +131,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 
 		configureDebugOptions();
 
-		ClearcasePlugin.getInstance().setClearcaseModificationHandler(new ClearcaseUIModificationHandler());
+		ClearCasePlugin.getInstance().setClearCaseModificationHandler(new ClearCaseUIModificationHandler());
 
 		PlatformUI.getWorkbench().addWindowListener(partListener);
 	}
@@ -141,7 +141,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * 
 	 * @return the default instance
 	 */
-	public static ClearcaseUI getInstance() {
+	public static ClearCaseUI getInstance() {
 		return plugin;
 	}
 
@@ -181,7 +181,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @return the preference value
 	 */
 	public static String getTextPrefixNew() {
-		return getInstance().getPluginPreferences().getString(ClearcaseUIPreferences.TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS);
+		return getInstance().getPluginPreferences().getString(ClearCaseUIPreferences.TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @return the preference value
 	 */
 	public static String getTextPrefixDirty() {
-		return getInstance().getPluginPreferences().getString(ClearcaseUIPreferences.TEXT_PREFIX_DIRTY_ELEMENTS);
+		return getInstance().getPluginPreferences().getString(ClearCaseUIPreferences.TEXT_PREFIX_DIRTY_ELEMENTS);
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @return the preference value
 	 */
 	public static String getTextPrefixUnknown() {
-		return getInstance().getPluginPreferences().getString(ClearcaseUIPreferences.TEXT_PREFIX_UNKNOWN_ELEMENTS);
+		return getInstance().getPluginPreferences().getString(ClearCaseUIPreferences.TEXT_PREFIX_UNKNOWN_ELEMENTS);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @return the preference value
 	 */
 	public static String getTextPrefixHijacked() {
-		return getInstance().getPluginPreferences().getString(ClearcaseUIPreferences.TEXT_PREFIX_HIJACKED_ELEMENTS);
+		return getInstance().getPluginPreferences().getString(ClearCaseUIPreferences.TEXT_PREFIX_HIJACKED_ELEMENTS);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class ClearcaseUI extends AbstractUIPlugin {
 	 * @return the preference value
 	 */
 	public static String getTextPrefixEdited() {
-		return getInstance().getPluginPreferences().getString(ClearcaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS);
+		return getInstance().getPluginPreferences().getString(ClearCaseUIPreferences.TEXT_PREFIX_EDITED_ELEMENTS);
 	}
 
 	/*
@@ -235,23 +235,23 @@ public class ClearcaseUI extends AbstractUIPlugin {
 		super.initializeImageRegistry(reg);
 
 		// objects
-		createImageDescriptor(reg, ClearcaseImages.IMG_QUESTIONABLE_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_CHECKEDOUT_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_EDITED_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_UNKNOWN_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_DERIVEDOBJECT_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_LINK_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_LINK_WARNING_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_HIJACKED_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_DYNAMIC_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_SNAPSHOT_OVR);
-		createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH);
-		createImageDescriptor(reg, ClearcaseImages.IMG_REFRESH_DISABLED);
-		createImageDescriptor(reg, ClearcaseImages.IMG_ELEMENT_BG);
+		createImageDescriptor(reg, ClearCaseImages.IMG_QUESTIONABLE_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_CHECKEDOUT_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_EDITED_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_UNKNOWN_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_DERIVEDOBJECT_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_LINK_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_LINK_WARNING_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_HIJACKED_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_DYNAMIC_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_SNAPSHOT_OVR);
+		createImageDescriptor(reg, ClearCaseImages.IMG_REFRESH);
+		createImageDescriptor(reg, ClearCaseImages.IMG_REFRESH_DISABLED);
+		createImageDescriptor(reg, ClearCaseImages.IMG_ELEMENT_BG);
 	}
 
 	private static void createImageDescriptor(ImageRegistry reg, String id) {
-		ImageDescriptor desc = imageDescriptorFromPlugin(ClearcaseUI.PLUGIN_ID, ClearcaseImages.ICON_PATH + id);
+		ImageDescriptor desc = imageDescriptorFromPlugin(ClearCaseUI.PLUGIN_ID, ClearCaseImages.ICON_PATH + id);
 		reg.put(id, null != desc ? desc : ImageDescriptor.getMissingImageDescriptor());
 	}
 

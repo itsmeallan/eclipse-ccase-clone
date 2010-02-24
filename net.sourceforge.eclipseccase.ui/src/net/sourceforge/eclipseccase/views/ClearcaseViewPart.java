@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import net.sourceforge.eclipseccase.*;
-import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -33,16 +33,16 @@ import org.eclipse.ui.views.navigator.ResourceNavigator;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public abstract class ClearcaseViewPart extends ResourceNavigator implements IResourceStateListener, IResourceChangeListener {
+public abstract class ClearCaseViewPart extends ResourceNavigator implements IResourceStateListener, IResourceChangeListener {
 
-	private ClearcaseContentProvider contentProvider;
+	private ClearCaseContentProvider contentProvider;
 
 	/**
 	 * @see org.eclipse.team.internal.ccvs.ui.repo.RemoteViewPart#getContentProvider()
 	 */
-	protected ClearcaseContentProvider getContentProvider() {
+	protected ClearCaseContentProvider getContentProvider() {
 		if (contentProvider == null) {
-			contentProvider = new ClearcaseContentProvider();
+			contentProvider = new ClearCaseContentProvider();
 		}
 		return contentProvider;
 	}
@@ -70,7 +70,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 	 */
 	@Override
 	protected void initLabelProvider(TreeViewer viewer) {
-		viewer.setLabelProvider(new DecoratingLabelProvider(new ClearcaseViewLabelProvider(), getPlugin().getWorkbench().getDecoratorManager().getLabelDecorator()));
+		viewer.setLabelProvider(new DecoratingLabelProvider(new ClearCaseViewLabelProvider(), getPlugin().getWorkbench().getDecoratorManager().getLabelDecorator()));
 	}
 
 	/*
@@ -127,16 +127,16 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 		return getRoot();
 	}
 
-	private ClearcaseViewRoot myRoot;
+	private ClearCaseViewRoot myRoot;
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.sourceforge.eclipseccase.views.ClearcaseViewPart#getRoot()
+	 * @see net.sourceforge.eclipseccase.views.ClearCaseViewPart#getRoot()
 	 */
-	protected ClearcaseViewRoot getRoot() {
+	protected ClearCaseViewRoot getRoot() {
 		if (null == myRoot) {
-			myRoot = new ClearcaseViewRoot() {
+			myRoot = new ClearCaseViewRoot() {
 
 				@Override
 				protected void collectElements(IProject[] clearcaseProjects, IElementCollector collector, IProgressMonitor monitor) {
@@ -181,7 +181,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 				throw new OperationCanceledException();
 
 			// filter out ignored resources
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (null == provider || provider.isIgnored(resource))
 				return;
 
@@ -236,7 +236,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 	 */
 	@Override
 	protected void makeActions() {
-		setActionGroup(new ClearcaseViewActionGroup(this));
+		setActionGroup(new ClearCaseViewActionGroup(this));
 	}
 
 	/**
@@ -283,7 +283,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 			} else if (t instanceof InterruptedException)
 				return;
 			else {
-				status = new Status(IStatus.ERROR, ClearcaseUI.PLUGIN_ID, 1, "An unknown exception occured: " + t.getLocalizedMessage(), t);
+				status = new Status(IStatus.ERROR, ClearCaseUI.PLUGIN_ID, 1, "An unknown exception occured: " + t.getLocalizedMessage(), t);
 				log = true;
 				dialog = true;
 			}
@@ -308,7 +308,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 				ErrorDialog.openError(getViewSite().getShell(), title, message, toShow);
 			}
 			if (log || getViewSite() == null || getViewSite().getShell() == null) {
-				ClearcasePlugin.log(toShow.getSeverity(), message, t);
+				ClearCasePlugin.log(toShow.getSeverity(), message, t);
 			}
 		}
 	}
@@ -337,7 +337,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 			final IResource resource = resources[i];
 
 			// filter out ignored resources
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (null == provider || provider.isIgnored(resource))
 				return;
 
@@ -410,7 +410,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 							if (null != resource) {
 								// filter out non clear case projects
 								if (resource.getType() == IResource.PROJECT)
-									return null != ClearcaseProvider.getClearcaseProvider(delta.getResource());
+									return null != ClearCaseProvider.getClearCaseProvider(delta.getResource());
 								return true;
 							}
 							return false;
@@ -450,7 +450,7 @@ public abstract class ClearcaseViewPart extends ResourceNavigator implements IRe
 		super.init(site, memento);
 		IWorkbenchSiteProgressService progressService = getProgressService();
 		if (null != progressService) {
-			progressService.showBusyForFamily(ClearcasePlugin.FAMILY_CLEARCASE_OPERATION);
+			progressService.showBusyForFamily(ClearCasePlugin.FAMILY_CLEARCASE_OPERATION);
 		}
 	}
 

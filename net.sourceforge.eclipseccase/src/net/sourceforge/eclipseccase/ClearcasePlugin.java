@@ -64,7 +64,7 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ClearcasePlugin extends Plugin {
+public class ClearCasePlugin extends Plugin {
 
 	private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
 
@@ -119,7 +119,7 @@ public class ClearcasePlugin extends Plugin {
 	static final int MAX_COMMENTS = 10;
 
 	/** the shared instance */
-	private static ClearcasePlugin plugin;
+	private static ClearCasePlugin plugin;
 
 	/** the plugin id */
 	public static final String PLUGIN_ID = "net.sourceforge.eclipseccase"; //$NON-NLS-1$
@@ -131,23 +131,23 @@ public class ClearcasePlugin extends Plugin {
 	public static final String UTF_8 = "UTF-8"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_PROVIDER = ClearcasePlugin.PLUGIN_ID
+	private static final String DEBUG_OPTION_PROVIDER = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/provider"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES = ClearcasePlugin.PLUGIN_ID
+	private static final String DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/provider/ignoredResources"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_PLUGIN = ClearcasePlugin.PLUGIN_ID
+	private static final String DEBUG_OPTION_PLUGIN = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/plugin"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_STATE_CACHE = ClearcasePlugin.PLUGIN_ID
+	private static final String DEBUG_OPTION_STATE_CACHE = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/stateCache"; //$NON-NLS-1$
 
 	/** debug option */
-	private static final String DEBUG_OPTION_SUBPROCESS = ClearcasePlugin.PLUGIN_ID
+	private static final String DEBUG_OPTION_SUBPROCESS = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/subprocess"; //$NON-NLS-1$
 
 	/** indicates if debugging is enabled */
@@ -157,31 +157,31 @@ public class ClearcasePlugin extends Plugin {
 	 * Configures debug settings.
 	 */
 	static void configureDebugOptions() {
-		if (ClearcasePlugin.getInstance().isDebugging()) {
+		if (ClearCasePlugin.getInstance().isDebugging()) {
 
 			if (getDebugOption(DEBUG_OPTION_PROVIDER)) {
 				trace("debugging " + DEBUG_OPTION_PROVIDER); //$NON-NLS-1$
-				ClearcasePlugin.DEBUG_PROVIDER = true;
+				ClearCasePlugin.DEBUG_PROVIDER = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES)) {
 				trace("debugging " + DEBUG_OPTION_PROVIDER_IGNORED_RESOURCES); //$NON-NLS-1$
-				ClearcasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES = true;
+				ClearCasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_PLUGIN)) {
 				trace("debugging " + DEBUG_OPTION_PLUGIN); //$NON-NLS-1$
-				ClearcasePlugin.DEBUG = true;
+				ClearCasePlugin.DEBUG = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_STATE_CACHE)) {
 				trace("debugging " + DEBUG_OPTION_STATE_CACHE); //$NON-NLS-1$
-				ClearcasePlugin.DEBUG_STATE_CACHE = true;
+				ClearCasePlugin.DEBUG_STATE_CACHE = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
 				trace("debugging " + DEBUG_OPTION_SUBPROCESS); //$NON-NLS-1$
-				ClearcasePlugin.getEngine().setDebugLevel(100);
+				ClearCasePlugin.getEngine().setDebugLevel(100);
 			}
 
 			String[] args = Platform.getCommandLineArgs();
@@ -212,7 +212,7 @@ public class ClearcasePlugin extends Plugin {
 	 * @param message
 	 */
 	public static void trace(String message) {
-		System.out.println("**Clearcase** " + message); //$NON-NLS-1$
+		System.out.println("**ClearCase** " + message); //$NON-NLS-1$
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class ClearcasePlugin extends Plugin {
 	}
 
 	/** the file modification validator */
-	private ClearcaseModificationHandler clearcaseModificationHandler = new ClearcaseModificationHandler();
+	private ClearCaseModificationHandler clearCaseModificationHandler = new ClearCaseModificationHandler();
 
 	/**
 	 * Prints out a debug string.
@@ -255,7 +255,7 @@ public class ClearcasePlugin extends Plugin {
 				}
 			}
 			log(IStatus.ERROR, Messages
-					.getString("ClearcasePlugin.error.debug") + debug, e); //$NON-NLS-1$
+					.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
 			debug = null;
 			return;
 		}
@@ -273,7 +273,7 @@ public class ClearcasePlugin extends Plugin {
 				}
 			}
 			log(IStatus.ERROR, Messages
-					.getString("ClearcasePlugin.error.debug") + debug, e); //$NON-NLS-1$
+					.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
 			debug = null;
 		}
 	}
@@ -289,10 +289,10 @@ public class ClearcasePlugin extends Plugin {
 	public static ClearCaseInterface getEngine() {
 		ClearCaseInterface impl = null;
 		try {
-			impl = ClearcasePlugin.getInstance().getClearcase();
+			impl = ClearCasePlugin.getInstance().getClearCase();
 		} catch (CoreException e) {
 			log(IStatus.ERROR, Messages
-					.getString("ClearcasePlugin.error.noClearcase"), e); //$NON-NLS-1$
+					.getString("ClearCasePlugin.error.noClearCase"), e); //$NON-NLS-1$
 		}
 		return impl;
 	}
@@ -302,7 +302,7 @@ public class ClearcasePlugin extends Plugin {
 	 * 
 	 * @return the shared instance
 	 */
-	public static ClearcasePlugin getInstance() {
+	public static ClearCasePlugin getInstance() {
 		return plugin;
 	}
 
@@ -322,7 +322,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isAddAuto() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.ADD_AUTO);
+				IClearCasePreferenceConstants.ADD_AUTO);
 	}
 
 	/**
@@ -332,7 +332,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isAddWithCheckin() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.ADD_WITH_CHECKIN);
+				IClearCasePreferenceConstants.ADD_WITH_CHECKIN);
 	}
 
 	/**
@@ -341,15 +341,15 @@ public class ClearcasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isCheckoutAutoAlways() {
-		return IClearcasePreferenceConstants.ALWAYS.equals(getInstance()
+		return IClearCasePreferenceConstants.ALWAYS.equals(getInstance()
 				.getPluginPreferences().getString(
-						IClearcasePreferenceConstants.CHECKOUT_AUTO));
+						IClearCasePreferenceConstants.CHECKOUT_AUTO));
 	}
 
 	public static void setCheckoutAutoAlways() {
 		getInstance().getPluginPreferences().setValue(
-				IClearcasePreferenceConstants.CHECKOUT_AUTO,
-				IClearcasePreferenceConstants.ALWAYS);
+				IClearCasePreferenceConstants.CHECKOUT_AUTO,
+				IClearCasePreferenceConstants.ALWAYS);
 	}
 
 	/**
@@ -358,15 +358,15 @@ public class ClearcasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isCheckoutAutoNever() {
-		return IClearcasePreferenceConstants.NEVER.equals(getInstance()
+		return IClearCasePreferenceConstants.NEVER.equals(getInstance()
 				.getPluginPreferences().getString(
-						IClearcasePreferenceConstants.CHECKOUT_AUTO));
+						IClearCasePreferenceConstants.CHECKOUT_AUTO));
 	}
 
 	public static void setCheckoutAutoNever() {
 		getInstance().getPluginPreferences().setValue(
-				IClearcasePreferenceConstants.CHECKOUT_AUTO,
-				IClearcasePreferenceConstants.NEVER);
+				IClearCasePreferenceConstants.CHECKOUT_AUTO,
+				IClearCasePreferenceConstants.NEVER);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCheckoutLatest() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.CHECKOUT_LATEST);
+				IClearCasePreferenceConstants.CHECKOUT_LATEST);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentAdd() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_ADD);
+				IClearCasePreferenceConstants.COMMENT_ADD);
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentAddNeverOnAuto() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO);
+				IClearCasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO);
 	}
 
 	/**
@@ -406,7 +406,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentCheckin() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_CHECKIN);
+				IClearCasePreferenceConstants.COMMENT_CHECKIN);
 	}
 
 	/**
@@ -416,7 +416,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentCheckout() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_CHECKOUT);
+				IClearCasePreferenceConstants.COMMENT_CHECKOUT);
 	}
 
 	/**
@@ -427,7 +427,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentCheckoutNeverOnAuto() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO);
+				IClearCasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO);
 	}
 
 	/**
@@ -446,7 +446,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isCommentEscape() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.COMMENT_ESCAPE);
+				IClearCasePreferenceConstants.COMMENT_ESCAPE);
 	}
 
 	/**
@@ -456,7 +456,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isIgnoreNew() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.IGNORE_NEW);
+				IClearCasePreferenceConstants.IGNORE_NEW);
 	}
 
 	/**
@@ -466,7 +466,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isPreserveTimes() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.PRESERVE_TIMES);
+				IClearCasePreferenceConstants.PRESERVE_TIMES);
 	}
 
 	/**
@@ -476,7 +476,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isRecursive() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.RECURSIVE);
+				IClearCasePreferenceConstants.RECURSIVE);
 	}
 
 	/**
@@ -485,9 +485,9 @@ public class ClearcasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isReservedCheckoutsAlways() {
-		return IClearcasePreferenceConstants.ALWAYS.equals(getInstance()
+		return IClearCasePreferenceConstants.ALWAYS.equals(getInstance()
 				.getPluginPreferences().getString(
-						IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+						IClearCasePreferenceConstants.CHECKOUT_RESERVED));
 	}
 
 	/**
@@ -496,9 +496,9 @@ public class ClearcasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isReservedCheckoutsIfPossible() {
-		return IClearcasePreferenceConstants.IF_POSSIBLE.equals(getInstance()
+		return IClearCasePreferenceConstants.IF_POSSIBLE.equals(getInstance()
 				.getPluginPreferences().getString(
-						IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+						IClearCasePreferenceConstants.CHECKOUT_RESERVED));
 	}
 
 	/**
@@ -507,9 +507,9 @@ public class ClearcasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isReservedCheckoutsNever() {
-		return IClearcasePreferenceConstants.NEVER.equals(getInstance()
+		return IClearCasePreferenceConstants.NEVER.equals(getInstance()
 				.getPluginPreferences().getString(
-						IClearcasePreferenceConstants.CHECKOUT_RESERVED));
+						IClearCasePreferenceConstants.CHECKOUT_RESERVED));
 	}
 
 	/**
@@ -520,7 +520,7 @@ public class ClearcasePlugin extends Plugin {
 	// mike: 20100220 remove isUseCleartool.
 	// public static boolean isUseCleartool() {
 	// return getInstance().getPluginPreferences().getBoolean(
-	// IClearcasePreferenceConstants.USE_CLEARTOOL);
+	// IClearCasePreferenceConstants.USE_CLEARTOOL);
 	// }
 
 	/**
@@ -530,7 +530,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isUseSingleProcess() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.USE_SINGLE_PROCESS);
+				IClearCasePreferenceConstants.USE_SINGLE_PROCESS);
 	}
 
 	/**
@@ -541,7 +541,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isHideRefreshActivity() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY);
+				IClearCasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY);
 	}
 
 	/**
@@ -551,7 +551,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isUseClearDlg() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.USE_CLEARDLG);
+				IClearCasePreferenceConstants.USE_CLEARDLG);
 	}
 
 	/**
@@ -561,7 +561,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isRefreshChildrenPrevented() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
+				IClearCasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
 	}
 
 	/**
@@ -569,14 +569,14 @@ public class ClearcasePlugin extends Plugin {
 	 * 
 	 * @return the CLEARCASE_PRIMARY_GROUP name
 	 */
-	public static String getClearcasePrimaryGroup() {
+	public static String getClearCasePrimaryGroup() {
 		return getInstance().getPluginPreferences().getString(
-				IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
+				IClearCasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
 	}
 
 	public static boolean isCheckinIdenticalAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.CHECKIN_IDENTICAL);
+				IClearCasePreferenceConstants.CHECKIN_IDENTICAL);
 	}
 
 	/**
@@ -585,7 +585,7 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isKeepChangesAfterUncheckout() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT);
+				IClearCasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT);
 	}
 
 	/**
@@ -594,17 +594,17 @@ public class ClearcasePlugin extends Plugin {
 	 */
 	public static boolean isTestLinkedParentInClearCase() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE);
+				IClearCasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE);
 	}
 
 	public static boolean isAutoCheckinParentAfterMoveAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE);
+				IClearCasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE);
 	}
 
 	public static int jobQueuePriority() {
 		return getInstance().getPluginPreferences().getInt(
-				IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY);
+				IClearCasePreferenceConstants.JOB_QUEUE_PRIORITY);
 	}
 
 	/**
@@ -616,8 +616,8 @@ public class ClearcasePlugin extends Plugin {
 	 *            (maybe <code>null</code>)
 	 */
 	public static void log(int severity, String message, Throwable ex) {
-		ILog log = ClearcasePlugin.getInstance().getLog();
-		log.log(new Status(severity, ClearcasePlugin.PLUGIN_ID, severity,
+		ILog log = ClearCasePlugin.getInstance().getLog();
+		log.log(new Status(severity, ClearCasePlugin.PLUGIN_ID, severity,
 				message, ex));
 	}
 
@@ -646,7 +646,7 @@ public class ClearcasePlugin extends Plugin {
 	/**
 	 * The constructor.
 	 */
-	public ClearcasePlugin() {
+	public ClearCasePlugin() {
 		super();
 		plugin = this;
 	}
@@ -684,10 +684,10 @@ public class ClearcasePlugin extends Plugin {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.clearcase.simple.IClearcaseDebugger#debugClearcase(java
+	 * net.sourceforge.clearcase.simple.IClearCaseDebugger#debugClearCase(java
 	 * .lang.String, java.lang.String)
 	 */
-	public void debugClearcase(String id, String message) {
+	public void debugClearCase(String id, String message) {
 		debug(id, message);
 	}
 
@@ -698,14 +698,14 @@ public class ClearcasePlugin extends Plugin {
 	 * <p>
 	 * The engine type depends on the current platform and on preference
 	 * settings. It is cached internally. After changing the preferences you
-	 * have to do a reset (see {@link #resetClearcase()}.
+	 * have to do a reset (see {@link #resetClearCase()}.
 	 * </p>
 	 * 
 	 * @return the ClearCase engine
 	 * @throws CoreException
 	 *             if no engine is available
 	 */
-	public ClearCaseInterface getClearcase() throws CoreException {
+	public ClearCaseInterface getClearCase() throws CoreException {
 		try {
 			if (clearcaseImpl == null) {
 				if (DEBUG) {
@@ -732,10 +732,10 @@ public class ClearcasePlugin extends Plugin {
 			throw new CoreException(
 					new Status(
 							IStatus.ERROR,
-							ClearcasePlugin.PLUGIN_ID,
+							ClearCasePlugin.PLUGIN_ID,
 							TeamException.UNABLE,
 							Messages
-									.getString("ClearcasePlugin.error.noValidClearcase"), e)); //$NON-NLS-1$
+									.getString("ClearCasePlugin.error.noValidClearCase"), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -766,59 +766,59 @@ public class ClearcasePlugin extends Plugin {
 		Preferences pref = getPluginPreferences();
 
 		// General preferences
-		pref.setDefault(IClearcasePreferenceConstants.USE_SINGLE_PROCESS, true);
+		pref.setDefault(IClearCasePreferenceConstants.USE_SINGLE_PROCESS, true);
 		pref.setDefault(
-				IClearcasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
+				IClearCasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
 				true);
 
-		String sClearcasePrimaryGroup = System
+		String sClearCasePrimaryGroup = System
 				.getenv("CLEARCASE_PRIMARY_GROUP");
-		if (sClearcasePrimaryGroup == null) {
-			sClearcasePrimaryGroup = "";
+		if (sClearCasePrimaryGroup == null) {
+			sClearCasePrimaryGroup = "";
 		}
-		pref.setDefault(IClearcasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
-				sClearcasePrimaryGroup);
+		pref.setDefault(IClearCasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
+				sClearCasePrimaryGroup);
 
-		pref.setDefault(IClearcasePreferenceConstants.USE_CLEARDLG, false);
-		pref.setDefault(IClearcasePreferenceConstants.PRESERVE_TIMES, false);
-		pref.setDefault(IClearcasePreferenceConstants.IGNORE_NEW, false);
-		pref.setDefault(IClearcasePreferenceConstants.RECURSIVE, true);
-		pref.setDefault(IClearcasePreferenceConstants.SAVE_DIRTY_EDITORS,
-				IClearcasePreferenceConstants.PROMPT);
+		pref.setDefault(IClearCasePreferenceConstants.USE_CLEARDLG, false);
+		pref.setDefault(IClearCasePreferenceConstants.PRESERVE_TIMES, false);
+		pref.setDefault(IClearCasePreferenceConstants.IGNORE_NEW, false);
+		pref.setDefault(IClearCasePreferenceConstants.RECURSIVE, true);
+		pref.setDefault(IClearCasePreferenceConstants.SAVE_DIRTY_EDITORS,
+				IClearCasePreferenceConstants.PROMPT);
 		pref
 				.setDefault(
-						IClearcasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY,
+						IClearCasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY,
 						true);
 
 		// source management
-		pref.setDefault(IClearcasePreferenceConstants.ADD_AUTO, true);
-		pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_AUTO,
-				IClearcasePreferenceConstants.PROMPT);
-		pref.setDefault(IClearcasePreferenceConstants.ADD_WITH_CHECKIN, false);
-		pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_RESERVED,
-				IClearcasePreferenceConstants.NEVER);
-		pref.setDefault(IClearcasePreferenceConstants.CHECKOUT_LATEST, true);
+		pref.setDefault(IClearCasePreferenceConstants.ADD_AUTO, true);
+		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_AUTO,
+				IClearCasePreferenceConstants.PROMPT);
+		pref.setDefault(IClearCasePreferenceConstants.ADD_WITH_CHECKIN, false);
+		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_RESERVED,
+				IClearCasePreferenceConstants.NEVER);
+		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_LATEST, true);
 
 		// comments
-		pref.setDefault(IClearcasePreferenceConstants.COMMENT_ADD, true);
+		pref.setDefault(IClearCasePreferenceConstants.COMMENT_ADD, true);
 		pref.setDefault(
-				IClearcasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO, true);
-		pref.setDefault(IClearcasePreferenceConstants.COMMENT_CHECKIN, true);
-		pref.setDefault(IClearcasePreferenceConstants.COMMENT_CHECKOUT, false);
+				IClearCasePreferenceConstants.COMMENT_ADD_NEVER_ON_AUTO, true);
+		pref.setDefault(IClearCasePreferenceConstants.COMMENT_CHECKIN, true);
+		pref.setDefault(IClearCasePreferenceConstants.COMMENT_CHECKOUT, false);
 		pref.setDefault(
-				IClearcasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
+				IClearCasePreferenceConstants.COMMENT_CHECKOUT_NEVER_ON_AUTO,
 				true);
-		pref.setDefault(IClearcasePreferenceConstants.COMMENT_ESCAPE, false);
-		pref.setDefault(IClearcasePreferenceConstants.JOB_QUEUE_PRIORITY,
+		pref.setDefault(IClearCasePreferenceConstants.COMMENT_ESCAPE, false);
+		pref.setDefault(IClearCasePreferenceConstants.JOB_QUEUE_PRIORITY,
 				Job.DECORATE);
 		pref.setDefault(
-				IClearcasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE,
+				IClearCasePreferenceConstants.TEST_LINKED_PARENT_IN_CLEARCASE,
 				false);
 		pref.setDefault(
-				IClearcasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT,
+				IClearCasePreferenceConstants.KEEP_CHANGES_AFTER_UNCHECKOUT,
 				true);
 		pref.setDefault(
-				IClearcasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE,
+				IClearCasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE,
 				false);
 
 	}
@@ -858,7 +858,7 @@ public class ClearcasePlugin extends Plugin {
 									PLUGIN_ID,
 									TeamException.UNABLE,
 									Messages
-											.getString("ClearcasePlugin.error.readingConfig.1") //$NON-NLS-1$
+											.getString("ClearCasePlugin.error.readingConfig.1") //$NON-NLS-1$
 											+ e.getLocalizedMessage(), e));
 		} catch (CoreException e) {
 			getLog().log(e.getStatus());
@@ -917,7 +917,7 @@ public class ClearcasePlugin extends Plugin {
 							PLUGIN_ID,
 							TeamException.UNABLE,
 							Messages
-									.getString("ClearcasePlugin.error.readingConfig.2"), e)); //$NON-NLS-1$
+									.getString("ClearCasePlugin.error.readingConfig.2"), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -925,7 +925,7 @@ public class ClearcasePlugin extends Plugin {
 	 * Resets this plugin so that a new ClearCase engine will be created next
 	 * time it is requested.
 	 */
-	public void resetClearcase() {
+	public void resetClearCase() {
 		// cancel pending refresh jobs
 		StateCacheFactory.getInstance().getJobQueue().cancel(true);
 
@@ -977,13 +977,13 @@ public class ClearcasePlugin extends Plugin {
 			if (!renamed)
 				throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
 						TeamException.UNABLE, MessageFormat.format(Messages
-								.getString("ClearcasePlugin.error.renameFile"), //$NON-NLS-1$
+								.getString("ClearCasePlugin.error.renameFile"), //$NON-NLS-1$
 								new Object[] { tempFile.getAbsolutePath() }),
 						null));
 		} catch (IOException e) {
 			throw new CoreException(new Status(IStatus.ERROR, PLUGIN_ID,
 					TeamException.UNABLE, MessageFormat.format(Messages
-							.getString("ClearcasePlugin.error.saveFile"), //$NON-NLS-1$
+							.getString("ClearCasePlugin.error.saveFile"), //$NON-NLS-1$
 							new Object[] { histFile.getAbsolutePath() }), e));
 		}
 	}
@@ -1001,7 +1001,7 @@ public class ClearcasePlugin extends Plugin {
 		configureDebugOptions();
 
 		// Disables plugin if clearcase is not available (throws CoreEx)
-		getClearcase();
+		getClearCase();
 
 		// process deltas since last activated in another thread
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=67449
@@ -1023,7 +1023,7 @@ public class ClearcasePlugin extends Plugin {
 							StateCacheFactory cacheFactory = StateCacheFactory
 									.getInstance();
 							ISavedState savedState = workspace
-									.addSaveParticipant(ClearcasePlugin.this,
+									.addSaveParticipant(ClearCasePlugin.this,
 											cacheFactory);
 							if (savedState != null) {
 								if (DEBUG) {
@@ -1069,7 +1069,7 @@ public class ClearcasePlugin extends Plugin {
 
 		StateCacheFactory.getInstance().getJobQueue().cancel();
 
-		resetClearcase();
+		resetClearCase();
 
 		saveCommentHistory();
 
@@ -1104,8 +1104,8 @@ public class ClearcasePlugin extends Plugin {
 	 * 
 	 * @return returns the ClearCase modification handler
 	 */
-	ClearcaseModificationHandler getClearcaseModificationHandler() {
-		return clearcaseModificationHandler;
+	ClearCaseModificationHandler getClearCaseModificationHandler() {
+		return clearCaseModificationHandler;
 	}
 
 	/**
@@ -1115,12 +1115,12 @@ public class ClearcasePlugin extends Plugin {
 	 * clients.
 	 * </p>
 	 * 
-	 * @param clearcaseModificationHandler
+	 * @param clearCaseModificationHandler
 	 *            the ClearCase modification handler to set
 	 */
-	public void setClearcaseModificationHandler(
-			ClearcaseModificationHandler clearcaseModificationHandler) {
-		this.clearcaseModificationHandler = clearcaseModificationHandler;
+	public void setClearCaseModificationHandler(
+			ClearCaseModificationHandler clearCaseModificationHandler) {
+		this.clearCaseModificationHandler = clearCaseModificationHandler;
 	}
 
 }

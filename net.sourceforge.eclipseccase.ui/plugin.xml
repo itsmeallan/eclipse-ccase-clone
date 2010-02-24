@@ -21,7 +21,7 @@
                   </objectState>
                   <objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
                   </objectState>
                </and>
             </enablement>
@@ -40,13 +40,13 @@
                   <not>
                      <objectState
                            name="projectPersistentProperty"
-                           value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+                           value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
                      </objectState>
                   </not>
                </and>
             </enablement>
          </action>
-         <action
+         <!--<action
                label="Activate clearcase plugin"
                class="net.sourceforge.eclipseccase.ui.actions.ActivatePluginAction"
                menubarPath="team.main/projectGroup"
@@ -59,7 +59,7 @@
                   </pluginState>
                </not>
             </enablement>
-         </action>
+         </action> -->
       </objectContribution>
    </extension>
    <extension
@@ -76,7 +76,7 @@
          </visibility>
          <filter
                name="projectPersistentProperty"
-               value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+               value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
          </filter>
          <action
                class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
@@ -93,7 +93,7 @@
                menubarPath="team.main/group1">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
+               class="net.sourceforge.eclipseccase.ui.actions.AddToClearCaseAction"
                icon="icons/full/add.png"
                id="net.sourceforge.eclipseccase.popups.add"
                label="Add"
@@ -209,7 +209,7 @@
                class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
                icon="icons/full/history.png"
                id="net.sourceforge.eclipseccase.popups.history"
-               label="&amp;Clearcase History"
+               label="&amp;ClearCase History"
                menubarPath="compareWithMenu/compareWithGroup">
          </action>
          <action
@@ -224,11 +224,11 @@
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Clearcase"
+            label="ClearCase"
             visible="true"
             id="net.sourceforge.eclipseccase.ui.actionset">
          <menu
-               label="&amp;Clearcase"
+               label="C&amp;learCase"
                id="eclipseccase_menu">
             <separator
                   name="projectGroup">
@@ -258,7 +258,7 @@
                   </objectState>
                   <objectState
                         name="projectPersistentProperty"
-                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+                        value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
                   </objectState>
                </and>
             </enablement>
@@ -279,13 +279,13 @@
                   <not>
                      <objectState
                            name="projectPersistentProperty"
-                           value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearcaseProvider">
+                           value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
                      </objectState>
                   </not>
                </and>
             </enablement>
          </action>
-         <action
+         <!-- <action
                class="net.sourceforge.eclipseccase.ui.actions.ActivatePluginAction"
                icon="icons/full/connect.png"
                id="net.sourceforge.eclipseccase.ui.actionset.activate"
@@ -299,7 +299,7 @@
                   </pluginState>
                </not>
             </enablement>
-         </action>
+         </action> -->
          <action
                class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.update"
@@ -329,7 +329,7 @@
             </enablement>
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.AddToClearcaseAction"
+               class="net.sourceforge.eclipseccase.ui.actions.AddToClearCaseAction"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.add"
                icon="icons/full/add.png"
                id="net.sourceforge.eclipseccase.ui.actionset.add"
@@ -563,8 +563,8 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            name="Clearcase"
-            description="Clearcase actions"
+            name="ClearCase"
+            description="ClearCase actions"
             id="net.sourceforge.eclipseccase.category">
       </category>
       <command
@@ -693,7 +693,7 @@
       <page
             name="%clearcasePreferences.name"
             category="org.eclipse.team.ui.TeamPreferences"
-            class="net.sourceforge.eclipseccase.ui.preferences.ClearcasePreferencePage"
+            class="net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferencePage"
             id="net.sourceforge.eclipseccase.preferences">
       </page>
       <page
@@ -710,7 +710,7 @@
             adaptable="true"
             label="%clearcaseDecorator.name"
             state="true"
-            class="net.sourceforge.eclipseccase.ui.ClearcaseDecorator"
+            class="net.sourceforge.eclipseccase.ui.ClearCaseDecorator"
             id="net.sourceforge.eclipseccase.ui.decorator">
          <enablement>
             <objectClass
@@ -725,7 +725,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Clearcase Private Files"
+            name="ClearCase Private Files"
             icon="icons/full/clearcase.png"
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
@@ -751,7 +751,7 @@
       <page
             objectClass="org.eclipse.core.resources.IResource"
             adaptable="true"
-            name="Clearcase Element Properties"
+            name="ClearCase Element Properties"
             class="net.sourceforge.eclipseccase.ElementPropertyPage"
             id="net.sourceforge.eclipseccase.elementPropertyPage">
       </page>
@@ -760,13 +760,13 @@
          point="org.eclipse.team.core.projectSets">
       <projectSets
             class="net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer"
-            id="net.sourceforge.eclipseccase.ClearcaseProvider">
+            id="net.sourceforge.eclipseccase.ClearCaseProvider">
       </projectSets>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences">
+            class="net.sourceforge.eclipseccase.ui.preferences.ClearCaseUIPreferences">
       </initializer>
    </extension>
    <extension

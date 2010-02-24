@@ -2,9 +2,9 @@ package net.sourceforge.eclipseccase.ui.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
+import net.sourceforge.eclipseccase.ui.ClearCaseDecorator;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -13,7 +13,7 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.PlatformUI;
 
-public class AssociateProjectAction extends ClearcaseWorkspaceAction {
+public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 
 	/**
 	 * (non-Javadoc) Method declared on IDropActionDelegate
@@ -34,7 +34,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 
 					for (int i = 0; i < projects.length; i++) {
 						IProject project = projects[i];
-						RepositoryProvider.map(project, ClearcaseProvider.ID);
+						RepositoryProvider.map(project, ClearCaseProvider.ID);
 						StateCacheFactory.getInstance().remove(project);
 						StateCacheFactory.getInstance().fireStateChanged(project);
 
@@ -56,7 +56,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 						// 10 for activeDecorator.refresh()
 						submonitor.beginTask(project.getName(), resources.size() + 10);
 						for (IResource res : resources) {
-							ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(res);
+							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(res);
 							if (p != null) {
 								p.ensureInitialized(res);
 							}
@@ -68,8 +68,8 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 						// To get correct state for project.
 						// refresh the decorator
 						IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-						if (manager.getEnabled(ClearcaseDecorator.ID) && ! submonitor.isCanceled()) {
-							ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
+						if (manager.getEnabled(ClearCaseDecorator.ID) && ! submonitor.isCanceled()) {
+							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
 								activeDecorator.refresh(project);
 							}
@@ -93,7 +93,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < projects.length; i++) {
 			IResource resource = projects[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null)
 				return false;
 		}
@@ -114,7 +114,7 @@ public class AssociateProjectAction extends ClearcaseWorkspaceAction {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearcaseWorkspaceAction#
+	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearCaseWorkspaceAction#
 	 * getSchedulingRule()
 	 */
 	@Override

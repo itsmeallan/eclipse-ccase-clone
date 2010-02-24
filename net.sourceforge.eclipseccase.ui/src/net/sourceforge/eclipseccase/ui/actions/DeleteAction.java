@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -10,7 +10,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 
-public class DeleteAction extends ClearcaseWorkspaceAction {
+public class DeleteAction extends ClearCaseWorkspaceAction {
 	@Override
 	public void execute(IAction action) {
 		boolean confirmed = MessageDialog.openConfirm(getShell(), "Confirm delete", "Are you sure you want to remove the selected elements from clearcase (rmname)?");
@@ -25,7 +25,7 @@ public class DeleteAction extends ClearcaseWorkspaceAction {
 					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
-						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 
 						provider.setOperationListener(opListener);
 						provider.delete(new IResource[] { resource }, subMonitor(monitor));
@@ -49,8 +49,8 @@ public class DeleteAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 		}
 		return true;

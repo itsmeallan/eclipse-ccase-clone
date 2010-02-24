@@ -2,8 +2,8 @@ package net.sourceforge.eclipseccase.ui.actions;
 
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
 
-public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
+public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 
 	/*
 	 * (non-Javadoc)
@@ -25,7 +25,7 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearcasePlugin.isUseClearDlg() && ClearcasePlugin.isCommentAdd()) {
+		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentAdd()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Add to clearcase comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -43,11 +43,11 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Adding...", resources.length);
 					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-					if (ClearcasePlugin.isUseClearDlg()) {
+					if (ClearCasePlugin.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.add(resources);
 					} else {
-						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resources[0]);
+						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 						provider.setComment(comment);
 						provider.setOperationListener(opListener);
 						provider.add(resources, depth, subMonitor(monitor));
@@ -76,23 +76,23 @@ public class AddToClearcaseAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
 				return false;
 
 			// Projects may be the view directory containing the VOBS, if so,
 			// don't want to be able to add em, or any resource diretcly under
 			// them
-			if (resource.getType() == IResource.PROJECT && !provider.isClearcaseElement(resource)) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for project outside CC: " + resource);
+			if (resource.getType() == IResource.PROJECT && !provider.isClearCaseElement(resource)) {
+				ClearCasePlugin.debug(DEBUG_ID, "disabled for project outside CC: " + resource);
 				return false;
 			}
-			if (resource.getParent().getType() == IResource.PROJECT && !provider.isClearcaseElement(resource.getParent())) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because parent is project outside CC: " + resource.getParent());
+			if (resource.getParent().getType() == IResource.PROJECT && !provider.isClearCaseElement(resource.getParent())) {
+				ClearCasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because parent is project outside CC: " + resource.getParent());
 				return false;
 			}
-			if (provider.isClearcaseElement(resource)) {
-				ClearcasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because it already is CC element");
+			if (provider.isClearCaseElement(resource)) {
+				ClearCasePlugin.debug(DEBUG_ID, "disabled for " + resource + " because it already is CC element");
 				return false;
 			}
 		}

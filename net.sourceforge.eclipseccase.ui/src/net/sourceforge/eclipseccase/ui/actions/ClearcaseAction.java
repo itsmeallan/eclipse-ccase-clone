@@ -2,8 +2,8 @@ package net.sourceforge.eclipseccase.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import net.sourceforge.eclipseccase.ui.ConfirmSaveModifiedResourcesDialog;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -18,12 +18,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.internal.ui.actions.TeamAction;
 import org.eclipse.ui.*;
 
-abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWindowActionDelegate {
+abstract public class ClearCaseAction extends TeamAction implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
 
 	private static Map actions = new HashMap();
 
-	public ClearcaseAction() {
+	public ClearCaseAction() {
 		super();
 	}
 
@@ -78,7 +78,7 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
 			synchronized (actions) {
 				IAction old = (IAction) actions.get(this);
 				if (old != null && old != action) {
-					ClearcasePlugin.log(IStatus.WARNING, "Mismatched actions in ClearcaseAction", null);
+					ClearCasePlugin.log(IStatus.WARNING, "Mismatched actions in ClearCaseAction", null);
 				}
 				actions.put(this, action);
 			}
@@ -100,7 +100,7 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
 		synchronized (actions) {
 			for (Iterator iter = actions.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry element = (Map.Entry) iter.next();
-				ClearcaseAction ccAction = (ClearcaseAction) element.getKey();
+				ClearCaseAction ccAction = (ClearCaseAction) element.getKey();
 				IAction action = (IAction) element.getValue();
 				ccAction.setActionEnablement(action);
 			}
@@ -147,7 +147,7 @@ abstract public class ClearcaseAction extends TeamAction implements IWorkbenchWi
 		final Object[] result = new Object[1];
 		display.syncExec(new Runnable() {
 			public void run() {
-				result[0] = ClearcaseUI.getDirtyEditors();
+				result[0] = ClearCaseUI.getDirtyEditors();
 			}
 		});
 		return (IEditorPart[]) result[0];

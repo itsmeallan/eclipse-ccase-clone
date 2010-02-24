@@ -8,11 +8,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
- * TODO Provide description for ClearcaseViewLabelProvider.
+ * TODO Provide description for ClearCaseViewLabelProvider.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public class ClearcaseViewLabelProvider extends WorkbenchLabelProvider {
+public class ClearCaseViewLabelProvider extends WorkbenchLabelProvider {
 
 	/*
 	 * (non-Javadoc)

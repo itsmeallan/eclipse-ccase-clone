@@ -13,8 +13,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.IClearcasePreferenceConstants;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.IClearCasePreferenceConstants;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.IWorkbench;
@@ -23,7 +23,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 /**
  * The main preference page for the Eclipse ClearCase integration.
  */
-public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCategories implements IWorkbenchPreferencePage, IClearcasePreferenceConstants {
+public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCategories implements IWorkbenchPreferencePage, IClearCasePreferenceConstants {
 
 	private static final String GENERAL = PreferenceMessages.getString("Preferences.Category.General"); //$NON-NLS-1$
 
@@ -47,11 +47,11 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	/**
 	 * Creates a new instance.
 	 */
-	public ClearcasePreferencePage() {
+	public ClearCasePreferencePage() {
 		setDescription(PreferenceMessages.getString("Preferences.Description")); //$NON-NLS-1$
 
 		// Set the preference store for the preference page.
-		setPreferenceStore(new ClearcasePreferenceStore());
+		setPreferenceStore(new ClearCasePreferenceStore());
 	}
 
 	/*
@@ -93,11 +93,11 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		//		addField(new BooleanFieldEditor(PRESERVE_TIMES, PreferenceMessages.getString("Preferences.General.PreserveTimes"), //$NON-NLS-1$
 		// getFieldEditorParent(GENERAL)));
 
-		//		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearcase"), //$NON-NLS-1$
+		//		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearCase"), //$NON-NLS-1$
 		// getFieldEditorParent(GENERAL)));
 		
 		// TODO Achim: misused for testing
-		// useCleartool.setEnabled(ClearcasePlugin.isWindows(),
+		// useCleartool.setEnabled(ClearCasePlugin.isWindows(),
 		// getFieldEditorParent(GENERAL));
 		// addField(useCleartool);
 
@@ -144,7 +144,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
-		addField(new RadioGroupFieldEditor(IClearcasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, //$NON-NLS-1$ 
+		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, //$NON-NLS-1$ 
 				ALWAYS_IF_POSSIBLE_NEVER, getFieldEditorParent(SOURCE_MANAGEMENT), true));
 
 		// comments
@@ -176,7 +176,7 @@ public class ClearcasePreferencePage extends FieldEditorPreferencePageWithCatego
 	@Override
 	public boolean performOk() {
 		if (super.performOk()) {
-			ClearcasePlugin.getInstance().resetClearcase();
+			ClearCasePlugin.getInstance().resetClearCase();
 			return true;
 		}
 		return false;

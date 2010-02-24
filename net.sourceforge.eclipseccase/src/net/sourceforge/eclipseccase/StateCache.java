@@ -109,7 +109,7 @@ public class StateCache implements Serializable {
 				synchronized (this) {
 					updateTimeStamp = IResource.NULL_STAMP;
 				}
-				ClearcasePlugin.trace(TRACE_ID,
+				ClearCasePlugin.trace(TRACE_ID,
 						"invalidating " + this.getPath()); //$NON-NLS-1$
 				// fireing state change (the update was forced)
 				// StateCacheFactory.getInstance().fireStateChanged(this.resource);
@@ -152,8 +152,8 @@ public class StateCache implements Serializable {
 		if (location == null) {
 			// resource has been invalidated in the workspace since request was
 			// queued, so ignore update request.
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID,
+			if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+				ClearCasePlugin.trace(TRACE_ID,
 						"not updating - invalid resource: " //$NON-NLS-1$
 								+ resource);
 			}
@@ -165,9 +165,9 @@ public class StateCache implements Serializable {
 
 			osPath = location.toOSString();
 
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$
-				ClearcasePlugin.trace("[StateCache] update in thread: "
+			if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+				ClearCasePlugin.trace(TRACE_ID, "updating " + resource); //$NON-NLS-1$
+				ClearCasePlugin.trace("[StateCache] update in thread: "
 						+ Thread.currentThread().getName()
 						+ " ID=" + Thread.currentThread().getId()); //$NON-NLS-1$
 			}
@@ -179,14 +179,14 @@ public class StateCache implements Serializable {
 				if (!Team.isIgnoredHint(resource)) {
 					ClearCaseElementState newState = null;
 
-					if (ClearcasePlugin.isRefreshChildrenPrevented()) {
+					if (ClearCasePlugin.isRefreshChildrenPrevented()) {
 						IResource parent = resource.getParent();
 						if (null != parent
 								&& !(parent instanceof IWorkspaceRoot)) {
 							StateCache parentCache = StateCacheFactory
 									.getInstance().getWithNoUpdate(parent);
 							if (!parentCache.isUninitialized()
-									&& !parentCache.isClearcaseElement()) {
+									&& !parentCache.isClearCaseElement()) {
 								// parent is no CC element, so don't call CC for
 								// state
 								newState = new ClearCaseElementState(osPath,
@@ -207,19 +207,19 @@ public class StateCache implements Serializable {
 					}
 
 					if (null == newState) {
-						newState = ClearcasePlugin.getEngine().getElementState(
+						newState = ClearCasePlugin.getEngine().getElementState(
 								osPath);
 					}
 
 					// Fix for Bug 2509230.
-					boolean isInsideSnapshotView = ClearcaseProvider
-							.isSnapshotView(ClearcaseProvider
+					boolean isInsideSnapshotView = ClearCaseProvider
+							.isSnapshotView(ClearCaseProvider
 									.getViewName(resource));
 
 					if (newState != null) {
 
 						boolean newIsElement = newState.isElement();
-						changed |= newIsElement != this.isClearcaseElement();
+						changed |= newIsElement != this.isClearCaseElement();
 						setFlag(IS_ELEMENT, newIsElement);
 
 						boolean newInsideView = !newState.isOutsideVob();
@@ -274,8 +274,8 @@ public class StateCache implements Serializable {
 					version = null;
 					symbolicLinkTarget = null;
 					changed = false;
-					if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-						ClearcasePlugin.trace(TRACE_ID,
+					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+						ClearCasePlugin.trace(TRACE_ID,
 								"resource must be ignored: " //$NON-NLS-1$
 										+ resource);
 					}
@@ -287,8 +287,8 @@ public class StateCache implements Serializable {
 				version = null;
 				symbolicLinkTarget = null;
 				changed = true;
-				if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-					ClearcasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
+				if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+					ClearCasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
 							+ resource);
 				}
 			}
@@ -298,14 +298,14 @@ public class StateCache implements Serializable {
 
 		// fire state change (lock must be released prior)
 		if (changed) {
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "updated " + this); //$NON-NLS-1$
+			if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+				ClearCasePlugin.trace(TRACE_ID, "updated " + this); //$NON-NLS-1$
 			}
 			StateCacheFactory.getInstance().fireStateChanged(this.resource);
 		} else {
 			// no changes
-			if (ClearcasePlugin.DEBUG_STATE_CACHE) {
-				ClearcasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ 
+			if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+				ClearCasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ 
 			}
 		}
 	}
@@ -333,7 +333,7 @@ public class StateCache implements Serializable {
 		// TODO calculate checkout state of target (Achim 2010 2 5)
 		boolean targetIsCheckedOut = false; // newState.isCheckedOut();
 		// get our provider
-		ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
+		ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
 		if (p != null) {
 			StateCache target = p.getFinalTargetElement(this);
 			targetIsCheckedOut = (target != null && target.isCheckedOut());
@@ -353,7 +353,7 @@ public class StateCache implements Serializable {
 	 * 
 	 * @return Returns a boolean
 	 */
-	public boolean isClearcaseElement() {
+	public boolean isClearCaseElement() {
 		return getFlag(IS_ELEMENT);
 	}
 
@@ -381,9 +381,9 @@ public class StateCache implements Serializable {
 
 		// this is too expensive
 		// try {
-		// return ClearcasePlugin.getEngine().isDifferent(osPath);
+		// return ClearCasePlugin.getEngine().isDifferent(osPath);
 		// } catch (RuntimeException ex) {
-		// ClearcasePlugin.log(IStatus.ERROR,
+		// ClearCasePlugin.log(IStatus.ERROR,
 		// "Could not determine element dirty state of "
 		// + osPath
 		// + ": "
@@ -428,7 +428,7 @@ public class StateCache implements Serializable {
 	 * @return String
 	 */
 	public String getPredecessorVersion() {
-		String predecessorVersion = ClearcasePlugin.getEngine()
+		String predecessorVersion = ClearCasePlugin.getEngine()
 				.getPreviousVersion(resource.getLocation().toOSString());
 		return predecessorVersion;
 	}
@@ -533,9 +533,9 @@ public class StateCache implements Serializable {
 		toString.append(": "); //$NON-NLS-1$
 		if (isUninitialized()) {
 			toString.append("not initialized"); //$NON-NLS-1$
-		} else if (!isClearcaseElement()) {
+		} else if (!isClearCaseElement()) {
 			toString.append("no clearcase element"); //$NON-NLS-1$
-		} else if (isClearcaseElement()) {
+		} else if (isClearCaseElement()) {
 			toString.append(version);
 
 			if (isSymbolicLink()) {

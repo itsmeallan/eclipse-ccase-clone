@@ -15,83 +15,83 @@ package net.sourceforge.eclipseccase;
 /**
  * Shared preference constants for ClearCase plugin preferences.
  */
-public interface IClearcasePreferenceConstants {
+public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
-	String ADD_AUTO = ClearcasePlugin.PLUGIN_ID + ".add.auto"; //$NON-NLS-1$
+	String ADD_AUTO = ClearCasePlugin.PLUGIN_ID + ".add.auto"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CHECKIN_IDENTICAL = ClearcasePlugin.PLUGIN_ID + ".checkin.identical"; //$NON-NLS-1$
+	String CHECKIN_IDENTICAL = ClearCasePlugin.PLUGIN_ID + ".checkin.identical"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String ADD_WITH_CHECKIN = ClearcasePlugin.PLUGIN_ID + ".add.checkin"; //$NON-NLS-1$
+	String ADD_WITH_CHECKIN = ClearCasePlugin.PLUGIN_ID + ".add.checkin"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CHECKOUT_AUTO = ClearcasePlugin.PLUGIN_ID + ".checkout.auto"; //$NON-NLS-1$
+	String CHECKOUT_AUTO = ClearCasePlugin.PLUGIN_ID + ".checkout.auto"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CHECKOUT_LATEST = ClearcasePlugin.PLUGIN_ID + ".checkout.latest"; //$NON-NLS-1$
+	String CHECKOUT_LATEST = ClearCasePlugin.PLUGIN_ID + ".checkout.latest"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CHECKOUT_RESERVED = ClearcasePlugin.PLUGIN_ID + ".checkout.reserved"; //$NON-NLS-1$
+	String CHECKOUT_RESERVED = ClearCasePlugin.PLUGIN_ID + ".checkout.reserved"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_ADD = ClearcasePlugin.PLUGIN_ID + ".comment.add"; //$NON-NLS-1$
+	String COMMENT_ADD = ClearCasePlugin.PLUGIN_ID + ".comment.add"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_ADD_NEVER_ON_AUTO = ClearcasePlugin.PLUGIN_ID
+	String COMMENT_ADD_NEVER_ON_AUTO = ClearCasePlugin.PLUGIN_ID
 			+ ".comment.add.neverOnAuto"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_CHECKIN = ClearcasePlugin.PLUGIN_ID + ".comment.checkin"; //$NON-NLS-1$
+	String COMMENT_CHECKIN = ClearCasePlugin.PLUGIN_ID + ".comment.checkin"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_CHECKOUT = ClearcasePlugin.PLUGIN_ID + ".comment.checkout"; //$NON-NLS-1$
+	String COMMENT_CHECKOUT = ClearCasePlugin.PLUGIN_ID + ".comment.checkout"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_CHECKOUT_NEVER_ON_AUTO = ClearcasePlugin.PLUGIN_ID
+	String COMMENT_CHECKOUT_NEVER_ON_AUTO = ClearCasePlugin.PLUGIN_ID
 			+ ".comment.checkout.neverOnAuto"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String COMMENT_ESCAPE = ClearcasePlugin.PLUGIN_ID + ".comment.escape"; //$NON-NLS-1$
+	String COMMENT_ESCAPE = ClearCasePlugin.PLUGIN_ID + ".comment.escape"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String IGNORE_NEW = ClearcasePlugin.PLUGIN_ID + ".ignore.new"; //$NON-NLS-1$
+	String IGNORE_NEW = ClearCasePlugin.PLUGIN_ID + ".ignore.new"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String PRESERVE_TIMES = ClearcasePlugin.PLUGIN_ID + ".preserveTimes"; //$NON-NLS-1$
+	String PRESERVE_TIMES = ClearCasePlugin.PLUGIN_ID + ".preserveTimes"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String RECURSIVE = ClearcasePlugin.PLUGIN_ID + ".recursive"; //$NON-NLS-1$
+	String RECURSIVE = ClearCasePlugin.PLUGIN_ID + ".recursive"; //$NON-NLS-1$
 
 	/** common preference */
-	String SAVE_DIRTY_EDITORS = ClearcasePlugin.PLUGIN_ID + ".saveDirtyEditors"; //$NON-NLS-1$
+	String SAVE_DIRTY_EDITORS = ClearCasePlugin.PLUGIN_ID + ".saveDirtyEditors"; //$NON-NLS-1$
 	
 	/** ClearCase preference */
-	String USE_SINGLE_PROCESS = ClearcasePlugin.PLUGIN_ID + ".useSingleProcess"; //$NON-NLS-1$
+	String USE_SINGLE_PROCESS = ClearCasePlugin.PLUGIN_ID + ".useSingleProcess"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String WIP_REFRESH_CHILDREN_PREVENT = ClearcasePlugin.PLUGIN_ID
+	String WIP_REFRESH_CHILDREN_PREVENT = ClearCasePlugin.PLUGIN_ID
 			+ ".preventRefreshChildren"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CLEARCASE_PRIMARY_GROUP = ClearcasePlugin.PLUGIN_ID
+	String CLEARCASE_PRIMARY_GROUP = ClearCasePlugin.PLUGIN_ID
 			+ ".clearcasePrimaryGroup"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String USE_CLEARDLG = ClearcasePlugin.PLUGIN_ID + ".useClearDlg"; //$NON-NLS-1$
+	String USE_CLEARDLG = ClearCasePlugin.PLUGIN_ID + ".useClearDlg"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String CLEARCASE_API = ClearcasePlugin.PLUGIN_ID + ".clearcaseAPI"; //$NON-NLS-1$
+	String CLEARCASE_API = ClearCasePlugin.PLUGIN_ID + ".clearcaseAPI"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String TEST_LINKED_PARENT_IN_CLEARCASE = ClearcasePlugin.PLUGIN_ID
-			+ ".testLinkedParentInClearcase"; // //$NON-NLS-1$
+	String TEST_LINKED_PARENT_IN_CLEARCASE = ClearCasePlugin.PLUGIN_ID
+			+ ".testLinkedParentInClearCase"; // //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String JOB_QUEUE_PRIORITY = ClearcasePlugin.PLUGIN_ID + ".jobQueuePriority"; // //$NON-NLS-1$
+	String JOB_QUEUE_PRIORITY = ClearCasePlugin.PLUGIN_ID + ".jobQueuePriority"; // //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String KEEP_CHANGES_AFTER_UNCHECKOUT = ClearcasePlugin.PLUGIN_ID
+	String KEEP_CHANGES_AFTER_UNCHECKOUT = ClearCasePlugin.PLUGIN_ID
 			+ ".keepAfterUncheckout"; // //$NON-NLS-1$;
 
 	/** preference value for <code>CLEARCASE_API</code> */
@@ -116,10 +116,10 @@ public interface IClearcasePreferenceConstants {
 	String PROMPT = "prompt"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String HIDE_REFRESH_STATE_ACTIVITY = ClearcasePlugin.PLUGIN_ID
+	String HIDE_REFRESH_STATE_ACTIVITY = ClearCasePlugin.PLUGIN_ID
 			+ ".refreshState.hide"; //$NON-NLS-1$
 	/** ClearCase preference */
-	String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearcasePlugin.PLUGIN_ID
+	String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearCasePlugin.PLUGIN_ID
 			+ ".auto.parent.checkin.after.move"; //$NON-NLS-1$
 
 }

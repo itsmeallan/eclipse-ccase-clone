@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.console.*;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -17,7 +17,7 @@ import org.eclipse.jface.action.IAction;
  * @author fbelouin
  * 
  */
-public class SetConfigSpecAction extends ClearcaseWorkspaceAction {
+public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 	private IResource resource = null;
 
 	private String configSpecTxt = null;
@@ -30,8 +30,8 @@ public class SetConfigSpecAction extends ClearcaseWorkspaceAction {
 		boolean bRes = true;
 
 		if (resource != null) {
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource)) {
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
 				bRes = false;
 			}
 		} else {

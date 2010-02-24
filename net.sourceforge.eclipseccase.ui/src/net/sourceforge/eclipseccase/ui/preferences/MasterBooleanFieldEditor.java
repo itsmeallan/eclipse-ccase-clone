@@ -121,7 +121,7 @@ public class MasterBooleanFieldEditor extends BooleanFieldEditor {
 			Object e = slaves.get(i);
 			FieldEditor fe = (FieldEditor) e;
 			String name = fe.getPreferenceName();
-			String imageccelelmentback = ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND;
+			String imageccelelmentback = ClearCaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND;
 			if (name.equals(imageccelelmentback) && enable) {
 				FileFieldEditor fed = ((FileFieldEditor) fe);
 				fed.setEmptyStringAllowed(false);

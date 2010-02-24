@@ -4,7 +4,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
@@ -16,7 +16,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
-public class MkBrTypeAction extends ClearcaseWorkspaceAction {
+public class MkBrTypeAction extends ClearCaseWorkspaceAction {
 	private IResource[] resources = null;
 
 	private String branchName = "";
@@ -34,8 +34,8 @@ public class MkBrTypeAction extends ClearcaseWorkspaceAction {
 		if (resources.length != 0) {
 			for (int i = 0; (i < resources.length) && (bRes); i++) {
 				IResource resource = resources[i];
-				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource)) {
+				ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
 					bRes = false;
 				}
 			}

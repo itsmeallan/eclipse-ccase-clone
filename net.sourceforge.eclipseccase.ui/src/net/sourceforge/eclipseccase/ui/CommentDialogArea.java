@@ -12,7 +12,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
@@ -47,7 +47,7 @@ public class CommentDialogArea extends DialogArea {
 	 */
 	public CommentDialogArea(Dialog parentDialog, IDialogSettings settings) {
 		super(parentDialog, settings);
-		comments = ClearcasePlugin.getInstance().getPreviousComments();
+		comments = ClearCasePlugin.getInstance().getPreviousComments();
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class CommentDialogArea extends DialogArea {
 	private void finished() {
 		// if there is a comment, remember it
 		if (comment.length() > 0) {
-			ClearcasePlugin.getInstance().addComment(comment);
+			ClearCasePlugin.getInstance().addComment(comment);
 		}
 	}
 }

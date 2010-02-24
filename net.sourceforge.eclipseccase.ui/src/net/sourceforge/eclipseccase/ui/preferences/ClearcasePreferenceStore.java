@@ -13,7 +13,7 @@
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import java.io.IOException;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
@@ -25,7 +25,7 @@ import org.eclipse.jface.util.*;
  * Internal implementation of a JFace preference store atop a core runtime
  * preference store.
  */
-public final class ClearcasePreferenceStore implements IPersistentPreferenceStore {
+public final class ClearCasePreferenceStore implements IPersistentPreferenceStore {
 
 	/**
 	 * Flag to indicate that the listener has been added.
@@ -56,7 +56,7 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 	/**
 	 * Creates a new instance for the this plug-in.
 	 */
-	public ClearcasePreferenceStore() {
+	public ClearCasePreferenceStore() {
 		// Important: do not call initialize() here
 		// due to heinous reentrancy problems.
 	}
@@ -71,7 +71,7 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 		// here's where we first ask for the plug-in's core runtime
 		// preferences;
 		// note that this causes this method to be reentered
-		this.prefs = ClearcasePlugin.getInstance().getPluginPreferences();
+		this.prefs = ClearCasePlugin.getInstance().getPluginPreferences();
 		// avoid adding the listener a second time when reentered
 		if (!this.listenerAdded) {
 			// register listener that funnels everything to
@@ -355,7 +355,7 @@ public final class ClearcasePreferenceStore implements IPersistentPreferenceStor
 	 * @see org.eclipse.jface.preference.IPersistentPreferenceStore#save()
 	 */
 	public void save() throws IOException {
-		ClearcasePlugin.getInstance().savePluginPreferences();
+		ClearCasePlugin.getInstance().savePluginPreferences();
 	}
 
 }

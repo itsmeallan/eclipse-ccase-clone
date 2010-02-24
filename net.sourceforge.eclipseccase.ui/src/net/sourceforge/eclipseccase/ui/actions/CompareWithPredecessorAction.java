@@ -1,8 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
 import java.io.IOException;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -13,7 +13,7 @@ import org.eclipse.ui.IActionDelegate;
 /**
  * Pulls up the compare with predecessor dialog.
  */
-public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
+public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 
 	/**
 	 * {@inheritDoc}
@@ -25,8 +25,8 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 		}
 		return true;
@@ -48,8 +48,8 @@ public class CompareWithPredecessorAction extends ClearcaseWorkspaceAction {
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
-						if (!ClearcasePlugin.isUseClearDlg()) {
-							ClearcaseProvider p = ClearcaseProvider.getClearcaseProvider(resource);
+						if (!ClearCasePlugin.isUseClearDlg()) {
+							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
 							p.compareWithPredecessor(path);
 						} else {
 							Runtime.getRuntime().exec(new String[] { "cleardlg", "/diffpred", path });

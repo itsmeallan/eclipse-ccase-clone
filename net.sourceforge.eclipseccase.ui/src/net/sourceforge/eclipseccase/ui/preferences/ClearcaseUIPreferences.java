@@ -12,17 +12,17 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.*;
 
 /**
- * An initializer for Clearcase UI default preferences and a class for accessing
+ * An initializer for ClearCase UI default preferences and a class for accessing
  * ClearCase UI preferences.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
-public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
+public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 
 	/** prefix for UI preferences */
 	private static final String _PREFIX = "net.sourceforge.eclipseccase.ui.preferences."; //$NON-NLS-1$
@@ -96,7 +96,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateCheckedInElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_CHECKED_IN_ELEMENTS);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateClearCaseElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_CLEARCASE_ELEMENTS);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateEditedElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_EDITED_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_EDITED_ELEMENTS);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateElementStatesWithTextPrefix() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateElementsWithVersionInfo() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_ELEMENTS_WITH_VERSION_INFO);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_ELEMENTS_WITH_VERSION_INFO);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateFoldersContainingViewPrivateElementsDirty() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateFoldersDirty() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_FOLDERS_DIRTY);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_DIRTY);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateHijackedElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_HIJACKED_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_HIJACKED_ELEMENTS);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateProjectsWithViewInfo() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_PROJECTS_WITH_VIEW_INFO);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_PROJECTS_WITH_VIEW_INFO);
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateUnknownElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_UNKNOWN_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_UNKNOWN_ELEMENTS);
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateViewPrivateElements() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_VIEW_PRIVATE_ELEMENTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_VIEW_PRIVATE_ELEMENTS);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateDerivedObjects() {
-		return getPluginPreferences().getBoolean(ClearcaseUIPreferences.DECORATE_DERIVED_OBJECTS);
+		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_DERIVED_OBJECTS);
 	}
 	
 	/**
@@ -208,7 +208,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return the plugin preferences
 	 */
 	public static Preferences getPluginPreferences() {
-		return ClearcaseUI.getInstance().getPluginPreferences();
+		return ClearCaseUI.getInstance().getPluginPreferences();
 	}
 
 	/*
@@ -220,7 +220,7 @@ public class ClearcaseUIPreferences extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 
-		IEclipsePreferences defaults = new DefaultScope().getNode(ClearcaseUI.PLUGIN_ID);
+		IEclipsePreferences defaults = new DefaultScope().getNode(ClearCaseUI.PLUGIN_ID);
 
 		// Decorator preferences
 		defaults.putBoolean(DECORATE_FOLDERS_DIRTY, true);

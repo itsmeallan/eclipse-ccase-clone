@@ -1,10 +1,10 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 import java.util.Vector;
 import net.sourceforge.clearcase.*;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.views.HistoryView;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -17,7 +17,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * Pulls up the clearcase history
  */
-public class HistoryAction extends ClearcaseWorkspaceAction {
+public class HistoryAction extends ClearCaseWorkspaceAction {
 	IResource[] resources = null;
 
 	private HistoryView view = null;
@@ -33,8 +33,8 @@ public class HistoryAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 		}
 		return true;
@@ -61,7 +61,7 @@ public class HistoryAction extends ClearcaseWorkspaceAction {
 
 						// ClearCaseInterface cci =
 						// ClearCase.createInterface(ClearCase.INTERFACE_CLI);
-						ClearCaseInterface cci = ClearcasePlugin.getEngine();
+						ClearCaseInterface cci = ClearCasePlugin.getEngine();
 						Vector<ElementHistory> result = cci.getElementHistory(path);
 						view.setHistoryInformation(resources[0], result);
 					}

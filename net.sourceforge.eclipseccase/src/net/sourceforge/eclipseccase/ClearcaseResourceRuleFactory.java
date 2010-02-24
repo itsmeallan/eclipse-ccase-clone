@@ -19,12 +19,12 @@ import org.eclipse.core.resources.team.ResourceRuleFactory;
  * 
  * @author Gunnar Wagenknecht (gunnar@wagenknecht.org)
  */
-class ClearcaseResourceRuleFactory extends ResourceRuleFactory {
+class ClearCaseResourceRuleFactory extends ResourceRuleFactory {
 
 	/**
 	 * Creates a new instance.
 	 */
-	ClearcaseResourceRuleFactory() {
+	ClearCaseResourceRuleFactory() {
 		super();
 	}
 

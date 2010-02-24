@@ -2,14 +2,14 @@ package net.sourceforge.eclipseccase.ui;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import net.sourceforge.eclipseccase.ui.preferences.ClearcaseUIPreferences;
+import net.sourceforge.eclipseccase.ui.preferences.ClearCaseUIPreferences;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class ClearcaseImages {
+public class ClearCaseImages {
 	// base path
 	public static final String ICON_PATH = "icons/full/"; //$NON-NLS-1$
 
-	// images (don't forget to add to ClearcaseUI#initialize...)
+	// images (don't forget to add to ClearCaseUI#initialize...)
 	public static final String IMG_EDITED_OVR = "edited_ovr.gif"; //$NON-NLS-1$
 
 	public static final String IMG_HIJACKED_OVR = "hijacked_ovr.gif"; //$NON-NLS-1$
@@ -41,7 +41,7 @@ public class ClearcaseImages {
 	 * @return
 	 */
 	public static ImageDescriptor getImageDescriptor(String string) {
-		return ClearcaseUI.getInstance().getImageRegistry().getDescriptor(string);
+		return ClearCaseUI.getInstance().getImageRegistry().getDescriptor(string);
 	}
 
 	/**
@@ -51,10 +51,10 @@ public class ClearcaseImages {
 	 * @return the background image for decorating ClearCase elements.
 	 */
 	public static ImageDescriptor getClearCaseElementsBackgroundImage() {
-		if (!ClearcaseUIPreferences.getPluginPreferences().getBoolean(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM))
+		if (!ClearCaseUIPreferences.getPluginPreferences().getBoolean(ClearCaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM))
 			return getImageDescriptor(IMG_ELEMENT_BG);
 
-		String customImage = ClearcaseUIPreferences.getPluginPreferences().getString(ClearcaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND);
+		String customImage = ClearCaseUIPreferences.getPluginPreferences().getString(ClearCaseUIPreferences.IMAGE_CLEARCASE_ELEMENTS_BACKGROUND);
 		if (null == customImage || customImage.trim().length() == 0)
 			return ImageDescriptor.getMissingImageDescriptor();
 
@@ -81,7 +81,7 @@ public class ClearcaseImages {
 			}
 
 			// store image
-			ClearcaseUI.getInstance().getImageRegistry().put(customImage, image);
+			ClearCaseUI.getInstance().getImageRegistry().put(customImage, image);
 		}
 
 		return image;

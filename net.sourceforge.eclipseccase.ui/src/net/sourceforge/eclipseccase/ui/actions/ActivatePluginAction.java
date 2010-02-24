@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.ClearcaseUI;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,7 +26,7 @@ public class ActivatePluginAction extends ActionDelegate implements IObjectActio
 
 	@Override
 	public void run(IAction action) {
-		MessageDialog.openInformation(ClearcaseUI.getInstance().getWorkbench().getActiveWorkbenchWindow().getShell(), "Clearcase Plugin", "The Clearcase plugin has been activated");
+		MessageDialog.openInformation(ClearCaseUI.getInstance().getWorkbench().getActiveWorkbenchWindow().getShell(), "ClearCase Plugin", "The ClearCase plugin has been activated");
 		if (action != null) {
 			action.setEnabled(false);
 		}

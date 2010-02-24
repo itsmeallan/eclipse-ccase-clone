@@ -20,7 +20,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public abstract class ClearcaseWorkspaceAction extends ClearcaseAction {
+public abstract class ClearCaseWorkspaceAction extends ClearCaseAction {
 	/**
 	 * Executes the specified runnable in the background.
 	 * 

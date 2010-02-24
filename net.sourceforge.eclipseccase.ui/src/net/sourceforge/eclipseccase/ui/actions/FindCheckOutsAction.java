@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IActionDelegate;
@@ -9,7 +9,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * Pulls up the clearcase version tree for the element
  */
-public class FindCheckOutsAction extends ClearcaseWorkspaceAction {
+public class FindCheckOutsAction extends ClearCaseWorkspaceAction {
 
 	/**
 	 * {@inheritDoc}
@@ -22,8 +22,8 @@ public class FindCheckOutsAction extends ClearcaseWorkspaceAction {
 		if (resources.length != 0) {
 			for (int i = 0; (i < resources.length) && (bRes); i++) {
 				IResource resource = resources[i];
-				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource)) {
+				ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
 					bRes = false;
 				}
 			}

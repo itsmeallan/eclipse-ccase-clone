@@ -55,7 +55,7 @@ public class ElementPropertyPage extends PropertyPage {
 		IResource resource = (IResource) getElement();
 		StateCache cache = StateCacheFactory.getInstance().get(resource);
 
-		if (cache.isClearcaseElement()) {
+		if (cache.isClearCaseElement()) {
 			Label versionLabel = new Label(composite, SWT.NONE);
 			versionLabel.setText("Version:");
 			versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);

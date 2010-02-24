@@ -4,7 +4,7 @@
 
 package net.sourceforge.eclipseccase.views;
 
-import net.sourceforge.eclipseccase.ui.ClearcaseImages;
+import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IActionBars;
@@ -13,18 +13,18 @@ import org.eclipse.ui.views.navigator.MainActionGroup;
 import org.eclipse.ui.views.navigator.ShowInNavigatorAction;
 
 /**
- * TODO Provide description for ClearcaseViewActionGroup.
+ * TODO Provide description for ClearCaseViewActionGroup.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public class ClearcaseViewActionGroup extends MainActionGroup {
+public class ClearCaseViewActionGroup extends MainActionGroup {
 
 	/**
 	 * Creates a new instance.
 	 * 
 	 * @param navigator
 	 */
-	public ClearcaseViewActionGroup(ClearcaseViewPart navigator) {
+	public ClearCaseViewActionGroup(ClearCaseViewPart navigator) {
 		super(navigator);
 	}
 
@@ -41,20 +41,20 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	protected void makeActions() {
 		super.makeActions();
 
-		refreshAction = new Action(Messages.getString("ClearcaseViewActionGroup.refresh.name"), ClearcaseImages //$NON-NLS-1$
-				.getImageDescriptor(ClearcaseImages.IMG_REFRESH)) {
+		refreshAction = new Action(Messages.getString("ClearCaseViewActionGroup.refresh.name"), ClearCaseImages //$NON-NLS-1$
+				.getImageDescriptor(ClearCaseImages.IMG_REFRESH)) {
 
 			@Override
 			public void run() {
-				getClearcaseView().refresh();
+				getClearCaseView().refresh();
 			}
 
 		};
-		refreshAction.setToolTipText(Messages.getString("ClearcaseViewActionGroup.refresh.description")); //$NON-NLS-1$
-		refreshAction.setDisabledImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_REFRESH_DISABLED));
-		refreshAction.setHoverImageDescriptor(ClearcaseImages.getImageDescriptor(ClearcaseImages.IMG_REFRESH));
+		refreshAction.setToolTipText(Messages.getString("ClearCaseViewActionGroup.refresh.description")); //$NON-NLS-1$
+		refreshAction.setDisabledImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_REFRESH_DISABLED));
+		refreshAction.setHoverImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_REFRESH));
 
-		showInNavigatorAction = new ShowInNavigatorAction(getClearcaseView().getSite().getPage(), getClearcaseView().getViewer());
+		showInNavigatorAction = new ShowInNavigatorAction(getClearCaseView().getSite().getPage(), getClearCaseView().getViewer());
 	}
 
 	/*
@@ -110,8 +110,8 @@ public class ClearcaseViewActionGroup extends MainActionGroup {
 	/**
 	 * @return
 	 */
-	protected ClearcaseViewPart getClearcaseView() {
-		return ((ClearcaseViewPart) getNavigator());
+	protected ClearCaseViewPart getClearCaseView() {
+		return ((ClearCaseViewPart) getNavigator());
 	}
 
 	/*

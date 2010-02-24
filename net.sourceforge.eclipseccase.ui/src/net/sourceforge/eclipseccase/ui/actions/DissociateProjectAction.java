@@ -1,8 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
-import net.sourceforge.eclipseccase.ui.ClearcaseDecorator;
+import net.sourceforge.eclipseccase.ui.ClearCaseDecorator;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,7 +12,7 @@ import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.PlatformUI;
 
-public class DissociateProjectAction extends ClearcaseWorkspaceAction {
+public class DissociateProjectAction extends ClearCaseWorkspaceAction {
 
 	/**
 	 * (non-Javadoc) Method declared on IDropActionDelegate
@@ -55,8 +55,8 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 
 						// refresh the decorator
 						IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-						if (manager.getEnabled(ClearcaseDecorator.ID)) {
-							ClearcaseDecorator activeDecorator = (ClearcaseDecorator) manager.getBaseLabelProvider(ClearcaseDecorator.ID);
+						if (manager.getEnabled(ClearCaseDecorator.ID)) {
+							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
 								activeDecorator.refresh(project);
 							}
@@ -73,7 +73,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 
 		executeInForeground(runnable, PROGRESS_DIALOG, "Dissociating from ClearCase");
 
-		// MessageDialog.openInformation(getShell(), "Clearcase Plugin", message
+		// MessageDialog.openInformation(getShell(), "ClearCase Plugin", message
 		// .toString());
 	}
 
@@ -84,7 +84,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < projects.length; i++) {
 			IResource resource = projects[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider == null)
 				return false;
 		}
@@ -105,7 +105,7 @@ public class DissociateProjectAction extends ClearcaseWorkspaceAction {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearcaseWorkspaceAction#
+	 * @seenet.sourceforge.eclipseccase.ui.actions.ClearCaseWorkspaceAction#
 	 * getSchedulingRule()
 	 */
 	@Override

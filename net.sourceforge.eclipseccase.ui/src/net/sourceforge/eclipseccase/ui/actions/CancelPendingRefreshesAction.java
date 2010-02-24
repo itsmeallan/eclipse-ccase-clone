@@ -12,7 +12,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -51,7 +51,7 @@ public class CancelPendingRefreshesAction extends ActionDelegate implements IObj
 
 	@Override
 	public void run(IAction action) {
-		if (MessageDialog.openQuestion(shell, "Clearcase Plugin", "Do you want to cancel all pending state refreshes?")) {
+		if (MessageDialog.openQuestion(shell, "ClearCase Plugin", "Do you want to cancel all pending state refreshes?")) {
 			StateCacheFactory.getInstance().cancelPendingRefreshes();
 			if (action != null) {
 				action.setEnabled(false);
@@ -62,7 +62,7 @@ public class CancelPendingRefreshesAction extends ActionDelegate implements IObj
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (action != null) {
-			action.setEnabled(null != shell && ClearcasePlugin.getInstance().hasPendingRefreshes());
+			action.setEnabled(null != shell && ClearCasePlugin.getInstance().hasPendingRefreshes());
 		}
 	}
 

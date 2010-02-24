@@ -4,7 +4,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.clearcase.commandline.CleartoolCommandLine;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 
-public class FindMergeAction extends ClearcaseWorkspaceAction {
+public class FindMergeAction extends ClearCaseWorkspaceAction {
 	private IResource[] resources = null;
 
 	/**
@@ -26,8 +26,8 @@ public class FindMergeAction extends ClearcaseWorkspaceAction {
 		if (resources.length != 0) {
 			for (int i = 0; (i < resources.length) && (bRes); i++) {
 				IResource resource = resources[i];
-				ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource)) {
+				ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
 					bRes = false;
 				}
 			}

@@ -1,13 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.team.core.Team;
 
-public class RefreshStateAction extends ClearcaseWorkspaceAction {
+public class RefreshStateAction extends ClearCaseWorkspaceAction {
 	/*
 	 * Method declared on IActionDelegate.
 	 */
@@ -22,7 +22,7 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						checkCanceled(monitor);
-						ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 						provider.refreshRecursive(resource, new SubProgressMonitor(monitor, 1));
 					}
 
@@ -46,13 +46,13 @@ public class RefreshStateAction extends ClearcaseWorkspaceAction {
 			if (Team.isIgnoredHint(resources[0]))
 				return false;
 
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resources[0]);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 			if (provider == null)
 				return false;
 		}
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider == null)
 				return false;
 		}

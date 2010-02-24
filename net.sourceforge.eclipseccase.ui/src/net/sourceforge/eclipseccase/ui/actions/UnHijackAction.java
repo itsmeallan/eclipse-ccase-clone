@@ -3,8 +3,8 @@ package net.sourceforge.eclipseccase.ui.actions;
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
-import net.sourceforge.eclipseccase.ClearcasePlugin;
-import net.sourceforge.eclipseccase.ClearcaseProvider;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
  * @author conwaym To change this generated comment edit the template variable
  *         "typecomment": Workbench>Preferences>Java>Templates.
  */
-public class UnHijackAction extends ClearcaseWorkspaceAction {
+public class UnHijackAction extends ClearCaseWorkspaceAction {
 
 	class UnHijackQuestion implements Runnable {
 		private int returncode;
@@ -46,7 +46,7 @@ public class UnHijackAction extends ClearcaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Removing Hijacked files...", resources.length);
 
-					if (ClearcasePlugin.isUseClearDlg()) {
+					if (ClearCasePlugin.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.uncheckout(resources);
 					} else {
@@ -68,7 +68,7 @@ public class UnHijackAction extends ClearcaseWorkspaceAction {
 							ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 							for (int i = 0; i < resources.length; i++) {
 								IResource resource = resources[i];
-								ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
+								ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 								provider.setOperationListener(opListener);
 								provider.unhijack(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
 							}
@@ -90,8 +90,8 @@ public class UnHijackAction extends ClearcaseWorkspaceAction {
 			return false;
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			ClearcaseProvider provider = ClearcaseProvider.getClearcaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearcaseElement(resource))
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 			if (!provider.isHijacked(resource))
 				return false;

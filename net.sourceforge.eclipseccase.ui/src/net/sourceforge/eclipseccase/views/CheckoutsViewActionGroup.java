@@ -12,7 +12,7 @@ import org.eclipse.ui.IActionBars;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
+public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 
 	/**
 	 * Creates a new instance.
@@ -33,7 +33,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#fillActionBars
+	 * net.sourceforge.eclipseccase.views.ClearCaseViewActionGroup#fillActionBars
 	 * (org.eclipse.ui.IActionBars)
 	 */
 	@Override
@@ -53,7 +53,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sourceforge.eclipseccase.views.ClearcaseViewActionGroup#makeActions()
+	 * net.sourceforge.eclipseccase.views.ClearCaseViewActionGroup#makeActions()
 	 */
 	@Override
 	protected void makeActions() {
@@ -90,7 +90,7 @@ public class CheckoutsViewActionGroup extends ClearcaseViewActionGroup {
 	 * @return
 	 */
 	protected CheckoutsView getCheckoutsView() {
-		return (CheckoutsView) getClearcaseView();
+		return (CheckoutsView) getClearCaseView();
 	}
 
 	/*

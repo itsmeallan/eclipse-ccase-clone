@@ -18,12 +18,12 @@ import org.eclipse.team.core.TeamException;
 
 public class MoveHandler implements IMoveDeleteHook {
 
-	ClearcaseProvider provider;
+	ClearCaseProvider provider;
 
 	/**
 	 * Constructor for MoveHandler.
 	 */
-	public MoveHandler(ClearcaseProvider provider) {
+	public MoveHandler(ClearCaseProvider provider) {
 		this.provider = provider;
 	}
 
@@ -34,7 +34,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean deleteFile(IResourceTree tree, IFile file, int updateFlags,
 			IProgressMonitor monitor) {
 		if (provider.isIgnored(file) || file.isLinked()
-				|| !provider.isClearcaseElement(file)) {
+				|| !provider.isClearCaseElement(file)) {
 			tree.standardDeleteFile(file, updateFlags, monitor);
 			return true;
 		}
@@ -45,7 +45,7 @@ public class MoveHandler implements IMoveDeleteHook {
 		if ((IResource.FORCE & updateFlags) != 0
 				&& !tree.isSynchronized(file, IResource.DEPTH_INFINITE)) {
 			failed = true;
-			status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+			status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 					TeamException.UNABLE, "Tree not synchronized", null);
 		}
 		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0) {
@@ -83,7 +83,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean deleteFolder(IResourceTree tree, IFolder folder,
 			int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(folder) || folder.isLinked()
-				|| !provider.isClearcaseElement(folder)) {
+				|| !provider.isClearCaseElement(folder)) {
 			tree.standardDeleteFolder(folder, updateFlags, monitor);
 			return true;
 		}
@@ -94,7 +94,7 @@ public class MoveHandler implements IMoveDeleteHook {
 		if ((IResource.FORCE & updateFlags) != 0
 				&& !tree.isSynchronized(folder, IResource.DEPTH_INFINITE)) {
 			failed = true;
-			status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+			status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 					TeamException.UNABLE, "Tree not synchronized", null);
 		}
 		if (!failed && (IResource.KEEP_HISTORY & updateFlags) != 0) {
@@ -132,7 +132,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	 */
 	public boolean deleteProject(IResourceTree tree, IProject project,
 			int updateFlags, IProgressMonitor monitor) {
-		if (provider.isIgnored(project) || !provider.isClearcaseElement(project)) {
+		if (provider.isIgnored(project) || !provider.isClearCaseElement(project)) {
 			tree.standardDeleteProject(project, updateFlags, monitor);
 			return true;
 		}
@@ -143,7 +143,7 @@ public class MoveHandler implements IMoveDeleteHook {
 		if ((IResource.FORCE & updateFlags) != 0
 				&& !tree.isSynchronized(project, IResource.DEPTH_INFINITE)) {
 			failed = true;
-			status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+			status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 					TeamException.UNABLE, "Tree not synchronized", null);
 		}
 		// KEEP_HISTORY not needed for project delete
@@ -187,15 +187,15 @@ public class MoveHandler implements IMoveDeleteHook {
 	}
 
 	private IStatus validateDest(IResource destination, IProgressMonitor monitor) {
-		IStatus status = new Status(IStatus.OK, ClearcaseProvider.ID,
+		IStatus status = new Status(IStatus.OK, ClearCaseProvider.ID,
 				TeamException.OK, "OK", null);
 		IContainer destParent = destination.getParent();
-		if (!provider.isClearcaseElement(destParent)) {
-			if (ClearcasePlugin.isAddAuto()) {
+		if (!provider.isClearCaseElement(destParent)) {
+			if (ClearCasePlugin.isAddAuto()) {
 				try {
 					LinkedList toAdd = new LinkedList();
 					while (null != destParent
-							&& !provider.isClearcaseElement(destParent)) {
+							&& !provider.isClearCaseElement(destParent)) {
 						if (destParent.getType() == IResource.ROOT)
 							// workspace root should be in ClearCase
 							throw new TeamException(
@@ -211,7 +211,7 @@ public class MoveHandler implements IMoveDeleteHook {
 					status = ex.getStatus();
 				}
 			} else {
-				status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+				status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 						TeamException.UNABLE,
 						"Destination folder is not a ClearCase element: "
 								+ destParent.getLocation().toOSString(), null);
@@ -226,7 +226,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean moveFile(IResourceTree tree, IFile source,
 			IFile destination, int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(source) || source.isLinked()
-				|| !provider.isClearcaseElement(source)) {
+				|| !provider.isClearCaseElement(source)) {
 			tree.standardMoveFile(source, destination, updateFlags
 					| IResource.SHALLOW, monitor);
 			return true;
@@ -243,7 +243,7 @@ public class MoveHandler implements IMoveDeleteHook {
 				if ((IResource.FORCE & updateFlags) != 0
 						&& !tree.isSynchronized(source,
 								IResource.DEPTH_INFINITE)) {
-					status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+					status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 							TeamException.UNABLE, "Tree not synchronized", null);
 				}
 
@@ -281,7 +281,7 @@ public class MoveHandler implements IMoveDeleteHook {
 	public boolean moveFolder(IResourceTree tree, IFolder source,
 			IFolder destination, int updateFlags, IProgressMonitor monitor) {
 		if (provider.isIgnored(source) || source.isLinked()
-				|| !provider.isClearcaseElement(source)) {
+				|| !provider.isClearCaseElement(source)) {
 			tree.standardMoveFolder(source, destination, updateFlags
 					| IResource.SHALLOW, monitor);
 			return true;
@@ -299,7 +299,7 @@ public class MoveHandler implements IMoveDeleteHook {
 				if ((IResource.FORCE & updateFlags) != 0
 						&& !tree.isSynchronized(source,
 								IResource.DEPTH_INFINITE)) {
-					status = new Status(IStatus.ERROR, ClearcaseProvider.ID,
+					status = new Status(IStatus.ERROR, ClearCaseProvider.ID,
 							TeamException.UNABLE, "Tree not synchronized", null);
 				}
 				if (status.getCode() == IStatus.OK
