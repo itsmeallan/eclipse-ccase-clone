@@ -5,14 +5,14 @@ come with no warranty (see the license.html shipped with
 the feature(s) and the Common Public License 1.0 for more
 details).
 
-This is our 2.1.6.2 release. Please see CHANGELOG
+This is our 2.2.0.v201002231500 release. Please see CHANGELOG
 and for more information.
 
 
 Requirenments
 -------------
 
-This release requires Eclipse 3.3.x or 3.4.x
+This release requires Eclipse 3.5.x
 
 
 Install via Eclipse
@@ -30,9 +30,7 @@ Install manually
 
 1. Shutdown Eclipse (if running)
 2. Remove all existing previous versions
-3. Unzip into your Eclipse directory
-4a. Remove directory %ECLIPSE%/configuration/org.eclipse.osgi (if it exists)
-4b. Remove directory %ECLIPSE%/configuration/org.eclipse.update (if it exists)
+3. Unzip into your Eclipse directory ( where directories plugins and features reside).
 5. Start Eclipse
 6. Go to Window -> Preferences -> Team -> ClearCase and (re)configure your preferences.
 
@@ -44,6 +42,6 @@ Window --> Preferences --> Team --> ClearCase --> Use quick refresh.
 
 Known Issues
 ------------
-See  Bug Tracker.
+See  Bug Tracker - https://sourceforge.net/tracker/?group_id=50595&atid=460297
 
 
