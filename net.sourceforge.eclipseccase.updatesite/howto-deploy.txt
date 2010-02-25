@@ -13,7 +13,7 @@ Prerequesites:
 
  <property name="project.version" value="net.sourceforge.clearcase_2.2.0.v201002231500"/>
  
- 2. Build project manually. Use target  'dist'.     
+ 2. Build project manually. Use target  'release'.     
 
 3. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
    Use same as in step 1.
@@ -30,11 +30,21 @@ Prerequesites:
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
 
-3. build each feature as single, deployable zip (Archive file) into 
+Select feature.xml (Overview) under 'Exporting' --> 'Synchronize' --> 
+
+Select feature.xml (Overview) under 'Exporting' --> 'Export Wizard'
+
    "net.sourceforge.eclipseccase.updatesite/full/${feature_id}_${feature_version}.zip"
    (either via File->Export...->Deployable Feature or via feature.xml->Export...)
+   Example:
+
+   "net.sourceforge.eclipseccase.updatesite/full/net.sourceforge.eclipseccase_2.2.0.v201002231900.zip
    
-3.5 Use the manifest editor and build (not build all) only current release.    
+   
+ Select feature.xml (Overview) under Publishing cannot be used.  
+   
+//FIXME: This has to be updated:
+http://www.vogella.de/articles/EclipseP2Update/article.html#introduction   
    
 4. build update site
    (right click site.xml->PDE Tools->Build Site)
@@ -47,18 +57,27 @@ Prerequesites:
    "net.sourceforge.eclipseccase.updatesite/plugins/" 
      -> one plugin jar for each plugin
      
-6. break: test the build output and update site from within your local 
+6. Testing and install plugin from local site. 
    machine if it works, only upload/deploy a release that works.
-   Help --> Software Updates --> Available Software --> Local
+   Help --> Install New Software --> Add --> 
+   Point to the following directory:
    ${workspace}/net.sourceforge.eclipseccase.updatesite
    (it will complain if no site.xml is found).
-   
    Make sure it downloads, installs and uninstalls.
    
 
 7. create "login.properties" file with user=... ,webuser= ... password=... ( name=value) next to site-deploy.xml
    Change in site-deploy.xml to new version.
    Note: webuser is "userid,projectname" as one string. E.g. "eraonel,eclipse-ccase".
+   Example:
+   
+   user=eraonel
+
+   webuser=eraonel,eclipse-ccase
+
+   password=<password>
+   
+   Set version in site-deploy.xml e.g. 2.2.0.v201002231900.
 
 8. run site-deploy.xml with ant
    (right click "Run Ant..." with target "all")
@@ -68,11 +87,13 @@ Prerequesites:
    
    To deploy zip:
    (At the moment the 'deploy-sf-release' target is not working.)
-   I used WebDaV, https://frs.sourceforge.net/webupload.
-   Prepare info for release on project webpage at sourceforge:
-   Admin --> File Releases
+   
+   Used IE ( firefox does not work )gui on https://sourceforge.net/project/admin/explorer.php?group_id=50595
    
    For more info check:https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
+   
+   Put release on update site.
+   
    
    
    For shell based:  sftp eraonel,eclipse-ccase@web.sourceforge.net
@@ -81,3 +102,42 @@ Prerequesites:
     Use the following tags with current version ( below is just examples):
     CLEARCASE-JAVA_2_1_4_RELEASE
     ECLIPSE-CCASE_2_1_4_RELEASE
+
+    
+    Errors:
+    
+    eclipse.buildId=M20090917-0800
+java.version=1.5.0_06
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.rcp.product
+Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.package.rcp.product -clean
+
+
+Linux delivery Errors ( FIXME: mike 20100224 check these later).
+=====================
+Wed Feb 24 19:23:34 CET 2010
+Bundle net.sourceforge.eclipseccase_2.2.0.v201002231900 failed to resolve.:
+	Another singleton version selected: net.sourceforge.eclipseccase_2.3.5.0
+
+BUILD FAILED
+/home/eraonel/opensource_projects/net.sourceforge.eclipseccase.updatesite/site-deploy.xml:59: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:116)
+	
+I tested to increase heap. Same error message.
+Also tested to use a never version of j2ssh. Same error message.	
+	
+	at org.apache.tools.ant.Task.perform(Task.java:348)
+	at org.apache.tools.ant.Target.execute(Target.java:357)
+	at org.apache.tools.ant.Target.performTasks(Target.java:385)
+	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1337)
+	at org.apache.tools.ant.Project.executeTarget(Project.java:1306)
+	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
+	at org.eclipse.ant.internal.ui.antsupport.EclipseDefaultExecutor.executeTargets(EclipseDefaultExecutor.java:32)
+	at org.apache.tools.ant.Project.executeTargets(Project.java:1189)
+	at org.eclipse.ant.internal.ui.antsupport.InternalAntRunner.run(InternalAntRunner.java:423)
+	at org.eclipse.ant.internal.ui.antsupport.InternalAntRunner.main(InternalAntRunner.java:137)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+--- Nested Exception ---
+java.lang.OutOfMemoryError: Java heap space
+    

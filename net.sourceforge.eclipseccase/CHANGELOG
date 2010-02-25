@@ -2,8 +2,27 @@ Change Log
 ==========
 
 
-2.2.0.v201002231500
+2.2.0.v201002231900
 -------------------
+
+Major Features:
+
+- Improved performance accessing clearcase (factor 41!!).
+- Reduction of number of requests to clearcase.
+- Usage of SingleProcess for cleartool process.
+ 
+ Bugs fixed:
+ 
+2957193  	 Inconsistent spelling ClearCase/Clearcase/clearcase
+2957153  	 Inconsistent wording in menus (external tool)
+2950482  	 No version tree is showing
+2954429  	 Inconsistent usage of CC command console
+2950481  	 Decorate Folders dirty
+2949185  	 Decorate CC elements has no effect
+2915468  	 2.1.7: Does not work with JRE 1.5
+2912709  	 Auto checkout does not prompt 'cleardlg' UI
+2868867  	 2.1.7 - Could not get view status for ** NONE **
+2820612  	 2.1.6.2 Refreshing ClearCase resource states fails
 
 
 2.1.6.2

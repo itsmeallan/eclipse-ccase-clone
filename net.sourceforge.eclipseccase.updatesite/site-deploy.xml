@@ -1,88 +1,83 @@
 <project name="eclipse-ccase-site" default="all">
-		
+
 	<target name="init-properties">
 		<tstamp>
-			<format property="release.date" pattern="MM/dd/yyyy"/>
+			<format property="release.date" pattern="MM/dd/yyyy" />
 		</tstamp>
-		
+
 		<!-- must contain properties "user" and "password"-->
-		<property file="login.properties"/>
+		<property file="login.properties" />
 
 		<!-- current version (also used for release label) -->
-		<property name="version" value="2.1.5"/>
-		
-		<property name="staging.dir" value="${basedir}"/>
-		<property name="features.dir" value="${staging.dir}/features"/>
-		<property name="plugins.dir" value="${staging.dir}/plugins"/>
-		
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip"/>
+		<property name="version" value="2.2.0.v201002231900" />
 
-		
-		<property name="site.deploy.host" value="web.sourceforge.net"/>
-		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update"/>
-		<property name="site.url" value="http://eclipse-ccase.sourceforge.net/update"/>
-		
+		<property name="staging.dir" value="${basedir}" />
+		<property name="features.dir" value="${staging.dir}/features" />
+		<property name="plugins.dir" value="${staging.dir}/plugins" />
+
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip" />
+
+
+		<property name="site.deploy.host" value="web.sourceforge.net" />
+		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update" />
+		<property name="site.url" value="http://eclipse-ccase.sourceforge.net/update" />
+
 		<fileset id="site.deploy.files" dir="${staging.dir}">
-			<include name="index.html"/>
-			<include name="web/*"/>
-			<include name="site.xml"/>
-			<include name="features/*"/>
-			<include name="plugins/*"/>
+			<include name="index.html" />
+			<include name="web/*" />
+			<include name="site.xml" />
+			<include name="features/*" />
+			<include name="plugins/*" />
 		</fileset>
 	</target>
 
 	<target name="init-custom-tasks" depends="init-properties">
 		<path id="tasks.classpath">
-			<fileset dir="${basedir}/lib" includes="*.jar"/>
+			<!--<fileset dir="${basedir}/lib" includes="*.jar" />-->
+			<fileset dir="/home/eraonel/tmp/j2ssh" includes="*.jar"/>
+			<fileset dir="/home/eraonel/tmp/j2ssh/lib" includes="*.jar"/>
+			<!--<pathelement location="${basedir}/lib/jsch_0.1.42.jar"/>-->
 		</path>
 		<!-- http://3sp.com/tutorials/j2ssh/sshanttask.htm -->
-		<taskdef	name="ssh"
-					classname="com.sshtools.ant.Ssh"
-					classpathref="tasks.classpath"/>
+		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpathref="tasks.classpath" />
 		<!-- http://sfutils.sourceforge.net/ -->
-		<taskdef 	name="sfpublish"
-					classname="org.apache.tools.ant.taskdefs.optional.sourceforge.SourceForgePublish"
-					classpathref="tasks.classpath"/>
+		<!--taskdef name="sfpublish" classname="org.apache.tools.ant.taskdefs.optional.sourceforge.SourceForgePublish" classpathref="tasks.classpath" />-->
+		<!-- FIXME: mike 20100224 cannot find class UserInfo in jsch but it is there!!!-->
+		<!--<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp" classpathref="tasks.classpath" />-->
 	</target>
-	
+
 	<target name="init" depends="init-properties,init-custom-tasks">
 	</target>
-	
+
 	<target name="clean" depends="init">
-		<ant antfile="${basedir}/build.xml" target="clean"/>
+		<ant antfile="${basedir}/build.xml" target="clean" />
 		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
 	</target>
-	
+
 	<target name="all" depends="init,deploy-local-site,deploy-site,deploy-sf-release">
 	</target>
 
 	<target name="deploy-site" depends="init" unless="site.local">
-		<ssh	host="${site.deploy.host}"
-				username="${webuser}"
-				password="${password}"
-				verifyhost="false">
-			<sftp action="put"
-					depends="true"
-					remotedir="${site.deploy.root}"
-					skipFailedTransfers="true">
-				<fileset refid="site.deploy.files"/>
+		<ssh host="${site.deploy.host}" username="${webuser}" password="${password}" verifyhost="false">
+			<sftp action="put" depends="true" remotedir="${site.deploy.root}" skipFailedTransfers="true">
+				<fileset refid="site.deploy.files" />
 			</sftp>
 		</ssh>
 	</target>
 
 	<target name="deploy-local-site" depends="init" if="site.local">
-		<delete dir="${site.local}/${version}" failonerror="false"/>
-		<copy todir="${site.local}/${version}">				
-			<fileset refid="site.deploy.files"/>
+		<delete dir="${site.local}/${version}" failonerror="false" />
+		<copy todir="${site.local}/${version}">
+			<fileset refid="site.deploy.files" />
 		</copy>
 	</target>
-	
+
 	<target name="deploy-sf-release" depends="init" unless="site.local">
 		<!-- 
 			 scp FILE jsmith@frs.sourceforge.net:uploads
 		-->
-		<scp file="${feature.eclipseccase.package}" todir="eraonel:${password}@frs.sourceforge.net:uploads"/>
+		<scp file="${feature.eclipseccase.package}" todir="eraonel:${password}@frs.sourceforge.net:uploads" />
 
-    </target>
-    
+	</target>
+
 </project>
