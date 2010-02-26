@@ -17,6 +17,7 @@ import java.io.Serializable;
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -81,7 +82,7 @@ public class StateCache implements Serializable {
 	private static final int SYM_LINK_TARGET_VALID = 0x40;
 
 	private static final int INSIDE_VIEW = 0x80;
-	
+
 	private static final int DERIVED_OBJECT = 0x100;
 
 	/**
@@ -181,7 +182,7 @@ public class StateCache implements Serializable {
 
 					if (ClearCasePlugin.isRefreshChildrenPrevented()) {
 						IResource parent = resource.getParent();
-						if (null != parent
+						if (null != parent && !(parent instanceof IProject)
 								&& !(parent instanceof IWorkspaceRoot)) {
 							StateCache parentCache = StateCacheFactory
 									.getInstance().getWithNoUpdate(parent);
@@ -233,7 +234,7 @@ public class StateCache implements Serializable {
 						boolean newIsDerivedObject = newState.isDerivedObject();
 						changed |= newIsDerivedObject != this.isDerivedObject();
 						setFlag(DERIVED_OBJECT, newIsDerivedObject);
-						
+
 						boolean newIsCheckedOut = newState.isCheckedOut();
 						if (!newIsSymbolicLink) {
 							// for symlinks the checkout state is calculated
@@ -604,7 +605,7 @@ public class StateCache implements Serializable {
 	public boolean isDerivedObject() {
 		return getFlag(DERIVED_OBJECT);
 	}
-	
+
 	/**
 	 * Returns the symbolicLinkTarget.
 	 * 
