@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase;
 
+import org.eclipse.core.resources.IProject;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -31,7 +33,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	 * org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public String[] asReference(IProject[] providerProjects, Object context, IProgressMonitor monitor) throws TeamException {
-		ArrayList references = new ArrayList(providerProjects.length);
+		ArrayList<String> references = new ArrayList<String>(providerProjects.length);
 		for (int i = 0; i < providerProjects.length; i++) {
 			IProject project = providerProjects[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(project);
@@ -48,7 +50,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			}
 		}
 
-		return (String[]) references.toArray(new String[references.size()]);
+		return references.toArray(new String[references.size()]);
 	}
 
 	/*
@@ -147,12 +149,12 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 					if (t instanceof TeamException)
 						throw (TeamException) t;
 				}
-				List result = new ArrayList();
+				List<IProject> result = new ArrayList<IProject>();
 				for (int i = 0; i < projects.length; i++)
 					if (projects[i] != null) {
 						result.add(projects[i]);
 					}
-				return (IProject[]) result.toArray(new IProject[result.size()]);
+				return result.toArray(new IProject[result.size()]);
 			}
 		}
 		return null;
@@ -255,7 +257,7 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 			return 2;
 		if (!project.exists())
 			return 0;
-		final MessageDialog dialog = new MessageDialog(shell, "Confirm Overwrite", null, MessageFormat.format("The project {0} already exists. Do you wish to overwrite it?", new String[] { project.getName() }), MessageDialog.QUESTION, new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.YES_TO_ALL_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
+		final MessageDialog dialog = new MessageDialog(shell, "Confirm Overwrite", null, MessageFormat.format("The project {0} already exists. Do you wish to overwrite it?", (Object[]) (new String[] { project.getName() })), MessageDialog.QUESTION, new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.YES_TO_ALL_LABEL, IDialogConstants.CANCEL_LABEL }, 0);
 		final int[] result = new int[1];
 		shell.getDisplay().syncExec(new Runnable() {
 			public void run() {
