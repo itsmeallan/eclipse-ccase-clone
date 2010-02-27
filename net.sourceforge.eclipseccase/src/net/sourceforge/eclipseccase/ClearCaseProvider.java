@@ -194,7 +194,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		try {
 			monitor.beginTask("Refreshing " + resourceToRefresh.getName(), 50);
-			final List toRefresh = new ArrayList(80);
+			final List<IResource> toRefresh = new ArrayList<IResource>(80);
 			monitor.subTask("collecting members");
 			resourceToRefresh.accept(new IResourceVisitor() {
 
@@ -209,7 +209,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			monitor.subTask("scheduling updates");
 			if (!toRefresh.isEmpty()) {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						(IResource[]) toRefresh.toArray(new IResource[toRefresh
+						toRefresh.toArray(new IResource[toRefresh
 								.size()]), monitor);
 			}
 			monitor.worked(10);

@@ -125,7 +125,7 @@ public class ClearCasePlugin extends Plugin {
 	public static final String PLUGIN_ID = "net.sourceforge.eclipseccase"; //$NON-NLS-1$
 
 	/** The previously remembered comment */
-	static LinkedList previousComments = new LinkedList();
+	static LinkedList<String> previousComments = new LinkedList<String>();
 
 	/** constant (value <code>UTF-8</code>) */
 	public static final String UTF_8 = "UTF-8"; //$NON-NLS-1$
@@ -745,7 +745,7 @@ public class ClearCasePlugin extends Plugin {
 	 * @return String[]
 	 */
 	public String[] getPreviousComments() {
-		String[] comments = (String[]) previousComments
+		String[] comments = previousComments
 				.toArray(new String[previousComments.size()]);
 
 		// encode all strings to the platform default encoding
@@ -1088,7 +1088,7 @@ public class ClearCasePlugin extends Plugin {
 			writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
 			for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++) {
 				writer.printSimpleTag(ELEMENT_COMMENT, BASE64_ENCODER
-						.encode(((String) previousComments.get(i))
+						.encode(previousComments.get(i)
 								.getBytes(UTF_8)));
 			}
 			writer.endTag(ELEMENT_COMMENT_HISTORY);

@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@planet-wagenknecht.de)
  */
-class StateCacheJob implements Comparable {
+class StateCacheJob implements Comparable<StateCacheJob> {
 
 	/** default priority */
 	static final int PRIORITY_DEFAULT = 0;
@@ -61,7 +61,7 @@ class StateCacheJob implements Comparable {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object o) {
+	public int compareTo(StateCacheJob o) {
 		if (this == o)
 			return 0;
 

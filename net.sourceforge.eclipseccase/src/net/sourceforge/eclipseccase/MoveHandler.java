@@ -132,7 +132,8 @@ public class MoveHandler implements IMoveDeleteHook {
 	 */
 	public boolean deleteProject(IResourceTree tree, IProject project,
 			int updateFlags, IProgressMonitor monitor) {
-		if (provider.isIgnored(project) || !provider.isClearCaseElement(project)) {
+		if (provider.isIgnored(project)
+				|| !provider.isClearCaseElement(project)) {
 			tree.standardDeleteProject(project, updateFlags, monitor);
 			return true;
 		}
@@ -193,7 +194,7 @@ public class MoveHandler implements IMoveDeleteHook {
 		if (!provider.isClearCaseElement(destParent)) {
 			if (ClearCasePlugin.isAddAuto()) {
 				try {
-					LinkedList toAdd = new LinkedList();
+					LinkedList<IContainer> toAdd = new LinkedList<IContainer>();
 					while (null != destParent
 							&& !provider.isClearCaseElement(destParent)) {
 						if (destParent.getType() == IResource.ROOT)
@@ -204,8 +205,7 @@ public class MoveHandler implements IMoveDeleteHook {
 						toAdd.addFirst(destParent);
 						destParent = destParent.getParent();
 					}
-					provider.add((IResource[]) toAdd
-							.toArray(new IResource[toAdd.size()]),
+					provider.add(toAdd.toArray(new IResource[toAdd.size()]),
 							IResource.DEPTH_ZERO, monitor);
 				} catch (TeamException ex) {
 					status = ex.getStatus();
