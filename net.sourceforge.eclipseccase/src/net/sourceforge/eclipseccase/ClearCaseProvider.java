@@ -59,9 +59,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 	/** trace id */
 	private static final String TRACE_ID_IS_IGNORED = "ClearCaseProvider#isIgnored"; //$NON-NLS-1$
 
-	private static Map<String, String> viewLookupTable;
+	private static Map<String, String> viewLookupTable = new Hashtable<String, String>(
+			200);
 
-	private static Map<String, Boolean> snapshotViewLookupTable;
+	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
+			30);
 
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
@@ -94,8 +96,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public ClearCaseProvider() {
 		super();
-		viewLookupTable = new Hashtable<String, String>(200);
-		snapshotViewLookupTable = new Hashtable<String, Boolean>(30);
 	}
 
 	UpdateOperation UPDATE = new UpdateOperation();
@@ -322,7 +322,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @see SimpleAccessOperations#isClearCaseElement(IResource)
 	 */
 	public boolean isClearCaseElement(IResource resource) {
-		return StateCacheFactory.getInstance().get(resource).isClearCaseElement();
+		return StateCacheFactory.getInstance().get(resource)
+				.isClearCaseElement();
 	}
 
 	/*
@@ -923,7 +924,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't process something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.isClearCaseElement())
+				if (targetElement == null
+						|| !targetElement.isClearCaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
@@ -1025,7 +1027,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't check in something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.isClearCaseElement())
+				if (targetElement == null
+						|| !targetElement.isClearCaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
@@ -1157,7 +1160,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't checkout something that is not part of
 				// clearcase
-				if (targetElement == null || !targetElement.isClearCaseElement())
+				if (targetElement == null
+						|| !targetElement.isClearCaseElement())
 					return new Status(
 							IStatus.WARNING,
 							ID,
