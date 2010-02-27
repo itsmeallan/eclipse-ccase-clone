@@ -1,0 +1,13 @@
+#!/usr/bin/expect -f
+
+set zip "[lindex $argv 0]"
+set webuser "[lindex $argv 1]"
+set rootdir "[lindex $argv 2]"
+set eclipsecategory "[lindex $argv 3]"
+set version "[lindex $argv 4]"
+set password "[lindex $argv 5]"
+
+spawn rsync -avP -e ssh  $zip $webuser@frs.sourceforge.net:$rootdir/${eclipsecategory}/${version}/
+expect "*password:" 
+send "${password}\r"
+expect eof 

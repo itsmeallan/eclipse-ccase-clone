@@ -77,6 +77,16 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
 
    password=<password>
    
+   Make sure you have created the following directories:
+   
+   <!-- current version (also used for release label) -->
+	<property name="version" value="2.2.0test" />
+	<property name="current.eclipse.download.category" value="ecllipse-ccase_Eclipse_3.5"/>
+	
+	using web gui ( Internet Explorer).
+	
+  	
+   
    Set version in site-deploy.xml e.g. 2.2.0.v201002231900.
 
 8. run site-deploy.xml with ant

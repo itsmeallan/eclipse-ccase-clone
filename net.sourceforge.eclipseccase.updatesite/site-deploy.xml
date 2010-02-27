@@ -9,13 +9,18 @@
 		<property file="login.properties" />
 
 		<!-- current version (also used for release label) -->
-		<property name="version" value="2.2.0.v201002231900" />
+		<property name="version" value="2.2.0test" />
+		<property name="zip.version" value="net.sourceforge.eclipseccase_${version}.zip" />
+
+		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
+		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
+
 
 		<property name="staging.dir" value="${basedir}" />
 		<property name="features.dir" value="${staging.dir}/features" />
 		<property name="plugins.dir" value="${staging.dir}/plugins" />
 
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/net.sourceforge.eclipseccase_${version}.zip" />
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
 
 
 		<property name="site.deploy.host" value="web.sourceforge.net" />
@@ -32,18 +37,42 @@
 	</target>
 
 	<target name="init-custom-tasks" depends="init-properties">
+
+		<!-- FIXME: mike 20100226
+		Error:
+		taskdef A class needed by class org.apache.tools.ant.taskdefs.optional.ssh.Scp
+		cannot be found: com/jcraft/jsch/UserInfo 
+		No support for dependent classes to be defined in an embedded classpath.
+		Since ant contains ant-jsch.jar that is contained in $ANT_HOME/lib dependent classes 
+		will be loaded from here. A workaround is to use the classloader from:
+		http://enitsys.sourceforge.net/ant-classloadertask/
+	    Might be included in ant 1.8 ?
+		 -->
+		<taskdef resource="net/jtools/classloadertask/antlib.xml" classpath="${basedir}/lib/ant-classloadertask.jar" />
+		<classloader loader="project" classpath="${basedir}/lib/jsch-0.1.42.jar" />
+		
+
+		<!-- Used for rsync since it is natively installed on this platform. -->
+		<condition property="isWindows">
+			<os family="windows" />
+		</condition>
+
+
+
+		<!-- FIXE: mike 20100226 Used this before classloaderfix ( above).-->
+		
+		
+		
+		<!-- TODO :http://3sp.com/tutorials/j2ssh/sshanttask.htm 
+		Not working since we get a  java.lang.OutOfMemoryError: Java heap space
+		-->
 		<path id="tasks.classpath">
 			<!--<fileset dir="${basedir}/lib" includes="*.jar" />-->
-			<fileset dir="/home/eraonel/tmp/j2ssh" includes="*.jar"/>
-			<fileset dir="/home/eraonel/tmp/j2ssh/lib" includes="*.jar"/>
-			<!--<pathelement location="${basedir}/lib/jsch_0.1.42.jar"/>-->
+			
 		</path>
-		<!-- http://3sp.com/tutorials/j2ssh/sshanttask.htm -->
 		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpathref="tasks.classpath" />
-		<!-- http://sfutils.sourceforge.net/ -->
-		<!--taskdef name="sfpublish" classname="org.apache.tools.ant.taskdefs.optional.sourceforge.SourceForgePublish" classpathref="tasks.classpath" />-->
-		<!-- FIXME: mike 20100224 cannot find class UserInfo in jsch but it is there!!!-->
-		<!--<taskdef name="scp" classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp" classpathref="tasks.classpath" />-->
+		
+
 	</target>
 
 	<target name="init" depends="init-properties,init-custom-tasks">
@@ -58,11 +87,17 @@
 	</target>
 
 	<target name="deploy-site" depends="init" unless="site.local">
+		
+	<!-- 
 		<ssh host="${site.deploy.host}" username="${webuser}" password="${password}" verifyhost="false">
 			<sftp action="put" depends="true" remotedir="${site.deploy.root}" skipFailedTransfers="true">
 				<fileset refid="site.deploy.files" />
 			</sftp>
-		</ssh>
+		</ssh>-->
+		<!-- Use native (unix) command instead -->
+		<exec executable="/usr/bin/sftp" os="Unix,Linux">
+					<arg line=" ${webuser} "/>
+		        </exec>
 	</target>
 
 	<target name="deploy-local-site" depends="init" if="site.local">
@@ -72,12 +107,17 @@
 		</copy>
 	</target>
 
-	<target name="deploy-sf-release" depends="init" unless="site.local">
-		<!-- 
-			 scp FILE jsmith@frs.sourceforge.net:uploads
-		-->
-		<scp file="${feature.eclipseccase.package}" todir="eraonel:${password}@frs.sourceforge.net:uploads" />
 
+	<!-- Transfers the zip files in net.sourceforge.eclipseccase.updatesite/full to sf-site.
+	 scp cannot create directory structure.
+	 Not possible to do ssh.
+	 Last resort is to use rsync ( only on unix).
+	  -->
+	<target name="deploy-sf-release" depends="init" unless="site.local">
+		<!-- Example: rsync -avP -e ssh FILE jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/-->
+		<exec executable="/usr/bin/expect" os="Unix,Linux">
+			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password}"/>
+        </exec>
 	</target>
 
 </project>
