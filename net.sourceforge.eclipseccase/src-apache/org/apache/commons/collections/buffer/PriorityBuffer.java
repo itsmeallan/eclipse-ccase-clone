@@ -96,7 +96,7 @@ import org.apache.commons.collections.BufferUnderflowException;
  * @author Paul Jack
  * @author Stephen Colebourne
  */
-public class PriorityBuffer extends AbstractCollection implements Buffer {
+public class PriorityBuffer extends AbstractCollection<Object> implements Buffer {
 
 	/**
 	 * The default capacity for the buffer.
@@ -120,7 +120,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	/**
 	 * The comparator used to order the elements
 	 */
-	protected Comparator comparator;
+	protected Comparator<Object> comparator;
 
 	// -----------------------------------------------------------------------
 	/**
@@ -139,7 +139,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 *            the comparator used to order the elements, null means use
 	 *            natural order
 	 */
-	public PriorityBuffer(Comparator comparator) {
+	public PriorityBuffer(Comparator<Object> comparator) {
 		this(DEFAULT_CAPACITY, true, comparator);
 	}
 
@@ -165,7 +165,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 *            the comparator used to order the elements, null means use
 	 *            natural order
 	 */
-	public PriorityBuffer(boolean ascendingOrder, Comparator comparator) {
+	public PriorityBuffer(boolean ascendingOrder, Comparator<Object> comparator) {
 		this(DEFAULT_CAPACITY, ascendingOrder, comparator);
 	}
 
@@ -194,7 +194,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 * @throws IllegalArgumentException
 	 *             if <code>capacity</code> is &lt;= <code>0</code>
 	 */
-	public PriorityBuffer(int capacity, Comparator comparator) {
+	public PriorityBuffer(int capacity, Comparator<Object> comparator) {
 		this(capacity, true, comparator);
 	}
 
@@ -230,7 +230,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 *             if <code>capacity</code> is <code>&lt;= 0</code>
 	 */
 	public PriorityBuffer(int capacity, boolean ascendingOrder,
-			Comparator comparator) {
+			Comparator<Object> comparator) {
 		super();
 		if (capacity <= 0)
 			throw new IllegalArgumentException("invalid capacity"); //$NON-NLS-1$
@@ -256,7 +256,7 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 * 
 	 * @return the comparator in use, null is natural order
 	 */
-	public Comparator comparator() {
+	public Comparator<Object> comparator() {
 		return comparator;
 	}
 
@@ -504,11 +504,12 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 * @return -ve if a less than b, 0 if they are equal, +ve if a greater than
 	 *         b
 	 */
+	@SuppressWarnings("unchecked")
 	protected int compare(Object a, Object b) {
 		if (comparator != null)
 			return comparator.compare(a, b);
 		else
-			return ((Comparable) a).compareTo(b);
+			return ((Comparable<Object>) a).compareTo(b);
 	}
 
 	/**
@@ -527,8 +528,8 @@ public class PriorityBuffer extends AbstractCollection implements Buffer {
 	 * @return an iterator over this heap's elements
 	 */
 	@Override
-	public Iterator iterator() {
-		return new Iterator() {
+	public Iterator<Object> iterator() {
+		return new Iterator<Object>() {
 
 			private int index = 1;
 			private int lastReturnedIndex = -1;

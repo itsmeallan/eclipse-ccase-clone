@@ -80,7 +80,7 @@ import java.util.Collection;
  * @author Paul Jack
  * @author Stephen Colebourne
  */
-public interface Buffer extends Collection {
+public interface Buffer extends Collection<Object> {
 
 	/**
 	 * Gets and removes the next object from the buffer.
