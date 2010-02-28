@@ -209,8 +209,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 			monitor.subTask("scheduling updates");
 			if (!toRefresh.isEmpty()) {
 				StateCacheFactory.getInstance().refreshStateAsyncHighPriority(
-						toRefresh.toArray(new IResource[toRefresh
-								.size()]), monitor);
+						toRefresh.toArray(new IResource[toRefresh.size()]),
+						monitor);
 			}
 			monitor.worked(10);
 		} finally {
@@ -361,7 +361,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// use the originally given resource for the cleartool query
 			res = ClearCasePlugin.getEngine().getViewName(
 					resource.getLocation().toOSString());
-			viewLookupTable.put(path, res);
+			if (res.length() > 0) {
+				viewLookupTable.put(path, res);
+			}
 		}
 		return res;
 	}
@@ -374,7 +376,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 		String res = viewLookupTable.get(path);
 		if (res == null) {
 			res = ClearCasePlugin.getEngine().getViewName(path);
-			viewLookupTable.put(path, res);
+			if (res.length() > 0) {
+				viewLookupTable.put(path, res);
+			}
 		}
 		return res;
 	}
@@ -392,6 +396,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	public static boolean isSnapshotView(final String viewName) {
+		if (viewName.length() == 0) {
+			return false;
+		}
 		Boolean res = snapshotViewLookupTable.get(viewName);
 		if (res == null) {
 			String viewtype = ClearCasePlugin.getEngine().getViewType(viewName);

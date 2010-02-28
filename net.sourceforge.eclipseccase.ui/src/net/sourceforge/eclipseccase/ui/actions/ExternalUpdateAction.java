@@ -61,9 +61,11 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 
 						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
 						String viewName = cci.getViewName(resources[0].getLocation().toOSString());
-						cci.setViewConfigSpec(viewName, "-current", new ConsoleOperationListener(monitor));
+						if (viewName.length() > 0) {
+							cci.setViewConfigSpec(viewName, "-current", new ConsoleOperationListener(monitor));
 
-						resources[0].getProject().refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
+							resources[0].getProject().refreshLocal(IResource.DEPTH_INFINITE, subMonitor(monitor));
+						}
 					}
 				} finally {
 					monitor.done();

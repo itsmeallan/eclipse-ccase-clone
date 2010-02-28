@@ -177,14 +177,16 @@ public class ConfigSpecView extends ViewPart {
 		if (resource != null) {
 			ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
 			String viewName = cci.getViewName(resource.getLocation().toOSString());
-			configSpecTxt = cci.getViewConfigSpec(viewName);
-			configSpec.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					configSpec.setText(configSpecTxt);
-					bConfigSpecRefreshing = false;
-					bConfigSpecModified = false;
-				}
-			});
+			if (viewName.length() > 0) {
+				configSpecTxt = cci.getViewConfigSpec(viewName);
+				configSpec.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						configSpec.setText(configSpecTxt);
+						bConfigSpecRefreshing = false;
+						bConfigSpecModified = false;
+					}
+				});
+			}
 		}
 
 		focusOnConfigSpec();
