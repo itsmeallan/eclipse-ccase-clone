@@ -32,6 +32,9 @@ public interface IClearCasePreferenceConstants {
 	String CHECKOUT_LATEST = ClearCasePlugin.PLUGIN_ID + ".checkout.latest"; //$NON-NLS-1$
 
 	/** ClearCase preference */
+	String FULL_REFRESH = ClearCasePlugin.PLUGIN_ID + ".refresh.full"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
 	String CHECKOUT_RESERVED = ClearCasePlugin.PLUGIN_ID + ".checkout.reserved"; //$NON-NLS-1$
 
 	/** ClearCase preference */

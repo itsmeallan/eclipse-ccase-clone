@@ -147,6 +147,10 @@ public class ClearCasePlugin extends Plugin {
 			+ "/debug/stateCache"; //$NON-NLS-1$
 
 	/** debug option */
+	private static final String DEBUG_OPTION_UPDATE_QUEUE = ClearCasePlugin.PLUGIN_ID
+	+ "/debug/updateQueue"; //$NON-NLS-1$
+	
+	/** debug option */
 	private static final String DEBUG_OPTION_SUBPROCESS = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/subprocess"; //$NON-NLS-1$
 
@@ -179,6 +183,11 @@ public class ClearCasePlugin extends Plugin {
 				ClearCasePlugin.DEBUG_STATE_CACHE = true;
 			}
 
+			if (getDebugOption(DEBUG_OPTION_UPDATE_QUEUE)) {
+				trace("debugging " + DEBUG_OPTION_UPDATE_QUEUE); //$NON-NLS-1$
+				ClearCasePlugin.DEBUG_UPDATE_QUEUE = true;
+			}
+			
 			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
 				trace("debugging " + DEBUG_OPTION_SUBPROCESS); //$NON-NLS-1$
 				ClearCasePlugin.getEngine().setDebugLevel(100);
@@ -379,6 +388,11 @@ public class ClearCasePlugin extends Plugin {
 				IClearCasePreferenceConstants.CHECKOUT_LATEST);
 	}
 
+	public static boolean isFullRefreshOnAssociate() {
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.FULL_REFRESH);
+	}
+	
 	/**
 	 * Returns the preference value for <code>COMMENT_ADD</code>.
 	 * 
@@ -643,6 +657,9 @@ public class ClearCasePlugin extends Plugin {
 	/** debug flag */
 	public static boolean DEBUG_STATE_CACHE = false;
 
+	/** debug flag */
+	public static boolean DEBUG_UPDATE_QUEUE = false;
+	
 	/**
 	 * The constructor.
 	 */
@@ -798,6 +815,7 @@ public class ClearCasePlugin extends Plugin {
 		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_RESERVED,
 				IClearCasePreferenceConstants.NEVER);
 		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_LATEST, true);
+		pref.setDefault(IClearCasePreferenceConstants.FULL_REFRESH, false);
 
 		// comments
 		pref.setDefault(IClearCasePreferenceConstants.COMMENT_ADD, true);

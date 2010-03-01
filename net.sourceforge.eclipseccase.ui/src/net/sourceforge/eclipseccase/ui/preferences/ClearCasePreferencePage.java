@@ -107,6 +107,9 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(USE_CLEARDLG, PreferenceMessages.getString("Preferences.Source.ClearDlg"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
+		addField(new BooleanFieldEditor(FULL_REFRESH, PreferenceMessages.getString("Preferences.Source.FullRefreshOnAssoc"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+		
 		addField(new RadioGroupFieldEditor(JOB_QUEUE_PRIORITY, PreferenceMessages.getString("Preferences.General.JobQueuePriority"), 1, //$NON-NLS-1$
 				PRIORITIES, getFieldEditorParent(GENERAL), true));
 

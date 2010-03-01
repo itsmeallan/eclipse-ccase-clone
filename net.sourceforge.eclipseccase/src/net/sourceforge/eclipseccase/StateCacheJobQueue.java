@@ -37,10 +37,12 @@ class StateCacheJobQueue extends Job {
 			.getString("StateCacheJobQueue.jobLabel"); //$NON-NLS-1$
 
 	/** the default delay */
-	private static final int DEFAULT_DELAY = 30;
+	private static final int DEFAULT_DELAY = 150;
+
+	private static final String TRACE_ID = "JobQueue"; //$NON-NLS-1$
 
 	/** the priority buffer */
-	private PriorityBuffer priorityQueue;
+	private PriorityBuffer queue;
 
 	/** the interrupted state */
 	private boolean interrupted = false;
@@ -60,7 +62,7 @@ class StateCacheJobQueue extends Job {
 		super(MESSAGE_QUEUE_NAME);
 
 		// create underlying priority queue
-		this.priorityQueue = new PriorityBuffer(80, false);
+		this.queue = new PriorityBuffer(400, false);
 
 		// execute as system job if hidden
 		setSystem(ClearCasePlugin.isHideRefreshActivity());
@@ -90,6 +92,10 @@ class StateCacheJobQueue extends Job {
 				return Status.OK_STATUS;
 		}
 		IStatus ret;
+		if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+			ClearCasePlugin.trace(TRACE_ID, "run(): starting "
+					+ System.currentTimeMillis());
+		}
 		try {
 			executePendingJobs(monitor);
 			// if the update was successful then it should not be recorded as
@@ -102,10 +108,17 @@ class StateCacheJobQueue extends Job {
 			ret = sig.getStatus();
 		}
 		// if we have items left in the queue, reschedule a run
-		synchronized (priorityQueue) {
-			if (!priorityQueue.isEmpty()) {
+		synchronized (queue) {
+			if (!queue.isEmpty()) {
+				if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+					ClearCasePlugin.trace(TRACE_ID, "run(): reschedule");
+				}
 				scheduleQueueRun();
 			}
+		}
+		if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+			ClearCasePlugin.trace(TRACE_ID, "run(): end "
+					+ System.currentTimeMillis());
 		}
 		return ret;
 
@@ -122,18 +135,26 @@ class StateCacheJobQueue extends Job {
 			throws CoreException, OperationCanceledException {
 
 		try {
-			monitor.beginTask(MESSAGE_QUEUE_NAME, priorityQueue.size());
+			monitor.beginTask(MESSAGE_QUEUE_NAME, queue.size());
 
-			while (!priorityQueue.isEmpty()) {
+			// break from time to time to give time for UI update
+			// seems to make no difference? -> disable (use 50000)
+			int doneCnt = 0;
 
+			while (!queue.isEmpty() && doneCnt < 50000) {
+
+				if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+					ClearCasePlugin.trace(TRACE_ID, "executePendingJobs: "
+							+ queue.size());
+				}
 				checkCanceled(monitor);
 
 				StateCacheJob job = null;
 
 				// synchronize on the buffer but execute job outside lock
-				synchronized (priorityQueue) {
-					if (!priorityQueue.isEmpty()) {
-						job = (StateCacheJob) priorityQueue.remove();
+				synchronized (queue) {
+					if (!queue.isEmpty()) {
+						job = (StateCacheJob) queue.remove();
 					}
 				}
 
@@ -144,14 +165,23 @@ class StateCacheJobQueue extends Job {
 
 				// execute job
 				if (null != job.getStateCache().getResource()) {
+					if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+						ClearCasePlugin.trace(TRACE_ID, "executePendingJobs: "
+								+ job.getStateCache().getResource()
+										.getFullPath());
+					}
 					monitor.subTask(Messages
 							.getString("StateCacheJobQueue.task.refresh") //$NON-NLS-1$
 							+ job.getStateCache().getResource().getFullPath());
 					job.execute(new SubProgressMonitor(monitor, 1));
+					doneCnt++;
 				}
 			}
 		} finally {
 			monitor.done();
+		}
+		if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+			ClearCasePlugin.trace(TRACE_ID, "executePendingJobs: done");
 		}
 	}
 
@@ -197,29 +227,48 @@ class StateCacheJobQueue extends Job {
 	 */
 	public void schedule(StateCacheJob[] jobs) {
 
-		// interrupt ongoing refreshes
-		interrupt();
+		boolean doSchedule = false;
 
 		// synchronize on the buffer
-		synchronized (priorityQueue) {
+		synchronized (queue) {
 
 			for (int i = 0; i < jobs.length; i++) {
 				StateCacheJob job = jobs[i];
-				if (priorityQueue.contains(job)) {
+				if (queue.contains(job)) {
+					if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+						ClearCasePlugin.trace(TRACE_ID,
+								"schedule: already in queue "
+										+ job.getStateCache().getPath());
+					}
 					// only reschedule high priority jobs
 					if (StateCacheJob.PRIORITY_HIGH == job.getPriority()) {
+						if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+							ClearCasePlugin.trace(TRACE_ID,
+									"schedule: remove+add ");
+						}
 						// reschedule
-						priorityQueue.remove(job);
-						priorityQueue.add(job);
+						queue.remove(job);
+						queue.add(job);
+						doSchedule = true;
 					}
 				} else {
-					priorityQueue.add(job);
+					if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+						ClearCasePlugin.trace(TRACE_ID, "schedule: adding "
+								+ job.getStateCache().getPath());
+					}
+
+					queue.add(job);
+					doSchedule = true;
 				}
 			}
 		}
 
 		// schedule a queue "run"
-		scheduleQueueRun();
+		if (doSchedule) {
+			// interrupt ongoing refreshes
+			interrupt();
+			scheduleQueueRun();
+		}
 	}
 
 	/**
@@ -230,12 +279,27 @@ class StateCacheJobQueue extends Job {
 		int state = getState();
 		switch (state) {
 		case Job.SLEEPING:
+			if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+				ClearCasePlugin.trace(TRACE_ID,
+						"scheduleQueueRun SLEEPING -> wakeUp() "
+								+ System.currentTimeMillis());
+			}
 			wakeUp(DEFAULT_DELAY);
 			break;
 		case NONE:
+			if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+				ClearCasePlugin.trace(TRACE_ID,
+						"scheduleQueueRun NONE -> schedule() "
+								+ System.currentTimeMillis());
+			}
 			schedule(DEFAULT_DELAY);
 			break;
 		case RUNNING:
+			if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+				ClearCasePlugin.trace(TRACE_ID,
+						"scheduleQueueRun RUNNING -> schedule() "
+								+ System.currentTimeMillis());
+			}
 			schedule(DEFAULT_DELAY);
 			break;
 		}
@@ -262,10 +326,13 @@ class StateCacheJobQueue extends Job {
 	 * @see Job#cancel()
 	 */
 	public boolean cancel(boolean clean) {
+		if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+			ClearCasePlugin.trace(TRACE_ID, "cancel() " + clean);
+		}
 		boolean canceled = cancel();
 		if (clean) {
-			synchronized (priorityQueue) {
-				priorityQueue.clear();
+			synchronized (queue) {
+				queue.clear();
 			}
 		}
 		return canceled;
@@ -276,6 +343,10 @@ class StateCacheJobQueue extends Job {
 	 * as interrupted so that it will cancel and reschedule itself
 	 */
 	synchronized void interrupt() {
+		if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+			ClearCasePlugin.trace(TRACE_ID, "interrupt(), old i-state: "
+					+ interrupted);
+		}
 		// if already interrupted, do nothing
 		if (interrupted)
 			return;
@@ -283,15 +354,20 @@ class StateCacheJobQueue extends Job {
 		case NONE:
 			return;
 		case WAITING:
+			if (ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
+				ClearCasePlugin.trace(TRACE_ID, "going to sleep");
+			}
 			// put the job to sleep if it is waiting to run
 			interrupted = !sleep();
 			break;
 		case RUNNING:
-			// make sure autobuild doesn't interrupt itself
+			// make sure we don't interrupt ourself
 			interrupted = jobManager.currentJob() != this;
-			if (interrupted && ClearCasePlugin.DEBUG_STATE_CACHE) {
+			if (interrupted && ClearCasePlugin.DEBUG_UPDATE_QUEUE) {
 				ClearCasePlugin
-						.trace("[StateCache] update job was interrupted: " + Thread.currentThread().getName()); //$NON-NLS-1$
+						.trace(
+								TRACE_ID,
+								"update job was interrupted: " + Thread.currentThread().getName()); //$NON-NLS-1$
 				// new Exception().fillInStackTrace().printStackTrace();
 			}
 			break;
@@ -315,6 +391,6 @@ class StateCacheJobQueue extends Job {
 	 */
 	public boolean isEmpty() {
 		// do not synchronize
-		return priorityQueue.isEmpty();
+		return queue.isEmpty();
 	}
 }

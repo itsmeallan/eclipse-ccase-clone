@@ -12,6 +12,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IResource;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearCaseUIPreferences;
@@ -467,7 +470,9 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 			return;
 		}
 
-		// test if ignored
+		// test if ignored. Caution: p.isIgnored() implicitely schedules an
+		// async StateCache update if this resource is not ignored and not
+		// yet initialized
 		if (p.isIgnored(resource)) {
 			if (ClearCaseUI.DEBUG_DECORATION) {
 				ClearCaseUI.trace(DECORATOR, "  ignored"); //$NON-NLS-1$
@@ -478,14 +483,13 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		// test if uninitialized before all other checks
 		if (p.isUnknownState(resource)) {
 
+			// p.isIgnored() already initiated an async update in this case
+			if (ClearCaseUI.DEBUG_DECORATION) {
+				ClearCaseUI.trace(DECORATOR, " scheduled refresh for " + resource.getFullPath().toString()); //$NON-NLS-1$
+			}
+			
 			// unknown state
 			decorateUnknown(decoration);
-
-			// getting the StateCache schedules an async update
-			if (ClearCaseUI.DEBUG_DECORATION) {
-				ClearCaseUI.trace(DECORATOR, " schedule refresh for " + resource.getFullPath().toString()); //$NON-NLS-1$
-			}
-			p.getCache(resource);
 
 			// no further decoration
 			return;
@@ -611,6 +615,9 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 	 * Updates all decorators on any resource.
 	 */
 	public void refresh() {
+		if (ClearCaseUI.DEBUG_DECORATION) {
+			ClearCaseUI.trace(DECORATOR, "  fireLabelProviderChanged,0,all"); //$NON-NLS-1$
+		}
 		fireLabelProviderChanged(new LabelProviderChangedEvent(this));
 	}
 
@@ -621,7 +628,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 	 * @param project
 	 */
 	public void refresh(IProject project) {
-		final List resources = new ArrayList();
+		final List<IResource> resources = new ArrayList<IResource>(3000);
 		try {
 			project.accept(new IResourceVisitor() {
 				public boolean visit(IResource resource) {
@@ -629,6 +636,9 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 					return true;
 				}
 			});
+			if (ClearCaseUI.DEBUG_DECORATION) {
+				ClearCaseUI.trace(DECORATOR, "  fireLabelProviderChanged,1, cnt=" + resources.size()); //$NON-NLS-1$
+			}
 			fireLabelProviderChanged(new LabelProviderChangedEvent(this, resources.toArray()));
 		} catch (CoreException e) {
 			handleException(e);
@@ -636,18 +646,21 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 	}
 
 	public void refresh(IResource[] changedResources) {
-		Set resourcesToUpdate = new HashSet();
+		Set<IResource> resourcesToUpdate = new HashSet<IResource>();
 
 		for (int i = 0; i < changedResources.length; i++) {
 			IResource resource = changedResources[i];
 
-			if (!ClearCaseUIPreferences.decorateFoldersDirty()) {
+			if (ClearCaseUIPreferences.decorateFoldersDirty()) {
 				addWithParents(resource, resourcesToUpdate);
 			} else {
 				resourcesToUpdate.add(resource);
 			}
 		}
 
+		if (ClearCaseUI.DEBUG_DECORATION) {
+			ClearCaseUI.trace(DECORATOR, "  fireLabelProviderChanged,2, cnt=" + resourcesToUpdate.size()); //$NON-NLS-1$
+		}
 		fireLabelProviderChanged(new LabelProviderChangedEvent(this, resourcesToUpdate.toArray()));
 
 	}
@@ -656,7 +669,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 	 * Add resource and its parents to the List
 	 */
 
-	private void addWithParents(IResource resource, Set resources) {
+	private void addWithParents(IResource resource, Set<IResource> resources) {
 		IResource current = resource;
 
 		while (current.getType() != IResource.ROOT) {
@@ -691,7 +704,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		// process delta
 		if (null != rootDelta) {
 
-			final Set resources = new HashSet();
+			final Set<IContainer> resources = new HashSet<IContainer>();
 
 			try {
 				// recursive
@@ -719,7 +732,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 			}
 
 			if (!resources.isEmpty()) {
-				refresh((IResource[]) resources.toArray(new IResource[resources.size()]));
+				refresh(resources.toArray(new IResource[resources.size()]));
 			}
 		}
 	}
@@ -740,6 +753,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 	 * @param resource
 	 * @param depth
 	 */
+	@SuppressWarnings("unused")
 	private void synchronizeResource(IResource resource, int depth) {
 		if (!resource.isSynchronized(depth)) {
 			try {

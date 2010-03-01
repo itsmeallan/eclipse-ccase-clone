@@ -142,12 +142,15 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	public static ClearCaseProvider getClearCaseProvider(IResource resource) {
-		if (null == resource || null == resource.getProject())
+		if (null == resource)
 			return null;
-		RepositoryProvider provider = RepositoryProvider.getProvider(resource
-				.getProject());
+		IProject project = resource.getProject();
+		if (null == project)
+			return null;
+		RepositoryProvider provider = RepositoryProvider.getProvider(project);
 		if (provider instanceof ClearCaseProvider) {
-			((ClearCaseProvider) provider).opListener = null;
+			// FIXME Achim: Whats this next line for?
+			((ClearCaseProvider) provider).opListener = null; 
 			return (ClearCaseProvider) provider;
 		} else
 			return null;
@@ -396,14 +399,18 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	public static boolean isSnapshotView(final String viewName) {
-		if (viewName.length() == 0) {
-			return false;
-		}
 		Boolean res = snapshotViewLookupTable.get(viewName);
 		if (res == null) {
-			String viewtype = ClearCasePlugin.getEngine().getViewType(viewName);
-			res = (viewtype.equals(ClearCaseInterface.VIEW_TYPE_SNAPSHOT) ? true
-					: false);
+			if (viewName.length() == 0) {
+				// special case, can happen after queries in non-view
+				// directories
+				res = false;
+			} else {
+				// standard case, we have a viewname, ask CC for the type
+				String viewtype = ClearCasePlugin.getEngine().getViewType(
+						viewName);
+				res = viewtype.equals(ClearCaseInterface.VIEW_TYPE_SNAPSHOT);
+			}
 			snapshotViewLookupTable.put(viewName, res);
 		}
 		return res;

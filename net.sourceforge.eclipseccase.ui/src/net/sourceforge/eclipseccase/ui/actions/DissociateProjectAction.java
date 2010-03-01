@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearCaseDecorator;
@@ -58,7 +60,8 @@ public class DissociateProjectAction extends ClearCaseWorkspaceAction {
 						if (manager.getEnabled(ClearCaseDecorator.ID)) {
 							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
-								activeDecorator.refresh(project);
+								if (ClearCasePlugin.isFullRefreshOnAssociate())
+									activeDecorator.refresh(project);
 							}
 						}
 						monitor.worked(5);

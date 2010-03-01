@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -34,9 +36,11 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 
 					for (int i = 0; i < projects.length; i++) {
 						IProject project = projects[i];
+						// the map() call automatically refreshes all labels (at
+						// least in Eclipse 3.5)
 						RepositoryProvider.map(project, ClearCaseProvider.ID);
 						StateCacheFactory.getInstance().remove(project);
-						StateCacheFactory.getInstance().fireStateChanged(project);
+						// StateCacheFactory.getInstance().fireStateChanged(project);
 
 						// first, get list of resources
 						final List<IResource> resources = new ArrayList<IResource>();
@@ -58,7 +62,8 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 						for (IResource res : resources) {
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(res);
 							if (p != null) {
-								p.ensureInitialized(res);
+								if (ClearCasePlugin.isFullRefreshOnAssociate())
+									p.ensureInitialized(res);
 							}
 							submonitor.worked(1);
 							if (submonitor.isCanceled())
@@ -68,10 +73,11 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 						// To get correct state for project.
 						// refresh the decorator
 						IDecoratorManager manager = PlatformUI.getWorkbench().getDecoratorManager();
-						if (manager.getEnabled(ClearCaseDecorator.ID) && ! submonitor.isCanceled()) {
+						if (manager.getEnabled(ClearCaseDecorator.ID) && !submonitor.isCanceled()) {
 							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
-								activeDecorator.refresh(project);
+								if (ClearCasePlugin.isFullRefreshOnAssociate())
+									activeDecorator.refresh(project);
 							}
 						}
 						submonitor.done();
