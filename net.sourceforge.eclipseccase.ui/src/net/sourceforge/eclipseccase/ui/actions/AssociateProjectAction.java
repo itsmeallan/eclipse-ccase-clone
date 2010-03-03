@@ -78,6 +78,10 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 							if (activeDecorator != null) {
 								if (ClearCasePlugin.isFullRefreshOnAssociate())
 									activeDecorator.refresh(project);
+								else {
+									activeDecorator.refresh(new IResource[] {project});  // refresh first level only
+									activeDecorator.refresh(project.members());  // refresh first level only
+								}
 							}
 						}
 						submonitor.done();
