@@ -144,11 +144,12 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 			} else if (element.equals(PREVIEW_PROJECT)) {
 				// checked in
 				// dirty (has checkouts and hijacked)
-				if (dirtyFolders.getBooleanValue()) {
-					overlay = IMG_DESC_DIRTY;
-				} else if (decorateCheckedIn.getBooleanValue()) {
-					overlay = IMG_DESC_CHECKED_IN;
-				}
+				// if (dirtyFolders.getBooleanValue()) {
+				// overlay = IMG_DESC_DIRTY;
+				// } else if (decorateCheckedIn.getBooleanValue()) {
+				// overlay = IMG_DESC_CHECKED_IN;
+				// }
+				overlay = IMG_DESC_CHECKED_IN;
 				// background
 				if (decorateClearCaseElements.getBooleanValue()) {
 					background = getElementBackgroundImage();
@@ -156,11 +157,14 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 			} else if (element.equals(PREVIEW_FOLDER)) {
 				// checked in
 				// dirty (has view private and checked in)
-				if (dirtyFoldersWithViewPrivate.getBooleanValue() && dirtyFolders.getBooleanValue() && decorateViewPrivate.getBooleanValue()) {
-					overlay = IMG_DESC_DIRTY;
-				} else if (decorateCheckedIn.getBooleanValue()) {
-					overlay = IMG_DESC_CHECKED_IN;
-				}
+				// if (dirtyFoldersWithViewPrivate.getBooleanValue() &&
+				// dirtyFolders.getBooleanValue() &&
+				// decorateViewPrivate.getBooleanValue()) {
+				// overlay = IMG_DESC_DIRTY;
+				// } else if (decorateCheckedIn.getBooleanValue()) {
+				// overlay = IMG_DESC_CHECKED_IN;
+				// }
+				overlay = IMG_DESC_CHECKED_IN;
 				// background
 				if (decorateClearCaseElements.getBooleanValue()) {
 					background = getElementBackgroundImage();
@@ -263,11 +267,12 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 				// checked in
 				// dirty (has checkouts and hijacked)
 				if (decorateElementStatesWithTextPrefix.getBooleanValue()) {
-					if (dirtyFolders.getBooleanValue()) {
-						prefix = prefixDirtyResources.getStringValue();
-					} else {
-						prefix = prefixCheckedInResources.getStringValue();
-					}
+//					if (dirtyFolders.getBooleanValue()) {
+//						prefix = prefixDirtyResources.getStringValue();
+//					} else {
+//						prefix = prefixCheckedInResources.getStringValue();
+//					}
+					prefix = prefixCheckedInResources.getStringValue();
 				}
 			} else if (element.equals(PREVIEW_FOLDER)) {
 				// version info
@@ -277,11 +282,12 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 				// checked in
 				// dirty (has view private and checked in)
 				if (decorateElementStatesWithTextPrefix.getBooleanValue()) {
-					if (dirtyFoldersWithViewPrivate.getBooleanValue() && dirtyFolders.getBooleanValue()) {
-						prefix = prefixDirtyResources.getStringValue();
-					} else {
-						prefix = prefixCheckedInResources.getStringValue();
-					}
+//					if (dirtyFoldersWithViewPrivate.getBooleanValue() && dirtyFolders.getBooleanValue()) {
+//						prefix = prefixDirtyResources.getStringValue();
+//					} else {
+//						prefix = prefixCheckedInResources.getStringValue();
+//					}
+					prefix = prefixCheckedInResources.getStringValue();
 				}
 			} else if (element.equals(PREVIEW_VIEWPRIVATE_TXT)) {
 				// view private
@@ -345,7 +351,10 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	private static final String CAT_TEXT = PreferenceMessages.getString("DecoratorPreferencePage.category.text"); //$NON-NLS-1$
 
 	/** array with all categories */
-	private static final String[] CATEGORIES = new String[] { CAT_TEXT, CAT_IMAGES, CAT_GENERAL };
+	private static final String[] CATEGORIES = new String[] { CAT_TEXT, CAT_IMAGES /*
+																					 * ,
+																					 * CAT_GENERAL
+																					 */};
 
 	/** cached descriptor */
 	static final ImageDescriptor IMG_DESC_CHECKED_IN;
@@ -501,14 +510,23 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	 */
 	@Override
 	protected void createFieldEditors() {
-		// general
-		dirtyFolders = new MasterBooleanFieldEditor(ClearCaseUIPreferences.DECORATE_FOLDERS_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty"), //$NON-NLS-1$
-				getFieldEditorParent(CAT_GENERAL));
-		addField(dirtyFolders);
-
-		dirtyFoldersWithViewPrivate = new BooleanFieldEditor(ClearCaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty.withViewPrivate"), getFieldEditorParent(CAT_GENERAL));//$NON-NLS-1$
-		addField(dirtyFoldersWithViewPrivate);
-		dirtyFolders.addSlave(dirtyFoldersWithViewPrivate);
+		/*
+		 * // general dirtyFolders = new
+		 * MasterBooleanFieldEditor(ClearCaseUIPreferences
+		 * .DECORATE_FOLDERS_DIRTY,
+		 * PreferenceMessages.getString("DecoratorPreferencePage.folders.dirty"
+		 * ), //$NON-NLS-1$ getFieldEditorParent(CAT_GENERAL));
+		 * addField(dirtyFolders);
+		 * 
+		 * dirtyFoldersWithViewPrivate = new
+		 * BooleanFieldEditor(ClearCaseUIPreferences
+		 * .DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY,
+		 * PreferenceMessages.getString
+		 * ("DecoratorPreferencePage.folders.dirty.withViewPrivate"),
+		 * getFieldEditorParent(CAT_GENERAL));//$NON-NLS-1$
+		 * addField(dirtyFoldersWithViewPrivate);
+		 * dirtyFolders.addSlave(dirtyFoldersWithViewPrivate);
+		 */
 
 		// image decoration
 

@@ -144,7 +144,8 @@ public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateFoldersContainingViewPrivateElementsDirty() {
-		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY);
+		return false;
+		//return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY);
 	}
 
 	/**
@@ -154,7 +155,8 @@ public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 	 * @return <code>true</code> if enabled, <code>false</code> otherwise
 	 */
 	public static boolean decorateFoldersDirty() {
-		return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_DIRTY);
+		return false;
+		//return getPluginPreferences().getBoolean(ClearCaseUIPreferences.DECORATE_FOLDERS_DIRTY);
 	}
 
 	/**
@@ -223,8 +225,8 @@ public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 		IEclipsePreferences defaults = new DefaultScope().getNode(ClearCaseUI.PLUGIN_ID);
 
 		// Decorator preferences
-		defaults.putBoolean(DECORATE_FOLDERS_DIRTY, true);
-		defaults.putBoolean(DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, true);
+		defaults.putBoolean(DECORATE_FOLDERS_DIRTY, false);
+		defaults.putBoolean(DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, false);
 
 		// default text decorations
 		defaults.putBoolean(DECORATE_PROJECTS_WITH_VIEW_INFO, true);
