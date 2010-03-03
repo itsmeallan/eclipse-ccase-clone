@@ -5,6 +5,7 @@
    <extension
          point="org.eclipse.team.core.repository">
       <repository
+            canImportId="net.sourceforge.eclipseccase.ClearcaseProvider"
             class="net.sourceforge.eclipseccase.ClearCaseProvider"
             id="net.sourceforge.eclipseccase.ClearCaseProvider">
       </repository>
