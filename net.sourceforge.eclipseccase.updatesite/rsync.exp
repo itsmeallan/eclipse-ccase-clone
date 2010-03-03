@@ -6,8 +6,9 @@ set rootdir "[lindex $argv 2]"
 set eclipsecategory "[lindex $argv 3]"
 set version "[lindex $argv 4]"
 set password "[lindex $argv 5]"
+set host "[lindex $argv 6]"
 
-spawn rsync -avP -e ssh  $zip $webuser@frs.sourceforge.net:$rootdir/${eclipsecategory}/${version}/
+spawn rsync -avP -e ssh  ${zip} ${webuser}@${host}:${rootdir}/${eclipsecategory}/${version}/
 expect "*password:" 
 send "${password}\r"
 expect eof 

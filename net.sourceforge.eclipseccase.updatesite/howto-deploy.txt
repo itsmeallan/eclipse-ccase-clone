@@ -1,8 +1,11 @@
-Make a new release of Plug-in
-=============================
+
+================================================
+=      How to make a release of plug-in        =
+================================================
 
 
-Prerequesites:
+Prerequesites
+=============
 
 - Eclipse 3.5
 - jdk 1.5.0 (check plugin.xml)   
@@ -13,7 +16,7 @@ Prerequesites:
 
  <property name="project.version" value="net.sourceforge.clearcase_2.2.0.v201002231500"/>
  
- 2. Build project manually. Use target  'release'.     
+2. Build project manually. Use target  'release'.     
 
 3. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
    Use same as in step 1.
@@ -42,14 +45,17 @@ Select feature.xml (Overview) under 'Exporting' --> 'Export Wizard'
    
    
  Select feature.xml (Overview) under Publishing cannot be used.  
-   
+ 
+ 
+ Build update site
+ =================  
 //FIXME: This has to be updated:
 http://www.vogella.de/articles/EclipseP2Update/article.html#introduction   
    
-4. build update site
+1. build update site
    (right click site.xml->PDE Tools->Build Site)
    
-5. check directories for content:
+2. check directories for content:
    "net.sourceforge.eclipseccase.updatesite/full/" 
      -> one zip with features and plugins for each feature
    "net.sourceforge.eclipseccase.updatesite/features/" 
@@ -57,7 +63,7 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
    "net.sourceforge.eclipseccase.updatesite/plugins/" 
      -> one plugin jar for each plugin
      
-6. Testing and install plugin from local site. 
+3. Testing and install plugin from local site. 
    machine if it works, only upload/deploy a release that works.
    Help --> Install New Software --> Add --> 
    Point to the following directory:
@@ -65,89 +71,38 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
    (it will complain if no site.xml is found).
    Make sure it downloads, installs and uninstalls.
    
-
-7. create "login.properties" file with user=... ,webuser= ... password=... ( name=value) next to site-deploy.xml
-   Change in site-deploy.xml to new version.
-   Note: webuser is "userid,projectname" as one string. E.g. "eraonel,eclipse-ccase".
-   Example:
    
-   user=eraonel
-
-   webuser=eraonel,eclipse-ccase
-
-   password=<password>
+   Release officially
+   ==================
    
-   Make sure you have created the following directories:
+   1. This step will deploy plug-in on sourceforge 'file management'-site as well as update site.
+      Make "login.properties" file with user=... ,webuser= ... password=... ( name=value) on same level as
+      site-deploy.xml
+      
+      Example:
+      user=eraonel
+      webuser=eraonel,eclipse-ccase
+      password=<password>
+       
+      Note: webuser is "userid,projectname" as one string. E.g. "eraonel,eclipse-ccase".
+    
+   	  View 'site-deploy.xml' and make sure that you have correct release of Eclipse to deploy in:
+      
+      <property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" /> 
+	   
+      Execute 'ant all'
    
-   <!-- current version (also used for release label) -->
-	<property name="version" value="2.2.0test" />
-	<property name="current.eclipse.download.category" value="ecllipse-ccase_Eclipse_3.5"/>
-	
-	using web gui ( Internet Explorer).
-	
-  	
+     Check that files have been updated:
+   	
+   	 Note: If you have problems with File Management there is always a fallback to use the GUI on website.
+     https://sourceforge.net/project/admin/explorer.php?group_id=50595
+      
+     For shell based:  sftp eraonel,eclipse-ccase@web.sourceforge.net
    
-   Set version in site-deploy.xml e.g. 2.2.0.v201002231900.
-
-8. run site-deploy.xml with ant
-   (right click "Run Ant..." with target "all")
-   Check that the update site contains the new version. ( Use IE instead of Mozilla).
-   
-   Within all use the new deploy-zip.
-   
-   To deploy zip:
-   (At the moment the 'deploy-sf-release' target is not working.)
-   
-   Used IE ( firefox does not work )gui on https://sourceforge.net/project/admin/explorer.php?group_id=50595
-   
-   For more info check:https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
-   
-   Put release on update site.
-   
-   
-   
-   For shell based:  sftp eraonel,eclipse-ccase@web.sourceforge.net
-   
- 9. Don't forget to TAG all projects. Checkin code.
+ 2. TAG all projects. First checkin code.
     Use the following tags with current version ( below is just examples):
-    CLEARCASE-JAVA_2_1_4_RELEASE
-    ECLIPSE-CCASE_2_1_4_RELEASE
+    CLEARCASE-JAVA_2_1_4_RELEASE (net.sourceforge.clearcase)
+    ECLIPSE-CCASE_2_1_4_RELEASE(net.sourceforge.eclipseccase,net.sourceforge.eclipseccase.ui,
+    net.sourceforge.eclipseccase.updatesite,net.sourceforge.eclipseccase.feature).
 
-    
-    Errors:
-    
-    eclipse.buildId=M20090917-0800
-java.version=1.5.0_06
-java.vendor=Sun Microsystems Inc.
-BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=en_US
-Framework arguments:  -product org.eclipse.epp.package.rcp.product
-Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.package.rcp.product -clean
-
-
-Linux delivery Errors ( FIXME: mike 20100224 check these later).
-=====================
-Wed Feb 24 19:23:34 CET 2010
-Bundle net.sourceforge.eclipseccase_2.2.0.v201002231900 failed to resolve.:
-	Another singleton version selected: net.sourceforge.eclipseccase_2.3.5.0
-
-BUILD FAILED
-/home/eraonel/opensource_projects/net.sourceforge.eclipseccase.updatesite/site-deploy.xml:59: java.lang.OutOfMemoryError: Java heap space
-	at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:116)
-	
-I tested to increase heap. Same error message.
-Also tested to use a never version of j2ssh. Same error message.	
-	
-	at org.apache.tools.ant.Task.perform(Task.java:348)
-	at org.apache.tools.ant.Target.execute(Target.java:357)
-	at org.apache.tools.ant.Target.performTasks(Target.java:385)
-	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1337)
-	at org.apache.tools.ant.Project.executeTarget(Project.java:1306)
-	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:41)
-	at org.eclipse.ant.internal.ui.antsupport.EclipseDefaultExecutor.executeTargets(EclipseDefaultExecutor.java:32)
-	at org.apache.tools.ant.Project.executeTargets(Project.java:1189)
-	at org.eclipse.ant.internal.ui.antsupport.InternalAntRunner.run(InternalAntRunner.java:423)
-	at org.eclipse.ant.internal.ui.antsupport.InternalAntRunner.main(InternalAntRunner.java:137)
-Caused by: java.lang.OutOfMemoryError: Java heap space
---- Nested Exception ---
-java.lang.OutOfMemoryError: Java heap space
     

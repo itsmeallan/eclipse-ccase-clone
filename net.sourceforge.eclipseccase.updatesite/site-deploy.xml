@@ -1,6 +1,11 @@
 <project name="eclipse-ccase-site" default="all">
 
-	<target name="init-properties">
+
+	<!-- ================================================================== 
+		  target: init-properties              
+		      
+		 ================================================================== -->
+	<target name="init-properties" depends="init-custom-tasks">
 		<tstamp>
 			<format property="release.date" pattern="MM/dd/yyyy" />
 		</tstamp>
@@ -8,20 +13,35 @@
 		<!-- must contain properties "user" and "password"-->
 		<property file="login.properties" />
 
-		<!-- current version (also used for release label) -->
-		<property name="version" value="2.2.0test" />
-		<property name="zip.version" value="net.sourceforge.eclipseccase_${version}.zip" />
+		<!-- General params -->
+		<property name="plugin.id" value="net.sourceforge.eclipseccase" />
 
+
+		<!-- Setting of version parameter -->
+		<timestampselector property="most.recent.release" count="1">
+			<path>
+				<fileset dir="${basedir}/features">
+					<include name="${plugin.id}*.jar" />
+				</fileset>
+			</path>
+		</timestampselector>
+		<basename property="jar.name" file="${basedir}/features/${most.recent.release}" suffix=".jar" />
+		<echo message="newest feature jar name is: ${jar.name}" />
+
+		<propertyregex property="version" input="${jar.name}" regexp="${plugin.id}_([0-9]\.[0-9]\.[0-9]\.[0-9 A-Z]*)" select="\1" casesensitive="false" />
+		<echo message="version is set to: ${version}" />
+
+		<!-- File management params -->
+		<property name="zip.version" value="${plugin.id}_${version}.zip" />
 		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
 		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
+		<property name="filemanagement.deploy.host" value="frs.sourceforge.net" />
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
 
-
+		<!-- Update site params -->
 		<property name="staging.dir" value="${basedir}" />
 		<property name="features.dir" value="${staging.dir}/features" />
 		<property name="plugins.dir" value="${staging.dir}/plugins" />
-
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
-
 
 		<property name="site.deploy.host" value="web.sourceforge.net" />
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update" />
@@ -31,12 +51,16 @@
 			<include name="index.html" />
 			<include name="web/*" />
 			<include name="site.xml" />
-			<include name="features/*" />
-			<include name="plugins/*" />
+			<include name="features/*${version}.jar" />
+			<include name="plugins/*${version}.jar" />
 		</fileset>
 	</target>
 
-	<target name="init-custom-tasks" depends="init-properties">
+	<!-- ================================================================== 
+			  target: init-custom-tasks              
+			      
+	     ================================================================== -->
+	<target name="init-custom-tasks" depends="">
 
 		<!-- FIXME: mike 20100226
 		Error:
@@ -49,55 +73,48 @@
 	    Might be included in ant 1.8 ?
 		 -->
 		<taskdef resource="net/jtools/classloadertask/antlib.xml" classpath="${basedir}/lib/ant-classloadertask.jar" />
+
 		<classloader loader="project" classpath="${basedir}/lib/jsch-0.1.42.jar" />
-		
-
-		<!-- Used for rsync since it is natively installed on this platform. -->
-		<condition property="isWindows">
-			<os family="windows" />
-		</condition>
 
 
-
-		<!-- FIXE: mike 20100226 Used this before classloaderfix ( above).-->
-		
-		
-		
-		<!-- TODO :http://3sp.com/tutorials/j2ssh/sshanttask.htm 
-		Not working since we get a  java.lang.OutOfMemoryError: Java heap space
-		-->
-		<path id="tasks.classpath">
-			<!--<fileset dir="${basedir}/lib" includes="*.jar" />-->
-			
-		</path>
-		<taskdef name="ssh" classname="com.sshtools.ant.Ssh" classpathref="tasks.classpath" />
-		
+		<!-- Needed for timestampselector &  propertyregex to get version name.
+		 http://ant-contrib.sourceforge.net/tasks/index.html -->
+		<taskdef resource="net/sf/antcontrib/antlib.xml">
+			<classpath>
+				<pathelement location="${basedir}/lib/ant-contrib-0.6.jar" />
+			</classpath>
+		</taskdef>
 
 	</target>
 
-	<target name="init" depends="init-properties,init-custom-tasks">
+	<!-- ================================================================== 
+		 target: init              
+		      
+		 ================================================================== -->
+	<target name="init" depends="init-custom-tasks,init-properties">
 	</target>
 
+	<!-- ================================================================== 
+	     target: clean  (mike 20100302 not used at the moment.
+			      
+		 ================================================================== -->
 	<target name="clean" depends="init">
 		<ant antfile="${basedir}/build.xml" target="clean" />
 		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
 	</target>
 
-	<target name="all" depends="init,deploy-local-site,deploy-site,deploy-sf-release">
+	<target name="all" depends="init,deploy-local-site,deploy-sf-update-site,deploy-sf-file-release">
 	</target>
 
-	<target name="deploy-site" depends="init" unless="site.local">
-		
-	<!-- 
-		<ssh host="${site.deploy.host}" username="${webuser}" password="${password}" verifyhost="false">
-			<sftp action="put" depends="true" remotedir="${site.deploy.root}" skipFailedTransfers="true">
-				<fileset refid="site.deploy.files" />
-			</sftp>
-		</ssh>-->
-		<!-- Use native (unix) command instead -->
-		<exec executable="/usr/bin/sftp" os="Unix,Linux">
-					<arg line=" ${webuser} "/>
-		        </exec>
+	<!-- ================================================================== 
+	      target: deploy-sf-update-site              
+	      copies local update site to sf-update wwww.
+	     ================================================================== -->
+	<target name="deploy-sf-update-site" depends="init" unless="site.local">
+		<scp verbose="true" todir="${webuser}:${password}@${site.deploy.host}:${site.deploy.root}">
+			<fileset refid="site.deploy.files" />
+		</scp>
+
 	</target>
 
 	<target name="deploy-local-site" depends="init" if="site.local">
@@ -106,18 +123,20 @@
 			<fileset refid="site.deploy.files" />
 		</copy>
 	</target>
-
-
-	<!-- Transfers the zip files in net.sourceforge.eclipseccase.updatesite/full to sf-site.
-	 scp cannot create directory structure.
-	 Not possible to do ssh.
-	 Last resort is to use rsync ( only on unix).
-	  -->
-	<target name="deploy-sf-release" depends="init" unless="site.local">
-		<!-- Example: rsync -avP -e ssh FILE jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/-->
+	
+	<!-- ================================================================== 
+		 target: deploy-sf-file-release              
+		 Transfers the zip files in net.sourceforge.eclipseccase.updatesite/full to sf-site.
+	 	 scp cannot create directory structure.
+	 	 Not possible to do ssh.
+	 	 Last resort is to use rsync ( only on unix).
+	 	 Example: rsync -avP -e ssh FILE jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/
+		      
+		 ================================================================== -->
+	<target name="deploy-sf-file-release" depends="init" unless="site.local">
 		<exec executable="/usr/bin/expect" os="Unix,Linux">
-			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password}"/>
-        </exec>
+			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host}" />
+		</exec>
 	</target>
 
 </project>
