@@ -147,7 +147,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
-		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 1, //$NON-NLS-1$ 
+		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 3, //$NON-NLS-1$ 
 				ALWAYS_IF_POSSIBLE_NEVER, getFieldEditorParent(SOURCE_MANAGEMENT), true));
 
 		// comments
@@ -205,12 +205,12 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 */
 	@Override
 	protected String getDescription(String category) {
-		if (GENERAL.equals(category))
-			return PreferenceMessages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$
-		if (SOURCE_MANAGEMENT.equals(category))
-			return PreferenceMessages.getString("Preferences.Description.Category.Source"); //$NON-NLS-1$
-		if (COMMENTS.equals(category))
-			return PreferenceMessages.getString("Preferences.Description.Category.Comments"); //$NON-NLS-1$
+//		if (GENERAL.equals(category))
+//			return PreferenceMessages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$
+//		if (SOURCE_MANAGEMENT.equals(category))
+//			return PreferenceMessages.getString("Preferences.Description.Category.Source"); //$NON-NLS-1$
+//		if (COMMENTS.equals(category))
+//			return PreferenceMessages.getString("Preferences.Description.Category.Comments"); //$NON-NLS-1$
 		return null;
 	}
 

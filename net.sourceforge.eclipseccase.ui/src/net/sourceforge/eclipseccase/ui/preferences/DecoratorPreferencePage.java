@@ -673,12 +673,12 @@ public class DecoratorPreferencePage extends FieldEditorPreferencePageWithCatego
 	 */
 	@Override
 	protected String getDescription(String category) {
-		if (CAT_GENERAL.equals(category))
-			return PreferenceMessages.getString("DecoratorPreferencePage.category.general.description"); //$NON-NLS-1$
-		if (CAT_IMAGES.equals(category))
-			return PreferenceMessages.getString("DecoratorPreferencePage.category.images.description"); //$NON-NLS-1$
-		if (CAT_TEXT.equals(category))
-			return PreferenceMessages.getString("DecoratorPreferencePage.category.text.description"); //$NON-NLS-1$
+//		if (CAT_GENERAL.equals(category))
+//			return PreferenceMessages.getString("DecoratorPreferencePage.category.general.description"); //$NON-NLS-1$
+//		if (CAT_IMAGES.equals(category))
+//			return PreferenceMessages.getString("DecoratorPreferencePage.category.images.description"); //$NON-NLS-1$
+//		if (CAT_TEXT.equals(category))
+//			return PreferenceMessages.getString("DecoratorPreferencePage.category.text.description"); //$NON-NLS-1$
 
 		return null;
 	}
