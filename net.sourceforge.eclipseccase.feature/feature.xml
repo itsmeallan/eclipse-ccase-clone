@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipseccase"
       label="%featureName"
-      version="2.2.0.v201002231900"
+      version="2.2.1.v201003041230"
       provider-name="%providerName"
       image="eclipse-ccase.jpg">
 
@@ -22,30 +22,32 @@
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.team.core"/>
-      <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.team.ui"/>
-      <import plugin="org.eclipse.core.runtime" version="3.1.0.v20051027" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.ui" version="3.3.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.console"/>
    </requires>
 
    <plugin
          id="net.sourceforge.clearcase"
          download-size="1000"
          install-size="1800"
-         version="2.2.0.v201002231900"/>
+         version="2.2.1.v201003041230"/>
 
    <plugin
          id="net.sourceforge.eclipseccase"
          download-size="400"
          install-size="800"
-         version="2.2.0.v201002231900"
+         version="2.2.1.v201003041230"
          unpack="false"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.ui"
          download-size="400"
          install-size="800"
-         version="2.2.0.v201002231900"
+         version="2.2.1.v201003041230"
          unpack="false"/>
 
 </feature>
