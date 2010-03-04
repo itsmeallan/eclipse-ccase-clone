@@ -81,7 +81,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private String comment = ""; //$NON-NLS-1$
 
-	public static final String ID = "net.sourceforge.eclipseccase.ClearCaseProvider"; //$NON-NLS-1$
+	public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider"; //$NON-NLS-1$
 
 	public static final Status OK_STATUS = new Status(IStatus.OK, ID,
 			TeamException.OK, "OK", null); //$NON-NLS-1$
