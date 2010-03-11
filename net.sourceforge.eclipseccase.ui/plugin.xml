@@ -9,10 +9,11 @@
             adaptable="true"
             id="net.sourceforge.eclipseccase.popups.Associate">
          <action
-               label="Dissociate from ClearCase"
                class="net.sourceforge.eclipseccase.ui.actions.DissociateProjectAction"
-               menubarPath="team.main/projectGroup"
-               id="net.sourceforge.eclipseccase.popups.dissociate">
+               icon="icons/full/plugin_delete.png"
+               id="net.sourceforge.eclipseccase.popups.dissociate"
+               label="Dissociate from ClearCase"
+               menubarPath="team.main/projectGroup">
             <enablement>
                <and>
                   <objectState
@@ -27,10 +28,11 @@
             </enablement>
          </action>
          <action
-               label="Associate with ClearCase"
                class="net.sourceforge.eclipseccase.ui.actions.AssociateProjectAction"
-               menubarPath="team.main/projectGroup"
-               id="net.sourceforge.eclipseccase.popups.associate">
+               icon="icons/full/plugin_add.png"
+               id="net.sourceforge.eclipseccase.popups.associate"
+               label="Associate with ClearCase"
+               menubarPath="team.main/projectGroup">
             <enablement>
                <and>
                   <objectState
@@ -160,7 +162,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
                icon="icons/full/cancel.png"
                id="net.sourceforge.eclipseccase.popups.cancelRefreshes"
-               label="Cancel pending refreshes"
+               label="Cancel Pending Refreshes"
                menubarPath="team.main/group3">
          </action>
          <action
@@ -255,7 +257,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
                icon="icons/full/plugin_delete.png"
                id="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-               label="Dissociat&amp;e project"
+               label="Dissociat&amp;e Project"
                menubarPath="eclipseccase_menu/projectGroup">
             <enablement>
                <and>
@@ -275,7 +277,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.associate"
                icon="icons/full/plugin_add.png"
                id="net.sourceforge.eclipseccase.ui.actionset.associate"
-               label="A&amp;ssociate project"
+               label="A&amp;ssociate Project"
                menubarPath="eclipseccase_menu/projectGroup">
             <enablement>
                <and>
@@ -400,7 +402,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
                icon="icons/full/cancel.png"
                id="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-               label="Cancel &amp;pending refreshes"
+               label="Cancel &amp;Pending Refreshes"
                menubarPath="eclipseccase_menu/group3">
             <enablement>
                <pluginState
@@ -657,6 +659,12 @@
             id="net.sourceforge.eclipseccase.ui.actionset.versiontree">
       </command>
       <command
+            name="Describe Version"
+            description="Opens the clearcase describe graphical tool on the selected resources (external tool)"
+            categoryId="net.sourceforge.eclipseccase.category"
+            id="net.sourceforge.eclipseccase.ui.actionset.describeversion">
+      </command>
+      <command
             name="Update (External)"
             description="Updates the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
@@ -849,7 +857,7 @@
             sequence="Alt+C Alt+O">
       </key>
       <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.delete"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.describeversion"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Alt+C Alt+D">
       </key>
