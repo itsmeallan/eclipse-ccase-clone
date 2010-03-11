@@ -141,8 +141,8 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(KEEP_CHANGES_AFTER_UNCHECKOUT, PreferenceMessages.getString("Preferences.Source.KeepChangesAfterUncheckout"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
-		//		addField(new BooleanFieldEditor(ADD_WITH_CHECKIN, PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
-		// getFieldEditorParent(SOURCE_MANAGEMENT)));
+		addField(new BooleanFieldEditor(ADD_WITH_CHECKIN, PreferenceMessages.getString("Preferences.Source.AddWithCheckin"), //$NON-NLS-1$
+				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));

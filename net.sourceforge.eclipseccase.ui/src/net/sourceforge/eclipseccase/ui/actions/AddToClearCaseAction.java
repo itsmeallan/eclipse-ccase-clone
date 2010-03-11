@@ -26,7 +26,7 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 		int maybeDepth = IResource.DEPTH_ZERO;
 
 		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentAdd()) {
-			CommentDialog dlg = new CommentDialog(getShell(), "Add to clearcase comment");
+			CommentDialog dlg = new CommentDialog(getShell(), "Add to ClearCase comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
 			maybeComment = dlg.getComment();

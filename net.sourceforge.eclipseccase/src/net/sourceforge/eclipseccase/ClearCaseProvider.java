@@ -26,7 +26,6 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -151,7 +150,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 		RepositoryProvider provider = RepositoryProvider.getProvider(project);
 		if (provider instanceof ClearCaseProvider) {
 			// FIXME Achim: Whats this next line for?
-			((ClearCaseProvider) provider).opListener = null; 
+			((ClearCaseProvider) provider).opListener = null;
 			return (ClearCaseProvider) provider;
 		} else
 			return null;
@@ -353,19 +352,19 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public void showFindMerge(File workingDir) {
 		ClearCasePlugin.getEngine().showFindMerge(workingDir);
-		
+
 	}
-	
+
 	public void compareWithPredecessor(String element) {
 		ClearCasePlugin.getEngine().compareWithPredecessor(element);
-		
+
 	}
-	
+
 	public void describeVersionGUI(String element) {
 		ClearCasePlugin.getEngine().describeVersionGUI(element);
-		
+
 	}
-	
+
 	public void compareWithVersion(String element1, String element2) {
 		ClearCasePlugin.getEngine().compareWithVersion(element1, element2);
 	}
@@ -825,10 +824,16 @@ public class ClearCaseProvider extends RepositoryProvider {
 	private Status makeFileElement(IResource resource, IProgressMonitor monitor) {
 		Status result = OK_STATUS;
 
-		ClearCaseElementState state = ClearCasePlugin.getEngine().add(
-				resource.getLocation().toOSString(), false, getComment(),
-				ClearCase.PTIME | ClearCase.MASTER | ClearCase.CHECKIN,
-				opListener);
+		ClearCaseElementState state = ClearCasePlugin
+				.getEngine()
+				.add(
+						resource.getLocation().toOSString(),
+						false,
+						getComment(),
+						ClearCase.PTIME
+								| ClearCase.MASTER
+								| (ClearCasePlugin.isAddWithCheckin() ? ClearCase.CHECKIN
+										: 0), opListener);
 
 		if (state.isElement()) {
 			// Do nothing!
@@ -877,7 +882,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 			}
 
-			// Now all content of directory is moved delete
+			// Now after all content of directory is moved -> delete
 			// original directory.
 			if (folder.exists()) {
 				folder.delete(true, true, new SubProgressMonitor(monitor, 10));
