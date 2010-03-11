@@ -9,7 +9,7 @@
             adaptable="true"
             id="net.sourceforge.eclipseccase.popups.Associate">
          <action
-               label="Dissociate from clearcase"
+               label="Dissociate from ClearCase"
                class="net.sourceforge.eclipseccase.ui.actions.DissociateProjectAction"
                menubarPath="team.main/projectGroup"
                id="net.sourceforge.eclipseccase.popups.dissociate">
@@ -27,7 +27,7 @@
             </enablement>
          </action>
          <action
-               label="Associate with clearcase"
+               label="Associate with ClearCase"
                class="net.sourceforge.eclipseccase.ui.actions.AssociateProjectAction"
                menubarPath="team.main/projectGroup"
                id="net.sourceforge.eclipseccase.popups.associate">
@@ -199,10 +199,17 @@
                menubarPath="team.main/group2">
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.DescribeVersionAction"
+               icon="icons/full/describe.png"
+               id="net.sourceforge.eclipseccase.popups.describeversion"
+               label="Describe Version (external tool)"
+               menubarPath="team.main/group2">
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
                icon="icons/full/diff.png"
                id="net.sourceforge.eclipseccase.popups.comparepredecessor"
-               label="Compare with predecessor (external tool)"
+               label="Compare with Predecessor (external tool)"
                menubarPath="team.main/group2">
          </action>
          <action
@@ -479,14 +486,30 @@
             </enablement>
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.DescribeVersionAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.describeversion"
+               icon="icons/full/describe.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.describeversion"
+               label="&amp;Describe Version (external tool)"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="Describe Version (external tool)">
+            <enablement>
+               <pluginState
+                     value="activated"
+                     id="net.sourceforge.eclipseccase">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
                icon="icons/full/diff.png"
                id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
-               label="&amp;Compare with predecessor (external tool)"
+               label="&amp;Compare with Predecessor (external tool)"
                menubarPath="eclipseccase_menu/group2"
                toolbarPath="Normal/additions"
-               tooltip="Compare With Predecessor (external tool)">
+               tooltip="Compare with Predecessor (external tool)">
             <enablement>
                <pluginState
                      value="activated"
@@ -646,7 +669,7 @@
             id="net.sourceforge.eclipseccase.ui.actionset.history">
       </command>
       <command
-            name="Compare with predecessor"
+            name="Compare with Predecessor"
             description="Opens the clearcase compare with predecessor tool on the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor">
@@ -910,6 +933,12 @@
             </instanceof>
          </enablement>
       </consolePageParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.team.ui.teamDecorators">
+      <teamDecorator
+            decoratorId="net.sourceforge.eclipseccase.ui.decorator"
+            repositoryId="net.sourceforge.eclipseccase.ClearCaseProvider"/>
    </extension>
 
 </plugin>
