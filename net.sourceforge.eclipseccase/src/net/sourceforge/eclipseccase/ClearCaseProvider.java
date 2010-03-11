@@ -26,6 +26,7 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -345,11 +346,26 @@ public class ClearCaseProvider extends RepositoryProvider {
 				.getPredecessorVersion();
 	}
 
-	public void compareWithPredecessor(String element) {
-		ClearCasePlugin.getEngine().compareWithPredecessor(element);
+	public void showVersionTree(String element) {
+		ClearCasePlugin.getEngine().showVersionTree(element);
 
 	}
 
+	public void showFindMerge(File workingDir) {
+		ClearCasePlugin.getEngine().showFindMerge(workingDir);
+		
+	}
+	
+	public void compareWithPredecessor(String element) {
+		ClearCasePlugin.getEngine().compareWithPredecessor(element);
+		
+	}
+	
+	public void describeVersionGUI(String element) {
+		ClearCasePlugin.getEngine().describeVersionGUI(element);
+		
+	}
+	
 	public void compareWithVersion(String element1, String element2) {
 		ClearCasePlugin.getEngine().compareWithVersion(element1, element2);
 	}

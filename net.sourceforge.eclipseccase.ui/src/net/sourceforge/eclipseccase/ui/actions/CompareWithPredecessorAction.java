@@ -1,7 +1,5 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import java.io.IOException;
-import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -42,21 +40,12 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
-					// mike: don't know how this is used.
-					// ConsoleOperationListener opListener = new
-					// ConsoleOperationListener(monitor);
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
-						if (!ClearCasePlugin.isUseClearDlg()) {
-							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-							p.compareWithPredecessor(path);
-						} else {
-							Runtime.getRuntime().exec(new String[] { "cleardlg", "/diffpred", path });
-						}
+						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+						p.compareWithPredecessor(path);
 					}
-
-				} catch (IOException ex) {
 				} finally {
 					monitor.done();
 				}

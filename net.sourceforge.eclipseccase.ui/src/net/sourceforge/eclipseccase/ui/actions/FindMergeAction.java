@@ -55,18 +55,15 @@ public class FindMergeAction extends ClearCaseWorkspaceAction {
 						} else {
 							workingDir = new File(resource.getLocation().toOSString()).getParentFile();
 						}
-
-						CommandLauncher launcher = new CommandLauncher();
-						launcher.setAutoReturn(3); // FIXME: use CC Provider API
-						launcher.execute(new CleartoolCommandLine("findmerge").addOption("-graphical").create(), workingDir, null, new ConsoleOperationListener(monitor));
+						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+						p.showFindMerge(workingDir);
 					}
-				} catch (Exception e) {
 				} finally {
 					monitor.done();
 				}
 			}
 		};
 
-		executeInBackground(runnable, "Make Branch Type");
+		executeInBackground(runnable, "Find merges (graphical)");
 	}
 }

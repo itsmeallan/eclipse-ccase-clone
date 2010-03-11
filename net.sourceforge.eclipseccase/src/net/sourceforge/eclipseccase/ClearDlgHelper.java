@@ -31,6 +31,8 @@ public class ClearDlgHelper {
 
 	private static final String _ADDTOSRC = "/addtosrc"; //$NON-NLS-1$
 
+	private static final String _DIFFPRED = "/diffpred"; //$NON-NLS-1$
+	
 	/**
 	 * Adds the specified resources.
 	 * 
@@ -75,6 +77,17 @@ public class ClearDlgHelper {
 		perform(_UNCHECKOUT, resources);
 	}
 
+	/**
+	 * Diff to predecessor for specified resource.
+	 * 
+	 * @param resources
+	 * @throws TeamException
+	 */
+	public static void diffpred(IResource resource) throws TeamException {
+		// execute cleardlg
+		perform(_DIFFPRED, new IResource[] {resource});
+	}
+	
 	/**
 	 * Adds the specified resources.
 	 * 
