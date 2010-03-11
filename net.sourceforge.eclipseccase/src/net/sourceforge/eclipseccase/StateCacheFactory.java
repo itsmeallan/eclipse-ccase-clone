@@ -612,6 +612,10 @@ public class StateCacheFactory implements ISaveParticipant,
 							continue;
 						}
 
+						if (projectDelta.getKind() == IResourceDelta.CHANGED
+								&& (projectDelta.getFlags() & IResourceDelta.OPEN) != 0) {
+							continue;
+						}
 						projectDelta.accept(new IResourceDeltaVisitor() {
 
 							public boolean visit(IResourceDelta delta)
@@ -705,9 +709,10 @@ public class StateCacheFactory implements ISaveParticipant,
 				| IResourceDelta.SYNC | IResourceDelta.REPLACED
 				| IResourceDelta.OPEN | IResourceDelta.TYPE;
 
-		if (delta.getKind() == IResourceDelta.ADDED
-				|| (delta.getKind() == IResourceDelta.CHANGED && 0 != (delta
-						.getFlags() & interestingChangeFlags)))
+		final int kind = delta.getKind();
+		final int flags = delta.getFlags();
+		if (kind == IResourceDelta.ADDED
+				|| (kind == IResourceDelta.CHANGED && 0 != (flags & interestingChangeFlags)))
 			// Returning true causes a state update whenever
 			// the file is edited and saved inside Eclipse, too. That's not
 			// nice, but acceptable
