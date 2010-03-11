@@ -12,6 +12,8 @@
 
 package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.lang.reflect.InvocationTargetException;
@@ -156,6 +158,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	private Shell getShell(final Object context) {
 		if (context instanceof Shell)
 			return (Shell) context;
+		if (context instanceof FileModificationValidationContext)
+			return (Shell) (((FileModificationValidationContext) context).getShell());
 		return null;
 	}
 
@@ -169,8 +173,12 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
+		if (ClearCasePlugin.isCheckoutAutoNever())
+			return CANCEL;
+
 		final Shell shell = getShell(context);
-		if (null == shell)
+		final boolean askForComment = ClearCasePlugin.isCommentCheckout() && !ClearCasePlugin.isCommentCheckoutNeverOnAuto();
+		if (null == shell || !askForComment)
 			return super.validateEdit(files, context);
 
 		try {
