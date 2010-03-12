@@ -355,6 +355,21 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
+	/**
+	 * For updating a snapshot view.
+	 * 
+	 * @param element
+	 *            one single element or a working directory.
+	 * @param flags
+	 *            options used by cleartool update.
+	 * @param isWorkingDir
+	 *            updates the working dir if true else element.
+	 */
+	public void updateSnapShotView(String element, int flags,
+			boolean isWorkingDir) {
+		ClearCasePlugin.getEngine().update(element, flags, isWorkingDir);
+	}
+
 	public void compareWithPredecessor(String element) {
 		ClearCasePlugin.getEngine().compareWithPredecessor(element);
 
@@ -1224,37 +1239,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (ClearCasePlugin.isCheckoutLatest()
 						&& targetElement.isSnapShot()) {
 					monitor.subTask("Updating " + targetElement.getPath());
+					updateSnapShotView(resource.getFullPath().toOSString(), 0,
+							false);
 
-					// ClearCaseElementState[] state =
-					// ClearCasePlugin.getEngine()
-					// .update(
-					// new String[] { resource.getLocation()
-					// .toOSString() }, comment, 0, null);
-					ClearCasePlugin.getEngine().update(
-							new String[] { targetElement.getPath() }, comment,
-							0, opListener);
-					// if (state[0] == null) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE,
-					// "Update before checkout failed: "
-					// + resource.getName(), null);
-					//
-					// }
-
-					// ClearCaseElementState[] state =
-					// ClearCasePlugin.getEngine()
-					// .update(
-					// new String[] { resource.getLocation()
-					// .toOSString() }, comment, 0, opListener);
-					// if (state[0] == null) {
-					// result = new Status(IStatus.ERROR, ID,
-					// TeamException.UNABLE,
-					// "Update before checkout failed: "
-					// + resource.getName(), null);
-					//
-					// }
-
-					// FIXME: Handle exceptions from update.
 				}
 				monitor.worked(20);
 
@@ -1397,17 +1384,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePlugin.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
+						updateSnapShotView(resource.getFullPath().toOSString(),
+								0, false);
 
-						// ClearCaseElementState[] state =
-						// ClearCasePlugin.getEngine()
-						// .update(
-						// new String[] { resource.getLocation()
-						// .toOSString() }, comment, 0, opListener);
-						ClearCasePlugin.getEngine()
-								.update(
-										new String[] { resource.getLocation()
-												.toOSString() }, comment, 0,
-										opListener);
 					}
 				}
 				monitor.worked(20);
