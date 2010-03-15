@@ -1326,6 +1326,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 				}
 				monitor.worked(20);
 
+				// update state of target element first (if symlink)
+				if (! targetElement.equals(cache)) {
+					targetElement.doUpdate();
+				}
 				// update state
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
