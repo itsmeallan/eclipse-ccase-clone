@@ -80,6 +80,7 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 	 * org.eclipse.ui.views.navigator.ResourceNavigator#setSorter(org.eclipse
 	 * .ui.views.navigator.ResourceSorter)
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setComparator(ResourceComparator comparator) {
 		super.setComparator(new ResourceComparator(comparator.getCriteria()) {
@@ -102,6 +103,10 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 				IResource r1 = (IResource) o1;
 				IResource r2 = (IResource) o2;
 
+				int typeres = compareClearCaseTypes(r1, r2);
+				if (typeres != 0) {
+					return typeres;
+				}
 				if (getCriteria() == NAME)
 					return compareNames(r1, r2);
 				else if (getCriteria() == TYPE)
@@ -113,6 +118,37 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 			@Override
 			protected int compareNames(IResource resource1, IResource resource2) {
 				return getComparator().compare(resource1.getFullPath().toString(), resource2.getFullPath().toString());
+			}
+
+			protected int compareClearCaseTypes(IResource resource1, IResource resource2) {
+				// TODO: optimize this, how can the repeated lookups be eliminated?
+				StateCache c1 = StateCacheFactory.getInstance().get(resource1);
+				StateCache c2 = StateCacheFactory.getInstance().get(resource2);
+				// sort checkedout files first
+				if (c1.isCheckedOut()) {
+					if (c2.isCheckedOut()) {
+						return 0;
+					} else {
+						return -1;
+					}
+				} else if (c2.isCheckedOut()) {
+					return 1;
+				} else {
+					// no CO
+					// sort hijacked files second
+					if (c1.isHijacked()) {
+						if (c2.isHijacked()) {
+							return 0;
+						} else {
+							return -1;
+						}
+					} else if (c2.isHijacked()) {
+						return 1;
+					} else {
+						// both files are neither CO nor hijacked
+						return 0;
+					}
+				}
 			}
 		});
 	}

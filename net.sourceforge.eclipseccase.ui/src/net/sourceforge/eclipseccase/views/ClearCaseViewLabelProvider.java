@@ -4,6 +4,10 @@
  */
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.eclipseccase.StateCacheFactory;
+
+import net.sourceforge.eclipseccase.StateCache;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
@@ -23,8 +27,17 @@ public class ClearCaseViewLabelProvider extends WorkbenchLabelProvider {
 	 */
 	@Override
 	protected String decorateText(String input, Object element) {
-		if (element instanceof IResource)
-			return ((IResource) element).getFullPath().toString();
+		if (element instanceof IResource) {
+			IResource resource = (IResource) element;
+			StateCache cache = StateCacheFactory.getInstance().get(resource);
+			if (cache.isCheckedOut()) {
+				return resource.getFullPath().toString() + "      CHECKEDOUT";
+			} else if (cache.isHijacked()) {
+				return resource.getFullPath().toString() + "      HIJACKED";
+			} else {
+				return resource.getFullPath().toString() + "      (no CC element)";
+			}
+		}
 
 		return super.decorateText(input, element);
 	}

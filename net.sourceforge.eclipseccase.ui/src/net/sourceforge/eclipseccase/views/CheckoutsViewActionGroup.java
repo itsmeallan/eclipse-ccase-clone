@@ -39,7 +39,7 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		IMenuManager menu = actionBars.getMenuManager();
-		IMenuManager submenu = new MenuManager("Hide...");
+		IMenuManager submenu = new MenuManager("Show...");
 		menu.add(submenu);
 		submenu.add(hideCheckouts);
 		submenu.add(hideHijackedElements);
@@ -59,31 +59,32 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 	protected void makeActions() {
 		super.makeActions();
 
-		hideCheckouts = new Action("checkouts") {
+		hideCheckouts = new Action("Checked-Out Elements") {
 			@Override
 			public void run() {
 				getCheckoutsView().setHideCheckouts(!getCheckoutsView().hideCheckouts());
 			}
 
 		};
-		hideCheckouts.setToolTipText("Hide checked out elements");
-		hideHijackedElements = new Action("Hijacked elements") {
+		hideCheckouts.setToolTipText("Hide checked-out elements");
+		
+		hideHijackedElements = new Action("Hijacked Elements") {
 			@Override
 			public void run() {
 				getCheckoutsView().setHideHijackedElements(!getCheckoutsView().hideHijackedElements());
 			}
 
 		};
-		hideHijackedElements.setToolTipText("Hide Hijacked elements");
+		hideHijackedElements.setToolTipText("Hide hijacked elements");
 
-		hideNewElements = new Action("new elements") {
+		hideNewElements = new Action("Other View-Private Files/Folders") {
 			@Override
 			public void run() {
 				getCheckoutsView().setHideNewElements(!getCheckoutsView().hideNewElements());
 			}
 
 		};
-		hideNewElements.setToolTipText("Hide new elements");
+		hideNewElements.setToolTipText("Hide other view-private stuff, e.g. new elements");
 	}
 
 	/**
@@ -102,8 +103,8 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 	public void updateActionBars() {
 		super.updateActionBars();
 
-		hideCheckouts.setChecked(getCheckoutsView().hideCheckouts());
-		hideHijackedElements.setChecked(getCheckoutsView().hideHijackedElements());
-		hideNewElements.setChecked(getCheckoutsView().hideNewElements());
+		hideCheckouts.setChecked(!getCheckoutsView().hideCheckouts());
+		hideHijackedElements.setChecked(!getCheckoutsView().hideHijackedElements());
+		hideNewElements.setChecked(!getCheckoutsView().hideNewElements());
 	}
 }

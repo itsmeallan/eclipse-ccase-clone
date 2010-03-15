@@ -29,7 +29,7 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
 				return false;
 			if (!provider.isSnapShot(resource))
 				return false;

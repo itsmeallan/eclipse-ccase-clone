@@ -23,7 +23,7 @@ public class FindCheckOutsAction extends ClearCaseWorkspaceAction {
 			for (int i = 0; (i < resources.length) && (bRes); i++) {
 				IResource resource = resources[i];
 				ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-				if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
+				if (provider == null) {
 					bRes = false;
 				}
 			}

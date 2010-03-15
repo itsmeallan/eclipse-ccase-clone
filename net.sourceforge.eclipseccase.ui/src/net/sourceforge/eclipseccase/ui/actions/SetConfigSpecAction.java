@@ -31,7 +31,7 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 
 		if (resource != null) {
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource)) {
+			if (provider == null) {
 				bRes = false;
 			}
 		} else {

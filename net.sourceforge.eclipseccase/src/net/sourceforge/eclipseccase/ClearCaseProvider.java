@@ -1629,14 +1629,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public boolean isIgnored(IResource resource) {
-		// ignore eclipse linked resource
-		if (resource.isLinked()) {
-			if (ClearCasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES) {
-				ClearCasePlugin.trace(TRACE_ID_IS_IGNORED,
-						"linked resource: " + resource); //$NON-NLS-1$
-			}
-			return true;
-		}
+//		// ignore eclipse linked resource
+//		if (resource.isLinked()) {
+//			if (ClearCasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES) {
+//				ClearCasePlugin.trace(TRACE_ID_IS_IGNORED,
+//						"linked resource: " + resource); //$NON-NLS-1$
+//			}
+//			return true;
+//		}
 
 		// never ignore handled resources
 		if (isClearCaseElement(resource))
