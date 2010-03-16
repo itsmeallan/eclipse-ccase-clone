@@ -147,8 +147,9 @@
                class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
                icon="icons/full/find.png"
                id="net.sourceforge.eclipseccase.popups.findcheckouts"
-               label="Find Private Files"
-               menubarPath="team.main/group2">
+               label="List CheckedOut, Hijacked and Private Files"
+               menubarPath="team.main/group2"
+               tooltip="List CheckedOut, Hijacked and other View-Private Files">
          </action>
          <action
                class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
@@ -384,10 +385,10 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
                icon="icons/full/find.png"
                id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-               label="&amp;Find Private Files"
+               label="List CheckedOut, Hijacked and Private Files"
                menubarPath="eclipseccase_menu/group2"
                toolbarPath="Normal/additions"
-               tooltip="Find Private Files">
+               tooltip="List CheckedOut, Hijacked and other View-Private Files">
             <enablement>
                <and>
                   <pluginState

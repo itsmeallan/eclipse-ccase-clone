@@ -12,6 +12,12 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.ui.actions.OpenFileAction;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.ui.actions.OpenResourceAction;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
@@ -498,4 +504,22 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 	protected IWorkbenchSiteProgressService getProgressService() {
 		return (IWorkbenchSiteProgressService) getSite().getAdapter(IWorkbenchSiteProgressService.class);
 	}
+
+	protected void handleDoubleClick(DoubleClickEvent event) {
+        IStructuredSelection selection = (IStructuredSelection) event
+                .getSelection();
+        Object element = selection.getFirstElement();
+
+        TreeViewer viewer = getTreeViewer();
+        if (viewer.isExpandable(element)) {
+            viewer.setExpandedState(element, !viewer.getExpandedState(element));
+		} else if (selection.size() == 1 && (element instanceof IResource)) {
+//			OpenFileAction ofa = new OpenFileAction(getSite().getPage());
+//			ofa.selectionChanged((IStructuredSelection) viewer.getSelection());
+//			if (ofa.isEnabled()) {
+//				ofa.run();
+//			}
+		}
+
+    }
 }

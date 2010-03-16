@@ -4,6 +4,8 @@
 
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.ui.actions.OpenFileAction;
+
 import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -54,7 +56,9 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 		refreshAction.setDisabledImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_REFRESH_DISABLED));
 		refreshAction.setHoverImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_REFRESH));
 
-		showInNavigatorAction = new ShowInNavigatorAction(getClearCaseView().getSite().getPage(), getClearCaseView().getViewer());
+		// showInNavigatorAction = new
+		// ShowInNavigatorAction(getClearCaseView().getSite().getPage(),
+		// getClearCaseView().getViewer());
 	}
 
 	/*
@@ -67,8 +71,8 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		IMenuManager menu = actionBars.getMenuManager();
-		menu.add(showInNavigatorAction);
-		menu.add(new Separator());
+		// menu.add(showInNavigatorAction);
+		// menu.add(new Separator());
 
 		super.fillActionBars(actionBars);
 
@@ -88,8 +92,8 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 	 */
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
-		menu.add(showInNavigatorAction);
-		menu.add(new Separator());
+		// menu.add(showInNavigatorAction);
+		// menu.add(new Separator());
 
 		super.fillContextMenu(menu);
 	}
@@ -103,8 +107,16 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 	 */
 	@Override
 	public void runDefaultAction(IStructuredSelection selection) {
-		showInNavigatorAction.selectionChanged(selection);
-		showInNavigatorAction.run();
+		// double click should open file in editor, not in navigator
+		// see bug 2964016: Not possible to open file from 'view private files'
+
+		// showInNavigatorAction.selectionChanged(selection);
+		// showInNavigatorAction.run();
+		OpenFileAction ofa = new OpenFileAction(getClearCaseView().getSite().getPage());
+		ofa.selectionChanged(selection);
+		if (ofa.isEnabled()) {
+			ofa.run();
+		}
 	}
 
 	/**
@@ -123,7 +135,8 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 	public void updateActionBars() {
 		super.updateActionBars();
 
-		IStructuredSelection selection = (IStructuredSelection) getContext().getSelection();
-		showInNavigatorAction.selectionChanged(selection);
+		// IStructuredSelection selection = (IStructuredSelection)
+		// getContext().getSelection();
+		// showInNavigatorAction.selectionChanged(selection);
 	}
 }
