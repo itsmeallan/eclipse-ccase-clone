@@ -198,7 +198,7 @@ abstract public class ClearCaseAction extends TeamAction implements IWorkbenchWi
 	 * 
 	 * @return true if successful.
 	 */
-	private boolean saveModifiedResources(final IFile[] dirtyFiles) {
+	protected boolean saveModifiedResources(final IFile[] dirtyFiles) {
 		// Get display for further UI operations
 		Display display = getShell().getDisplay();
 		if (display == null || display.isDisposed())

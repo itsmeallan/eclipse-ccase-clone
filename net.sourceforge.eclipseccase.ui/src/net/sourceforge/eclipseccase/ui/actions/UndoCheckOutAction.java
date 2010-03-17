@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.core.resources.IFile;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
@@ -56,12 +58,19 @@ public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 
 						/* Yes=0 No=1 Cancel=2 */
 						if (question.getReturncode() == 0) {
+							// save file first, so that the revert automatically
+							// replaces the editor contents.
+							IFile[] unsavedFiles = getUnsavedFiles();
+							if (unsavedFiles.length > 0) {
+								saveModifiedResources(unsavedFiles);
+							}
+
 							// Sort resources with directories last so that the
 							// modification of a
 							// directory doesn't abort the modification of files
 							// within
 							// it.
-							List resList = Arrays.asList(resources);
+							List<IResource> resList = Arrays.asList(resources);
 							Collections.sort(resList, new DirectoryLastComparator());
 
 							Vector<IResource> parents = new Vector<IResource>();
