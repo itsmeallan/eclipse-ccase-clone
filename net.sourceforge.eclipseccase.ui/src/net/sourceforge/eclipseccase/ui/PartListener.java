@@ -69,7 +69,7 @@ class PartListener implements IPartListener2, IWindowListener {
 	 * IWorkbenchPartReference)
 	 */
 	public void partActivated(IWorkbenchPartReference ref) {
-		// TODO should we refresh here?
+		// TODO: refresh necessary? what for?
 		refreshResource(ref.getPart(false));
 	}
 
@@ -80,8 +80,7 @@ class PartListener implements IPartListener2, IWindowListener {
 	 * IWorkbenchPartReference)
 	 */
 	public void partBroughtToTop(IWorkbenchPartReference ref) {
-		// TODO should we refresh here?
-		refreshResource(ref.getPart(false));
+		// nothing
 	}
 
 	/*
@@ -111,7 +110,7 @@ class PartListener implements IPartListener2, IWindowListener {
 	 * IWorkbenchPartReference)
 	 */
 	public void partOpened(IWorkbenchPartReference ref) {
-		refreshResource(ref.getPart(false));
+		// nothing
 	}
 
 	/*
@@ -131,8 +130,7 @@ class PartListener implements IPartListener2, IWindowListener {
 	 * IWorkbenchPartReference)
 	 */
 	public void partVisible(IWorkbenchPartReference ref) {
-		// TODO should we refresh here?
-		refreshResource(ref.getPart(false));
+		// nothing
 	}
 
 	/*
