@@ -757,7 +757,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="ClearCase Private Files"
+            name="ViewPrivate"
             icon="icons/full/clearcase.png"
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.CheckoutsView"
@@ -768,14 +768,14 @@
             class="net.sourceforge.eclipseccase.views.ConfigSpecView"
             icon="icons/full/clearcase.png"
             id="net.sourceforge.eclipseccase.views.ConfigSpecView"
-            name="ClearCase ConfigSpec">
+            name="ConfigSpec">
       </view>
       <view
             category="org.eclipse.team.ui"
             class="net.sourceforge.eclipseccase.views.HistoryView"
             icon="icons/full/history.png"
             id="net.sourceforge.eclipseccase.views.HistoryView"
-            name="ClearCase History">
+            name="CC History">
       </view>
    </extension>
    <extension
