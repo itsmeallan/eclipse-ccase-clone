@@ -12,12 +12,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.ui.actions.OpenFileAction;
-
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.ui.actions.OpenResourceAction;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +36,8 @@ import org.eclipse.ui.views.navigator.ResourceNavigator;
 public abstract class ClearCaseViewPart extends ResourceNavigator implements IResourceStateListener, IResourceChangeListener {
 
 	private ClearCaseContentProvider contentProvider;
+
+	protected boolean initialized = false;
 
 	/**
 	 * @see org.eclipse.team.internal.ccvs.ui.repo.RemoteViewPart#getContentProvider()
@@ -127,7 +123,8 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 			}
 
 			protected int compareClearCaseTypes(IResource resource1, IResource resource2) {
-				// TODO: optimize this, how can the repeated lookups be eliminated?
+				// TODO: optimize this, how can the repeated lookups be
+				// eliminated?
 				StateCache c1 = StateCacheFactory.getInstance().get(resource1);
 				StateCache c2 = StateCacheFactory.getInstance().get(resource2);
 				// sort checkedout files first
@@ -289,6 +286,15 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 			return;
 		getContentProvider().cancelJobs(getRoot());
 		getViewer().refresh();
+		initialized = true;
+	}
+
+	public void refreshInGuiThread() {
+		getViewer().getControl().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				refresh();
+			}
+		});
 	}
 
 	/**
@@ -375,6 +381,11 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 	 * sourceforge.eclipseccase.StateCache)
 	 */
 	public void resourceStateChanged(final IResource[] resources) {
+		if (!initialized) {
+			refreshInGuiThread();
+			return;
+		}
+
 		for (int i = 0; i < resources.length; i++) {
 			final IResource resource = resources[i];
 
@@ -427,6 +438,10 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 	 * .eclipse.core.resources.IResourceChangeEvent)
 	 */
 	public void resourceChanged(IResourceChangeEvent event) {
+		if (!initialized) {
+			refreshInGuiThread();
+			return;
+		}
 		IResourceDelta rootDelta = event.getDelta();
 		if (null != rootDelta) {
 
@@ -506,20 +521,20 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 	}
 
 	protected void handleDoubleClick(DoubleClickEvent event) {
-        IStructuredSelection selection = (IStructuredSelection) event
-                .getSelection();
-        Object element = selection.getFirstElement();
+		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+		Object element = selection.getFirstElement();
 
-        TreeViewer viewer = getTreeViewer();
-        if (viewer.isExpandable(element)) {
-            viewer.setExpandedState(element, !viewer.getExpandedState(element));
+		TreeViewer viewer = getTreeViewer();
+		if (viewer.isExpandable(element)) {
+			viewer.setExpandedState(element, !viewer.getExpandedState(element));
 		} else if (selection.size() == 1 && (element instanceof IResource)) {
-//			OpenFileAction ofa = new OpenFileAction(getSite().getPage());
-//			ofa.selectionChanged((IStructuredSelection) viewer.getSelection());
-//			if (ofa.isEnabled()) {
-//				ofa.run();
-//			}
+			// OpenFileAction ofa = new OpenFileAction(getSite().getPage());
+			// ofa.selectionChanged((IStructuredSelection)
+			// viewer.getSelection());
+			// if (ofa.isEnabled()) {
+			// ofa.run();
+			// }
 		}
 
-    }
+	}
 }
