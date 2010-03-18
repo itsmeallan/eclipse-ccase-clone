@@ -221,7 +221,7 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 
 			// filter out ignored resources
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-			if (null == provider || provider.isIgnored(resource))
+			if (null == provider)
 				return;
 
 			// determine children
@@ -230,7 +230,7 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 			monitor.beginTask("processing", (children.length + 1) * 1000);
 
 			// determine state
-			if (shouldAdd(resource)) {
+			if (!provider.isUnknownState(resource) && shouldAdd(resource)) {
 				collector.add(resource, new SubProgressMonitor(monitor, 1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
 			}
 
