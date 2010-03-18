@@ -248,6 +248,9 @@ public class ClearCaseUI extends AbstractUIPlugin {
 		createImageDescriptor(reg, ClearCaseImages.IMG_REFRESH);
 		createImageDescriptor(reg, ClearCaseImages.IMG_REFRESH_DISABLED);
 		createImageDescriptor(reg, ClearCaseImages.IMG_ELEMENT_BG);
+		createImageDescriptor(reg, ClearCaseImages.IMG_ELEM_CO);
+		createImageDescriptor(reg, ClearCaseImages.IMG_ELEM_HJ);
+		createImageDescriptor(reg, ClearCaseImages.IMG_ELEM_UNK);
 	}
 
 	private static void createImageDescriptor(ImageRegistry reg, String id) {

@@ -21,7 +21,7 @@ public class ClearCaseImages {
 	public static final String IMG_UNKNOWN_OVR = "unknown_ovr.gif"; //$NON-NLS-1$
 
 	public static final String IMG_DERIVEDOBJECT_OVR = "derivedobj_ovr.gif"; //$NON-NLS-1$
-	
+
 	public static final String IMG_QUESTIONABLE_OVR = "question_ovr.gif"; //$NON-NLS-1$
 
 	public static final String IMG_CHECKEDOUT_OVR = "checkedout_ovr.gif"; //$NON-NLS-1$
@@ -29,6 +29,12 @@ public class ClearCaseImages {
 	public static final String IMG_DYNAMIC_OVR = "proj_dynamic_ovr.gif"; //$NON-NLS-1$
 
 	public static final String IMG_SNAPSHOT_OVR = "proj_snapshot_ovr.gif"; //$NON-NLS-1$
+
+	public static final String IMG_ELEM_CO = "elem_co.png"; //$NON-NLS-1$
+
+	public static final String IMG_ELEM_HJ = "elem_hj.png"; //$NON-NLS-1$
+
+	public static final String IMG_ELEM_UNK = "elem_unk.png"; //$NON-NLS-1$
 
 	public static final String IMG_REFRESH = "refresh.gif"; //$NON-NLS-1$
 

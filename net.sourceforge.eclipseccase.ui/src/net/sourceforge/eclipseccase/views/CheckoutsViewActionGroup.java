@@ -4,8 +4,10 @@
  */
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 import org.eclipse.jface.action.*;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchActionConstants;
 
 /**
  * TODO Provide description for CheckoutsViewActionGroup.
@@ -46,6 +48,13 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 		submenu.add(hideNewElements);
 		menu.add(new Separator());
 
+		IToolBarManager toolBar = actionBars.getToolBarManager();
+		toolBar.add(new Separator());
+		toolBar.add(hideCheckouts);
+		toolBar.add(hideHijackedElements);
+		toolBar.add(hideNewElements);
+		toolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
 		super.fillActionBars(actionBars);
 	}
 
@@ -64,10 +73,10 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 			public void run() {
 				getCheckoutsView().setHideCheckouts(!getCheckoutsView().hideCheckouts());
 			}
-
 		};
-		hideCheckouts.setToolTipText("Hide checked-out elements");
-		
+		hideCheckouts.setToolTipText("Show Checked-Out Elements");
+		hideCheckouts.setImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_ELEM_CO));
+
 		hideHijackedElements = new Action("Hijacked Elements") {
 			@Override
 			public void run() {
@@ -75,7 +84,8 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 			}
 
 		};
-		hideHijackedElements.setToolTipText("Hide hijacked elements");
+		hideHijackedElements.setToolTipText("Show Hijacked Elements");
+		hideHijackedElements.setImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_ELEM_HJ));
 
 		hideNewElements = new Action("Other View-Private Files/Folders") {
 			@Override
@@ -84,7 +94,8 @@ public class CheckoutsViewActionGroup extends ClearCaseViewActionGroup {
 			}
 
 		};
-		hideNewElements.setToolTipText("Hide other view-private stuff, e.g. new elements");
+		hideNewElements.setImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_ELEM_UNK));
+		hideNewElements.setToolTipText("Show other view-private stuff, e.g. new elements");
 	}
 
 	/**

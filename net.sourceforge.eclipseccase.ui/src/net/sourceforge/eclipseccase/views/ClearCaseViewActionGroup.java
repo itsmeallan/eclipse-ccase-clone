@@ -70,17 +70,17 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 	 */
 	@Override
 	public void fillActionBars(IActionBars actionBars) {
-		IMenuManager menu = actionBars.getMenuManager();
-		// menu.add(showInNavigatorAction);
-		// menu.add(new Separator());
 
-		super.fillActionBars(actionBars);
+		// add only part of super.fillActionBars(actionBars) :
+		workingSetGroup.fillActionBars(actionBars);
+		sortAndFilterGroup.fillActionBars(actionBars);
 
 		actionBars.setGlobalActionHandler(ActionFactory.REFRESH.getId(), refreshAction);
 
 		IToolBarManager toolBar = actionBars.getToolBarManager();
 		toolBar.add(new Separator());
 		toolBar.add(refreshAction);
+		toolBar.add(new Separator());
 	}
 
 	/*
