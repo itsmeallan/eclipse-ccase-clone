@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.core.resources.IResource;
+
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 import java.util.ArrayList;
@@ -79,8 +81,8 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 								if (ClearCasePlugin.isFullRefreshOnAssociate())
 									activeDecorator.refresh(project);
 								else {
-									activeDecorator.refresh(new IResource[] {project});  // refresh first level only
-									activeDecorator.refresh(project.members());  // refresh first level only
+									activeDecorator.refresh(new IResource[] {project});  // refresh first level
+									activeDecorator.refresh(activeDecorator.getShownResources(project));
 								}
 							}
 						}

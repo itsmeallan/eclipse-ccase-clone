@@ -12,6 +12,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
+import java.util.HashSet;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 
@@ -34,6 +36,8 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 
 	/** trace if */
 	private static final String DECORATOR = "ClearCaseDecorator"; //$NON-NLS-1$
+
+	private Set<IResource> shownResources = new HashSet<IResource>();
 
 	/*
 	 * Define a cached image descriptor which only creates the image data once
@@ -460,6 +464,13 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		if (ClearCaseUI.DEBUG_DECORATION) {
 			ClearCaseUI.trace(DECORATOR, "decorating " + resource.getFullPath().toString()); //$NON-NLS-1$
 		}
+		synchronized (shownResources) {
+			// remember that we have seen this resource. Doesn't matter if we
+			// handle it or not (that is, whether it is already in a CC
+			// project). This list is used later during the Associate or
+			// Dissociate actions.
+			shownResources.add(resource);
+		}
 
 		// get our provider
 		ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
@@ -487,7 +498,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 			if (ClearCaseUI.DEBUG_DECORATION) {
 				ClearCaseUI.trace(DECORATOR, " scheduled refresh for " + resource.getFullPath().toString()); //$NON-NLS-1$
 			}
-			
+
 			// unknown state
 			decorateUnknown(decoration);
 
@@ -764,4 +775,24 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		}
 	}
 
+	/**
+	 * Return a list of all resources from a given project that were shown in
+	 * one of the navigators before and requested decoration. That list can be
+	 * used to refresh the decorators.
+	 * 
+	 * @param project
+	 *            which project to search
+	 * @return array of all resources that requested decoration
+	 */
+	public IResource[] getShownResources(IProject project) {
+		Vector<IResource> result = new Vector<IResource>();
+		synchronized (shownResources) {
+			for (IResource resource : shownResources) {
+				if (resource.getProject().equals(project)) {
+					result.add(resource);
+				}
+			}
+		}
+		return result.toArray(new IResource[result.size()]);
+	}
 }

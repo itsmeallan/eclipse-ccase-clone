@@ -60,10 +60,10 @@ public class DissociateProjectAction extends ClearCaseWorkspaceAction {
 						if (manager.getEnabled(ClearCaseDecorator.ID)) {
 							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
-								activeDecorator.refresh(project);
-								// if
-								// (ClearCasePlugin.isFullRefreshOnAssociate())
-								// activeDecorator.refresh(project);
+								if (ClearCasePlugin.isFullRefreshOnAssociate())
+									activeDecorator.refresh(project);
+								else
+									activeDecorator.refresh(activeDecorator.getShownResources(project));
 							}
 						}
 						monitor.worked(5);
