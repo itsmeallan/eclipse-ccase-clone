@@ -110,8 +110,10 @@ public class StateCache implements Serializable {
 				synchronized (this) {
 					updateTimeStamp = IResource.NULL_STAMP;
 				}
-				ClearCasePlugin.trace(TRACE_ID,
-						"invalidating " + this.getPath()); //$NON-NLS-1$
+				if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+					ClearCasePlugin.trace(TRACE_ID,
+							"invalidating " + this.getPath()); //$NON-NLS-1$
+				}
 				// fireing state change (the update was forced)
 				// StateCacheFactory.getInstance().fireStateChanged(this.resource);
 			}
