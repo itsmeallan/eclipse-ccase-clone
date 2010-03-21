@@ -355,19 +355,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
-	/**
-	 * For updating a snapshot view.
-	 * 
-	 * @param element
-	 *            one single element or a working directory.
-	 * @param flags
-	 *            options used by cleartool update.
-	 * @param isWorkingDir
-	 *            updates the working dir if true else element.
-	 */
-	public void updateSnapShotView(String element, int flags,
-			boolean isWorkingDir) {
-		ClearCasePlugin.getEngine().update(element, flags, isWorkingDir);
+	public void update(String element, int flags, boolean workingDir) {
+		ClearCasePlugin.getEngine().update(element, flags, workingDir);
 	}
 
 	public void compareWithPredecessor(String element) {
@@ -1427,20 +1416,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 													.getFullPath().toString() }),
 							null);
 				IStatus result = OK_STATUS;
-				// String filename = resource.getLocation().toOSString();
-				// ClearCaseInterface.Status status =
-				// ClearCasePlugin.getEngine()
-				// .cleartool(
-				// "update -log NUL -force -ptime "
-				// + ClearCaseUtil.quote(filename));
+				String element = resource.getLocation().toOSString();
+				ClearCasePlugin.getEngine().update(element, 0, false);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_INFINITE,
 						new SubProgressMonitor(monitor, 10));
-				// if (!status.status) {
-				// result = new Status(IStatus.ERROR, ID,
-				// TeamException.UNABLE, "Update failed: "
-				// + status.message, null);
-				// }
 				return result;
 			} finally {
 				monitor.done();
