@@ -84,7 +84,7 @@
                class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
                icon="icons/full/update.png"
                id="net.sourceforge.eclipseccase.popups.update"
-               label="Update File"
+               label="Update"
                menubarPath="team.main/group1">
          </action>
          <action
@@ -140,7 +140,7 @@
                class="net.sourceforge.eclipseccase.ui.actions.ExternalUpdateAction"
                icon="icons/full/database_refresh.png"
                id="net.sourceforge.eclipseccase.popups.externalupdate"
-               label="Update Work Area"
+               label="Update (external tool)"
                menubarPath="team.main/group2">
          </action>
          <action
@@ -315,7 +315,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.update"
                icon="icons/full/update.png"
                id="net.sourceforge.eclipseccase.ui.actionset.update"
-               label="Upda&amp;te File"
+               label="Upda&amp;te"
                menubarPath="eclipseccase_menu/group1">
             <enablement>
                <pluginState
@@ -371,7 +371,7 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
                icon="icons/full/database_refresh.png"
                id="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
-               label="Update &amp;Work Area"
+               label="Update &amp;(external tool)"
                menubarPath="eclipseccase_menu/group2">
             <enablement>
                <pluginState
@@ -388,7 +388,7 @@
                label="List CheckedOut, Hijacked and Private Files"
                menubarPath="eclipseccase_menu/group2"
                toolbarPath="Normal/additions"
-               tooltip="List CheckedOut, Hijacked and other View-Private Files">
+               tooltip="Find Private Files">
             <enablement>
                <and>
                   <pluginState
@@ -637,7 +637,7 @@
       </command>
       <command
             name="Update"
-            description="Updates the seletced resources (Static view only)"
+            description="Updates the seletced resources (snapshot view only)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.update">
       </command>
@@ -666,7 +666,7 @@
             id="net.sourceforge.eclipseccase.ui.actionset.describeversion">
       </command>
       <command
-            name="Update (External)"
+            name="Update (external tool)"
             description="Updates the selected resources (external tool)"
             categoryId="net.sourceforge.eclipseccase.category"
             id="net.sourceforge.eclipseccase.ui.actionset.externalupdate">

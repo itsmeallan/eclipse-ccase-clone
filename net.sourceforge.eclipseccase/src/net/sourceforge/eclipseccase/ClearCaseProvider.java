@@ -1228,7 +1228,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (ClearCasePlugin.isCheckoutLatest()
 						&& targetElement.isSnapShot()) {
 					monitor.subTask("Updating " + targetElement.getPath());
-					updateSnapShotView(resource.getFullPath().toOSString(), 0,
+					update(resource.getFullPath().toOSString(), 0,
 							false);
 
 				}
@@ -1377,7 +1377,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePlugin.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
-						updateSnapShotView(resource.getFullPath().toOSString(),
+						update(resource.getFullPath().toOSString(),
 								0, false);
 
 					}
