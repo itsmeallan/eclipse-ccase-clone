@@ -29,7 +29,7 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
+0			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource))
 				return false;
 			if (!provider.isSnapShot(resource))
 				return false;
@@ -45,22 +45,29 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 
 			public void run(IProgressMonitor monitor) throws CoreException {
 
-				IResource[] resources = getSelectedResources();
 				try {
-					if (resources != null && resources.length != 0) {
-						IResource resource = resources[0];
-						String element = null;
-						if (resource.getType() == IResource.FOLDER) {
-							element = resource.getLocation().toOSString();
-						} else if (resource.getType() == IResource.PROJECT) {
-							// Project folder.
-							element = resource.getLocation().toOSString();
 
-						} else {
-							element = resource.getParent().getLocation().toOSString();
+					IResource[] resources = getSelectedResources();
+					if (resources != null && resources.length != 0) {
+						for (int i = 0; i < resources.length; i++) {
+
+							IResource resource = resources[i];
+							String element = null;
+
+							if (resource.getType() == IResource.FOLDER) {
+								element = resource.getLocation().toOSString();
+							} else if (resource.getType() == IResource.PROJECT) {
+								// Project folder.
+								element = resource.getLocation().toOSString();
+
+							} else {
+								// Folder to file.
+								element = resource.getParent().getLocation().toOSString();
+							}
+							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+							p.update(element, ClearCase.GRAPHICAL, true);
+
 						}
-						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						p.updateSnapShotView(element, ClearCase.GRAPHICAL, true);
 					}
 				} finally {
 					monitor.done();
