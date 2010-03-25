@@ -1,6 +1,64 @@
-Change Log
-==========
+===============================================================================
+=                                 Change Log                                 =
+===============================================================================
 
+2.2.2
+=====
+
+New Features:
+2972459: ViewPrivate view: Major improvements (Toolbar buttons for show groups, cleaned up toolbar and menu, sorting...)
+2966923: Sort 'CC Private Files' view by CC type
+2957206: Access to "cleartool describe" for files
+2856831: Clearcase Toolbar Buttons (was already introduced with 2.2.0)
+0726945: Auto CheckIn files after adding to CC
+ 
+Fixed Bugs:
+2964016: Not possible to open file from 'view private files' view
+2966919: 'CC Private Files' view does not show all files
+2972455: ViewPrivate view not correctly initialized
+2972630: ViewPrivate view causes full refresh
+2968582: Auto checkout doesn't prompt for a comment
+2963193: Update Work Area fails
+2966428: Version tree runs as a "blocking" task
+2961794: Icons refresh problem.
+2218689: Refresh state not working
+2220668: Preference "Automatically checkin after add" ignored
+2001526: Element state does not change when changed
+1642486: Linked Folder's are not treated the same a regular folders
+2523820: Plugin is inactive for eclipse links
+2954429: Inconsistent usage of CC command console
+2957141: Launching graphical CC tools blocks Eclipse
+2968584: Uncheckout of an unsaved file doesn't revert the file
+2968756: checkout of symlink fails to update icon
+2968691: Refresh hangs when switching project
+2971849: CC views hard to distinguish
+2976334: Associate Project: Not all icons are updated
+ 
+Additional info:
+We started to document the plugin in a Wiki. Please help in documentation (ask in the help forum for write permission)
+Wiki: http://sourceforge.net/apps/mediawiki/eclipse-ccase/index.php?title=Main_Page
+Forum: http://sourceforge.net/projects/eclipse-ccase/forums/forum/167189
+
+
+2.2.1.v201003041230
+===================
+
+Bugs fixed:
+2962675 Installation problem.
+2960204 NPE with 2.2.0
+2959547 MultiVOB Project Structure not recognized
+2959023 Comments not quoted when checking-in file
+2961793 First association does not work.
+2957205 Label decorator "Edited by someone else" does not work (not functional, removed from GUI)
+2956491 Activate Plug-in not necessary (removed from menu)
+2812710 An internal error occurred during: "Refreshing ClearCase Res
+2950481 Decorate Folders dirty (not usable, removed the pref page)   (we forgot that for 2.2.0, although it was already closed in the tracker)
+2954428 use isSingleProcess instead of isCleartool
+
+Other:
+- Clean up of preference pages (spelling, layout)
+- Enhance release process step 1.
+- Clean up code and adaptation to java 1.5
 
 2.2.0.v201002231900
 -------------------
