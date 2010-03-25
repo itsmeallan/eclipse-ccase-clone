@@ -144,14 +144,6 @@
                menubarPath="team.main/group2">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.FindCheckOutsAction"
-               icon="icons/full/find.png"
-               id="net.sourceforge.eclipseccase.popups.findcheckouts"
-               label="List CheckedOut, Hijacked and Private Files"
-               menubarPath="team.main/group2"
-               tooltip="List CheckedOut, Hijacked and other View-Private Files">
-         </action>
-         <action
                class="net.sourceforge.eclipseccase.ui.actions.CompareWithPredecessorAction"
                icon="icons/full/diff.png"
                id="net.sourceforge.eclipseccase.popups.comparepredecessor2"
@@ -159,18 +151,10 @@
                menubarPath="compareWithMenu/compareWithGroup">
          </action>
          <action
-               class="net.sourceforge.eclipseccase.ui.actions.CancelPendingRefreshesAction"
-               definitionId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
-               icon="icons/full/cancel.png"
-               id="net.sourceforge.eclipseccase.popups.cancelRefreshes"
-               label="Cancel Pending Refreshes"
-               menubarPath="team.main/group3">
-         </action>
-         <action
                class="net.sourceforge.eclipseccase.ui.actions.GetConfigSpecAction"
                icon="icons/full/get.png"
                id="net.sourceforge.eclipseccase.popups.getConfigSpec"
-               label="Get &amp;Config Spec"
+               label="Get/Edit &amp;Config Spec"
                menubarPath="team.main/group2">
          </action>
          <action
@@ -385,10 +369,10 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
                icon="icons/full/find.png"
                id="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
-               label="List CheckedOut, Hijacked and Private Files"
+               label="Show CheckedOut, Hijacked and View-Private Files"
                menubarPath="eclipseccase_menu/group2"
                toolbarPath="Normal/additions"
-               tooltip="Find Private Files">
+               tooltip="Open a View to show all CheckedOut, Hijacked and View-Private Files">
             <enablement>
                <and>
                   <pluginState
@@ -417,10 +401,10 @@
                definitionId="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
                icon="icons/full/get.png"
                id="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
-               label="Get &amp;Config Spec"
+               label="Get/Edit &amp;Config Spec"
                menubarPath="eclipseccase_menu/group2"
                toolbarPath="Normal/additions"
-               tooltip="Get Config Spec">
+               tooltip="Get/Edit Config Spec">
             <enablement>
                <pluginState
                      id="net.sourceforge.eclipseccase"
@@ -697,9 +681,9 @@
       </command>
       <command
             categoryId="net.sourceforge.eclipseccase.category"
-            description="Get Config Spec"
+            description="Get/Edit Config Spec"
             id="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
-            name="Get &amp;Config Spec">
+            name="Get/Edit &amp;Config Spec">
       </command>
       <command
             categoryId="net.sourceforge.eclipseccase.category"
