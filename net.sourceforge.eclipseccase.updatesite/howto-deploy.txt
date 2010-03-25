@@ -28,14 +28,14 @@ Prerequesites
    Same releasenotes.txt in eclipseccase.feature-project.   
 
 
-5. update version numbers in site.xml ( Use Feature editor).
+5. 
     
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
 
-Select feature.xml (Overview) under 'Exporting' --> 'Synchronize' --> 
+   Select feature.xml (Overview) under 'Exporting' --> 'Synchronize' --> Copy versions from ...
 
-Select feature.xml (Overview) under 'Exporting' --> 'Export Wizard'
+   Select feature.xml (Overview) under 'Exporting' --> 'Export Wizard'
 
    "net.sourceforge.eclipseccase.updatesite/full/${feature_id}_${feature_version}.zip"
    (either via File->Export...->Deployable Feature or via feature.xml->Export...)
@@ -44,11 +44,19 @@ Select feature.xml (Overview) under 'Exporting' --> 'Export Wizard'
    "net.sourceforge.eclipseccase.updatesite/full/net.sourceforge.eclipseccase_2.2.0.v201002231900.zip
    
    
- Select feature.xml (Overview) under Publishing cannot be used.  
  
+  - update version numbers in site.xml ( Use Feature editor).
  
  Build update site
- =================  
+ =================
+ Note:
+  Before creating and building an update site project, create a backup of your build.xml file.
+  The update-site project build option will erase every build.xml it finds in the features and 
+  plugins required by the site which leads to lost work.
+  
+  Use build.xml for this.
+  http://svn.apache.org/viewvc/incubator/uima/uimaj/trunk/uimaj-eclipse-update-site/
+   
 //FIXME: This has to be updated:
 http://www.vogella.de/articles/EclipseP2Update/article.html#introduction   
    
@@ -105,4 +113,4 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
     ECLIPSE-CCASE_2_1_4_RELEASE(net.sourceforge.eclipseccase,net.sourceforge.eclipseccase.ui,
     net.sourceforge.eclipseccase.updatesite,net.sourceforge.eclipseccase.feature).
 
-    
+   

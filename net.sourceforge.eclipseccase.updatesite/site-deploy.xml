@@ -36,12 +36,13 @@
 		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
 		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
 		<property name="filemanagement.deploy.host" value="frs.sourceforge.net" />
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
+		
 
 		<!-- Update site params -->
 		<property name="staging.dir" value="${basedir}" />
 		<property name="features.dir" value="${staging.dir}/features" />
 		<property name="plugins.dir" value="${staging.dir}/plugins" />
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
 
 		<property name="site.deploy.host" value="web.sourceforge.net" />
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update" />

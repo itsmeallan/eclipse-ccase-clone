@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipseccase"
       label="%featureName"
-      version="2.2.1.vqualifier"
+      version="2.2.2.vqualifier"
       provider-name="%providerName"
       image="eclipse-ccase.jpg">
 
