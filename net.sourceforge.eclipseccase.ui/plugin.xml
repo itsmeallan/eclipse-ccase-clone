@@ -776,7 +776,7 @@
          point="org.eclipse.team.core.projectSets">
       <projectSets
             class="net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer"
-            id="net.sourceforge.eclipseccase.ClearCaseProvider">
+            id="net.sourceforge.eclipseccase.ClearcaseProvider">
       </projectSets>
    </extension>
    <extension
@@ -931,7 +931,7 @@
          point="org.eclipse.team.ui.teamDecorators">
       <teamDecorator
             decoratorId="net.sourceforge.eclipseccase.ui.decorator"
-            repositoryId="net.sourceforge.eclipseccase.ClearCaseProvider"/>
+            repositoryId="net.sourceforge.eclipseccase.ClearcaseProvider"/>
    </extension>
 
 </plugin>
