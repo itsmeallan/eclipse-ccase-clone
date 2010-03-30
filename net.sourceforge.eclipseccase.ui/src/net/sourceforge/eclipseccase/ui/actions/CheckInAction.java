@@ -78,14 +78,13 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 						}
 					} finally {
 						monitor.done();
+						updateActionEnablement();
 					}
 				}
 			};
 
 			executeInBackground(runnable, "Checking in ClearCase resources");
 		}
-
-		updateActionEnablement();
 	}
 
 	@Override

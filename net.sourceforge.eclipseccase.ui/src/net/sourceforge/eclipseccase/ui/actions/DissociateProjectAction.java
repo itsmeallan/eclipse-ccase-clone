@@ -71,6 +71,7 @@ public class DissociateProjectAction extends ClearCaseWorkspaceAction {
 					message.append(" from ClearCase");
 				} finally {
 					StateCacheFactory.getInstance().operationEnd();
+					updateActionEnablement();
 					monitor.done();
 				}
 			}

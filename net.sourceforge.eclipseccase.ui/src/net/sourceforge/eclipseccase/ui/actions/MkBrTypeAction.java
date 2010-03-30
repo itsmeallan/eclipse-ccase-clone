@@ -54,7 +54,7 @@ public class MkBrTypeAction extends ClearCaseWorkspaceAction {
 		InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), "Create a branch", "Branch name:", "", null);
 		if (dlg.open() == Window.OK) {
 			// User clicked OK; update the label with the input
-			System.out.println(dlg.getValue());
+			// System.out.println(dlg.getValue());
 			branchName = dlg.getValue();
 		} else
 			return;

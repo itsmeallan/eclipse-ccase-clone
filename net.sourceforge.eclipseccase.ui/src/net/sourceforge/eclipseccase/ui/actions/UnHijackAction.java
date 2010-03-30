@@ -75,6 +75,7 @@ public class UnHijackAction extends ClearCaseWorkspaceAction {
 						}
 					}
 				} finally {
+					updateActionEnablement();
 					monitor.done();
 				}
 			}

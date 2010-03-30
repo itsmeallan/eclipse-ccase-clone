@@ -97,6 +97,7 @@ public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 					}
 				} finally {
 					monitor.done();
+					updateActionEnablement();
 				}
 			}
 		};

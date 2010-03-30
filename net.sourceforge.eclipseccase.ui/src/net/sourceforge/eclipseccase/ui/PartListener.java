@@ -70,7 +70,10 @@ class PartListener implements IPartListener2, IWindowListener {
 	 */
 	public void partActivated(IWorkbenchPartReference ref) {
 		// TODO: refresh necessary? what for?
-		refreshResource(ref.getPart(false));
+		// if this gets enabled, the Action enablement mechanism does not
+		// work any more, because at the time the isEnabled() gets called
+		// the element state is not yet known.
+		// refreshResource(ref.getPart(false));
 	}
 
 	/*

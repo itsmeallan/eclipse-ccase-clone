@@ -122,7 +122,7 @@ public class HistoryView extends ViewPart {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out.println("select default");
+				// System.out.println("select default");
 			}
 		});
 

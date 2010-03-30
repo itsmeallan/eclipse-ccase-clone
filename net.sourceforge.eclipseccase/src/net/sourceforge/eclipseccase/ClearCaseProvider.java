@@ -818,6 +818,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				monitor.worked(40);
 				updateState(parent, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
+				updateState(resource, IResource.DEPTH_ZERO,
+						new SubProgressMonitor(monitor, 10));
 				return result;
 			} finally {
 				monitor.done();
@@ -848,14 +850,20 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 
 		if (result.isOK()) {
-			state = ClearCasePlugin.getEngine().setGroup(
-					resource.getLocation().toOSString(),
-					ClearCasePlugin.getClearCasePrimaryGroup(), opListener);
+			String group = ClearCasePlugin.getClearCasePrimaryGroup().trim();
+			if (group.length() > 0) {
+				try {
+					state = ClearCasePlugin.getEngine().setGroup(
+							resource.getLocation().toOSString(), group,
+							opListener);
+				} catch (Exception e) {
+					result = new Status(IStatus.ERROR, ID,
+							TeamException.UNABLE, "Chgrp failed: "
+									+ "Could not change group element"
+									+ resource.getName() + "\n"
+									+ e.getMessage(), null);
+				}
 
-			if (!state.isElement()) {
-				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
-						"Chgrp failed: " + "Could not change group element"
-								+ resource.getName(), null);
 			}
 		}
 
@@ -904,11 +912,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 			}
 
 			if (result.isOK()) {
-				state = ClearCasePlugin.getEngine().setGroup(
-						resource.getLocation().toOSString(),
-						ClearCasePlugin.getClearCasePrimaryGroup(), opListener);
-
-				if (!state.isElement()) {
+				try {
+					state = ClearCasePlugin.getEngine().setGroup(
+							resource.getLocation().toOSString(),
+							ClearCasePlugin.getClearCasePrimaryGroup(),
+							opListener);
+				} catch (Exception e) {
 					result = new Status(IStatus.ERROR, ID,
 							TeamException.UNABLE, "Chgrp failed: "
 									+ "Could not change group element"
@@ -1228,8 +1237,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (ClearCasePlugin.isCheckoutLatest()
 						&& targetElement.isSnapShot()) {
 					monitor.subTask("Updating " + targetElement.getPath());
-					update(resource.getFullPath().toOSString(), 0,
-							false);
+					update(resource.getFullPath().toOSString(), 0, false);
 
 				}
 				monitor.worked(20);
@@ -1316,7 +1324,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				monitor.worked(20);
 
 				// update state of target element first (if symlink)
-				if (! targetElement.equals(cache)) {
+				if (!targetElement.equals(cache)) {
 					targetElement.doUpdate();
 				}
 				// update state
@@ -1377,8 +1385,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePlugin.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
-						update(resource.getFullPath().toOSString(),
-								0, false);
+						update(resource.getFullPath().toOSString(), 0, false);
 
 					}
 				}
@@ -1609,14 +1616,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public boolean isIgnored(IResource resource) {
-//		// ignore eclipse linked resource
-//		if (resource.isLinked()) {
-//			if (ClearCasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES) {
-//				ClearCasePlugin.trace(TRACE_ID_IS_IGNORED,
-//						"linked resource: " + resource); //$NON-NLS-1$
-//			}
-//			return true;
-//		}
+		// // ignore eclipse linked resource
+		// if (resource.isLinked()) {
+		// if (ClearCasePlugin.DEBUG_PROVIDER_IGNORED_RESOURCES) {
+		// ClearCasePlugin.trace(TRACE_ID_IS_IGNORED,
+		//						"linked resource: " + resource); //$NON-NLS-1$
+		// }
+		// return true;
+		// }
 
 		// never ignore handled resources
 		if (isClearCaseElement(resource))

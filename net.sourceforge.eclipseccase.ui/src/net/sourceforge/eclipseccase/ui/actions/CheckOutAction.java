@@ -68,6 +68,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					}
 				} finally {
 					monitor.done();
+					updateActionEnablement();
 				}
 			}
 		};

@@ -53,6 +53,7 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 						provider.add(resources, depth, subMonitor(monitor));
 					}
 				} finally {
+					updateActionEnablement();
 					monitor.done();
 				}
 			}

@@ -4,6 +4,10 @@
 
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearCaseOperation;
@@ -77,6 +81,15 @@ public abstract class ClearCaseWorkspaceAction extends ClearCaseAction {
 			rule = MultiRule.combine(rule, projects[i]);
 		}
 		return rule;
+	}
+
+	public void selectionChanged(IAction action, ISelection selection) {
+		super.selectionChanged(action, selection);
+		if (! (selection instanceof IStructuredSelection)) {
+			if (action != null) {
+				setActionEnablement(action);
+			}
+		}
 	}
 
 }

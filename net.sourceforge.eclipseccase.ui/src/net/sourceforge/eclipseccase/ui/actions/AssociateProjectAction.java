@@ -90,6 +90,7 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 					}
 				} finally {
 					StateCacheFactory.getInstance().operationEnd();
+					updateActionEnablement();
 					monitor.done();
 				}
 			}
