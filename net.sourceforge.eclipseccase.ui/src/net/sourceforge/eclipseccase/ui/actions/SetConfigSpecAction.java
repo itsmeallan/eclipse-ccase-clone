@@ -50,7 +50,8 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 				monitor.done();
 				if (resource != null) {
 					try {
-						File f = new File("/tmp/configSpec" + Integer.toString(this.hashCode()) + ".tmp");
+						String userDir = System.getProperty("user.home");
+						File f = new File(userDir + File.separator + "configSpec" + Integer.toString(this.hashCode()) + ".tmp");
 						if (f.exists()) {
 							f.delete();
 						}
