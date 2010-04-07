@@ -230,7 +230,7 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 			monitor.beginTask("processing", (children.length + 1) * 1000);
 
 			// determine state
-			if (!provider.isUnknownState(resource) && shouldAdd(resource)) {
+			if (shouldAdd(resource)) {
 				collector.add(resource, new SubProgressMonitor(monitor, 1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
 			}
 
@@ -445,7 +445,7 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 		IResourceDelta rootDelta = event.getDelta();
 		if (null != rootDelta) {
 
-			final Set toRemove = new HashSet();
+			final Set<IResource> toRemove = new HashSet<IResource>();
 
 			try {
 				rootDelta.accept(new IResourceDeltaVisitor() {

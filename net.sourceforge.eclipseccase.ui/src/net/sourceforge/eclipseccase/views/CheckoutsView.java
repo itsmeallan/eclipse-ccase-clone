@@ -1,9 +1,11 @@
 package net.sourceforge.eclipseccase.views;
 
 import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.StateCache;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.team.core.Team;
 
 /**
  * The Checkouts view
@@ -34,21 +36,28 @@ public class CheckoutsView extends ClearCaseViewPart {
 		if (null == provider)
 			return false;
 
+		// don't show ignored resources
+		if (Team.isIgnoredHint(resource))
+			return false;
+
 		// don't show resources with unknown state
 		if (provider.isUnknownState(resource))
 			return false;
 
+		// optimize: query the cache only once:
+		StateCache state = provider.getCache(resource);
+		
 		// show checkouts if enabled
-		if (provider.isCheckedOut(resource))
-			return !hideCheckouts();
+		if (!hideCheckouts() && state.isCheckedOut())
+			return true;
 
 		// show Hijacked files if enabled
-		if (provider.isHijacked(resource))
-			return !hideHijackedElements();
+		if (!hideHijackedElements() && state.isHijacked())
+			return true;
 
 		// show new elements if enabled
-		if (!provider.isClearCaseElement(resource))
-			return !hideNewElements();
+		if (!hideNewElements() && !state.isClearCaseElement())
+			return true;
 
 		// hide all other
 		return false;
