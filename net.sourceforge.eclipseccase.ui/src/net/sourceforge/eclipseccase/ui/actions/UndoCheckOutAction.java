@@ -79,9 +79,10 @@ public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 							for (int i = 0; i < resources.length; i++) {
 								IResource resource = resources[i];
 								ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-								provider.setOperationListener(opListener);
-								provider.uncheckout(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
-
+								if (provider != null) {
+									provider.setOperationListener(opListener);
+									provider.uncheckout(new IResource[] { resource }, IResource.DEPTH_ZERO, subMonitor(monitor));
+								}
 								// update parent status only once
 								if (!parents.contains(resource.getParent())) {
 									parents.add(resource.getParent());
@@ -90,8 +91,10 @@ public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 
 							for (IResource resource : parents) {
 								ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-								provider.setOperationListener(opListener);
-								provider.updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(monitor, 10));
+								if (provider != null) {
+									provider.setOperationListener(opListener);
+									provider.updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(monitor, 10));
+								}
 							}
 						}
 					}

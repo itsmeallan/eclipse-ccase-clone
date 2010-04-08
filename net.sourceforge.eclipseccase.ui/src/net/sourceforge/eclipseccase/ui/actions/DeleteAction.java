@@ -26,9 +26,10 @@ public class DeleteAction extends ClearCaseWorkspaceAction {
 					for (int i = 0; i < resources.length; i++) {
 						IResource resource = resources[i];
 						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-
-						provider.setOperationListener(opListener);
-						provider.delete(new IResource[] { resource }, subMonitor(monitor));
+						if (provider != null) {
+							provider.setOperationListener(opListener);
+							provider.delete(new IResource[] { resource }, subMonitor(monitor));
+						}
 					}
 				} finally {
 					monitor.done();

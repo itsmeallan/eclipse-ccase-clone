@@ -44,7 +44,8 @@ public class DescribeVersionAction extends ClearCaseWorkspaceAction {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						p.describeVersionGUI(path);
+						if (p != null)
+							p.describeVersionGUI(path);
 					}
 				} finally {
 					monitor.done();

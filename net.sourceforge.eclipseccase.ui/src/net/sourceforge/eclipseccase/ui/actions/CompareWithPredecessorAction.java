@@ -44,7 +44,9 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						p.compareWithPredecessor(path);
+						if (p != null) {
+							p.compareWithPredecessor(path);
+						}
 					}
 				} finally {
 					monitor.done();

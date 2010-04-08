@@ -57,9 +57,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-							// fix for 1046462
-							// TODO: investigate null here
-							if (null != provider) {
+							if (provider != null) {
 								provider.setComment(comment);
 								provider.setOperationListener(opListener);
 								provider.checkout(new IResource[] { resource }, depth, subMonitor(monitor));

@@ -23,7 +23,9 @@ public class RefreshStateAction extends ClearCaseWorkspaceAction {
 						IResource resource = resources[i];
 						checkCanceled(monitor);
 						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-						provider.refreshRecursive(resource, new SubProgressMonitor(monitor, 1));
+						if (provider != null) {
+							provider.refreshRecursive(resource, new SubProgressMonitor(monitor, 1));
+						}
 					}
 
 				} finally {

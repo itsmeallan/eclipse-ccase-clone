@@ -61,10 +61,12 @@ public class VersionTreeAction extends ClearCaseWorkspaceAction {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						if (p.isHijacked(resource)) {
-							p.showVersionTree(path + "@@/");
-						} else {
-							p.showVersionTree(path);
+						if (p != null) {
+							if (p.isHijacked(resource)) {
+								p.showVersionTree(path + "@@/");
+							} else {
+								p.showVersionTree(path);
+							}
 						}
 					}
 

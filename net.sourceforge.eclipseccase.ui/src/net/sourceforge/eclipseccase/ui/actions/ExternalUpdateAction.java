@@ -65,7 +65,8 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 								element = resource.getParent().getLocation().toOSString();
 							}
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-							p.update(element, ClearCase.GRAPHICAL, true);
+							if (p != null)
+								p.update(element, ClearCase.GRAPHICAL, true);
 
 						}
 					}

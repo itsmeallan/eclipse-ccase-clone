@@ -56,7 +56,8 @@ public class FindMergeAction extends ClearCaseWorkspaceAction {
 							workingDir = new File(resource.getLocation().toOSString()).getParentFile();
 						}
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						p.showFindMerge(workingDir);
+						if (p != null)
+							p.showFindMerge(workingDir);
 					}
 				} finally {
 					monitor.done();

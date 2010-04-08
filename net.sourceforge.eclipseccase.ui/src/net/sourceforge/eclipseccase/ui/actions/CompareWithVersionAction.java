@@ -66,7 +66,8 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 						v2 = v2 + "@@" + versionB;
 					}
 					ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
-					p.compareWithVersion(v1, v2);
+					if (p != null)
+						p.compareWithVersion(v1, v2);
 
 				} catch (Exception ex) {
 

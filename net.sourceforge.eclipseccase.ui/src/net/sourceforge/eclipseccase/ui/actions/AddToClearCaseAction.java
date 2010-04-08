@@ -43,14 +43,16 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Adding...", resources.length);
 					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-					if (ClearCasePlugin.isUseClearDlg()) {
-						monitor.subTask("Executing ClearCase user interface...");
-						ClearDlgHelper.add(resources);
-					} else {
-						ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
-						provider.setComment(comment);
-						provider.setOperationListener(opListener);
-						provider.add(resources, depth, subMonitor(monitor));
+					ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
+					if (provider != null) {
+						if (ClearCasePlugin.isUseClearDlg()) {
+							monitor.subTask("Executing ClearCase user interface...");
+							ClearDlgHelper.add(resources);
+						} else {
+							provider.setComment(comment);
+							provider.setOperationListener(opListener);
+							provider.add(resources, depth, subMonitor(monitor));
+						}
 					}
 				} finally {
 					updateActionEnablement();
