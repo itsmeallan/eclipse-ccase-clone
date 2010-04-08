@@ -767,7 +767,7 @@
       <page
             objectClass="org.eclipse.core.resources.IResource"
             adaptable="true"
-            name="ClearCase Element Properties"
+            name="ClearCase"
             class="net.sourceforge.eclipseccase.ElementPropertyPage"
             id="net.sourceforge.eclipseccase.elementPropertyPage">
       </page>
@@ -787,18 +787,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.associate"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Alt+C Alt+S">
-      </key>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Alt+C Alt+E">
-      </key>
       <key
             commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
             contextId="org.eclipse.ui.contexts.window"
@@ -828,12 +816,6 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Alt+C Alt+T">
-      </key>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.refreshquick"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Alt+C Alt+Q">
       </key>
       <key
             commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
@@ -886,13 +868,7 @@
             commandId="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Alt+C Alt+G">
-      </key>
-      <key
-            commandId="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
-            contextId="org.eclipse.ui.contexts.window"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="Alt+C Alt+B">
+            sequence="Alt+C Alt+S">
       </key>
       <key
             commandId="net.sourceforge.eclipseccase.ui.actionset.findmerge"
@@ -905,6 +881,105 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Alt+C Alt+J">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C U">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkin"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C I">
+      </key>
+      <key
+            platform="gtk"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.refresh"
+            sequence="Alt+C R">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.add"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C A">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.update"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C T">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.checkout"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C O">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.describeversion"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C D">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.versiontree"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C V">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.history"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C H">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.externalupdate"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C X">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findcheckouts"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C F">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.comparepredecessor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C C">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.cancelRefreshes"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C Z">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.getConfigSpec"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C S">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.findmerge"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C M">
+      </key>
+      <key
+            platform="gtk"
+            commandId="net.sourceforge.eclipseccase.ui.actionset.unhijack"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Alt+C J">
       </key>
    </extension>
    <extension

@@ -501,6 +501,11 @@ public class StateCacheFactory implements ISaveParticipant,
 	 * @throws CoreException
 	 */
 	private void readStateCache(File stateFile) throws Exception {
+		if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+			ClearCasePlugin.trace(
+					TRACE_STATECACHEFACTORY,
+					"parsing: " + stateFile.getCanonicalPath()); //$NON-NLS-1$
+		}
 		DefaultHandler stateCacheLoader = new DefaultHandler() {
 
 			/** indicates if parsing is enabled */
@@ -582,6 +587,11 @@ public class StateCacheFactory implements ISaveParticipant,
 		// parse
 		SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 		parser.parse(stateFile, stateCacheLoader);
+		if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+			ClearCasePlugin.trace(
+					TRACE_STATECACHEFACTORY,
+					"done: " + stateFile.getCanonicalPath()); //$NON-NLS-1$
+		}
 	}
 
 	/*

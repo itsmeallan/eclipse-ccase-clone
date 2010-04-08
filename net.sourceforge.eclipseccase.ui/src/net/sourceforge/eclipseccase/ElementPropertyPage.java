@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase;
 
+import org.eclipse.swt.widgets.Text;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -16,11 +18,9 @@ public class ElementPropertyPage extends PropertyPage {
 
 	private Text versionLabelValue;
 
-	private Button checkedOutValue;
+	private Text checkedOutValue;
 
-	private Button hijackedValue;
-
-	private Button dirtyValue;
+	private Text hijackedValue;
 
 	/**
 	 * Constructor for SamplePropertyPage.
@@ -39,6 +39,7 @@ public class ElementPropertyPage extends PropertyPage {
 
 		// Path text field
 		Text pathValueText = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+		pathValueText.setBackground(pathValueText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		pathValueText.setText(((IResource) getElement()).getLocation().toOSString());
 	}
 
@@ -56,31 +57,34 @@ public class ElementPropertyPage extends PropertyPage {
 		StateCache cache = StateCacheFactory.getInstance().get(resource);
 
 		if (cache.isClearCaseElement()) {
-			Label versionLabel = new Label(composite, SWT.NONE);
-			versionLabel.setText("Version:");
-			versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+			if (cache.isDerivedObject()) {
+				Label versionLabel = new Label(composite, SWT.NONE);
+				versionLabel.setText("State:");
+				versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+				versionLabelValue.setBackground(versionLabelValue.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			} else {
+				Label versionLabel = new Label(composite, SWT.NONE);
+				versionLabel.setText("Version:");
+				versionLabelValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+				versionLabelValue.setBackground(versionLabelValue.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-			Label predecessorVersionLabel = new Label(composite, SWT.NONE);
-			predecessorVersionLabel.setText("Predecessor Version:");
-			predecessorVersionValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+				Label predecessorVersionLabel = new Label(composite, SWT.NONE);
+				predecessorVersionLabel.setText("Predecessor Version:");
+				predecessorVersionValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+				predecessorVersionValue.setBackground(versionLabelValue.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-			Label checkedOutLabel = new Label(composite, SWT.NONE);
-			checkedOutLabel.setText("Checked Out:");
-			checkedOutValue = new Button(composite, SWT.CHECK);
-			checkedOutValue.setEnabled(false);
+				Label checkedOutLabel = new Label(composite, SWT.NONE);
+				checkedOutLabel.setText("Checked Out:");
+				checkedOutValue = new Text(composite, SWT.WRAP | SWT.READ_ONLY);
+				checkedOutValue.setBackground(versionLabelValue.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-			if (cache.isSnapShot()) {
-				Label hijackedLabel = new Label(composite, SWT.NONE);
-				hijackedLabel.setText("Hijacked:");
-				hijackedValue = new Button(composite, SWT.CHECK);
-				hijackedValue.setEnabled(false);
-			}
-
-			if (cache.isCheckedOut()) {
-				Label dirtyLabel = new Label(composite, SWT.NONE);
-				dirtyLabel.setText("Contents differ from predecessor:");
-				dirtyValue = new Button(composite, SWT.CHECK);
-				dirtyValue.setEnabled(false);
+				if (cache.isSnapShot()) {
+					Label hijackedLabel = new Label(composite, SWT.NONE);
+					hijackedLabel.setText("Hijacked:");
+					hijackedValue = new Text(composite, SWT.CHECK);
+					hijackedValue.setEnabled(false);
+					hijackedValue.setBackground(versionLabelValue.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				}
 
 			}
 			performRefresh();
@@ -124,17 +128,25 @@ public class ElementPropertyPage extends PropertyPage {
 
 	protected void performRefresh() {
 		StateCache cache = StateCacheFactory.getInstance().get((IResource) getElement());
-		if (versionLabelValue != null) {
-			versionLabelValue.setText(cache.getVersion());
-		}
-		if (predecessorVersionValue != null) {
-			predecessorVersionValue.setText(cache.getPredecessorVersion());
-		}
-		if (checkedOutValue != null) {
-			checkedOutValue.setSelection(cache.isCheckedOut());
-		}
-		if (hijackedValue != null) {
-			hijackedValue.setSelection(cache.isHijacked());
+		if (cache.isDerivedObject()) {
+			versionLabelValue.setText("derived object");
+		} else {
+			if (versionLabelValue != null) {
+				String version = cache.getVersion();
+				if (cache.isCheckedOut())
+					version = version.replaceFirst("/[0-9]+$", "/CHECKEDOUT");
+				versionLabelValue.setText(version);
+			}
+
+			if (predecessorVersionValue != null) {
+				predecessorVersionValue.setText(cache.getPredecessorVersion());
+			}
+			if (checkedOutValue != null) {
+				checkedOutValue.setText(cache.isCheckedOut() ? "yes" : "no");
+			}
+			if (hijackedValue != null) {
+				hijackedValue.setText(cache.isHijacked() ? "yes" : "no");
+			}
 		}
 	}
 

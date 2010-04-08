@@ -539,7 +539,8 @@ public class StateCache implements Serializable {
 		} else if (!isClearCaseElement()) {
 			toString.append("no clearcase element"); //$NON-NLS-1$
 		} else if (isClearCaseElement()) {
-			toString.append(version);
+			if (version != null)
+				toString.append(version);
 
 			if (isSymbolicLink()) {
 				toString.append(" [SYMBOLIC LINK ("); //$NON-NLS-1$
@@ -555,6 +556,10 @@ public class StateCache implements Serializable {
 				toString.append(" [HIJACKED]"); //$NON-NLS-1$
 			}
 
+			if (isDerivedObject()) {
+				toString.append(" [DERIVEDOBJ]"); //$NON-NLS-1$
+			}
+			
 			if (isSnapShot()) {
 				toString.append(" [SNAPSHOT]"); //$NON-NLS-1$
 			}
