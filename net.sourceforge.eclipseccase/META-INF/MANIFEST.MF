@@ -10,7 +10,7 @@ Export-Package: net.sourceforge.eclipseccase,
  net.sourceforge.eclipseccase.tools,
  org.apache.commons.collections,
  org.apache.commons.collections.buffer
-Require-Bundle: org.eclipse.core.runtime;bundle-version="3.5.0";visibility:=reexport,
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0";visibility:=reexport,
  org.eclipse.core.resources;visibility:=reexport,
  org.eclipse.team.core;visibility:=reexport,
  net.sourceforge.clearcase;visibility:=reexport,
