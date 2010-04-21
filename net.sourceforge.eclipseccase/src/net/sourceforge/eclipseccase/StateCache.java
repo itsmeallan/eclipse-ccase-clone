@@ -145,10 +145,22 @@ public class StateCache implements Serializable {
 	}
 
 	/**
-	 * Updates the state. Calls the engine's getElementState() (which execs
-	 * cleartool)
+	 * Updates the state. Eventually calls the engine's getElementState() (which
+	 * execs cleartool)
 	 */
-	void doUpdate() {
+	public void doUpdate() {
+		doUpdate((ClearCaseElementState) null);
+	}
+
+	/**
+	 * Updates the state. Calls the engine's getElementState() (which execs
+	 * cleartool) if no givenState
+	 * 
+	 * @param givenState
+	 *            the ClearCaseElementState to update from, or null if the
+	 *            engine shall be queried for current state
+	 */
+	void doUpdate(ClearCaseElementState givenState) {
 		boolean changed = isUninitialized();
 
 		IPath location = resource.getLocation();
@@ -181,8 +193,15 @@ public class StateCache implements Serializable {
 				// resources)
 				if (!Team.isIgnoredHint(resource)) {
 					ClearCaseElementState newState = null;
+					if (givenState != null) {
+						newState = givenState;
+					}
 
-					if (ClearCasePlugin.isRefreshChildrenPrevented()) {
+					if (newState == null
+							&& ClearCasePlugin
+									.isUnneededChildrenRefreshPrevented()) {
+						// check parent for CC state, don't update if parent is
+						// not a CC element
 						IResource parent = resource.getParent();
 						if (null != parent && !(parent instanceof IProject)
 								&& !(parent instanceof IWorkspaceRoot)) {
@@ -559,7 +578,7 @@ public class StateCache implements Serializable {
 			if (isDerivedObject()) {
 				toString.append(" [DERIVEDOBJ]"); //$NON-NLS-1$
 			}
-			
+
 			if (isSnapShot()) {
 				toString.append(" [SNAPSHOT]"); //$NON-NLS-1$
 			}

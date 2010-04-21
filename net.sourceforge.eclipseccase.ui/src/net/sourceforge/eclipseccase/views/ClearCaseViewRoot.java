@@ -12,6 +12,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.core.resources.IProject;
+
 import java.util.ArrayList;
 import java.util.List;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -43,6 +45,7 @@ public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	public void fetchDeferredChildren(Object object, IElementCollector collector, IProgressMonitor monitor) {
 		if (!StateCacheFactory.getInstance().isInitialized()) {
 			// during startup, don't update from uninitialized cache
+			// TODO: schedule an automatic refresh after 2 seconds
 			collector.done();
 			return;
 		}
@@ -84,9 +87,17 @@ public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	}
 
 	/**
+	 * gets implemented in ClearCaseViewPart, calls
+	 * ClearCaseViewPart.findResources
+	 * 
 	 * @param clearcaseProjects
+	 *            the projects to search
 	 * @param collector
+	 *            found elements get added to this
 	 * @param monitor
+	 *            IProgressMonitor
+	 * @see ClearCaseViewPart
+	 * @see ClearCaseViewPart#findResources(IProject[], IElementCollector, IProgressMonitor)
 	 */
 	protected abstract void collectElements(IProject[] clearcaseProjects, IElementCollector collector, IProgressMonitor monitor);
 

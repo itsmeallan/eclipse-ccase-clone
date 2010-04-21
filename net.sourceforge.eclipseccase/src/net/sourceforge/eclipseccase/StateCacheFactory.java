@@ -560,12 +560,15 @@ public class StateCacheFactory implements ISaveParticipant,
 								cache.updateTimeStamp = Long
 										.parseLong(attributes
 												.getValue(ATTR_TIME_STAMP));
-
+								
 								// store cache
 								synchronized (cacheMap) {
 									cacheMap.put(resource, cache);
 								}
 
+								// make sure we know the view name for all cached elements
+								ClearCaseProvider.getViewName(resource);
+								
 								if (ClearCasePlugin.DEBUG_STATE_CACHE) {
 									ClearCasePlugin.trace(
 											TRACE_STATECACHEFACTORY,

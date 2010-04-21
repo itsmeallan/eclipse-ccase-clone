@@ -15,9 +15,11 @@ package net.sourceforge.eclipseccase;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -26,6 +28,7 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -61,6 +64,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private static Map<String, String> viewLookupTable = new Hashtable<String, String>(
 			200);
+
+	private static Map<String, IContainer> viewAccessLookupTable = new Hashtable<String, IContainer>(
+			30);
 
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
@@ -379,30 +385,45 @@ public class ClearCaseProvider extends RepositoryProvider {
 		// assume that a complete project is inside one view
 		String path = resource.getProject().getLocation().toOSString();
 		String res = viewLookupTable.get(path);
-		if (res == null) {
+		if (res == null || res.length() == 0) {
 			// use the originally given resource for the cleartool query
-			res = ClearCasePlugin.getEngine().getViewName(
-					resource.getLocation().toOSString());
+			if (!(resource instanceof IContainer)) {
+				resource = resource.getParent();
+			}
+			res = getViewName(resource.getLocation().toOSString());
 			if (res.length() > 0) {
 				viewLookupTable.put(path, res);
+				viewAccessLookupTable.put(res, (IContainer) resource);
 			}
 		}
 		return res;
 	}
 
-	public static String getViewName(final StateCache cache) {
-		return getViewName(cache.getPath());
+	public static IContainer getViewFolder(final String viewname) {
+		IContainer res = viewAccessLookupTable.get(viewname);
+		if (res == null) {
+			// TODO: search for a directory in view
+		} else if (! res.isAccessible()){
+			// TODO: search for a new directory in view
+		}
+		return res;
 	}
 
 	public static String getViewName(final String path) {
 		String res = viewLookupTable.get(path);
 		if (res == null) {
 			res = ClearCasePlugin.getEngine().getViewName(path);
-			if (res.length() > 0) {
-				viewLookupTable.put(path, res);
-			}
+			viewLookupTable.put(path, res);
 		}
 		return res;
+	}
+
+	public static String[] getUsedViewNames() {
+		Set<String> views = new HashSet<String>();
+		for (String v : viewLookupTable.values()) {
+			views.add(v);
+		}
+		return views.toArray(new String[views.size()]);
 	}
 
 	/**
@@ -1732,8 +1753,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 		 * todo: we need a better check for the vob root; this only supports
 		 * structures where a project is the view directory containing the vobs
 		 */
-		return resource.getType() == IResource.FOLDER && !resource.isLinked()
-				&& isViewRoot(resource.getParent());
+		// return resource.getType() == IResource.FOLDER && !resource.isLinked()
+		// && isViewRoot(resource.getParent());
+		return false;
 	}
 
 	/**

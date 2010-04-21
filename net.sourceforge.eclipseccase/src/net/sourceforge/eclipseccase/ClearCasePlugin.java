@@ -573,9 +573,9 @@ public class ClearCasePlugin extends Plugin {
 	 * 
 	 * @return the preference value
 	 */
-	public static boolean isRefreshChildrenPrevented() {
+	public static boolean isUnneededChildrenRefreshPrevented() {
 		return getInstance().getPluginPreferences().getBoolean(
-				IClearCasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT);
+				IClearCasePreferenceConstants.PREVENT_UNNEEDED_CHILDREN_REFRESH);
 	}
 
 	/**
@@ -785,7 +785,7 @@ public class ClearCasePlugin extends Plugin {
 		// General preferences
 		pref.setDefault(IClearCasePreferenceConstants.USE_SINGLE_PROCESS, true);
 		pref.setDefault(
-				IClearCasePreferenceConstants.WIP_REFRESH_CHILDREN_PREVENT,
+				IClearCasePreferenceConstants.PREVENT_UNNEEDED_CHILDREN_REFRESH,
 				true);
 
 		String sClearCasePrimaryGroup = System

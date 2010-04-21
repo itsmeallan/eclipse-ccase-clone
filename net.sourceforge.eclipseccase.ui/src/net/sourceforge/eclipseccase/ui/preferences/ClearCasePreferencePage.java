@@ -78,7 +78,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new StringFieldEditor(CLEARCASE_PRIMARY_GROUP, PreferenceMessages.getString("Preferences.General.ClearCasePrimaryGroup"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
-		addField(new BooleanFieldEditor(WIP_REFRESH_CHILDREN_PREVENT, PreferenceMessages.getString("Preferences.General.RefreshChildren"), //$NON-NLS-1$
+		addField(new BooleanFieldEditor(PREVENT_UNNEEDED_CHILDREN_REFRESH, PreferenceMessages.getString("Preferences.General.RefreshChildren"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
 		//		addField(new BooleanFieldEditor(IGNORE_NEW, PreferenceMessages.getString("Preferences.General.IgnoreNew"), //$NON-NLS-1$

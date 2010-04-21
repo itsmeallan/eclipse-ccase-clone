@@ -1,9 +1,13 @@
 package net.sourceforge.eclipseccase.views;
 
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-import net.sourceforge.eclipseccase.StateCache;
+import java.util.ArrayList;
+import java.util.List;
+import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.team.core.Team;
 
@@ -21,6 +25,8 @@ public class CheckoutsView extends ClearCaseViewPart {
 
 	/** the dialog settings */
 	private IDialogSettings settings;
+
+	private Boolean inClearCaseRefresh = false;
 
 	/*
 	 * (non-Javadoc)
@@ -46,7 +52,7 @@ public class CheckoutsView extends ClearCaseViewPart {
 
 		// optimize: query the cache only once:
 		StateCache state = provider.getCache(resource);
-		
+
 		// show checkouts if enabled
 		if (!hideCheckouts() && state.isCheckedOut())
 			return true;
@@ -130,6 +136,7 @@ public class CheckoutsView extends ClearCaseViewPart {
 		if (null == settings) {
 			settings = dialogSettings.addNewSection(DIALOG_SETTINGS_STORE);
 		}
+		refreshFromClearCase();
 	}
 
 	/*
@@ -140,5 +147,50 @@ public class CheckoutsView extends ClearCaseViewPart {
 	@Override
 	protected void makeActions() {
 		setActionGroup(new CheckoutsViewActionGroup(this));
+	}
+
+	public void refreshFromClearCase() {
+		synchronized (inClearCaseRefresh) {
+			// guard against second refresh while first one is not finished yet
+			if (inClearCaseRefresh) {
+				return;
+			}
+			inClearCaseRefresh = true;
+		}
+		String[] views = ClearCaseProvider.getUsedViewNames();
+		List<IResource> dirlist = new ArrayList<IResource>();
+		for (String v : views) {
+			IContainer dir = ClearCaseProvider.getViewFolder(v);
+			if (dir != null) {
+				dirlist.add(dir);
+			}
+		}
+		if (dirlist.size() > 0) {
+			final IResource[] array = (IResource[]) dirlist.toArray(new IResource[dirlist.size()]);
+			final ViewPrivCollector collector = new ViewPrivCollector(array);
+			collector.setFindCheckedouts(!hideCheckouts());
+			collector.setFindOthers(!hideNewElements());
+			collector.setFindHijacked(!hideHijackedElements());
+			Job gatherViewPrivateStuff = new Job("Gathering view-private files") { //$NON-NLS-1$
+
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					try {
+						collector.collectElements(monitor);
+					} finally {
+						synchronized (inClearCaseRefresh) {
+							inClearCaseRefresh = false;
+						}
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			gatherViewPrivateStuff.setPriority(Job.LONG);
+			gatherViewPrivateStuff.schedule();
+		} else {
+			synchronized (inClearCaseRefresh) {
+				inClearCaseRefresh = false;
+			}
+		}
 	}
 }

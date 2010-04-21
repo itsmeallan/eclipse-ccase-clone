@@ -49,8 +49,8 @@ public class ClearCaseViewActionGroup extends MainActionGroup {
 			@Override
 			public void run() {
 				getClearCaseView().refresh();
+				getClearCaseView().refreshFromClearCase();
 			}
-
 		};
 		refreshAction.setToolTipText(Messages.getString("ClearCaseViewActionGroup.refresh.description")); //$NON-NLS-1$
 		refreshAction.setDisabledImageDescriptor(ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_REFRESH_DISABLED));

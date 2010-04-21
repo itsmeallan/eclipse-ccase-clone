@@ -13,12 +13,12 @@
 package net.sourceforge.eclipseccase.views;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.team.core.TeamException;
@@ -295,6 +295,10 @@ public abstract class ClearCaseViewPart extends ResourceNavigator implements IRe
 				refresh();
 			}
 		});
+	}
+	
+	public void refreshFromClearCase() {
+		// empty
 	}
 
 	/**

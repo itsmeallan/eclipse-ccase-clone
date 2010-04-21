@@ -73,7 +73,7 @@ public interface IClearCasePreferenceConstants {
 	String USE_SINGLE_PROCESS = ClearCasePlugin.PLUGIN_ID + ".useSingleProcess"; //$NON-NLS-1$
 
 	/** ClearCase preference */
-	String WIP_REFRESH_CHILDREN_PREVENT = ClearCasePlugin.PLUGIN_ID
+	String PREVENT_UNNEEDED_CHILDREN_REFRESH = ClearCasePlugin.PLUGIN_ID
 			+ ".preventRefreshChildren"; //$NON-NLS-1$
 
 	/** ClearCase preference */
