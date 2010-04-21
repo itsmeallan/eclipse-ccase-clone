@@ -484,7 +484,7 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		// test if ignored. Caution: p.isIgnored() implicitely schedules an
 		// async StateCache update if this resource is not ignored and not
 		// yet initialized
-		if (p.isIgnored(resource)) {
+		if (!(resource instanceof IProject) && p.isIgnored(resource)) {
 			if (ClearCaseUI.DEBUG_DECORATION) {
 				ClearCaseUI.trace(DECORATOR, "  ignored"); //$NON-NLS-1$
 			}
@@ -510,9 +510,9 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		// they are not decoratable
 		if (p.isViewRoot(resource) || p.isVobRoot(resource)) {
 			if (ClearCaseUI.DEBUG_DECORATION) {
-				ClearCaseUI.trace(DECORATOR, "  view or vob root"); //$NON-NLS-1$
+				ClearCaseUI.trace(DECORATOR, "  view or vob root ?"); //$NON-NLS-1$
 			}
-			return;
+			// return; // FIXME: no return because view tag decoration needed
 		}
 
 		// decorate view tag for projects
