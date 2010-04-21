@@ -96,11 +96,6 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		//		addField(new BooleanFieldEditor(TEST_LINKED_PARENT_IN_CLEARCASE, PreferenceMessages.getString("Preferences.General.TestLinkedParentInClearCase"), //$NON-NLS-1$
 		// getFieldEditorParent(GENERAL)));
 		
-		// TODO Achim: misused for testing
-		// useCleartool.setEnabled(ClearCasePlugin.isWindows(),
-		// getFieldEditorParent(GENERAL));
-		// addField(useCleartool);
-
 		//		addField(new RadioGroupFieldEditor(SAVE_DIRTY_EDITORS, PreferenceMessages.getString("Preferences.General.SaveDirtyEditors"), 1, //$NON-NLS-1$
 		// ALWAYS_NEVER_PROMPT, getFieldEditorParent(GENERAL), true));
 
