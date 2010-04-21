@@ -46,6 +46,13 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 	@Override
 	public void execute(IAction action) {
 		resources = getSelectedResources();
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider == null) {
+				return;
+			}
+		}
 		try {
 			view = (HistoryView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.HistoryView");
 		} catch (Exception e) {
