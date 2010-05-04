@@ -403,7 +403,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 		IContainer res = viewAccessLookupTable.get(viewname);
 		if (res == null) {
 			// TODO: search for a directory in view
-		} else if (! res.isAccessible()){
+		} else if (!res.isAccessible()) {
 			// TODO: search for a new directory in view
 		}
 		return res;
@@ -893,32 +893,15 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private Status makeFolderElement(IResource resource,
 			IProgressMonitor monitor) {
+		File dir = new File(resource.getLocation().toOSString());
+		File tmpDir = new File(dir.getParentFile(), dir.getName() + ".tmp");
 
-		IFolder folder = (IFolder) resource;
 		Status result = OK_STATUS;
 		try {
-			IPath path = new Path(folder.getName() + ".tmp");
-			IFolder tmpFolder = resource.getParent().getFolder(path);
-			if (!tmpFolder.exists()) {
-				tmpFolder.create(false, true, new SubProgressMonitor(monitor,
-						10));
-			}
-			// Move content of original directory to tmp
-			IResource[] resources = folder.members();
-			if (resources != null && resources.length > 0) {
-				for (int i = 0; i < resources.length; i++) {
-					IPath renamedPath = tmpFolder.getFullPath().append(
-							resources[i].getName());
-					resources[i].move(renamedPath, false,
-							new SubProgressMonitor(monitor, 10));
-				}
-
-			}
-
-			// Now after all content of directory is moved -> delete
-			// original directory.
-			if (folder.exists()) {
-				folder.delete(true, true, new SubProgressMonitor(monitor, 10));
+			if (!dir.renameTo(tmpDir)) {
+				// FIXME: eraonel 20100503 add error handling.
+				System.out.println("Could not rename " + dir.getPath() + " to "
+						+ tmpDir.getPath());
 			}
 
 			// Now time to create the original directory in
@@ -930,6 +913,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Add failed: " + "Could not add element"
 								+ resource.getName(), null);
+			}
+			// FIXME:mike 20100503 add error handling.
+			if (!moveDirRec(tmpDir, dir)) {
+				System.out.println("Could not move back the content of "
+						+ dir.getPath()
+						+ " as part of adding it to Clearcase:\n"
+						+ "Its old content is in " + tmpDir.getName()
+						+ ". Please move it back manually");
 			}
 
 			if (result.isOK()) {
@@ -951,19 +942,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// not recognize the cc created resource directory.
 			resource.refreshLocal(IResource.DEPTH_ZERO, new SubProgressMonitor(
 					monitor, 10));
-			IResource[] tmpResources = tmpFolder.members();
-			for (int i = 0; i < tmpResources.length; i++) {
-				IPath renamedPath = folder.getFullPath().append(
-						tmpResources[i].getName());
-				tmpResources[i].move(renamedPath, true, new SubProgressMonitor(
-						monitor, 10));
-			}
-
-			// Remove the temporary.
-			if (tmpFolder.exists()) {
-				tmpFolder.delete(true, true,
-						new SubProgressMonitor(monitor, 10));
-			}
 
 			// Check-in parent since since new directory is now
 			// created.
@@ -1871,4 +1849,29 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 		return null;
 	}
+
+	// FIXME: eraonel 20100503 move this to other file.
+	public static boolean moveDirRec(File fromDir, File toDir) {
+		if (!toDir.exists()) {
+			return fromDir.renameTo(toDir);
+		}
+
+		File[] files = fromDir.listFiles();
+		if (files == null) {
+			return false;
+		}
+
+		boolean success = true;
+
+		for (int i = 0; i < files.length; i++) {
+			File fromFile = files[i];
+			File toFile = new File(toDir, fromFile.getName());
+			success = success && fromFile.renameTo(toFile);
+		}
+
+		fromDir.delete();
+
+		return success;
+	}
+
 }
