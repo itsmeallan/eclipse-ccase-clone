@@ -15,11 +15,14 @@ package net.sourceforge.eclipseccase;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -795,11 +798,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private final class AddOperation implements IRecursiveOperation {
 
+		ArrayList<IResource> privateElement = new ArrayList<IResource>();
+
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
 				monitor.beginTask(
 						"Adding " + resource.getFullPath().toString(), 100);
-				IStatus result;
+				IStatus result = OK_STATUS;
 				// Sanity check - can't add something that already is under VC
 				if (isClearCaseElement(resource))
 					// return status with severity OK
@@ -813,54 +818,96 @@ public class ClearCaseProvider extends RepositoryProvider {
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
+				result = findPrivateElements(resource, monitor);
 
-				IResource parent = resource.getParent();
-
-				// When resource is a project, try checkout its parent, and if
-				// that fails,
-				// then neither project nor workspace is in clearcase.
-				if (resource instanceof IProject || isClearCaseElement(parent)) {
-					result = checkoutParent(resource, new SubProgressMonitor(
-							monitor, 10));
-				} else {
-					result = visit(parent, new SubProgressMonitor(monitor, 10));
-				}
-
-				// Now make elements of the view private files if parent could
-				// be checked-out.
 				if (result.isOK()) {
-					if (resource.getType() == IResource.FOLDER) {
-						result = makeFolderElement(resource, monitor);
-					} else if (resource.getType() == IResource.FILE) {
-						result = makeFileElement(resource, monitor);
+					Collections.reverse(privateElement);
+					for (Iterator iterator = privateElement.iterator(); iterator
+							.hasNext();) {
+						IResource myResource = (IResource) iterator.next();
+						if (myResource.getType() == IResource.FOLDER) {
+							result = makeFolderElement(myResource, monitor);
+						} else if (myResource.getType() == IResource.FILE) {
+							result = makeFileElement(myResource, monitor);
+						}
+
 					}
 				}
-				// refresh state on all elements.
+
+				// Add check recursive checkin of files.
+				if (ClearCasePlugin.isAddWithCheckin() && result == OK_STATUS) {
+					for (Iterator iterator = privateElement.iterator(); iterator
+							.hasNext();) {
+						IResource res = (IResource) iterator.next();
+						if (isCheckedOut(res)) {
+							ClearCasePlugin.getEngine().checkin(
+									new String[] { res.getLocation()
+											.toOSString() }, getComment(),
+									ClearCase.NONE, opListener);
+
+						}
+
+					}
+				}
+
 				monitor.worked(40);
-				updateState(parent, IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 10));
-				updateState(resource, IResource.DEPTH_ZERO,
-						new SubProgressMonitor(monitor, 10));
 				return result;
 			} finally {
 				monitor.done();
+				privateElement.clear();
 			}
+		}
+
+		/**
+		 * Recursively from bottom of file path to top until clearcase element
+		 * is found.
+		 * 
+		 * @param resource
+		 * @param monitor
+		 * @return
+		 */
+		private IStatus findPrivateElements(IResource resource,
+				IProgressMonitor monitor) {
+			IStatus result = OK_STATUS;
+			IResource parent = resource.getParent();
+
+			// When resource is a project, try checkout its parent, and if
+			// that fails,
+			// then neither project nor workspace is in clearcase.
+			if (isClearCaseElement(parent)) {
+				privateElement.add(resource);
+				updateState(parent, IResource.DEPTH_ZERO,
+						new SubProgressMonitor(monitor, 10));// make sure state
+				// for parent is
+				// correct.
+				if (!isCheckedOut(parent)) {
+					ClearCasePlugin.getEngine().checkout(
+							new String[] { parent.getLocation().toOSString() },
+							getComment(), ClearCase.NONE, opListener);
+
+				}
+
+			} else if (resource instanceof IProject
+					&& !(isClearCaseElement(resource))) {
+				// We reached project top and it is not a cc element.
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Add failed: " + "project folder " + resource.getName()
+								+ " is not an element is not an cc element",
+						null);
+			} else {
+				privateElement.add(resource);
+				findPrivateElements(parent, new SubProgressMonitor(monitor, 10));
+			}
+			return result;
 		}
 	}
 
 	private Status makeFileElement(IResource resource, IProgressMonitor monitor) {
 		Status result = OK_STATUS;
 
-		ClearCaseElementState state = ClearCasePlugin
-				.getEngine()
-				.add(
-						resource.getLocation().toOSString(),
-						false,
-						getComment(),
-						ClearCase.PTIME
-								| ClearCase.MASTER
-								| (ClearCasePlugin.isAddWithCheckin() ? ClearCase.CHECKIN
-										: 0), opListener);
+		ClearCaseElementState state = ClearCasePlugin.getEngine().add(
+				resource.getLocation().toOSString(), false, getComment(),
+				ClearCase.PTIME | ClearCase.MASTER, opListener);
 
 		if (state.isElement()) {
 			// Do nothing!
@@ -869,23 +916,20 @@ public class ClearCaseProvider extends RepositoryProvider {
 					"Add failed: " + "Could not add element"
 							+ resource.getName(), null);
 		}
-
+		try {
+			resource.refreshLocal(IResource.DEPTH_ZERO, new SubProgressMonitor(
+					monitor, 10));
+		} catch (CoreException e) {
+			System.out.println("We got an exception!");
+			e.printStackTrace();
+			result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+					"Add failed: " + "Exception" + e.getMessage(), null);
+		}
+		updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(
+				monitor, 10));
 		if (result.isOK()) {
-			String group = ClearCasePlugin.getClearCasePrimaryGroup().trim();
-			if (group.length() > 0) {
-				try {
-					state = ClearCasePlugin.getEngine().setGroup(
-							resource.getLocation().toOSString(), group,
-							opListener);
-				} catch (Exception e) {
-					result = new Status(IStatus.ERROR, ID,
-							TeamException.UNABLE, "Chgrp failed: "
-									+ "Could not change group element"
-									+ resource.getName() + "\n"
-									+ e.getMessage(), null);
-				}
+			result = forceSetChgrp(resource);
 
-			}
 		}
 
 		return result;
@@ -898,10 +942,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		Status result = OK_STATUS;
 		try {
+			// rename target dir to <name>.tmp since clearcase cannot make
+			// an directory element out of an existing view private one.
 			if (!dir.renameTo(tmpDir)) {
-				// FIXME: eraonel 20100503 add error handling.
-				System.out.println("Could not rename " + dir.getPath() + " to "
-						+ tmpDir.getPath());
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Add failed: " + "Could not rename " + dir.getPath()
+								+ " to " + tmpDir.getPath()
+								+ resource.getName(), null);
 			}
 
 			// Now time to create the original directory in
@@ -914,27 +961,18 @@ public class ClearCaseProvider extends RepositoryProvider {
 						"Add failed: " + "Could not add element"
 								+ resource.getName(), null);
 			}
-			// FIXME:mike 20100503 add error handling.
+			// Now move back the content of <name>.tmp to cc created one.
 			if (!moveDirRec(tmpDir, dir)) {
-				System.out.println("Could not move back the content of "
-						+ dir.getPath()
-						+ " as part of adding it to Clearcase:\n"
-						+ "Its old content is in " + tmpDir.getName()
-						+ ". Please move it back manually");
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Could not move back the content of " + dir.getPath()
+								+ " as part of adding it to Clearcase:\n"
+								+ "Its old content is in " + tmpDir.getName()
+								+ ". Please move it back manually", null);
+
 			}
 
 			if (result.isOK()) {
-				try {
-					state = ClearCasePlugin.getEngine().setGroup(
-							resource.getLocation().toOSString(),
-							ClearCasePlugin.getClearCasePrimaryGroup(),
-							opListener);
-				} catch (Exception e) {
-					result = new Status(IStatus.ERROR, ID,
-							TeamException.UNABLE, "Chgrp failed: "
-									+ "Could not change group element"
-									+ resource.getName(), null);
-				}
+				result = forceSetChgrp(resource);
 			}
 
 			// Now move back the content of tmp to original.
@@ -942,14 +980,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// not recognize the cc created resource directory.
 			resource.refreshLocal(IResource.DEPTH_ZERO, new SubProgressMonitor(
 					monitor, 10));
-
-			// Check-in parent since since new directory is now
-			// created.
-			String[] parentResource = { resource.getParent().getLocation()
-					.toOSString() };
-
-			ClearCasePlugin.getEngine().checkin(parentResource, comment, 0,
-					opListener);
+			updateState(resource, IResource.DEPTH_ZERO, new SubProgressMonitor(
+					monitor, 10));
 
 		} catch (CoreException ce) {
 			System.out.println("We got an exception!");
@@ -958,6 +990,24 @@ public class ClearCaseProvider extends RepositoryProvider {
 					"Add failed: " + "Exception" + ce.getMessage(), null);
 		}
 
+		return result;
+	}
+
+	private Status forceSetChgrp(IResource resource) {
+		Status result = OK_STATUS;
+		String group = ClearCasePlugin.getClearCasePrimaryGroup().trim();
+		if (group.length() > 0) {
+			try {
+				ClearCasePlugin.getEngine().setGroup(
+						resource.getLocation().toOSString(), group, opListener);
+			} catch (Exception e) {
+				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
+						"Chgrp failed: " + "Could not change group element "
+								+ resource.getName() + "\n" + e.getMessage(),
+						null);
+			}
+
+		}
 		return result;
 	}
 
