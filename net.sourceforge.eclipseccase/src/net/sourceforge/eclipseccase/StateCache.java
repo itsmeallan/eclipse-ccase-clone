@@ -214,7 +214,7 @@ public class StateCache implements Serializable {
 								newState = new ClearCaseElementState(osPath,
 										ClearCase.VIEW_PRIVATE);
 							}
-							if (parentCache.isUninitialized()) {
+							if (parentCache.isUninitialized() && parentCache.isClearCaseElement()) {
 								// schedule a high priority refresh, so that
 								// further
 								// elements of same parent get a real result

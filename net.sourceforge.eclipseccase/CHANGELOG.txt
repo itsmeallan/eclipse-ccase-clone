@@ -2,6 +2,21 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.3
+=====
+Fixed Bugs:
+2957269: Main menu/toolbar: All items enabled if in editor.
+2978571: Add to CC failure with invalid group. 	
+2978560: Main menu/toolbar don't update enablement when checking out. 	
+2978664: Context menu problem after other view had focus. 	
+2979984: Checkin doesn't handle double quotes in comment. 	
+2983037: Error when displaying properties for a DO. 	
+2957250: Hotkeys don't work as expected on Solaris. 	
+2370914: Shortcuts without associated project. 	
+2983751: Property page: Contents differ from predecessor not function. 	
+2983042: ViewPrivate view does not honor "ignored resources" settings. 	
+2992645: Error when adding view private directory with recurse. 	
+
 2.2.2
 =====
 
