@@ -7,8 +7,14 @@ set eclipsecategory "[lindex $argv 3]"
 set version "[lindex $argv 4]"
 set password "[lindex $argv 5]"
 set host "[lindex $argv 6]"
+set changelog "[lindex $argv 7]"
 
+#Send zip
 spawn rsync -avP -e ssh  ${zip} ${webuser}@${host}:${rootdir}/${eclipsecategory}/${version}/
+expect "*password:" 
+send "${password}\r"
+#send changelog
+spawn rsync -avP -e ssh  ${changelog} ${webuser}@${host}:${rootdir}/${eclipsecategory}/${version}/
 expect "*password:" 
 send "${password}\r"
 expect eof 

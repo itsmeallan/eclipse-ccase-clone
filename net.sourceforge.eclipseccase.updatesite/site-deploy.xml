@@ -36,6 +36,7 @@
 		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
 		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
 		<property name="filemanagement.deploy.host" value="frs.sourceforge.net" />
+		<property name="changelog" value="${basedir}/../net.sourceforge.eclipseccase/CHANGELOG.txt" />
 		
 
 		<!-- Update site params -->
@@ -136,8 +137,10 @@
 		 ================================================================== -->
 	<target name="deploy-sf-file-release" depends="init" unless="site.local">
 		<exec executable="/usr/bin/expect" os="Unix,Linux">
-			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host}" />
+			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host} ${changelog}" />
 		</exec>
 	</target>
+	
+	
 
 </project>

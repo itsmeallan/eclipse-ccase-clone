@@ -99,8 +99,11 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
       <property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" /> 
 	   
       Execute 'ant all'
-   
+   	
      Check that files have been updated:
+   	
+   	 https://sourceforge.net/project/admin/explorer.php?group_id=50595
+   	 File Manangement --> ecllipse-ccase_Eclipse_3.5 --> 
    	
    	 Note: If you have problems with File Management there is always a fallback to use the GUI on website.
      https://sourceforge.net/project/admin/explorer.php?group_id=50595

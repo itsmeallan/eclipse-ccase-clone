@@ -3,7 +3,7 @@
    <description url="http://eclipse-ccase.sourceforge.net/update/">
       Update site for the Open Source Eclipse ClearCase integration.
    </description>
-   <feature url="features/net.sourceforge.eclipseccase_1.0.0.jar" id="net.sourceforge.eclipseccase" version="1.0.0">
+   <feature url="features/net.sourceforge.eclipseccase_1.0.0.201005271244.jar" id="net.sourceforge.eclipseccase" version="1.0.0.201005271244">
       <category name="eclipse-ccase-3"/>
    </feature>
    <feature url="features/net.sourceforge.eclipseccase_0.9.11.jar" id="net.sourceforge.eclipseccase" version="0.9.11">
@@ -58,6 +58,15 @@
       <category name="eclipse-ccase-35"/>
    </feature>
    <feature url="features/net.sourceforge.eclipseccase_2.2.1.v201003041230.jar" id="net.sourceforge.eclipseccase" version="2.2.1.v201003041230">
+      <category name="eclipse-ccase-35"/>
+   </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.2.2.v201003261502.jar" id="net.sourceforge.eclipseccase" version="2.2.2.v201003261502">
+      <category name="eclipse-ccase-35"/>
+   </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.2.3.v201005270722.jar" id="net.sourceforge.eclipseccase" version="2.2.3.v201005270722">
+      <category name="eclipse-ccase-35"/>
+   </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.2.3.v201005271244.jar" id="net.sourceforge.eclipseccase" version="2.2.3.v201005271244">
       <category name="eclipse-ccase-35"/>
    </feature>
    <category-def name="eclipse-ccase-3" label="Eclipse ClearCase Integration for Eclipse 3.0">
