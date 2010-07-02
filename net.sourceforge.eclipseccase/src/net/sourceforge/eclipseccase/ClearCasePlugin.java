@@ -620,7 +620,19 @@ public class ClearCasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getInt(
 				IClearCasePreferenceConstants.JOB_QUEUE_PRIORITY);
 	}
+	
+	public static void setGraphicalToolTimeout(){
+		/* Set timeout as an environment variable */
+		System.setProperty("TIMEOUT_GRAPHICAL_TOOLS", getInstance().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.TIMEOUT_GRAPHICAL_TOOLS));
+	}
 
+	
+	public static boolean UseGraphicalExternalUpdateView() {
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW);
+	}
+	
 	/**
 	 * Logs an exception with the specified severity an message.
 	 * 
@@ -796,6 +808,9 @@ public class ClearCasePlugin extends Plugin {
 		pref.setDefault(IClearCasePreferenceConstants.CLEARCASE_PRIMARY_GROUP,
 				sClearCasePrimaryGroup);
 
+		pref.setDefault(IClearCasePreferenceConstants.TIMEOUT_GRAPHICAL_TOOLS,
+				"2");
+		
 		pref.setDefault(IClearCasePreferenceConstants.USE_CLEARDLG, false);
 		pref.setDefault(IClearCasePreferenceConstants.PRESERVE_TIMES, false);
 		pref.setDefault(IClearCasePreferenceConstants.IGNORE_NEW, false);
@@ -838,7 +853,12 @@ public class ClearCasePlugin extends Plugin {
 		pref.setDefault(
 				IClearCasePreferenceConstants.AUTO_PARENT_CHECKIN_AFTER_MOVE,
 				false);
+		pref.setDefault(
+				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW,
+				true);
 
+		/* Set timeout as an environment variable */
+		setGraphicalToolTimeout();
 	}
 
 	/**
@@ -947,6 +967,8 @@ public class ClearCasePlugin extends Plugin {
 		// cancel pending refresh jobs
 		StateCacheFactory.getInstance().getJobQueue().cancel(true);
 
+		setGraphicalToolTimeout();
+		
 		// destroy clearcase engine
 		if (clearcaseImpl != null) {
 			clearcaseImpl.dispose();

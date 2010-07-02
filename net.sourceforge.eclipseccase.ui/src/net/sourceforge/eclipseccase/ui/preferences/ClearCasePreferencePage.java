@@ -108,6 +108,15 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new RadioGroupFieldEditor(JOB_QUEUE_PRIORITY, PreferenceMessages.getString("Preferences.General.JobQueuePriority"), 1, //$NON-NLS-1$
 				PRIORITIES, getFieldEditorParent(GENERAL), true));
 
+
+		// general settings
+		addField(new StringFieldEditor(TIMEOUT_GRAPHICAL_TOOLS, PreferenceMessages.getString("Preferences.General.GraphicalTimeout"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+		
+		addField(new BooleanFieldEditor(GRAPHICAL_EXTERNAL_UPDATE_VIEW, PreferenceMessages.getString("Preferences.General.GraphicalUpdateView"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+
+		
 		// RadioGroupFieldEditor clearcaseLayer = new
 		// RadioGroupFieldEditor(CLEARCASE_API,
 		// "Interface for ClearCase operations",1,

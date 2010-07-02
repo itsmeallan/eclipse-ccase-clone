@@ -121,6 +121,15 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String HIDE_REFRESH_STATE_ACTIVITY = ClearCasePlugin.PLUGIN_ID
 			+ ".refreshState.hide"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String TIMEOUT_GRAPHICAL_TOOLS = ClearCasePlugin.PLUGIN_ID
+			+ ".graphical.timeout"; //$NON-NLS-1$
+
+	/** ClearCase preference */
+	String GRAPHICAL_EXTERNAL_UPDATE_VIEW = ClearCasePlugin.PLUGIN_ID
+	+ ".graphical.external.updae.view"; //$NON-NLS-1$
+	
 	/** ClearCase preference */
 	String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearCasePlugin.PLUGIN_ID
 			+ ".auto.parent.checkin.after.move"; //$NON-NLS-1$

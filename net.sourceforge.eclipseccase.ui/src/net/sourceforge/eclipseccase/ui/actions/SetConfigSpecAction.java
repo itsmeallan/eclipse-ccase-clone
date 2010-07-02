@@ -62,7 +62,8 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
 						String viewName = cci.getViewName(resource.getLocation().toOSString());
 						if (viewName.length() > 0) {
-							cci.setViewConfigSpec(viewName, f.getPath(), new ConsoleOperationListener(monitor));
+							cci.setViewConfigSpec(viewName, f.getPath(), resource.getProject().getLocation().toOSString(),
+									new ConsoleOperationListener(monitor));
 							f.delete();
 
 							if (resource != null) {

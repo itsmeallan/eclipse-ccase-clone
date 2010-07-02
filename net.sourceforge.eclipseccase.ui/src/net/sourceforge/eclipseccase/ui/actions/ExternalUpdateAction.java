@@ -1,5 +1,15 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.ui.PlatformUI;
+
+import net.sourceforge.eclipseccase.views.ConfigSpecView;
+
+import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
+
+import net.sourceforge.clearcase.ClearCaseInterface;
+
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import org.eclipse.core.resources.IProject;
 
 import net.sourceforge.clearcase.ClearCase;
@@ -18,7 +28,8 @@ import org.eclipse.ui.IActionDelegate;
  * Updates the resources in a clearcase snapshot view.
  */
 public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
-
+	private IResource [] resources =null;
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -36,18 +47,18 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 		}
 		return true;
 	}
-
+	
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void execute(IAction action) {
+		resources = getSelectedResources();
+
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
 			public void run(IProgressMonitor monitor) throws CoreException {
 
 				try {
-
-					IResource[] resources = getSelectedResources();
 					if (resources != null && resources.length != 0) {
 						for (int i = 0; i < resources.length; i++) {
 
@@ -66,7 +77,19 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 							}
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
 							if (p != null)
-								p.update(element, ClearCase.GRAPHICAL, true);
+							{
+								if (ClearCasePlugin.UseGraphicalExternalUpdateView())
+								{
+									p.update(element, ClearCase.GRAPHICAL, true);
+								}
+								else
+								{
+			                    	ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
+			                    	String viewName = cci.getViewName(resources[0].getLocation().toOSString());
+			                    	String workingDir = resources[0].getProject().getLocation().toOSString();
+			                    	cci.setViewConfigSpec(viewName, "-current", workingDir, new ConsoleOperationListener(monitor));
+								}
+							}
 
 						}
 					}

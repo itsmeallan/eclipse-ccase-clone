@@ -1434,7 +1434,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePlugin.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
-						update(resource.getFullPath().toOSString(), 0, false);
+						update(resource.getLocation().toOSString(), 0, false);
 
 					}
 				}
