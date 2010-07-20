@@ -1,2 +1,1 @@
-This project is obsolete! 
-test
+This project is obsolete!
