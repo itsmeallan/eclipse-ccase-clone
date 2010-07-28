@@ -24,6 +24,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.team.core.Team;
@@ -187,6 +188,29 @@ public class StateCache implements Serializable {
 						+ " ID=" + Thread.currentThread().getId()); //$NON-NLS-1$
 			}
 
+			if (!resource.isAccessible()) {
+				// file/dir is present on disk, but not available in workspace.
+				// This can happen if "automatic refresh" in workspace prefs is
+				// disabled, and we create a resource outside Eclipse. A
+				// subsequent refresh in the ViewPrivate view picks up the newly
+				// created file, which in turn triggers the update of the state
+				// cache. In this case we want to incorporate the file
+				// automatically into the workspace.
+				// TODO: run refreshLocal in a separate thread, as it may be
+				// long running...
+				try {
+					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+						ClearCasePlugin.trace(TRACE_ID, "not accessible, refreshing in WS: " + resource); //$NON-NLS-1$
+					}
+					resource.refreshLocal(IResource.DEPTH_ZERO,
+							new NullProgressMonitor());
+					// when resource is added to workspace, a resource change notification is run,
+					// which in turn triggers a state update. No need to continue now
+					return;
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+			}
 			if (resource.isAccessible()) {
 
 				// check the global ignores from Team (includes derived
@@ -214,7 +238,8 @@ public class StateCache implements Serializable {
 								newState = new ClearCaseElementState(osPath,
 										ClearCase.VIEW_PRIVATE);
 							}
-							if (parentCache.isUninitialized() && parentCache.isClearCaseElement()) {
+							if (parentCache.isUninitialized()
+									&& parentCache.isClearCaseElement()) {
 								// schedule a high priority refresh, so that
 								// further
 								// elements of same parent get a real result
@@ -303,19 +328,22 @@ public class StateCache implements Serializable {
 					}
 				}
 
+				updateTimeStamp = resource.getModificationStamp();
 			} else {
-				// resource does not exists
+				// resource does not exist in workspace (maybe a refresh needed)
 				flags = 0;
 				version = null;
 				symbolicLinkTarget = null;
-				changed = true;
+				updateTimeStamp = IResource.NULL_STAMP;
+				changed = false; // we did not get any info, so mark this as not
+				// changed; if changed=true is set here, we trigger an endless
+				// loop!
 				if (ClearCasePlugin.DEBUG_STATE_CACHE) {
 					ClearCasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
 							+ resource);
 				}
 			}
 
-			updateTimeStamp = resource.getModificationStamp();
 		}
 
 		// fire state change (lock must be released prior)

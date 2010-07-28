@@ -512,4 +512,8 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		}
 
 	}
+
+	public boolean isRefreshActive() {
+		return inClearCaseRefresh;
+	}
 }

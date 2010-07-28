@@ -66,6 +66,13 @@ public class CheckoutsViewRoot implements IDeferredWorkbenchAdapter, IAdaptable 
 				collector.add(resource, new SubProgressMonitor(monitor, 1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
 			}
 		}
+		// while (checkoutsView.isRefreshActive()) {
+		//			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
+		// try {
+		// Thread.sleep(200);
+		// } catch (InterruptedException e) {
+		// }
+		// }
 		if (ClearCaseUI.DEBUG_VIEWPRIV) {
 			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: done"); //$NON-NLS-1$
 		}

@@ -699,7 +699,7 @@ public class StateCacheFactory implements ISaveParticipant,
 		StateCacheJob[] jobs = new StateCacheJob[resources.length];
 		for (int i = 0; i < resources.length; i++) {
 			StateCache cache = StateCacheFactory.getInstance()
-					.get(resources[i]);
+					.getWithNoUpdate(resources[i]);
 			jobs[i] = new StateCacheJob(cache);
 		}
 		getJobQueue().schedule(jobs);
