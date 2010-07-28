@@ -13,8 +13,6 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -185,12 +183,16 @@ public class ViewPrivCollector {
 				throw new OperationCanceledException();
 
 			if (findOthers) {
-				monitor.subTask("View private in " + viewName);
+				String taskname = "View private in " + viewName;
 				// TODO: process getViewLSPrivateList line by line, not as array
 				ClearCaseElementState[] viewLSPrivateList = ClearCasePlugin
-						.getEngine().getViewLSPrivateList(
-								workingdir.getLocation().toOSString(), null);
+						.getEngine()
+						.getViewLSPrivateList(
+								workingdir.getLocation().toOSString(),
+								new ViewprivOperationListener(
+										taskname, monitor));
 				monitor.worked(50);
+				monitor.subTask(taskname + ", processing list...");
 				if (null == viewLSPrivateList) {
 					throw new RuntimeException(
 							"Could not get view private file information from view: "
@@ -251,16 +253,21 @@ public class ViewPrivCollector {
 	private void addCheckedOutFiles(String viewName, IProgressMonitor monitor,
 			IPath path) {
 		String workingdir = path.toOSString();
-		monitor.subTask("Checked out in " + viewName);
 		trace("addCheckedOutFiles, dir=: " + workingdir);
 		// TODO: process getCheckedOutElements line by line, not as array
 		ClearCaseElementState[] checkedOutState = ClearCasePlugin.getEngine()
-				.getCheckedOutElements(workingdir, null);
+				.getCheckedOutElements(
+						workingdir,
+						new ViewprivOperationListener("Checked out in "
+								+ viewName, monitor));
+		monitor.subTask("Checked out in " + viewName + ", processing list...");
 		updateStateCaches(checkedOutState, monitor);
 	}
 
 	private void updateStateCaches(ClearCaseElementState[] elementStates,
 			IProgressMonitor monitor) {
+
+		trace("updateStateCaches, " + elementStates.length + " elements");
 		for (int i = 0; i < elementStates.length; i++) {
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
@@ -288,50 +295,12 @@ public class ViewPrivCollector {
 					trace("Found Hijacked " + resource.getLocation());
 					cache.doUpdate(elementState);
 				} else if (cache.isUninitialized()) {
-					trace("Found New " + resource.getLocation());
+					trace("Found ViewPriv " + resource.getLocation());
 					cache.doUpdate(elementState);
 				}
 			}
 		}
-	}
-
-	private List<IPath> optimizeClearCaseOperationsForLinkedResources(
-			IResource[] resources) {
-		Set<IPath> paths = new HashSet<IPath>();
-
-		boolean checkParent = ClearCasePlugin.isTestLinkedParentInClearCase();
-
-		// Use parent optimization when checking status for resources.
-		for (IResource resource : resources) {
-			if (checkParent) {
-				IPath parent = resource.getLocation().removeLastSegments(1);
-				ClearCaseElementState elementState = elementStates.get(parent
-						.toOSString());
-				if (elementState == null) {
-					elementState = ClearCasePlugin.getEngine().getElementState(
-							parent.toOSString());
-					elementStates.put(parent.toOSString(), elementState);
-				}
-				if (elementState.isElement()) {
-					paths.add(parent);
-				} else {
-					paths.add(resource.getLocation());
-				}
-			} else {
-				paths.add(resource.getLocation());
-
-			}
-		}
-
-		// Sort list to get a nicer progress output
-		List<IPath> sortedPaths = new ArrayList<IPath>(paths);
-		Collections.sort(sortedPaths, new Comparator<IPath>() {
-			public int compare(IPath left, IPath right) {
-				return left.toOSString().compareTo(right.toOSString());
-			}
-		});
-
-		return sortedPaths;
+		trace("updateStateCaches done");
 	}
 
 	public ClearCaseElementState getElementState(StateCache stateCache) {

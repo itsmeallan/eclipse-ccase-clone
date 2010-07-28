@@ -16,7 +16,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public class ClearCaseViewLabelProvider extends WorkbenchLabelProvider {
+public class CheckoutsViewLabelProvider extends WorkbenchLabelProvider {
 
 	/*
 	 * (non-Javadoc)

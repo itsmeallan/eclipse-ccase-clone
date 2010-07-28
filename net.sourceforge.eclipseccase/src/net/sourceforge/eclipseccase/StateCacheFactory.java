@@ -248,6 +248,10 @@ public class StateCacheFactory implements ISaveParticipant,
 		return cache;
 	}
 
+	public Iterable<IResource> getContainedResources() {
+		return cacheMap.keySet();
+	}
+
 	/**
 	 * Removes the state cache for the specified resource including all its
 	 * direct and indirect members.

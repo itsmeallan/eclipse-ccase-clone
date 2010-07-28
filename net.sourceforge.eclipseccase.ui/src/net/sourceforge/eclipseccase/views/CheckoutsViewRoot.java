@@ -12,15 +12,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.core.resources.IProject;
-
-import java.util.ArrayList;
-import java.util.List;
-import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.StateCacheFactory;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkingSet;
@@ -33,7 +28,14 @@ import org.eclipse.ui.progress.IElementCollector;
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
-public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IAdaptable {
+public class CheckoutsViewRoot implements IDeferredWorkbenchAdapter, IAdaptable {
+
+	CheckoutsView checkoutsView;
+
+	public CheckoutsViewRoot(CheckoutsView checkoutsView) {
+		this.checkoutsView = checkoutsView;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -49,57 +51,27 @@ public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IA
 			collector.done();
 			return;
 		}
-		try {
-			// find projects
-			List projectsToSearch = null;
-			if (null != getWorkingSet()) {
-				IAdaptable[] adaptables = getWorkingSet().getElements();
-				projectsToSearch = new ArrayList(adaptables.length);
-				for (int i = 0; i < adaptables.length; i++) {
-					IResource resource = (IResource) adaptables[i].getAdapter(IResource.class);
-					if (null != resource) {
-						IProject project = resource.getProject();
-						if (null != project && !projectsToSearch.contains(project) && null != ClearCaseProvider.getClearCaseProvider(project)) {
-							projectsToSearch.add(project);
-						}
-					}
-				}
-			} else {
-				// use all workspace projects
-				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-				projectsToSearch = new ArrayList(projects.length);
-				for (int i = 0; i < projects.length; i++) {
-					IProject project = projects[i];
-					if (!projectsToSearch.contains(project) && null != ClearCaseProvider.getClearCaseProvider(project)) {
-						projectsToSearch.add(project);
-					}
-				}
-			}
 
-			if (null == projectsToSearch || projectsToSearch.isEmpty())
-				return;
-
-			// collect elements
-			collectElements((IProject[]) projectsToSearch.toArray(new IProject[projectsToSearch.size()]), collector, monitor);
-		} finally {
-			collector.done();
+		if (ClearCaseUI.DEBUG_VIEWPRIV) {
+			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: starting"); //$NON-NLS-1$
 		}
-	}
 
-	/**
-	 * gets implemented in ClearCaseViewPart, calls
-	 * ClearCaseViewPart.findResources
-	 * 
-	 * @param clearcaseProjects
-	 *            the projects to search
-	 * @param collector
-	 *            found elements get added to this
-	 * @param monitor
-	 *            IProgressMonitor
-	 * @see ClearCaseViewPart
-	 * @see ClearCaseViewPart#findResources(IProject[], IElementCollector, IProgressMonitor)
-	 */
-	protected abstract void collectElements(IProject[] clearcaseProjects, IElementCollector collector, IProgressMonitor monitor);
+		Iterable<IResource> resources = StateCacheFactory.getInstance().getContainedResources();
+		for (IResource resource : resources) {
+			// determine state
+			if (checkoutsView.shouldAdd(resource)) {
+				if (ClearCaseUI.DEBUG_VIEWPRIV) {
+					ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "adding to collector: " + resource.getFullPath()); //$NON-NLS-1$
+				}
+				collector.add(resource, new SubProgressMonitor(monitor, 1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
+			}
+		}
+		if (ClearCaseUI.DEBUG_VIEWPRIV) {
+			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: done"); //$NON-NLS-1$
+		}
+		collector.done();
+
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -192,6 +164,7 @@ public abstract class ClearCaseViewRoot implements IDeferredWorkbenchAdapter, IA
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return ResourcesPlugin.getWorkspace().getRoot().getAdapter(adapter);
 	}

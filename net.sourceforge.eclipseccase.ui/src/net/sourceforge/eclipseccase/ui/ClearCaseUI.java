@@ -37,6 +37,12 @@ public class ClearCaseUI extends AbstractUIPlugin {
 
 	/** debug option */
 	private static final String DEBUG_OPTION_DECORATION = ClearCaseUI.PLUGIN_ID + "/debug/decoration"; //$NON-NLS-1$
+	
+	/** debug option */
+	private static final String DEBUG_OPTION_VIEWPRIV = ClearCaseUI.PLUGIN_ID + "/debug/viewpriv"; //$NON-NLS-1$
+
+	/** trace text */
+	public static final String VIEWPRIV = "VP_View"; //$NON-NLS-1$
 
 	/** debug option */
 	private static final String DEBUG_OPTION_PLUGIN = ClearCaseUI.PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
@@ -53,6 +59,11 @@ public class ClearCaseUI extends AbstractUIPlugin {
 			if (getDebugOption(DEBUG_OPTION_DECORATION)) {
 				trace("debugging " + DEBUG_OPTION_DECORATION); //$NON-NLS-1$
 				ClearCaseUI.DEBUG_DECORATION = true;
+			}
+			
+			if (getDebugOption(DEBUG_OPTION_VIEWPRIV)) {
+				trace("debugging " + DEBUG_OPTION_VIEWPRIV); //$NON-NLS-1$
+				ClearCaseUI.DEBUG_VIEWPRIV = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_PLUGIN)) {
@@ -281,6 +292,7 @@ public class ClearCaseUI extends AbstractUIPlugin {
 
 	/** indicates if additional debug output should be printed */
 	public static boolean DEBUG_DECORATION = false;
+	public static boolean DEBUG_VIEWPRIV = false;
 
 	/**
 	 * Returns the workbench display

@@ -12,6 +12,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.ui.progress.IDeferredWorkbenchAdapter;
+
 import org.eclipse.jface.viewers.*;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.progress.DeferredTreeContentManager;
@@ -21,7 +23,7 @@ import org.eclipse.ui.progress.DeferredTreeContentManager;
  * 
  * @author Gunnar Wagenknecht (gunnar@wagenknecht.org)
  */
-public class ClearCaseContentProvider implements ITreeContentProvider {
+public class CheckoutsViewContentProvider implements ITreeContentProvider {
 	DeferredTreeContentManager manager;
 
 	/*
@@ -33,14 +35,24 @@ public class ClearCaseContentProvider implements ITreeContentProvider {
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		if (viewer instanceof AbstractTreeViewer) {
-			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer);
+			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer){
+
+				/* (non-Javadoc)
+				 * @see org.eclipse.ui.progress.DeferredTreeContentManager#getFetchJobName(java.lang.Object, org.eclipse.ui.progress.IDeferredWorkbenchAdapter)
+				 */
+				@Override
+				protected String getFetchJobName(Object parent, IDeferredWorkbenchAdapter adapter) {
+					return "Updating view-private file list";
+				}
+				
+			};
 		}
 	}
 
 	public boolean hasChildren(Object element) {
 		// the + box will always appear, but then disappear
 		// if not needed after you first click on it.
-		if (element instanceof ClearCaseViewRoot)
+		if (element instanceof CheckoutsViewRoot)
 			return true;
 
 		return false;
@@ -54,8 +66,8 @@ public class ClearCaseContentProvider implements ITreeContentProvider {
 	 * Object)
 	 */
 	public Object[] getChildren(Object element) {
-		if (element instanceof ClearCaseViewRoot) {
-			((ClearCaseViewRoot) element).setWorkingSet(getWorkingSet());
+		if (element instanceof CheckoutsViewRoot) {
+			((CheckoutsViewRoot) element).setWorkingSet(getWorkingSet());
 			if (manager != null) {
 				Object[] children = manager.getChildren(element);
 				if (children != null)
@@ -72,7 +84,7 @@ public class ClearCaseContentProvider implements ITreeContentProvider {
 	 * 
 	 * @param root
 	 */
-	public void cancelJobs(ClearCaseViewRoot root) {
+	public void cancelJobs(CheckoutsViewRoot root) {
 		if (manager != null) {
 			manager.cancel(root);
 		}
