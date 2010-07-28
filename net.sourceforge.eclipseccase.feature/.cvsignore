@@ -5,3 +5,4 @@ export
 *.jar
 *.zip
 dev.properties
+compile.net.sourceforge.eclipseccase.xml
