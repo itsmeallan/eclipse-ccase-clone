@@ -18,11 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -31,8 +29,6 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
@@ -822,9 +818,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 				if (result.isOK()) {
 					Collections.reverse(privateElement);
-					for (Iterator iterator = privateElement.iterator(); iterator
-							.hasNext();) {
-						IResource myResource = (IResource) iterator.next();
+					for (Object element : privateElement) {
+						IResource myResource = (IResource) element;
 						if (myResource.getType() == IResource.FOLDER) {
 							result = makeFolderElement(myResource, monitor);
 						} else if (myResource.getType() == IResource.FILE) {
@@ -836,9 +831,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 				// Add check recursive checkin of files.
 				if (ClearCasePlugin.isAddWithCheckin() && result == OK_STATUS) {
-					for (Iterator iterator = privateElement.iterator(); iterator
-							.hasNext();) {
-						IResource res = (IResource) iterator.next();
+					for (Object element : privateElement) {
+						IResource res = (IResource) element;
 						if (isCheckedOut(res)) {
 							ClearCasePlugin.getEngine().checkin(
 									new String[] { res.getLocation()
