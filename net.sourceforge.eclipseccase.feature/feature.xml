@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipseccase"
       label="%featureName"
-      version="2.2.3.vqualifier"
+      version="2.2.4.vqualifier"
       provider-name="%providerName"
       image="eclipse-ccase.jpg">
 
@@ -34,20 +34,20 @@
          id="net.sourceforge.clearcase"
          download-size="1000"
          install-size="1800"
-         version="2.2.3.vqualifier"/>
+         version="2.2.4.vqualifier"/>
 
    <plugin
          id="net.sourceforge.eclipseccase"
          download-size="400"
          install-size="800"
-         version="2.2.3.vqualifier"
+         version="2.2.4.vqualifier"
          unpack="false"/>
 
    <plugin
          id="net.sourceforge.eclipseccase.ui"
          download-size="400"
          install-size="800"
-         version="2.2.3.vqualifier"
+         version="2.2.4.vqualifier"
          unpack="false"/>
 
 </feature>

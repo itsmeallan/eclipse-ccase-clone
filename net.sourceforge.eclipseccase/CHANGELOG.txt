@@ -2,6 +2,30 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.4
+=====
+Fixed Bugs:
+
+3035853: ViewPrivate view unusably slow with large projects
+2983666: ViewPrivate view does not show CO files from outside Eclipse
+3033406: Sporadic freeze of communication with cleartool subprocess
+3019574: View Private view seems to force a Working Set
+3013400: Constant refreshing of removed files
+3000299: Problem to modify Config Spec within snapshot view
+2989447: ClearCase Version Tree shows doesn't show.
+
+New Features:
+3024175  	 Graphical update 
+
+Fixed errors with no Bug id:
+
+-add working directory when setting new config spec
+-graphical tool timeout is now configurable from preference
+
+Improvements
+
+- restructuring of the ViewPrivate view ( stability and performance).
+
 2.2.3
 =====
 Fixed Bugs:

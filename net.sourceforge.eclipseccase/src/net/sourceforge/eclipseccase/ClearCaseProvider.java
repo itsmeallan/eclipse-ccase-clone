@@ -878,6 +878,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					ClearCasePlugin.getEngine().checkout(
 							new String[] { parent.getLocation().toOSString() },
 							getComment(), ClearCase.NONE, opListener);
+					//TODO: mike 20100801 Successful checkout of parent. Change state on icon.
 
 				}
 
