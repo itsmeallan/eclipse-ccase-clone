@@ -875,10 +875,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 				// for parent is
 				// correct.
 				if (!isCheckedOut(parent)) {
-					ClearCasePlugin.getEngine().checkout(
+					ClearCaseElementState [] state = ClearCasePlugin.getEngine().checkout(
 							new String[] { parent.getLocation().toOSString() },
 							getComment(), ClearCase.NONE, opListener);
-					//TODO: mike 20100801 Successful checkout of parent. Change state on icon.
+					if(state[0].isCheckedOut()){
+					updateState(parent, IResource.DEPTH_ZERO,
+							new SubProgressMonitor(monitor, 10));
+					}
 
 				}
 
