@@ -6,7 +6,7 @@
 =====
 
 Fixed Bugs:
-
+3039373: Cannot handle files with brackets, "[]"
 3023824: Adding file does not change checkout state of parent (TODO: Test it).
 
 2.2.4
