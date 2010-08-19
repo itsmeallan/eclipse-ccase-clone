@@ -58,8 +58,9 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 						FileWriter writer = new FileWriter(f);
 						writer.write(configSpecTxt, 0, configSpecTxt.length());
 						writer.close();
-
-						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
+						//TODO: mike 20100819 Testing to use single presistent process cleartool to 
+						//speed up setViewConfigSpec.
+						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI_SP);
 						String viewName = cci.getViewName(resource.getLocation().toOSString());
 						if (viewName.length() > 0) {
 							cci.setViewConfigSpec(viewName, f.getPath(), resource.getProject().getLocation().toOSString(),
