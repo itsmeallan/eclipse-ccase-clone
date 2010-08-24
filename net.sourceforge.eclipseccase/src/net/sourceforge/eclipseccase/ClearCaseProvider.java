@@ -350,8 +350,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				.getPredecessorVersion();
 	}
 
-	public void showVersionTree(String element) {
-		ClearCasePlugin.getEngine().showVersionTree(element);
+	public void showVersionTree(String element, File workingDir) {
+		ClearCasePlugin.getEngine().showVersionTree(element, workingDir);
 
 	}
 
@@ -359,6 +359,17 @@ public class ClearCaseProvider extends RepositoryProvider {
 		ClearCasePlugin.getEngine().showFindMerge(workingDir);
 
 	}
+	
+
+	public String[] loadBrancheList(File workingDir) {
+		return ClearCasePlugin.getEngine().loadBrancheList(workingDir);
+	}
+	
+	public String[] searchFilesInBranch(String branchName, File workingDir, OperationListener listener)
+	{
+		return ClearCasePlugin.getEngine().searchFilesInBranch(branchName,workingDir, listener);
+	}
+
 
 	public void update(String element, int flags, boolean workingDir) {
 		ClearCasePlugin.getEngine().update(element, flags, workingDir);

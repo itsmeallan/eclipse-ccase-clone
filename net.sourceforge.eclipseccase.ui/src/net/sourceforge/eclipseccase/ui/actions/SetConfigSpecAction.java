@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.views.ConfigSpecView;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +24,8 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 
 	private String configSpecTxt = null;
 
+	private ConfigSpecView view = null;
+	
 	/**
 	 * {@inheritDoc
 	 */
@@ -75,6 +79,13 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 						ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
 						console.err.println("A Problem occurs while updating Config Spec.\n" + e.getMessage());
 						console.show();
+					} 
+					finally
+					{
+						if(view != null)
+						{
+							view.focusOnConfigSpec();
+						}
 					}
 				}
 			}
@@ -89,5 +100,10 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 
 	public void setConfigSpecTxt(String configSpecTxt) {
 		this.configSpecTxt = configSpecTxt;
+	}
+	
+	public void setConfigSpecView(ConfigSpecView view)
+	{
+		this.view = view;
 	}
 }

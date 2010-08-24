@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.eclipseccase.ui.actions.SetConfigSpecAction;
@@ -138,7 +140,7 @@ public class ConfigSpecView extends ViewPart {
 		}
 	}
 
-	private void focusOnConfigSpec() {
+	public void focusOnConfigSpec() {
 		configSpec.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				getViewSite().getActionBars().getToolBarManager().removeAll();
@@ -156,12 +158,22 @@ public class ConfigSpecView extends ViewPart {
 					refreshAction.setEnabled(false);
 					configSpec.setText("");
 				} else {
-					configSpecLabel.setText("Base: " + resource.getLocation().toString());
+					
+					if(!(ClearCasePlugin.IsConfigSpecModificationForbidden()))
+					{
+						configSpecLabel.setText("Base: " + resource.getLocation().toString());
 
-					configSpec.setEditable(true);
-					if (bConfigSpecModified) {
-						saveAction.setEnabled(true);
-					} else {
+						configSpec.setEditable(true);
+						if (bConfigSpecModified) {
+							saveAction.setEnabled(true);
+						} else {
+							saveAction.setEnabled(false);
+						}
+					}
+					else
+					{
+						configSpecLabel.setText("Base: " + resource.getLocation().toString() + " - Config Spec cannot be modified");
+						configSpec.setEditable(false);
 						saveAction.setEnabled(false);
 					}
 
@@ -201,6 +213,7 @@ public class ConfigSpecView extends ViewPart {
 		SetConfigSpecAction saveAction = new SetConfigSpecAction();
 		saveAction.setResource(this.resource);
 		saveAction.setConfigSpecTxt(configSpecTxt);
+		saveAction.setConfigSpecView(this);
 
 		try {
 			saveAction.execute((IAction) null);
@@ -211,7 +224,6 @@ public class ConfigSpecView extends ViewPart {
 			console.show();
 		} finally {
 		}
-
 	}
 
 	public void clear() {
@@ -220,4 +232,5 @@ public class ConfigSpecView extends ViewPart {
 		configSpec.setText("");
 		focusOnConfigSpec();
 	}
+	
 }

@@ -79,6 +79,9 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String CLEARCASE_PRIMARY_GROUP = ClearCasePlugin.PLUGIN_ID
 			+ ".clearcasePrimaryGroup"; //$NON-NLS-1$
+	
+	String BRANCH_PREFIX = ClearCasePlugin.PLUGIN_ID
+	+ ".branch.prefix"; //$NON-NLS-1$
 
 	/** ClearCase preference */
 	String USE_CLEARDLG = ClearCasePlugin.PLUGIN_ID + ".useClearDlg"; //$NON-NLS-1$
@@ -128,7 +131,10 @@ public interface IClearCasePreferenceConstants {
 
 	/** ClearCase preference */
 	String GRAPHICAL_EXTERNAL_UPDATE_VIEW = ClearCasePlugin.PLUGIN_ID
-	+ ".graphical.external.updae.view"; //$NON-NLS-1$
+	+ ".graphical.external.update.view"; //$NON-NLS-1$
+	
+	String FORBID_CONFIG_SPEC_MODIFICATION = ClearCasePlugin.PLUGIN_ID
+	+ ".config_spec.forbid_modification"; //$NON-NLS-1$
 	
 	/** ClearCase preference */
 	String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearCasePlugin.PLUGIN_ID

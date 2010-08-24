@@ -19,11 +19,17 @@ import org.eclipse.ui.IActionDelegate;
  */
 public class VersionTreeAction extends ClearCaseWorkspaceAction {
 	IResource forceResource = null;
-
+	String forceFile = null;
+	
 	public void setResource(IResource resource) {
 		this.forceResource = resource;
 	}
 
+
+	public void setFile(String file) {
+		this.forceFile = file;
+	}
+	
 	/**
 	 * {@inheritDoc
 	 */
@@ -61,11 +67,16 @@ public class VersionTreeAction extends ClearCaseWorkspaceAction {
 						IResource resource = resources[i];
 						String path = resource.getLocation().toOSString();
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						if (p != null) {
+						
+						if(forceFile != null)
+						{
+							p.showVersionTree(forceFile, new File(resource.getProject().getLocation().toOSString()));
+						}
+						else if (p != null) {
 							if (p.isHijacked(resource)) {
-								p.showVersionTree(path + "@@/");
+								p.showVersionTree(path + "@@/", new File(resource.getProject().getLocation().toOSString()));
 							} else {
-								p.showVersionTree(path);
+								p.showVersionTree(path, new File(resource.getProject().getLocation().toOSString()));
 							}
 						}
 					}

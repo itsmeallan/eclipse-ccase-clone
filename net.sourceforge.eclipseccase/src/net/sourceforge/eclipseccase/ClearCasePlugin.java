@@ -587,6 +587,11 @@ public class ClearCasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getString(
 				IClearCasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
 	}
+	
+	public static String getBranchPrefix() {
+		return getInstance().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.BRANCH_PREFIX);
+	}
 
 	public static boolean isCheckinIdenticalAllowed() {
 		return getInstance().getPluginPreferences().getBoolean(
@@ -631,6 +636,16 @@ public class ClearCasePlugin extends Plugin {
 	public static boolean UseGraphicalExternalUpdateView() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW);
+	}
+	
+
+	/**
+	 * Used to know if config spec modification has been forbidden
+	 * @return true if modification forbidden; false else.
+	 */
+	public static boolean IsConfigSpecModificationForbidden() {
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION);
 	}
 	
 	/**
@@ -790,6 +805,7 @@ public class ClearCasePlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void initializeDefaultPluginPreferences() {
 		Preferences pref = getPluginPreferences();
@@ -856,7 +872,13 @@ public class ClearCasePlugin extends Plugin {
 		pref.setDefault(
 				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW,
 				true);
-
+		pref.setDefault(
+				IClearCasePreferenceConstants.BRANCH_PREFIX,
+				"");
+		pref.setDefault(
+				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION,
+				false);
+		
 		/* Set timeout as an environment variable */
 		setGraphicalToolTimeout();
 	}

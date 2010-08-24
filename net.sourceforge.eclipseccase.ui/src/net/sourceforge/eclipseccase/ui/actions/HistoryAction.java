@@ -19,6 +19,16 @@ import org.eclipse.ui.PlatformUI;
  */
 public class HistoryAction extends ClearCaseWorkspaceAction {
 	IResource[] resources = null;
+	String fileVersion = null;
+	IResource forceResource = null;
+	
+	public void setResource(IResource Resource) {
+		this.forceResource = Resource;
+	}
+	
+	public void setFileVersion(String fileVersion) {
+		this.fileVersion = fileVersion;
+	}
 
 	private HistoryView view = null;
 
@@ -45,7 +55,16 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
-		resources = getSelectedResources();
+		
+		if(forceResource != null)
+		{
+			resources = new IResource[1];
+			resources[0] = forceResource;
+		}
+		else
+		{
+			resources = getSelectedResources();
+		}
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
@@ -64,8 +83,17 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 				try {
 					if (resources != null && resources.length > 0) {
 						IResource resource = resources[0];
-						String path = resource.getLocation().toOSString();
-
+						String path;
+						
+						if(fileVersion != null)
+						{	
+							path = fileVersion;
+						}
+						else
+						{
+							path = resource.getLocation().toOSString();
+						}
+						
 						// ClearCaseInterface cci =
 						// ClearCase.createInterface(ClearCase.INTERFACE_CLI);
 						ClearCaseInterface cci = ClearCasePlugin.getEngine();

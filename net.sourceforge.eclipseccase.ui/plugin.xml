@@ -186,6 +186,13 @@
                menubarPath="team.main/group2">
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.BranchSearchViewAction"
+               icon="icons/full/clearcase.png"
+               id="net.sourceforge.eclipseccase.popups.branchsearch"
+               label="Search File in Branch"
+               menubarPath="team.main/group2">
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.DescribeVersionAction"
                icon="icons/full/describe.png"
                id="net.sourceforge.eclipseccase.popups.describeversion"
@@ -473,6 +480,22 @@
             </enablement>
          </action>
          <action
+               class="net.sourceforge.eclipseccase.ui.actions.BranchSearchViewAction"
+               definitionId="net.sourceforge.eclipseccase.ui.actionset.branchsearch"
+               icon="icons/full/clearcase.png"
+               id="net.sourceforge.eclipseccase.ui.actionset.branchsearch"
+               label="&amp;Search File in Branch"
+               menubarPath="eclipseccase_menu/group2"
+               toolbarPath="Normal/additions"
+               tooltip="Search File in Branch">
+            <enablement>
+               <pluginState
+                     id="net.sourceforge.eclipseccase"
+                     value="activated">
+               </pluginState>
+            </enablement>
+         </action>
+         <action
                class="net.sourceforge.eclipseccase.ui.actions.DescribeVersionAction"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.describeversion"
                icon="icons/full/describe.png"
@@ -703,6 +726,12 @@
             id="net.sourceforge.eclipseccase.ui.actionset.unhijack"
             name="UnHijack">
       </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.category"
+            description="Search File in Branch"
+            id="net.sourceforge.eclipseccase.ui.actionset.branchsearch"
+            name="Search File in Branch">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -760,6 +789,14 @@
             icon="icons/full/history.png"
             id="net.sourceforge.eclipseccase.views.HistoryView"
             name="CC History">
+      </view>
+      <view
+            category="org.eclipse.team.ui"
+            class="net.sourceforge.eclipseccase.views.BranchSearchView"
+            icon="icons/full/clearcase.png"
+            id="net.sourceforge.eclipseccase.views.BranchSearchView"
+            name="ClearCase Search"
+            restorable="true">
       </view>
    </extension>
    <extension
