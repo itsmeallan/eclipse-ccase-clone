@@ -6,8 +6,17 @@
 =====
 
 Fixed Bugs:
+3044243       Cannot save edited cs in dyn view twice
+3052126       [snapshot view] Version tree requests dynamic view to show
+3000299       Problem to modify Config Spec within snapshot view
 3039373: Cannot handle files with brackets, "[]"
 3023824: Adding file does not change checkout state of parent (TODO: Test it).
+
+New Features:
+
+3052119       Add a view to search files in a branch                     
+3052122       Add prefix name to branch when creating it                
+3026490       Forbid config spec modification from preferences
 
 2.2.4
 =====
