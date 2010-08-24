@@ -116,6 +116,9 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(GRAPHICAL_EXTERNAL_UPDATE_VIEW, PreferenceMessages.getString("Preferences.General.GraphicalUpdateView"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
 
+		addField(new BooleanFieldEditor(FORBID_CONFIG_SPEC_MODIFICATION, PreferenceMessages.getString("Preferences.General.ModifyConfigSpec"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
+
 		
 		// RadioGroupFieldEditor clearcaseLayer = new
 		// RadioGroupFieldEditor(CLEARCASE_API,
@@ -167,7 +170,12 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 		addField(new BooleanFieldEditor(COMMENT_CHECKOUT_NEVER_ON_AUTO, PreferenceMessages.getString("Preferences.Comments.CommentCheckoutNeverOnAuto"), //$NON-NLS-1$ 
 				getFieldEditorParent(COMMENTS)));
-
+		
+		addField(new StringFieldEditor(BRANCH_PREFIX, PreferenceMessages.getString("Preferences.Comments.BranchPrefix"), //$NON-NLS-1$
+				getFieldEditorParent(COMMENTS)));
+		
+		
+		
 		//		addField(new BooleanFieldEditor(COMMENT_ADD_NEVER_ON_AUTO, PreferenceMessages.getString("Preferences.Comments.CommentAddNeverOnAuto"), //$NON-NLS-1$ 
 		// getFieldEditorParent(COMMENTS)));
 
