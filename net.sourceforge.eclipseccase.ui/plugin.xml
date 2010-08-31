@@ -246,7 +246,8 @@
            
          </menu>
           <menu id="net.sourceforge.eclipseccase.ui.actionset.subMenu"
-		   label="subMenu"
+		   label="Checkedout State"
+		   icon="icons/full/checkedout.png"
 		   path="eclipseccase_menu/group2"> 
 		   <separator name="slot1"/>
 		   <separator name="slot2"/>
@@ -264,7 +265,6 @@
         <action
                class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
                definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
-               icon="icons/full/find.png"
                id="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
                label="Unreserved"
                menubarPath="eclipseccase_menu/net.sourceforge.eclipseccase.ui.actionset.subMenu/slot1"
