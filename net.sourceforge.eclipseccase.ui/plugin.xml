@@ -56,6 +56,7 @@
 			<filter name="projectPersistentProperty"
 				value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
 			</filter>
+
 			<action class="net.sourceforge.eclipseccase.ui.actions.UpdateAction"
 				icon="icons/full/update.png" id="net.sourceforge.eclipseccase.popups.update"
 				label="Update" menubarPath="team.main/group1">
@@ -134,10 +135,24 @@
 				icon="icons/full/diff.png" id="net.sourceforge.eclipseccase.popups.comparepredecessor"
 				label="Compare with Predecessor (external tool)" menubarPath="team.main/group2">
 			</action>
+			<!-- mike 20100903 In popupMenus it does not follow the same concept as actionSet. As a workaround
+			     I will put the menus under Team and group2. Not nice but it works.
+			<menu id="net.sourceforge.eclipseccase.ui.popups.checkedoutstate"
+				label="Checkedout State" icon="icons/full/checkedout.png" path="additions">
+				<separator name="res2unres"/>
+				<separator name="unres2res">
+			</menu> -->
 			<action
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
-				id="net.sourceforge.eclipseccase.popups.checkouttounreserved"
-				label="Reserved --&gt;Unreserved" menubarPath="team.main/net.sourceforge.eclipseccase.ui.actionset.checkedoutstate">
+				id="net.sourceforge.eclipseccase.ui.popups.checkouttounreserved"
+				label="Reserved --&gt;Unreserved"
+				menubarPath="team.main/group2">
+			</action>
+			<action
+				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToReservedAction"
+				id="net.sourceforge.eclipseccase.ui.popups.checkouttoreserved"
+				label=" Unreserved--&gt;Reserved"
+				menubarPath="team.main/group2">
 			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
 				icon="icons/full/history.png" id="net.sourceforge.eclipseccase.popups.history"
@@ -168,7 +183,7 @@
 				<separator name="res2unres" />
 				<separator name="unres2res" />
 			</menu>
-			<action 
+			<action
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
 				id="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
