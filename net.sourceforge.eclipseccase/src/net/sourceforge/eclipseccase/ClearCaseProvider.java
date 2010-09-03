@@ -82,6 +82,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	RefreshStateOperation REFRESH_STATE = new RefreshStateOperation();
 
+	CheckoutUnreservedOperation CO_UNRESERVED = new CheckoutUnreservedOperation();
+
+	CheckoutReservedOperation CO_RESERVED = new CheckoutReservedOperation();
+
 	private IMoveDeleteHook moveHandler = new MoveHandler(this);
 
 	private String comment = ""; //$NON-NLS-1$
@@ -293,6 +297,25 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 	}
 
+	public void unreserved(IResource[] resources, int depth,
+			IProgressMonitor progress) throws TeamException {
+		try {
+			execute(CO_UNRESERVED, resources, depth, progress);
+		} finally {
+			setComment("");
+		}
+	}
+	
+	public void reserved(IResource[] resources, int depth,
+			IProgressMonitor progress) throws TeamException {
+		try {
+			execute(CO_RESERVED, resources, depth, progress);
+		} finally {
+			setComment("");
+		}
+	}
+	
+
 	/*
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
 	 */
@@ -359,17 +382,16 @@ public class ClearCaseProvider extends RepositoryProvider {
 		ClearCasePlugin.getEngine().showFindMerge(workingDir);
 
 	}
-	
 
 	public String[] loadBrancheList(File workingDir) {
 		return ClearCasePlugin.getEngine().loadBrancheList(workingDir);
 	}
-	
-	public String[] searchFilesInBranch(String branchName, File workingDir, OperationListener listener)
-	{
-		return ClearCasePlugin.getEngine().searchFilesInBranch(branchName,workingDir, listener);
-	}
 
+	public String[] searchFilesInBranch(String branchName, File workingDir,
+			OperationListener listener) {
+		return ClearCasePlugin.getEngine().searchFilesInBranch(branchName,
+				workingDir, listener);
+	}
 
 	public void update(String element, int flags, boolean workingDir) {
 		ClearCasePlugin.getEngine().update(element, flags, workingDir);
@@ -886,12 +908,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 				// for parent is
 				// correct.
 				if (!isCheckedOut(parent)) {
-					ClearCaseElementState [] state = ClearCasePlugin.getEngine().checkout(
-							new String[] { parent.getLocation().toOSString() },
-							getComment(), ClearCase.NONE, opListener);
-					if(state[0].isCheckedOut()){
-					updateState(parent, IResource.DEPTH_ZERO,
-							new SubProgressMonitor(monitor, 10));
+					ClearCaseElementState[] state = ClearCasePlugin.getEngine()
+							.checkout(
+									new String[] { parent.getLocation()
+											.toOSString() }, getComment(),
+									ClearCase.NONE, opListener);
+					if (state[0].isCheckedOut()) {
+						updateState(parent, IResource.DEPTH_ZERO,
+								new SubProgressMonitor(monitor, 10));
 					}
 
 				}
@@ -1483,6 +1507,78 @@ public class ClearCaseProvider extends RepositoryProvider {
 				IStatus result = OK_STATUS;
 				String element = resource.getLocation().toOSString();
 				ClearCasePlugin.getEngine().update(element, 0, false);
+				monitor.worked(40);
+				updateState(resource, IResource.DEPTH_INFINITE,
+						new SubProgressMonitor(monitor, 10));
+				return result;
+			} finally {
+				monitor.done();
+			}
+		}
+	}
+
+	private final class CheckoutUnreservedOperation implements
+			IIterativeOperation {
+
+		public IStatus visit(IResource resource, int depth,
+				IProgressMonitor monitor) {
+			try {
+				monitor.beginTask("Changing checkout to unreserved "
+						+ resource.getFullPath(), 100);
+
+				// Sanity check - can't update something that is not part of
+				// clearcase
+				if (!isClearCaseElement(resource))
+					return new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.NO_REMOTE_RESOURCE,
+							MessageFormat
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
+											new Object[] { resource
+													.getFullPath().toString() }),
+							null);
+				IStatus result = OK_STATUS;
+				String element = resource.getLocation().toOSString();
+				ClearCasePlugin.getEngine().unreserved(
+						new String[] { element }, null, 0, opListener);
+				monitor.worked(40);
+				updateState(resource, IResource.DEPTH_INFINITE,
+						new SubProgressMonitor(monitor, 10));
+				return result;
+			} finally {
+				monitor.done();
+			}
+		}
+	}
+
+	private final class CheckoutReservedOperation implements
+			IIterativeOperation {
+
+		public IStatus visit(IResource resource, int depth,
+				IProgressMonitor monitor) {
+			try {
+				monitor.beginTask("Changing checkout to reserved "
+						+ resource.getFullPath(), 100);
+
+				// Sanity check - can't update something that is not part of
+				// clearcase
+				if (!isClearCaseElement(resource))
+					return new Status(
+							IStatus.ERROR,
+							ID,
+							TeamException.NO_REMOTE_RESOURCE,
+							MessageFormat
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
+											new Object[] { resource
+													.getFullPath().toString() }),
+							null);
+				IStatus result = OK_STATUS;
+				String element = resource.getLocation().toOSString();
+				ClearCasePlugin.getEngine().reserved(
+						new String[] { element }, null, 0, opListener);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_INFINITE,
 						new SubProgressMonitor(monitor, 10));
