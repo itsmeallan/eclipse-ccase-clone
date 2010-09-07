@@ -146,12 +146,14 @@
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
 				id="net.sourceforge.eclipseccase.ui.popups.checkouttounreserved"
 				label="Reserved --&gt;Unreserved"
+				icon="icons/full/unreserve.png"
 				menubarPath="team.main/group2">
 			</action>
 			<action
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToReservedAction"
 				id="net.sourceforge.eclipseccase.ui.popups.checkouttoreserved"
 				label=" Unreserved--&gt;Reserved"
+				icon="icons/full/reserve.png"
 				menubarPath="team.main/group2">
 			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
@@ -186,6 +188,7 @@
 			<action
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
+				icon="icons/full/unreserve.png"
 				id="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
 				label="Reserved --&gt;Unreserved"
 				menubarPath="eclipseccase_menu/net.sourceforge.eclipseccase.ui.actionset.checkedoutstate/res2unres">
@@ -199,6 +202,7 @@
 			<action
 				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToReservedAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
+				icon="icons/full/reserve.png"
 				id="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
 				label="UnReserved --&gt;Reserved"
 				menubarPath="eclipseccase_menu/net.sourceforge.eclipseccase.ui.actionset.checkedoutstate/unres2res">
