@@ -1,5 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.console.ClearCaseConsole;
+import net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.views.ConfigSpecView;
@@ -58,6 +61,9 @@ public class GetConfigSpecAction extends ClearCaseWorkspaceAction {
 						view.loadConfigSpec(resources[0]);
 					}
 				} catch (Exception e) {
+					ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
+					console.err.println("A Problem occurs while retrieving Config Spec.\n" + e.getMessage());
+					console.show();
 				} finally {
 				}
 			}
