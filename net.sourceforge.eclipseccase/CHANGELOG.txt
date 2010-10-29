@@ -18,6 +18,7 @@ New Features:
 3052122       Add prefix name to branch when creating it                
 3026490       Forbid config spec modification from preferences
 2832726		  Ability to change checkout state reserved/unreserved
+3096488       Add use of -master in preference settings.
 
 2.2.4
 =====

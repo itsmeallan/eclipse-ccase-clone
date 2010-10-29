@@ -82,6 +82,7 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 					} 
 					finally
 					{
+						monitor.done();
 						if(view != null)
 						{
 							view.focusOnConfigSpec();
@@ -91,7 +92,9 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 			}
 		};
 
-		executeInForeground(runnable, PROGRESS_DIALOG, "Set Config Spec...");
+		//executeInForeground(runnable, PROGRESS_DIALOG, "Set Config Spec...");
+		executeInBackground(runnable, "Set Config Spec");
+		
 	}
 
 	public void setResource(IResource resource) {

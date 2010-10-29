@@ -26,6 +26,9 @@ public interface IClearCasePreferenceConstants {
 	String ADD_WITH_CHECKIN = ClearCasePlugin.PLUGIN_ID + ".add.checkin"; //$NON-NLS-1$
 
 	/** ClearCase preference */
+	String ADD_WITH_MASTER = ClearCasePlugin.PLUGIN_ID + ".add.master"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
 	String CHECKOUT_AUTO = ClearCasePlugin.PLUGIN_ID + ".checkout.auto"; //$NON-NLS-1$
 
 	/** ClearCase preference */

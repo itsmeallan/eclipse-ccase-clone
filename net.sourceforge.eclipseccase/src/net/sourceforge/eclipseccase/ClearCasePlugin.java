@@ -643,9 +643,18 @@ public class ClearCasePlugin extends Plugin {
 	 * Used to know if config spec modification has been forbidden
 	 * @return true if modification forbidden; false else.
 	 */
-	public static boolean IsConfigSpecModificationForbidden() {
+	public static boolean isConfigSpecModificationForbidden() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION);
+	}
+	
+	/**
+	 * Used for a
+	 * @return
+	 */
+	public static boolean isUseMasterForAdd(){
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.ADD_WITH_MASTER);
 	}
 	
 	/**
@@ -847,6 +856,7 @@ public class ClearCasePlugin extends Plugin {
 				IClearCasePreferenceConstants.NEVER);
 		pref.setDefault(IClearCasePreferenceConstants.CHECKOUT_LATEST, true);
 		pref.setDefault(IClearCasePreferenceConstants.FULL_REFRESH, false);
+		pref.setDefault(IClearCasePreferenceConstants.ADD_WITH_MASTER, true);
 
 		// comments
 		pref.setDefault(IClearCasePreferenceConstants.COMMENT_ADD, true);

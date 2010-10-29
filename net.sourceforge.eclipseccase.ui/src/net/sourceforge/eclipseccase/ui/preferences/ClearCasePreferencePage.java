@@ -156,6 +156,9 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 3, //$NON-NLS-1$ 
 				ALWAYS_IF_POSSIBLE_NEVER, getFieldEditorParent(SOURCE_MANAGEMENT), true));
+		
+		addField(new BooleanFieldEditor(ADD_WITH_MASTER, PreferenceMessages.getString("Preferences.Source.AddWithMaster"), //$NON-NLS-1$
+				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
 		// comments
 

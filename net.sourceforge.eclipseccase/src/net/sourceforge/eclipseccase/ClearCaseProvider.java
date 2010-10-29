@@ -940,7 +940,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		ClearCaseElementState state = ClearCasePlugin.getEngine().add(
 				resource.getLocation().toOSString(), false, getComment(),
-				ClearCase.PTIME | ClearCase.MASTER, opListener);
+				ClearCase.PTIME | (ClearCasePlugin.isUseMasterForAdd()? ClearCase.MASTER:ClearCase.NONE), opListener);
 
 		if (state.isElement()) {
 			// Do nothing!
@@ -988,7 +988,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// clearcase.
 			ClearCaseElementState state = ClearCasePlugin.getEngine().add(
 					resource.getLocation().toOSString(), true, getComment(),
-					ClearCase.MASTER, opListener);
+					ClearCasePlugin.isUseMasterForAdd()? ClearCase.MASTER:ClearCase.NONE, opListener);
 			if (!state.isElement()) {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Add failed: " + "Could not add element"
