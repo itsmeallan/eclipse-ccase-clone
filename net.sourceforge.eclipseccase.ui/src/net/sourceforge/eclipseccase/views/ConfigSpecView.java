@@ -159,7 +159,7 @@ public class ConfigSpecView extends ViewPart {
 					configSpec.setText("");
 				} else {
 					
-					if(!(ClearCasePlugin.IsConfigSpecModificationForbidden()))
+					if(!(ClearCasePlugin.isConfigSpecModificationForbidden()))
 					{
 						configSpecLabel.setText("Base: " + resource.getLocation().toString());
 
