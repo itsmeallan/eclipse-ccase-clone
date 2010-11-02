@@ -3,13 +3,13 @@
 <repository name='${p2.metadata.repo.name}' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1281182145944'/>
+    <property name='p2.timestamp' value='1288698833400'/>
   </properties>
   <references size='2'>
     <repository uri='http://eclipse-ccase.sourceforge.net/update/' url='http://eclipse-ccase.sourceforge.net/update/' type='0' options='0'/>
     <repository uri='http://eclipse-ccase.sourceforge.net/update/' url='http://eclipse-ccase.sourceforge.net/update/' type='1' options='0'/>
   </references>
-  <units size='114'>
+  <units size='120'>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.0.v201002231900' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.0.v201002231900)' severity='0'/>
       <properties size='8'>
@@ -123,40 +123,6 @@
         </license>
       </licenses>
     </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005261900'>
-      <properties size='3'>
-        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005261900'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005261900'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005261900'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
     <unit id='net.sourceforge.eclipseccase.feature.jar' version='2.1.6'>
       <update id='net.sourceforge.eclipseccase.feature.jar' range='[0.0.0,2.1.6)' severity='0'/>
       <properties size='7'>
@@ -193,6 +159,40 @@
           %license
         </license>
       </licenses>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005261900'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005261900'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005261900'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005261900'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
     </unit>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005270704' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,1.0.0.201005270704)' severity='0'/>
@@ -259,6 +259,40 @@
         [Enter Copyright Description here.]
       </copyright>
     </unit>
+    <unit id='net.sourceforge.clearcase' version='2.2.5.v201011021253' singleton='false'>
+      <update id='net.sourceforge.clearcase' range='[0.0.0,2.2.5.v201011021253)' severity='0'/>
+      <properties size='5'>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.pluginName' value='ClearCase Java API'/>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      </properties>
+      <provides size='8'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' version='2.2.5.v201011021253'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.clearcase' version='2.2.5.v201011021253'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.commandline' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.events' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.utils' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.5.v201011021253'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.2.5.v201011021253&#xA;Export-Package: net.sourceforge.clearcase,net.sourceforge.clearcase.commandline,net.sourceforge.clearcase.events,net.sourceforge.clearcase.utils&#xA;Bundle-SymbolicName: net.sourceforge.clearcase&#xA;Bundle-Localization: plugin&#xA;Bundle-ClassPath: clearcase.jar&#xA;Bundle-Name: %pluginName&#xA;Bundle-Vendor: %providerName
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005261900' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,1.0.0.201005261900)' severity='0'/>
       <properties size='4'>
@@ -281,40 +315,6 @@
         </required>
       </requires>
       <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005271233'>
-      <properties size='3'>
-        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005271233'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005271233'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005271233'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
       <licenses size='1'>
         <license uri='http://www.example.com/license' url='http://www.example.com/license'>
           [Enter License Description here.]
@@ -363,6 +363,40 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005271233'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005271233'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005271233'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005271233'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
     </unit>
     <unit id='net.sourceforge.clearcase' version='2.2.3.v201005270734' singleton='false'>
       <update id='net.sourceforge.clearcase' range='[0.0.0,2.2.3.v201005270734)' severity='0'/>
@@ -718,6 +752,19 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='eclipse-ccase-35' version='0.0.0.20101102125351'>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse ClearCase Integration for Eclipse 3.5'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='eclipse-ccase-35' version='0.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' range='[2.2.5.v201011021253,2.2.5.v201011021253]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
     </unit>
     <unit id='net.sourceforge.eclipseccase.feature.jar' version='2.2.0.v201002231900'>
       <properties size='7'>
@@ -1196,6 +1243,47 @@
         </license>
       </licenses>
     </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.5.v201011021253' singleton='false'>
+      <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.5.v201011021253)' severity='0'/>
+      <properties size='8'>
+        <property name='org.eclipse.equinox.p2.name' value='%featureName'/>
+        <property name='org.eclipse.equinox.p2.description' value='%description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='df_LT.featureName' value='Eclipse ClearCase Integration'/>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.description' value='Eclipse ClearCase integration provided by eclipse-ccase.sourceforge.net.'/>
+        <property name='df_LT.license' value='ECLIPSE-CCASE.SOURCEFORGE.NET SOFTWARE USER AGREEMENT&#xA;15th June, 2004&#xA;&#xA;Usage Of Content&#xA;&#xA;ECLIPSE-CCASE.SOURCEFORGE.NET MAKES AVAILABLE SOFTWARE, DOCUMENTATION,&#xA;INFORMATION AND/OR OTHER MATERIALS FOR OPEN SOURCE PROJECTS (COLLECTIVELY&#xA;&quot;CONTENT&quot;). USE OF THE CONTENT IS GOVERNED BY THE TERMS AND CONDITIONS OF&#xA;THIS AGREEMENT AND/OR THE TERMS AND CONDITIONS OF LICENSE AGREEMENTS OR&#xA;NOTICES INDICATED OR REFERENCED BELOW. BY USING THE CONTENT, YOU&#xA;AGREE THAT YOUR USE OF THE CONTENT IS GOVERNED BY THIS AGREEMENT&#xA;AND/OR THE TERMS AND CONDITIONS OF ANY APPLICABLE LICENSE AGREEMENTS&#xA;OR NOTICES INDICATED OR REFERENCED BELOW. IF YOU DO NOT AGREE TO THE&#xA;TERMS AND CONDITIONS OF THIS AGREEMENT AND THE TERMS AND CONDITIONS&#xA;OF ANY APPLICABLE LICENSE AGREEMENTS OR NOTICES INDICATED OR REFERENCED&#xA;BELOW, THEN YOU MAY NOT USE THE CONTENT.&#xA;&#xA;Applicable Licenses&#xA;&#xA;Unless otherwise indicated, all Content made available by eclipse-ccase.sourceforge.net&#xA;is provided to you under the terms and conditions of the Common Public&#xA;License Version 1.0 (&quot;CPL&quot;). A copy of the CPL is provided with this&#xA;Content and is also available at http://www.eclipse.org/legal/cpl-v10.html.&#xA;For purposes of the CPL, &quot;Program&quot; will mean the Content.&#xA;&#xA;Content includes, but is not limited to, source code, object code,&#xA;documentation and other files maintained in the eclipse-ccase.sourceforge.net CVS&#xA;repository (&quot;Repository&quot;) in CVS modules (&quot;Modules&quot;) and made available&#xA;as downloadable archives (&quot;Downloads&quot;).&#xA;&#xA;Content may be apportioned into plug-ins (&quot;Plug-ins&quot;), plug-in fragments&#xA;(&quot;Fragments&quot;), and features (&quot;Features&quot;). A Feature is a bundle of one or&#xA;more Plug-ins and/or Fragments and associated material. Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of the&#xA;Plug-ins and/or Fragments associated with a Feature. Plug-ins and Fragments&#xA;are located in directories named &quot;plugins&quot; and Features are located in&#xA;directories named &quot;features&quot;.&#xA;&#xA;Features may also include other Features (&quot;Included Features&quot;). Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of&#xA;Included Features.&#xA;&#xA;The terms and conditions governing Plug-ins and Fragments should be&#xA;contained in files named &quot;about.html&quot; (&quot;Abouts&quot;). The terms and&#xA;conditions governing Features and Included Features should be contained&#xA;in files named &quot;license.html&quot; (&quot;Feature Licenses&quot;). Abouts and Feature&#xA;Licenses may be located in any directory of a Download or Module&#xA;including, but not limited to the following locations:&#xA;&#xA;- The top-level (root) directory&#xA;- Plug-in and Fragment directories&#xA;- Subdirectories of the directory named &quot;src&quot; of certain Plug-ins&#xA;- Feature directories&#xA;&#xA;Note: if a Feature made available by eclipse-ccase.sourceforge.net is installed using the&#xA;Eclipse Update Manager, you must agree to a license (&quot;Feature Update&#xA;License&quot;) during the installation process. If the Feature contains&#xA;Included Features, the Feature Update License should either provide you&#xA;with the terms and conditions governing the Included Features or inform&#xA;you where you can locate them. Feature Update Licenses may be found in&#xA;the &quot;license&quot; property of files named &quot;feature.properties&quot;. Such Abouts,&#xA;Feature Licenses and Feature Update Licenses contain the terms and&#xA;conditions (or references to such terms and conditions) that govern your&#xA;use of the associated Content in that directory.&#xA;&#xA;THE ABOUTS, FEATURE LICENSES AND FEATURE UPDATE LICENSES MAY REFER&#xA;TO THE CPL OR OTHER LICENSE AGREEMENTS, NOTICES OR TERMS AND CONDITIONS.&#xA;SOME OF THESE OTHER LICENSE AGREEMENTS MAY INCLUDE (BUT ARE NOT LIMITED TO):&#xA;&#xA;- Eclipse Public License Version 1.0 (available at http://www.eclipse.org/legal/epl-v10.html)&#xA;- Apache Software License 2.0 (available at http://www.apache.org/licenses/LICENSE-2.0)&#xA;&#xA;IT IS YOUR OBLIGATION TO READ AND ACCEPT ALL SUCH TERMS AND CONDITIONS PRIOR&#xA;TO USE OF THE CONTENT. If no About, Feature License or Feature Update License&#xA;is provided, please contact eclipse-ccase.sourceforge.net to determine what terms and conditions&#xA;govern that particular Content.&#xA;&#xA;Cryptography&#xA;&#xA;Content may contain encryption software. The country in which you are&#xA;currently may have restrictions on the import, possession, and use,&#xA;and/or re-export to another country, of encryption software. BEFORE&#xA;using any encryption software, please check the country&apos;s laws,&#xA;regulations and policies concerning the import, possession, or use,&#xA;and re-export of encryption software, to see if this is permitted.'/>
+      </properties>
+      <provides size='2'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' version='2.2.5.v201011021253'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <requires size='12'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='3.4.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='3.3.1'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' range='[2.2.5.v201011021253,2.2.5.v201011021253]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.5.v201011021253,2.2.5.v201011021253]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.5.v201011021253,2.2.5.v201011021253]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[2.2.5.v201011021253,2.2.5.v201011021253]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='%25licenseURL' url='%25licenseURL'>
+          %license
+        </license>
+      </licenses>
+    </unit>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.3.v201005270722' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.3.v201005270722)' severity='0'/>
       <properties size='8'>
@@ -1237,40 +1325,6 @@
         </license>
       </licenses>
     </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270734'>
-      <properties size='3'>
-        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270734'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005270734'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005270734'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
     <unit id='net.sourceforge.eclipseccase' version='2.2.3.v201005270741'>
       <update id='net.sourceforge.eclipseccase' range='[0.0.0,2.2.3.v201005270741)' severity='0'/>
       <properties size='5'>
@@ -1309,6 +1363,40 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270734'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270734'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005270734'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005270734'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
     </unit>
     <unit id='net.sourceforge.eclipseccase.ui' version='2.2.3.v201005270708'>
       <update id='net.sourceforge.eclipseccase.ui' range='[0.0.0,2.2.3.v201005270708)' severity='0'/>
@@ -1403,71 +1491,6 @@
       </requires>
       <touchpoint id='null' version='0.0.0'/>
     </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005270708' singleton='false'>
-      <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,1.0.0.201005270708)' severity='0'/>
-      <properties size='4'>
-        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005270708'/>
-      </provides>
-      <requires size='4'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[1.0.0.201005270708,1.0.0.201005270708]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
-    </unit>
-    <unit id='net.sourceforge.clearcase' version='2.2.3.v201005270708' singleton='false'>
-      <update id='net.sourceforge.clearcase' range='[0.0.0,2.2.3.v201005270708)' severity='0'/>
-      <properties size='5'>
-        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
-        <property name='df_LT.pluginName' value='ClearCase Java API'/>
-        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
-        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
-        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
-      </properties>
-      <provides size='8'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
-        <provided namespace='osgi.bundle' name='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
-        <provided namespace='java.package' name='net.sourceforge.clearcase' version='0.0.0'/>
-        <provided namespace='java.package' name='net.sourceforge.clearcase.commandline' version='0.0.0'/>
-        <provided namespace='java.package' name='net.sourceforge.clearcase.events' version='0.0.0'/>
-        <provided namespace='java.package' name='net.sourceforge.clearcase.utils' version='0.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
-        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
-      </provides>
-      <artifacts size='1'>
-        <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='2'>
-          <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.2.3.v201005270708&#xA;Export-Package: net.sourceforge.clearcase,net.sourceforge.clearcase.commandline,net.sourceforge.clearcase.events,net.sourceforge.clearcase.utils&#xA;Bundle-SymbolicName: net.sourceforge.clearcase&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Bundle-ClassPath: clearcase.jar&#xA;Bundle-Vendor: %providerName
-          </instruction>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-    </unit>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.3.v201005271244' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.3.v201005271244)' severity='0'/>
       <properties size='8'>
@@ -1508,6 +1531,71 @@
           %license
         </license>
       </licenses>
+    </unit>
+    <unit id='net.sourceforge.clearcase' version='2.2.3.v201005270708' singleton='false'>
+      <update id='net.sourceforge.clearcase' range='[0.0.0,2.2.3.v201005270708)' severity='0'/>
+      <properties size='5'>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.pluginName' value='ClearCase Java API'/>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      </properties>
+      <provides size='8'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.commandline' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.events' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.clearcase.utils' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.3.v201005270708'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 2.2.3.v201005270708&#xA;Export-Package: net.sourceforge.clearcase,net.sourceforge.clearcase.commandline,net.sourceforge.clearcase.events,net.sourceforge.clearcase.utils&#xA;Bundle-SymbolicName: net.sourceforge.clearcase&#xA;Bundle-Localization: plugin&#xA;Bundle-Name: %pluginName&#xA;Bundle-ClassPath: clearcase.jar&#xA;Bundle-Vendor: %providerName
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005270708' singleton='false'>
+      <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,1.0.0.201005270708)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' version='1.0.0.201005270708'/>
+      </provides>
+      <requires size='4'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.3.v201005270708,2.2.3.v201005270708]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[1.0.0.201005270708,1.0.0.201005270708]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
     </unit>
     <unit id='net.sourceforge.eclipseccase.ui' version='2.2.3.v201005270722'>
       <update id='net.sourceforge.eclipseccase.ui' range='[0.0.0,2.2.3.v201005270722)' severity='0'/>
@@ -1601,6 +1689,41 @@
         <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' range='[2.2.4.v201008071355,2.2.4.v201008071355]'/>
       </requires>
       <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.jar' version='2.2.5.v201011021253'>
+      <properties size='7'>
+        <property name='org.eclipse.equinox.p2.name' value='%featureName'/>
+        <property name='org.eclipse.equinox.p2.description' value='%description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='df_LT.featureName' value='Eclipse ClearCase Integration'/>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.description' value='Eclipse ClearCase integration provided by eclipse-ccase.sourceforge.net.'/>
+        <property name='df_LT.license' value='ECLIPSE-CCASE.SOURCEFORGE.NET SOFTWARE USER AGREEMENT&#xA;15th June, 2004&#xA;&#xA;Usage Of Content&#xA;&#xA;ECLIPSE-CCASE.SOURCEFORGE.NET MAKES AVAILABLE SOFTWARE, DOCUMENTATION,&#xA;INFORMATION AND/OR OTHER MATERIALS FOR OPEN SOURCE PROJECTS (COLLECTIVELY&#xA;&quot;CONTENT&quot;). USE OF THE CONTENT IS GOVERNED BY THE TERMS AND CONDITIONS OF&#xA;THIS AGREEMENT AND/OR THE TERMS AND CONDITIONS OF LICENSE AGREEMENTS OR&#xA;NOTICES INDICATED OR REFERENCED BELOW. BY USING THE CONTENT, YOU&#xA;AGREE THAT YOUR USE OF THE CONTENT IS GOVERNED BY THIS AGREEMENT&#xA;AND/OR THE TERMS AND CONDITIONS OF ANY APPLICABLE LICENSE AGREEMENTS&#xA;OR NOTICES INDICATED OR REFERENCED BELOW. IF YOU DO NOT AGREE TO THE&#xA;TERMS AND CONDITIONS OF THIS AGREEMENT AND THE TERMS AND CONDITIONS&#xA;OF ANY APPLICABLE LICENSE AGREEMENTS OR NOTICES INDICATED OR REFERENCED&#xA;BELOW, THEN YOU MAY NOT USE THE CONTENT.&#xA;&#xA;Applicable Licenses&#xA;&#xA;Unless otherwise indicated, all Content made available by eclipse-ccase.sourceforge.net&#xA;is provided to you under the terms and conditions of the Common Public&#xA;License Version 1.0 (&quot;CPL&quot;). A copy of the CPL is provided with this&#xA;Content and is also available at http://www.eclipse.org/legal/cpl-v10.html.&#xA;For purposes of the CPL, &quot;Program&quot; will mean the Content.&#xA;&#xA;Content includes, but is not limited to, source code, object code,&#xA;documentation and other files maintained in the eclipse-ccase.sourceforge.net CVS&#xA;repository (&quot;Repository&quot;) in CVS modules (&quot;Modules&quot;) and made available&#xA;as downloadable archives (&quot;Downloads&quot;).&#xA;&#xA;Content may be apportioned into plug-ins (&quot;Plug-ins&quot;), plug-in fragments&#xA;(&quot;Fragments&quot;), and features (&quot;Features&quot;). A Feature is a bundle of one or&#xA;more Plug-ins and/or Fragments and associated material. Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of the&#xA;Plug-ins and/or Fragments associated with a Feature. Plug-ins and Fragments&#xA;are located in directories named &quot;plugins&quot; and Features are located in&#xA;directories named &quot;features&quot;.&#xA;&#xA;Features may also include other Features (&quot;Included Features&quot;). Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of&#xA;Included Features.&#xA;&#xA;The terms and conditions governing Plug-ins and Fragments should be&#xA;contained in files named &quot;about.html&quot; (&quot;Abouts&quot;). The terms and&#xA;conditions governing Features and Included Features should be contained&#xA;in files named &quot;license.html&quot; (&quot;Feature Licenses&quot;). Abouts and Feature&#xA;Licenses may be located in any directory of a Download or Module&#xA;including, but not limited to the following locations:&#xA;&#xA;- The top-level (root) directory&#xA;- Plug-in and Fragment directories&#xA;- Subdirectories of the directory named &quot;src&quot; of certain Plug-ins&#xA;- Feature directories&#xA;&#xA;Note: if a Feature made available by eclipse-ccase.sourceforge.net is installed using the&#xA;Eclipse Update Manager, you must agree to a license (&quot;Feature Update&#xA;License&quot;) during the installation process. If the Feature contains&#xA;Included Features, the Feature Update License should either provide you&#xA;with the terms and conditions governing the Included Features or inform&#xA;you where you can locate them. Feature Update Licenses may be found in&#xA;the &quot;license&quot; property of files named &quot;feature.properties&quot;. Such Abouts,&#xA;Feature Licenses and Feature Update Licenses contain the terms and&#xA;conditions (or references to such terms and conditions) that govern your&#xA;use of the associated Content in that directory.&#xA;&#xA;THE ABOUTS, FEATURE LICENSES AND FEATURE UPDATE LICENSES MAY REFER&#xA;TO THE CPL OR OTHER LICENSE AGREEMENTS, NOTICES OR TERMS AND CONDITIONS.&#xA;SOME OF THESE OTHER LICENSE AGREEMENTS MAY INCLUDE (BUT ARE NOT LIMITED TO):&#xA;&#xA;- Eclipse Public License Version 1.0 (available at http://www.eclipse.org/legal/epl-v10.html)&#xA;- Apache Software License 2.0 (available at http://www.apache.org/licenses/LICENSE-2.0)&#xA;&#xA;IT IS YOUR OBLIGATION TO READ AND ACCEPT ALL SUCH TERMS AND CONDITIONS PRIOR&#xA;TO USE OF THE CONTENT. If no About, Feature License or Feature Update License&#xA;is provided, please contact eclipse-ccase.sourceforge.net to determine what terms and conditions&#xA;govern that particular Content.&#xA;&#xA;Cryptography&#xA;&#xA;Content may contain encryption software. The country in which you are&#xA;currently may have restrictions on the import, possession, and use,&#xA;and/or re-export to another country, of encryption software. BEFORE&#xA;using any encryption software, please check the country&apos;s laws,&#xA;regulations and policies concerning the import, possession, or use,&#xA;and re-export of encryption software, to see if this is permitted.'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='2.2.5.v201011021253'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='%25licenseURL' url='%25licenseURL'>
+          %license
+        </license>
+      </licenses>
     </unit>
     <unit id='net.sourceforge.eclipseccase' version='2.2.3.v201005270722'>
       <update id='net.sourceforge.eclipseccase' range='[0.0.0,2.2.3.v201005270722)' severity='0'/>
@@ -2409,6 +2532,45 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'>
+      <update id='net.sourceforge.eclipseccase' range='[0.0.0,2.2.5.v201011021253)' severity='0'/>
+      <properties size='5'>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.pluginName' value='Eclipse ClearCase Integration Core'/>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      </properties>
+      <provides size='8'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.tools' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.commons.collections' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.commons.collections.buffer' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <requires size='6'>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.4.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.team.core' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='net.sourceforge.clearcase' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.3.1'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.5.v201011021253'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: net.sourceforge.eclipseccase,net.sourceforge.eclipseccase.tools,org.apache.commons.collections,org.apache.commons.collections.buffer&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Localization: plugin&#xA;Require-Bundle: org.eclipse.core.runtime;bundle-version=&quot;3.4.0&quot;;visibility:=reexport,org.eclipse.core.resources;visibility:=reexport,org.eclipse.team.core;visibility:=reexport,net.sourceforge.clearcase;visibility:=reexport,org.eclipse.jface,org.eclipse.ui;bundle-version=&quot;3.3.1&quot;&#xA;Bundle-Activator: net.sourceforge.eclipseccase.ClearCasePlugin&#xA;Bundle-Name: %pluginName&#xA;Bundle-Version: 2.2.5.v201011021253&#xA;Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: net.sourceforge.eclipseccase; singleton:=true&#xA;Bundle-ActivationPolicy: lazy&#xA;Manifest-Version: 1.0
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.sourceforge.clearcase' version='2.2.3.v201005270704' singleton='false'>
       <update id='net.sourceforge.clearcase' range='[0.0.0,2.2.3.v201005270704)' severity='0'/>
       <properties size='5'>
@@ -3135,6 +3297,47 @@
           %license
         </license>
       </licenses>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.ui' version='2.2.5.v201011021253'>
+      <update id='net.sourceforge.eclipseccase.ui' range='[0.0.0,2.2.5.v201011021253)' severity='0'/>
+      <properties size='5'>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.pluginName' value='Eclipse ClearCase Integration UI'/>
+        <property name='org.eclipse.equinox.p2.name' value='%pluginName'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      </properties>
+      <provides size='10'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' version='2.2.5.v201011021253'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.eclipseccase.ui' version='2.2.5.v201011021253'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.ui' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.ui.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.ui.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.ui.viewsupport' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.eclipseccase.views' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <requires size='6'>
+        <required namespace='osgi.bundle' name='net.sourceforge.eclipseccase' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.team.ui' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.forms' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase.ui' version='2.2.5.v201011021253'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Export-Package: net.sourceforge.eclipseccase,net.sourceforge.eclipseccase.ui,net.sourceforge.eclipseccase.ui.actions,net.sourceforge.eclipseccase.ui.preferences,net.sourceforge.eclipseccase.ui.viewsupport,net.sourceforge.eclipseccase.views&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Localization: plugin&#xA;Require-Bundle: net.sourceforge.eclipseccase;visibility:=reexport,org.eclipse.ui,org.eclipse.ui.ide,org.eclipse.team.ui;visibility:=reexport,org.eclipse.ui.console;visibility:=reexport,org.eclipse.ui.forms&#xA;Bundle-Activator: net.sourceforge.eclipseccase.ui.ClearCaseUI&#xA;Bundle-Name: %pluginName&#xA;Bundle-Version: 2.2.5.v201011021253&#xA;Bundle-Vendor: %providerName&#xA;Bundle-SymbolicName: net.sourceforge.eclipseccase.ui; singleton:=true&#xA;Manifest-Version: 1.0&#xA;Eclipse-LazyStart: true
+          </instruction>
+        </instructions>
+      </touchpointData>
     </unit>
     <unit id='net.sourceforge.eclipseccase' version='2.2.3.v201005261900'>
       <update id='net.sourceforge.eclipseccase' range='[0.0.0,2.2.3.v201005261900)' severity='0'/>
@@ -3891,60 +4094,6 @@
       </provides>
       <touchpoint id='org.eclipse.equinox.p2.native' version='1.0.0'/>
     </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.1.v201003041230' singleton='false'>
-      <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.1.v201003041230)' severity='0'/>
-      <properties size='8'>
-        <property name='org.eclipse.equinox.p2.name' value='%featureName'/>
-        <property name='org.eclipse.equinox.p2.description' value='%description'/>
-        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
-        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
-        <property name='df_LT.featureName' value='Eclipse ClearCase Integration'/>
-        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
-        <property name='df_LT.description' value='Eclipse ClearCase integration provided by eclipse-ccase.sourceforge.net.'/>
-        <property name='df_LT.license' value='ECLIPSE-CCASE.SOURCEFORGE.NET SOFTWARE USER AGREEMENT&#xA;15th June, 2004&#xA;&#xA;Usage Of Content&#xA;&#xA;ECLIPSE-CCASE.SOURCEFORGE.NET MAKES AVAILABLE SOFTWARE, DOCUMENTATION,&#xA;INFORMATION AND/OR OTHER MATERIALS FOR OPEN SOURCE PROJECTS (COLLECTIVELY&#xA;&quot;CONTENT&quot;). USE OF THE CONTENT IS GOVERNED BY THE TERMS AND CONDITIONS OF&#xA;THIS AGREEMENT AND/OR THE TERMS AND CONDITIONS OF LICENSE AGREEMENTS OR&#xA;NOTICES INDICATED OR REFERENCED BELOW. BY USING THE CONTENT, YOU&#xA;AGREE THAT YOUR USE OF THE CONTENT IS GOVERNED BY THIS AGREEMENT&#xA;AND/OR THE TERMS AND CONDITIONS OF ANY APPLICABLE LICENSE AGREEMENTS&#xA;OR NOTICES INDICATED OR REFERENCED BELOW. IF YOU DO NOT AGREE TO THE&#xA;TERMS AND CONDITIONS OF THIS AGREEMENT AND THE TERMS AND CONDITIONS&#xA;OF ANY APPLICABLE LICENSE AGREEMENTS OR NOTICES INDICATED OR REFERENCED&#xA;BELOW, THEN YOU MAY NOT USE THE CONTENT.&#xA;&#xA;Applicable Licenses&#xA;&#xA;Unless otherwise indicated, all Content made available by eclipse-ccase.sourceforge.net&#xA;is provided to you under the terms and conditions of the Common Public&#xA;License Version 1.0 (&quot;CPL&quot;). A copy of the CPL is provided with this&#xA;Content and is also available at http://www.eclipse.org/legal/cpl-v10.html.&#xA;For purposes of the CPL, &quot;Program&quot; will mean the Content.&#xA;&#xA;Content includes, but is not limited to, source code, object code,&#xA;documentation and other files maintained in the eclipse-ccase.sourceforge.net CVS&#xA;repository (&quot;Repository&quot;) in CVS modules (&quot;Modules&quot;) and made available&#xA;as downloadable archives (&quot;Downloads&quot;).&#xA;&#xA;Content may be apportioned into plug-ins (&quot;Plug-ins&quot;), plug-in fragments&#xA;(&quot;Fragments&quot;), and features (&quot;Features&quot;). A Feature is a bundle of one or&#xA;more Plug-ins and/or Fragments and associated material. Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of the&#xA;Plug-ins and/or Fragments associated with a Feature. Plug-ins and Fragments&#xA;are located in directories named &quot;plugins&quot; and Features are located in&#xA;directories named &quot;features&quot;.&#xA;&#xA;Features may also include other Features (&quot;Included Features&quot;). Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of&#xA;Included Features.&#xA;&#xA;The terms and conditions governing Plug-ins and Fragments should be&#xA;contained in files named &quot;about.html&quot; (&quot;Abouts&quot;). The terms and&#xA;conditions governing Features and Included Features should be contained&#xA;in files named &quot;license.html&quot; (&quot;Feature Licenses&quot;). Abouts and Feature&#xA;Licenses may be located in any directory of a Download or Module&#xA;including, but not limited to the following locations:&#xA;&#xA;- The top-level (root) directory&#xA;- Plug-in and Fragment directories&#xA;- Subdirectories of the directory named &quot;src&quot; of certain Plug-ins&#xA;- Feature directories&#xA;&#xA;Note: if a Feature made available by eclipse-ccase.sourceforge.net is installed using the&#xA;Eclipse Update Manager, you must agree to a license (&quot;Feature Update&#xA;License&quot;) during the installation process. If the Feature contains&#xA;Included Features, the Feature Update License should either provide you&#xA;with the terms and conditions governing the Included Features or inform&#xA;you where you can locate them. Feature Update Licenses may be found in&#xA;the &quot;license&quot; property of files named &quot;feature.properties&quot;. Such Abouts,&#xA;Feature Licenses and Feature Update Licenses contain the terms and&#xA;conditions (or references to such terms and conditions) that govern your&#xA;use of the associated Content in that directory.&#xA;&#xA;THE ABOUTS, FEATURE LICENSES AND FEATURE UPDATE LICENSES MAY REFER&#xA;TO THE CPL OR OTHER LICENSE AGREEMENTS, NOTICES OR TERMS AND CONDITIONS.&#xA;SOME OF THESE OTHER LICENSE AGREEMENTS MAY INCLUDE (BUT ARE NOT LIMITED TO):&#xA;&#xA;- Eclipse Public License Version 1.0 (available at http://www.eclipse.org/legal/epl-v10.html)&#xA;- Apache Software License 2.0 (available at http://www.apache.org/licenses/LICENSE-2.0)&#xA;&#xA;IT IS YOUR OBLIGATION TO READ AND ACCEPT ALL SUCH TERMS AND CONDITIONS PRIOR&#xA;TO USE OF THE CONTENT. If no About, Feature License or Feature Update License&#xA;is provided, please contact eclipse-ccase.sourceforge.net to determine what terms and conditions&#xA;govern that particular Content.&#xA;&#xA;Cryptography&#xA;&#xA;Content may contain encryption software. The country in which you are&#xA;currently may have restrictions on the import, possession, and use,&#xA;and/or re-export to another country, of encryption software. BEFORE&#xA;using any encryption software, please check the country&apos;s laws,&#xA;regulations and policies concerning the import, possession, or use,&#xA;and re-export of encryption software, to see if this is permitted.'/>
-      </properties>
-      <provides size='2'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' version='2.2.1.v201003041230'/>
-        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
-      </provides>
-      <requires size='12'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.core' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.ui' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='3.5.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='3.3.1'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[2.2.1.v201003041230,2.2.1.v201003041230]'>
-          <filter>
-            (org.eclipse.update.install.features=true)
-          </filter>
-        </required>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-      <licenses size='1'>
-        <license uri='%25licenseURL' url='%25licenseURL'>
-          %license
-        </license>
-      </licenses>
-    </unit>
-    <unit id='eclipse-ccase-35' version='0.0.0.20100225100729'>
-      <properties size='2'>
-        <property name='org.eclipse.equinox.p2.name' value='Eclipse ClearCase Integration for Eclipse 3.5'/>
-        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
-      </properties>
-      <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='eclipse-ccase-35' version='0.0.0'/>
-      </provides>
-      <requires size='1'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' range='[2.2.0.v201002231900,2.2.0.v201002231900]'/>
-      </requires>
-      <touchpoint id='null' version='0.0.0'/>
-    </unit>
     <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.3.v201005270713' singleton='false'>
       <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.3.v201005270713)' severity='0'/>
       <properties size='8'>
@@ -3974,6 +4123,60 @@
         <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.3.v201005270713,2.2.3.v201005270713]'/>
         <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.3.v201005270713,2.2.3.v201005270713]'/>
         <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[2.2.3.v201005270713,2.2.3.v201005270713]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='%25licenseURL' url='%25licenseURL'>
+          %license
+        </license>
+      </licenses>
+    </unit>
+    <unit id='eclipse-ccase-35' version='0.0.0.20100225100729'>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse ClearCase Integration for Eclipse 3.5'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='eclipse-ccase-35' version='0.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' range='[2.2.0.v201002231900,2.2.0.v201002231900]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.group' version='2.2.1.v201003041230' singleton='false'>
+      <update id='net.sourceforge.eclipseccase.feature.group' range='[0.0.0,2.2.1.v201003041230)' severity='0'/>
+      <properties size='8'>
+        <property name='org.eclipse.equinox.p2.name' value='%featureName'/>
+        <property name='org.eclipse.equinox.p2.description' value='%description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='%providerName'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='df_LT.featureName' value='Eclipse ClearCase Integration'/>
+        <property name='df_LT.providerName' value='eclipse-ccase.sourceforge.net'/>
+        <property name='df_LT.description' value='Eclipse ClearCase integration provided by eclipse-ccase.sourceforge.net.'/>
+        <property name='df_LT.license' value='ECLIPSE-CCASE.SOURCEFORGE.NET SOFTWARE USER AGREEMENT&#xA;15th June, 2004&#xA;&#xA;Usage Of Content&#xA;&#xA;ECLIPSE-CCASE.SOURCEFORGE.NET MAKES AVAILABLE SOFTWARE, DOCUMENTATION,&#xA;INFORMATION AND/OR OTHER MATERIALS FOR OPEN SOURCE PROJECTS (COLLECTIVELY&#xA;&quot;CONTENT&quot;). USE OF THE CONTENT IS GOVERNED BY THE TERMS AND CONDITIONS OF&#xA;THIS AGREEMENT AND/OR THE TERMS AND CONDITIONS OF LICENSE AGREEMENTS OR&#xA;NOTICES INDICATED OR REFERENCED BELOW. BY USING THE CONTENT, YOU&#xA;AGREE THAT YOUR USE OF THE CONTENT IS GOVERNED BY THIS AGREEMENT&#xA;AND/OR THE TERMS AND CONDITIONS OF ANY APPLICABLE LICENSE AGREEMENTS&#xA;OR NOTICES INDICATED OR REFERENCED BELOW. IF YOU DO NOT AGREE TO THE&#xA;TERMS AND CONDITIONS OF THIS AGREEMENT AND THE TERMS AND CONDITIONS&#xA;OF ANY APPLICABLE LICENSE AGREEMENTS OR NOTICES INDICATED OR REFERENCED&#xA;BELOW, THEN YOU MAY NOT USE THE CONTENT.&#xA;&#xA;Applicable Licenses&#xA;&#xA;Unless otherwise indicated, all Content made available by eclipse-ccase.sourceforge.net&#xA;is provided to you under the terms and conditions of the Common Public&#xA;License Version 1.0 (&quot;CPL&quot;). A copy of the CPL is provided with this&#xA;Content and is also available at http://www.eclipse.org/legal/cpl-v10.html.&#xA;For purposes of the CPL, &quot;Program&quot; will mean the Content.&#xA;&#xA;Content includes, but is not limited to, source code, object code,&#xA;documentation and other files maintained in the eclipse-ccase.sourceforge.net CVS&#xA;repository (&quot;Repository&quot;) in CVS modules (&quot;Modules&quot;) and made available&#xA;as downloadable archives (&quot;Downloads&quot;).&#xA;&#xA;Content may be apportioned into plug-ins (&quot;Plug-ins&quot;), plug-in fragments&#xA;(&quot;Fragments&quot;), and features (&quot;Features&quot;). A Feature is a bundle of one or&#xA;more Plug-ins and/or Fragments and associated material. Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of the&#xA;Plug-ins and/or Fragments associated with a Feature. Plug-ins and Fragments&#xA;are located in directories named &quot;plugins&quot; and Features are located in&#xA;directories named &quot;features&quot;.&#xA;&#xA;Features may also include other Features (&quot;Included Features&quot;). Files named&#xA;&quot;feature.xml&quot; may contain a list of the names and version numbers of&#xA;Included Features.&#xA;&#xA;The terms and conditions governing Plug-ins and Fragments should be&#xA;contained in files named &quot;about.html&quot; (&quot;Abouts&quot;). The terms and&#xA;conditions governing Features and Included Features should be contained&#xA;in files named &quot;license.html&quot; (&quot;Feature Licenses&quot;). Abouts and Feature&#xA;Licenses may be located in any directory of a Download or Module&#xA;including, but not limited to the following locations:&#xA;&#xA;- The top-level (root) directory&#xA;- Plug-in and Fragment directories&#xA;- Subdirectories of the directory named &quot;src&quot; of certain Plug-ins&#xA;- Feature directories&#xA;&#xA;Note: if a Feature made available by eclipse-ccase.sourceforge.net is installed using the&#xA;Eclipse Update Manager, you must agree to a license (&quot;Feature Update&#xA;License&quot;) during the installation process. If the Feature contains&#xA;Included Features, the Feature Update License should either provide you&#xA;with the terms and conditions governing the Included Features or inform&#xA;you where you can locate them. Feature Update Licenses may be found in&#xA;the &quot;license&quot; property of files named &quot;feature.properties&quot;. Such Abouts,&#xA;Feature Licenses and Feature Update Licenses contain the terms and&#xA;conditions (or references to such terms and conditions) that govern your&#xA;use of the associated Content in that directory.&#xA;&#xA;THE ABOUTS, FEATURE LICENSES AND FEATURE UPDATE LICENSES MAY REFER&#xA;TO THE CPL OR OTHER LICENSE AGREEMENTS, NOTICES OR TERMS AND CONDITIONS.&#xA;SOME OF THESE OTHER LICENSE AGREEMENTS MAY INCLUDE (BUT ARE NOT LIMITED TO):&#xA;&#xA;- Eclipse Public License Version 1.0 (available at http://www.eclipse.org/legal/epl-v10.html)&#xA;- Apache Software License 2.0 (available at http://www.apache.org/licenses/LICENSE-2.0)&#xA;&#xA;IT IS YOUR OBLIGATION TO READ AND ACCEPT ALL SUCH TERMS AND CONDITIONS PRIOR&#xA;TO USE OF THE CONTENT. If no About, Feature License or Feature Update License&#xA;is provided, please contact eclipse-ccase.sourceforge.net to determine what terms and conditions&#xA;govern that particular Content.&#xA;&#xA;Cryptography&#xA;&#xA;Content may contain encryption software. The country in which you are&#xA;currently may have restrictions on the import, possession, and use,&#xA;and/or re-export to another country, of encryption software. BEFORE&#xA;using any encryption software, please check the country&apos;s laws,&#xA;regulations and policies concerning the import, possession, or use,&#xA;and re-export of encryption software, to see if this is permitted.'/>
+      </properties>
+      <provides size='2'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.group' version='2.2.1.v201003041230'/>
+        <provided namespace='org.eclipse.equinox.p2.localization' name='df_LT' version='1.0.0'/>
+      </provides>
+      <requires size='12'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.resources' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.core' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.ide' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.team.ui' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.core.runtime' range='3.5.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.jface' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui' range='3.3.1'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='org.eclipse.ui.console' range='0.0.0'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.clearcase' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.ui' range='[2.2.1.v201003041230,2.2.1.v201003041230]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' range='[2.2.1.v201003041230,2.2.1.v201003041230]'>
           <filter>
             (org.eclipse.update.install.features=true)
           </filter>
@@ -4026,6 +4229,40 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270741'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
+        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270741'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005270741'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005270741'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          [Enter License Description here.]
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        [Enter Copyright Description here.]
+      </copyright>
+    </unit>
     <unit id='net.sourceforge.eclipseccase' version='2.2.0.v201002231900'>
       <update id='net.sourceforge.eclipseccase' range='[0.0.0,2.2.0.v201002231900)' severity='0'/>
       <properties size='5'>
@@ -4064,40 +4301,6 @@
           </instruction>
         </instructions>
       </touchpointData>
-    </unit>
-    <unit id='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270741'>
-      <properties size='3'>
-        <property name='org.eclipse.equinox.p2.name' value='plugin'/>
-        <property name='org.eclipse.equinox.p2.description' value='[Enter Feature Description here.]'/>
-        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
-      </properties>
-      <provides size='3'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.eclipseccase.feature.jar' version='1.0.0.201005270741'/>
-        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.eclipseccase' version='1.0.0.201005270741'/>
-      </provides>
-      <filter>
-        (org.eclipse.update.install.features=true)
-      </filter>
-      <artifacts size='1'>
-        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005270741'/>
-      </artifacts>
-      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
-      <touchpointData size='1'>
-        <instructions size='1'>
-          <instruction key='zipped'>
-            true
-          </instruction>
-        </instructions>
-      </touchpointData>
-      <licenses size='1'>
-        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
-          [Enter License Description here.]
-        </license>
-      </licenses>
-      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
-        [Enter Copyright Description here.]
-      </copyright>
     </unit>
     <unit id='net.sourceforge.eclipseccase.feature.jar' version='2.2.3.v201005271225'>
       <properties size='7'>
