@@ -219,9 +219,7 @@ public class ConfigSpecView extends ViewPart {
 			saveAction.execute((IAction) null);
 			bConfigSpecModified = false;
 		} catch (Exception e) {
-			ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
-			console.err.println("A Problem occurs while updating Config Spec.\n" + e.getMessage());
-			console.show();
+			//Already handled in SaveAction.
 		} finally {
 		}
 	}

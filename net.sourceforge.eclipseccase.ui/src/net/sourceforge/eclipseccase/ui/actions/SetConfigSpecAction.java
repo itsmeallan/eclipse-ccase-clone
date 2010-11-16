@@ -61,28 +61,24 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 						}
 						FileWriter writer = new FileWriter(f);
 						writer.write(configSpecTxt, 0, configSpecTxt.length());
-						writer.close();
-						//TODO: mike 20100819 Testing to use single presistent process cleartool to 
-						//speed up setViewConfigSpec.
+						writer.close();						
 						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI_SP);
 						String viewName = cci.getViewName(resource.getLocation().toOSString());
 						if (viewName.length() > 0) {
 							cci.setViewConfigSpec(viewName, f.getPath(), resource.getProject().getLocation().toOSString(),
-									new ConsoleOperationListener(monitor));
+									null);
 							f.delete();
 
-							if (resource != null) {
-								resource.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
-							}
 						}
 					} catch (Exception e) {
 						ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
 						console.err.println("A Problem occurs while updating Config Spec.\n" + e.getMessage());
 						console.show();
+						
 					} 
 					finally
 					{
-						monitor.done();
+					
 						if(view != null)
 						{
 							view.focusOnConfigSpec();
@@ -92,7 +88,7 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 			}
 		};
 
-		//executeInForeground(runnable, PROGRESS_DIALOG, "Set Config Spec...");
+		
 		executeInBackground(runnable, "Set Config Spec");
 		
 	}
