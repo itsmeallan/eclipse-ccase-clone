@@ -173,7 +173,13 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		if (null == settings) {
 			settings = dialogSettings.addNewSection(DIALOG_SETTINGS_STORE);
 		}
-		refreshFromClearCase();
+		// add defaults for hide/show state
+		if (settings.get(SETTING_HIDE_NEW_ELEMENTS) == null)
+			settings.put(SETTING_HIDE_NEW_ELEMENTS, true);
+
+		// makes no sense to call refreshFromClearCase() here, as
+		// ClearCaseProvider.getUsedViewNames() always returns empty list in
+		// this stage
 	}
 
 	/**

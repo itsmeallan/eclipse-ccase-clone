@@ -415,7 +415,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 		if (resource == null || resource.getProject() == null)
 			return "";
 		// assume that a complete project is inside one view
-		String path = resource.getProject().getLocation().toOSString();
+		String path;
+		try {
+			path = resource.getProject().getLocation().toOSString();
+		} catch (NullPointerException e) {
+			return "";
+		}
 		String res = viewLookupTable.get(path);
 		if (res == null || res.length() == 0) {
 			// use the originally given resource for the cleartool query

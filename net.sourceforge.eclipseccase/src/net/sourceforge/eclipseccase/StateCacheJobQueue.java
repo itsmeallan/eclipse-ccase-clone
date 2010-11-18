@@ -70,8 +70,11 @@ class StateCacheJobQueue extends Job {
 		// set priority for long running jobs
 		setPriority(ClearCasePlugin.jobQueuePriority());
 
-		// set the rule to the clearcase engine
-		setRule(ClearCasePlugin.RULE_CLEARCASE_REFRESH);
+		// NOT: set the rule to the clearcase engine
+		// NOT: setRule(ClearCasePlugin.RULE_CLEARCASE_REFRESH);
+		// (if we have such a scheduling rule here, we can't do any
+		// refreshLocal() calls from inside this thread. So use a null rule)
+		setRule(null);
 	}
 
 	/*

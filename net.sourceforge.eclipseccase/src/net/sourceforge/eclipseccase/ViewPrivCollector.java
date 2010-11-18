@@ -125,12 +125,16 @@ public class ViewPrivCollector {
 			IProject project = resource.getProject();
 			if (!projects.containsKey(project)) {
 				boolean isSnapshotView;
-				isSnapshotView = ClearCaseProvider.getViewType(resource)
-						.equals("snapshot");
-				projects.put(project,
-						new RefreshSourceData(project, resource,
-								ClearCaseProvider.getViewName(resource),
-								isSnapshotView));
+				try {
+					isSnapshotView = ClearCaseProvider.getViewType(resource)
+							.equals("snapshot");
+					projects.put(project, new RefreshSourceData(project,
+							resource, ClearCaseProvider.getViewName(resource),
+							isSnapshotView));
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else {
 				RefreshSourceData data = projects.get(project);
 				data.addResource(resource);
@@ -184,21 +188,14 @@ public class ViewPrivCollector {
 
 			if (findOthers) {
 				String taskname = "View private in " + viewName;
-				// TODO: process getViewLSPrivateList line by line, not as array
-				ClearCaseElementState[] viewLSPrivateList = ClearCasePlugin
-						.getEngine()
+				// processing getViewLSPrivateList line by line in
+				// ViewprivOperationListener
+				ClearCasePlugin.getEngine()
 						.getViewLSPrivateList(
 								workingdir.getLocation().toOSString(),
-								new ViewprivOperationListener(
-										taskname, monitor));
+								new ViewprivOperationListener(taskname, false,
+										monitor));
 				monitor.worked(50);
-				monitor.subTask(taskname + ", processing list...");
-				if (null == viewLSPrivateList) {
-					throw new RuntimeException(
-							"Could not get view private file information from view: "
-									+ viewName);
-				}
-				updateStateCaches(viewLSPrivateList, monitor);
 			} else {
 				monitor.worked(50);
 			}
@@ -254,14 +251,12 @@ public class ViewPrivCollector {
 			IPath path) {
 		String workingdir = path.toOSString();
 		trace("addCheckedOutFiles, dir=: " + workingdir);
-		// TODO: process getCheckedOutElements line by line, not as array
-		ClearCaseElementState[] checkedOutState = ClearCasePlugin.getEngine()
-				.getCheckedOutElements(
-						workingdir,
-						new ViewprivOperationListener("Checked out in "
-								+ viewName, monitor));
+		// process getCheckedOutElements line by line, not as array
+		ClearCasePlugin.getEngine().getCheckedOutElements(
+				workingdir,
+				new ViewprivOperationListener("Checked out in " + viewName,
+						true, monitor));
 		monitor.subTask("Checked out in " + viewName + ", processing list...");
-		updateStateCaches(checkedOutState, monitor);
 	}
 
 	private void updateStateCaches(ClearCaseElementState[] elementStates,
