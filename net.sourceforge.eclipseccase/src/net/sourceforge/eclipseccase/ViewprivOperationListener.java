@@ -93,7 +93,10 @@ public class ViewprivOperationListener implements OperationListener {
 				cache.updateAsync(true);
 			} else if (cache.isClearCaseElement()) {
 				if (isGatheringCO) {
-					if (!(cache.isCheckedOut())) {
+					if (cache.isCheckedOut()) {
+						// validate that this is still a checkedout element
+						cache.setVpStateVerified();
+					} else {
 						trace("Found new CO(2) " + resource.getLocation());
 						cache.updateAsync(true);
 					}
@@ -103,9 +106,13 @@ public class ViewprivOperationListener implements OperationListener {
 					cache.updateAsync(true);
 				}
 			} else {
+				// cached state is not (yet) a CC element
 				if (isGatheringCO) {
 					trace("Found new CO(3) " + resource.getLocation());
 					cache.updateAsync(true);
+				} else {
+					// validate that this is still a private element
+					cache.setVpStateVerified();
 				}
 			}
 		}

@@ -55,6 +55,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * @author abu
+ * 
+ */
 public class StateCacheFactory implements ISaveParticipant,
 		IResourceChangeListener {
 
@@ -250,6 +254,63 @@ public class StateCacheFactory implements ISaveParticipant,
 
 	public Iterable<IResource> getContainedResources() {
 		return cacheMap.keySet();
+	}
+
+	/**
+	 * Reset the VP_STATE_VERIFIED flag for all entries. Used together with
+	 * refreshAllUnverifiedStates() to detect resources that are out of sync
+	 * with the real CC state.
+	 * 
+	 * Before the real CC state for the view is gathered (with lsprivate,
+	 * lsco...) resetVerifiyStates() is called once. While processing the CC
+	 * output, the VP_STATE_VERIFIED flag is set for all verified entries.
+	 * Later, refreshAllUnverifiedStates() gets called which schedules a refresh
+	 * for all entries that were not verified.
+	 * 
+	 * @see StateCacheFactory#refreshAllUnverifiedStates(boolean, boolean,
+	 *      boolean)
+	 */
+	public void resetVerifiyStates() {
+		for (StateCache s : cacheMap.values()) {
+			s.setFlag(StateCache.VP_STATE_VERIFIED, false);
+		}
+	}
+
+	/**
+	 * Schedule a state refresh for all entries with a cleared VP_STATE_VERIFIED
+	 * flag.
+	 * 
+	 * @see StateCacheFactory#resetVerifiyStates()
+	 * @param doCheckedout
+	 * @param doNew
+	 * @param doHijacked
+	 */
+	public void refreshAllUnverifiedStates(boolean doCheckedout, boolean doNew,
+			boolean doHijacked) {
+		for (StateCache s : cacheMap.values()) {
+			if (!s.isVpStateVerified()) {
+				if (doCheckedout && s.isCheckedOut()) {
+					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+						ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
+								"refetch unverified CO: " + s.getPath()); //$NON-NLS-1$
+					}
+					s.updateAsync(true);
+				} else if (doNew && !s.isClearCaseElement()
+						&& !s.isUninitialized()) {
+					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+						ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
+								"refetch unverified viewpriv: " + s.getPath()); //$NON-NLS-1$
+					}
+					s.updateAsync(true);
+				} else if (doHijacked && s.isHijacked()) {
+					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+						ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
+								"refetch unverified hijacked: " + s.getPath()); //$NON-NLS-1$
+					}
+					s.updateAsync(true);
+				}
+			}
+		}
 	}
 
 	/**
@@ -506,8 +567,7 @@ public class StateCacheFactory implements ISaveParticipant,
 	 */
 	private void readStateCache(File stateFile) throws Exception {
 		if (ClearCasePlugin.DEBUG_STATE_CACHE) {
-			ClearCasePlugin.trace(
-					TRACE_STATECACHEFACTORY,
+			ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
 					"parsing: " + stateFile.getCanonicalPath()); //$NON-NLS-1$
 		}
 		DefaultHandler stateCacheLoader = new DefaultHandler() {
@@ -564,15 +624,16 @@ public class StateCacheFactory implements ISaveParticipant,
 								cache.updateTimeStamp = Long
 										.parseLong(attributes
 												.getValue(ATTR_TIME_STAMP));
-								
+
 								// store cache
 								synchronized (cacheMap) {
 									cacheMap.put(resource, cache);
 								}
 
-								// make sure we know the view name for all cached elements
+								// make sure we know the view name for all
+								// cached elements
 								ClearCaseProvider.getViewName(resource);
-								
+
 								if (ClearCasePlugin.DEBUG_STATE_CACHE) {
 									ClearCasePlugin.trace(
 											TRACE_STATECACHEFACTORY,
@@ -595,8 +656,7 @@ public class StateCacheFactory implements ISaveParticipant,
 		SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 		parser.parse(stateFile, stateCacheLoader);
 		if (ClearCasePlugin.DEBUG_STATE_CACHE) {
-			ClearCasePlugin.trace(
-					TRACE_STATECACHEFACTORY,
+			ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
 					"done: " + stateFile.getCanonicalPath()); //$NON-NLS-1$
 		}
 	}
@@ -698,8 +758,8 @@ public class StateCacheFactory implements ISaveParticipant,
 	void refreshState(IResource[] resources, int priority) {
 		StateCacheJob[] jobs = new StateCacheJob[resources.length];
 		for (int i = 0; i < resources.length; i++) {
-			StateCache cache = StateCacheFactory.getInstance()
-					.getWithNoUpdate(resources[i]);
+			StateCache cache = StateCacheFactory.getInstance().getWithNoUpdate(
+					resources[i]);
 			jobs[i] = new StateCacheJob(cache);
 		}
 		getJobQueue().schedule(jobs);

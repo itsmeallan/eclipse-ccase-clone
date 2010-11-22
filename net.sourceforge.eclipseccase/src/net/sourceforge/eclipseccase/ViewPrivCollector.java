@@ -110,16 +110,13 @@ public class ViewPrivCollector {
 		}
 	}
 
-	public void collectElements(final IProgressMonitor progressMonitor) {
-		IProgressMonitor monitor = progressMonitor == null ? new NullProgressMonitor()
-				: progressMonitor;
-		monitor.beginTask("Collecting elements", 100 * startupDirectories
-				.size() + 10);
+	public void collectElements(final IProgressMonitor monitor) {
+		monitor.beginTask("Collecting elements", IProgressMonitor.UNKNOWN);
+		StateCacheFactory.getInstance().resetVerifiyStates();
 		// Find all involved projects and whether they contain dynamic or
 		// snapshot views
 		Map<IProject, RefreshSourceData> projects = new HashMap<IProject, RefreshSourceData>();
 		Iterator<IResource> resourceIterator = startupDirectories.iterator();
-		monitor.worked(5);
 		while (resourceIterator.hasNext()) {
 			IResource resource = resourceIterator.next();
 			IProject project = resource.getProject();
@@ -132,8 +129,6 @@ public class ViewPrivCollector {
 							resource, ClearCaseProvider.getViewName(resource),
 							isSnapshotView));
 				} catch (NullPointerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			} else {
 				RefreshSourceData data = projects.get(project);
@@ -167,6 +162,8 @@ public class ViewPrivCollector {
 
 		}
 
+		StateCacheFactory.getInstance().refreshAllUnverifiedStates(
+				findCheckedouts, findOthers, findHijacked);
 		monitor.done();
 	}
 
@@ -181,7 +178,6 @@ public class ViewPrivCollector {
 			if (findCheckedouts) {
 				addCheckedOutFiles(viewName, monitor, workingdir.getLocation());
 			}
-			monitor.worked(40);
 
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
@@ -195,17 +191,12 @@ public class ViewPrivCollector {
 								workingdir.getLocation().toOSString(),
 								new ViewprivOperationListener(taskname, false,
 										monitor));
-				monitor.worked(50);
-			} else {
-				monitor.worked(50);
 			}
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
-			monitor.worked(10);
 			queriedViews.add(viewName);
 		} else {
 			// view was already processed... (?)
-			monitor.worked(100);
 		}
 	}
 
@@ -220,7 +211,6 @@ public class ViewPrivCollector {
 			if (findCheckedouts) {
 				addCheckedOutFiles(viewName, monitor, workingdir.getLocation());
 			}
-			monitor.worked(40);
 
 			if (findOthers || findHijacked) {
 				// TODO: find top directory of SS view via
@@ -230,20 +220,15 @@ public class ViewPrivCollector {
 				ClearCaseElementState[] viewLSViewOnlyList = ClearCasePlugin
 						.getEngine().getViewLSViewOnlyList(
 								workingdir.getLocation().toOSString(), null);
-				monitor.worked(50);
 				updateStateCaches(viewLSViewOnlyList, monitor);
-			} else {
-				monitor.worked(50);
 			}
 
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
 			}
 			queriedViews.add(viewName);
-			monitor.worked(10);
 		} else {
 			// view was already processed... (?)
-			monitor.worked(100);
 		}
 	}
 
@@ -283,15 +268,28 @@ public class ViewPrivCollector {
 			for (IResource resource : resources) {
 				StateCache cache = StateCacheFactory.getInstance()
 						.getWithNoUpdate(resource);
-				if (elementState.isCheckedOut() && !cache.isCheckedOut()) {
-					trace("Found CO " + resource.getLocation());
-					cache.doUpdate(elementState);
-				} else if (elementState.isHijacked() && !cache.isHijacked()) {
-					trace("Found Hijacked " + resource.getLocation());
-					cache.doUpdate(elementState);
-				} else if (cache.isUninitialized()) {
-					trace("Found ViewPriv " + resource.getLocation());
-					cache.doUpdate(elementState);
+				if (elementState.isCheckedOut()) {
+					if (cache.isCheckedOut()) {
+						cache.setVpStateVerified();
+					} else {
+						trace("Found CO " + resource.getLocation());
+						cache.doUpdate(elementState);
+					}
+				} else if (elementState.isHijacked()) {
+					if (cache.isHijacked()) {
+						cache.setVpStateVerified();
+					} else {
+						trace("Found Hijacked " + resource.getLocation());
+						cache.doUpdate(elementState);
+					}
+				} else {
+					// this is a view-private file
+					if (cache.isUninitialized()) {
+						trace("Found ViewPriv " + resource.getLocation());
+						cache.doUpdate(elementState);
+					} else if (!cache.isClearCaseElement()) {
+						cache.setVpStateVerified();
+					}
 				}
 			}
 		}

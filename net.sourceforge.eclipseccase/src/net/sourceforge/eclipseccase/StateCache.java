@@ -24,9 +24,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.team.core.Team;
 
 public class StateCache implements Serializable {
@@ -85,6 +88,8 @@ public class StateCache implements Serializable {
 	private static final int INSIDE_VIEW = 0x80;
 
 	private static final int DERIVED_OBJECT = 0x100;
+
+	static final int VP_STATE_VERIFIED = 0x4000;
 
 	/**
 	 * Schedules a state update.
@@ -163,6 +168,7 @@ public class StateCache implements Serializable {
 	 */
 	void doUpdate(ClearCaseElementState givenState) {
 		boolean changed = isUninitialized();
+		//ClearCasePlugin.trace(TRACE_ID, "XXX doUpdate: " + resource); //$NON-NLS-1$
 
 		IPath location = resource.getLocation();
 		if (location == null) {
@@ -196,22 +202,21 @@ public class StateCache implements Serializable {
 				// created file, which in turn triggers the update of the state
 				// cache. In this case we want to incorporate the file
 				// automatically into the workspace.
-				// TODO: run refreshLocal in a separate thread, as it may be
-				// long running...
-				try {
-					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
-						ClearCasePlugin.trace(TRACE_ID, "not accessible, refreshing in WS: " + resource); //$NON-NLS-1$
-					}
-					resource.refreshLocal(IResource.DEPTH_ZERO,
-							new NullProgressMonitor());
-					// when resource is added to workspace, a resource change notification is run,
-					// which in turn triggers a state update. No need to continue now
-					return;
-				} catch (CoreException e) {
-					e.printStackTrace();
+				if (ClearCasePlugin.DEBUG_STATE_CACHE) {
+					ClearCasePlugin.trace(TRACE_ID,
+							"not accessible, refreshing in WS: " + resource); //$NON-NLS-1$
 				}
-			}
-			if (resource.isAccessible()) {
+				// resource does not exist in workspace (refresh needed)
+				flags = 0;
+				version = null;
+				symbolicLinkTarget = null;
+				updateTimeStamp = IResource.NULL_STAMP;
+				scheduleRefreshLocal(false);
+				// when resource is added to workspace, a resource change
+				// notification is run, which in turn triggers a state update.
+				// No need to continue now
+				return;
+			} else {
 
 				// check the global ignores from Team (includes derived
 				// resources)
@@ -223,7 +228,8 @@ public class StateCache implements Serializable {
 
 					if (newState == null
 							&& ClearCasePlugin
-									.isUnneededChildrenRefreshPrevented()) {
+									.isUnneededChildrenRefreshPrevented()
+							&& resource.isSynchronized(0)) {
 						// check parent for CC state, don't update if parent is
 						// not a CC element
 						IResource parent = resource.getParent();
@@ -264,7 +270,10 @@ public class StateCache implements Serializable {
 									.getViewName(resource));
 
 					if (newState != null) {
-
+						if (newState.isMissing()) {
+							scheduleRefreshLocal(true);
+							return;
+						}
 						boolean newIsElement = newState.isElement();
 						changed |= newIsElement != this.isClearCaseElement();
 						setFlag(IS_ELEMENT, newIsElement);
@@ -313,6 +322,7 @@ public class StateCache implements Serializable {
 							changed = true;
 						}
 
+						setFlag(VP_STATE_VERIFIED, true);
 					}// End newState !=null
 
 				} else {
@@ -329,19 +339,6 @@ public class StateCache implements Serializable {
 				}
 
 				updateTimeStamp = resource.getModificationStamp();
-			} else {
-				// resource does not exist in workspace (maybe a refresh needed)
-				flags = 0;
-				version = null;
-				symbolicLinkTarget = null;
-				updateTimeStamp = IResource.NULL_STAMP;
-				changed = false; // we did not get any info, so mark this as not
-				// changed; if changed=true is set here, we trigger an endless
-				// loop!
-				if (ClearCasePlugin.DEBUG_STATE_CACHE) {
-					ClearCasePlugin.trace(TRACE_ID, "resource not accessible: " //$NON-NLS-1$
-							+ resource);
-				}
 			}
 
 		}
@@ -358,6 +355,29 @@ public class StateCache implements Serializable {
 				ClearCasePlugin.trace(TRACE_ID, "  no changes detected"); //$NON-NLS-1$ 
 			}
 		}
+	}
+
+	private void scheduleRefreshLocal(final boolean refreshParent) {
+		Job localRefreshJob = new Job(
+				"Refreshing state for " + resource.toString()) { //$NON-NLS-1$
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					if (refreshParent && resource.getParent() != null) {
+						resource.getParent().refreshLocal(IResource.DEPTH_ONE,
+								new NullProgressMonitor());
+					} else {
+						resource.refreshLocal(IResource.DEPTH_ZERO,
+								new NullProgressMonitor());
+					}
+				} catch (CoreException e) {
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		localRefreshJob.setPriority(Job.SHORT);
+		localRefreshJob.schedule();
 	}
 
 	/**
@@ -658,6 +678,14 @@ public class StateCache implements Serializable {
 
 	public boolean isDerivedObject() {
 		return getFlag(DERIVED_OBJECT);
+	}
+
+	public boolean isVpStateVerified() {
+		return getFlag(VP_STATE_VERIFIED);
+	}
+
+	public void setVpStateVerified() {
+		setFlag(VP_STATE_VERIFIED, true);
 	}
 
 	/**
