@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.core.resources.IResourceDelta;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
@@ -39,6 +41,8 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	protected boolean initialized = false;
 
 	private CheckoutsViewRoot myRoot;
+
+	private boolean needsRefresh;
 
 	/*
 	 * (non-Javadoc)
@@ -434,12 +438,14 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		if (null != rootDelta) {
 
 			final Set<IResource> toRemove = new HashSet<IResource>();
+			needsRefresh = false;
 
 			try {
 				rootDelta.accept(new IResourceDeltaVisitor() {
 
 					public boolean visit(IResourceDelta delta) throws CoreException {
 
+						IResource resource = delta.getResource();
 						switch (delta.getKind()) {
 
 						case IResourceDelta.ADDED:
@@ -450,8 +456,40 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 							toRemove.add(delta.getResource());
 							return true;
 
+						case IResourceDelta.CHANGED:
+							if (null != resource) {
+								// filter out non clear case projects
+								if (resource.getType() == IResource.PROJECT) {
+									if ((delta.getFlags() & IResourceDelta.OPEN) != 0) {
+										if (((IProject) resource).isOpen()) {
+											// project changed from closed to
+											// open
+											if (null != ClearCaseProvider.getClearCaseProvider(resource)) {
+												// it's a CC project
+												needsRefresh = true;
+												return true;
+											} else {
+												return false;
+											}
+										} else {
+											// project changed from open to
+											// closed, we can't know now whether
+											// it was associated with CC, so do
+											// a refresh always :-(
+											needsRefresh = true;
+										}
+									} else if ((delta.getFlags() & IResourceDelta.DESCRIPTION) != 0) {
+										needsRefresh = true;
+										return null != ClearCaseProvider.getClearCaseProvider(resource);
+									} else {
+										return null != ClearCaseProvider.getClearCaseProvider(resource);
+									}
+								}
+								return true;
+							}
+							return false;
+
 						default:
-							IResource resource = delta.getResource();
 							if (null != resource) {
 								// filter out non clear case projects
 								if (resource.getType() == IResource.PROJECT)
@@ -479,6 +517,9 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 						}
 					}
 				});
+			}
+			if (needsRefresh) {
+				refreshInGuiThread();
 			}
 		}
 	}
