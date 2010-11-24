@@ -1,5 +1,11 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.core.resources.IResourceVisitor;
+
+import org.eclipse.team.core.Team;
+
+import org.eclipse.core.runtime.SubProgressMonitor;
+
 import net.sourceforge.eclipseccase.views.ConfigSpecView;
 
 import java.io.File;
@@ -25,9 +31,10 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 	private String configSpecTxt = null;
 
 	private ConfigSpecView view = null;
-	
+
 	/**
 	 * {@inheritDoc
+
 	 */
 	@Override
 	public boolean isEnabled() {
@@ -50,9 +57,13 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 	public void execute(IAction action) throws InvocationTargetException, InterruptedException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-
-				monitor.done();
-				if (resource != null) {
+							
+			if (resource != null) {
+				int scale = 10;
+				ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI_SP);
+				String viewName = cci.getViewName(resource.getLocation().toOSString());
+				
+								
 					try {
 						String userDir = System.getProperty("user.home");
 						File f = new File(userDir + File.separator + "configSpec" + Integer.toString(this.hashCode()) + ".tmp");
@@ -61,15 +72,18 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 						}
 						FileWriter writer = new FileWriter(f);
 						writer.write(configSpecTxt, 0, configSpecTxt.length());
-						writer.close();						
-						ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI_SP);
-						String viewName = cci.getViewName(resource.getLocation().toOSString());
+						writer.close();
+												
 						if (viewName.length() > 0) {
 							cci.setViewConfigSpec(viewName, f.getPath(), resource.getProject().getLocation().toOSString(),
 									null);
 							f.delete();
 
 						}
+						monitor.beginTask("Refreshing workspace ...", 1*scale);
+						resource.getProject().refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 1*scale));
+						
+						
 					} catch (Exception e) {
 						ClearCaseConsole console = ClearCaseConsoleFactory.getClearCaseConsole();
 						console.err.println("A Problem occurs while updating Config Spec.\n" + e.getMessage());
@@ -78,16 +92,18 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 					} 
 					finally
 					{
-					
+						monitor.done();
 						if(view != null)
 						{
 							view.focusOnConfigSpec();
 						}
+						
 					}
 				}
 			}
 		};
 
+		
 		
 		executeInBackground(runnable, "Set Config Spec");
 		
@@ -100,9 +116,8 @@ public class SetConfigSpecAction extends ClearCaseWorkspaceAction {
 	public void setConfigSpecTxt(String configSpecTxt) {
 		this.configSpecTxt = configSpecTxt;
 	}
-	
-	public void setConfigSpecView(ConfigSpecView view)
-	{
+
+	public void setConfigSpecView(ConfigSpecView view) {
 		this.view = view;
 	}
 }
