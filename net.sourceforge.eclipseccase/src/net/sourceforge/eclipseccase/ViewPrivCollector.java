@@ -287,7 +287,7 @@ public class ViewPrivCollector {
 					if (cache.isUninitialized()) {
 						trace("Found ViewPriv " + resource.getLocation());
 						cache.doUpdate(elementState);
-					} else if (!cache.isClearCaseElement()) {
+					} else if (cache.isViewprivate()) {
 						cache.setVpStateVerified();
 					}
 				}

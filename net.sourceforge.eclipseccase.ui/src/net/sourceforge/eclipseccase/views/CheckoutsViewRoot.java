@@ -14,7 +14,8 @@ package net.sourceforge.eclipseccase.views;
 
 import net.sourceforge.eclipseccase.StateCacheFactory;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -66,14 +67,33 @@ public class CheckoutsViewRoot implements IDeferredWorkbenchAdapter, IAdaptable 
 				collector.add(resource, new SubProgressMonitor(monitor, 1000, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL));
 			}
 		}
-		// while (checkoutsView.isRefreshActive()) {
-		//			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
-		// try {
-		// Thread.sleep(200);
-		// } catch (InterruptedException e) {
-		// }
-		// }
+		boolean waited = false;
+		while (checkoutsView.isRefreshActive()) {
+			//			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
+			try {
+				Thread.sleep(300);
+				waited = true;
+			} catch (InterruptedException e) {
+			}
+		}
+		if (waited && ClearCaseUI.DEBUG_VIEWPRIV) {
+			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting for CC refresh done"); //$NON-NLS-1$
+		}
+		
+		waited = false;
+		while (StateCacheFactory.getInstance().hasPendingUpdates()) {
+			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
+			try {
+				Thread.sleep(300);
+				waited = true;
+			} catch (InterruptedException e) {
+			}
+		}
+		
 		if (ClearCaseUI.DEBUG_VIEWPRIV) {
+			if (waited) {
+				ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting for async refreshes done"); //$NON-NLS-1$
+			}
 			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: done"); //$NON-NLS-1$
 		}
 		collector.done();

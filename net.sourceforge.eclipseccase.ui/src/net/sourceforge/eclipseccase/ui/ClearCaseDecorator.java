@@ -494,7 +494,11 @@ public class ClearCaseDecorator extends LabelProvider implements ILightweightLab
 		// test if uninitialized before all other checks
 		if (p.isUnknownState(resource)) {
 
-			// p.isIgnored() already initiated an async update in this case
+			// p.isIgnored() already initiated an async update in this case,
+			// except for projects. We do it now
+			if (resource instanceof IProject) {
+				p.getVersion(resource); // this triggers an async update
+			}
 			if (ClearCaseUI.DEBUG_DECORATION) {
 				ClearCaseUI.trace(DECORATOR, " scheduled refresh for " + resource.getFullPath().toString()); //$NON-NLS-1$
 			}

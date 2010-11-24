@@ -295,8 +295,7 @@ public class StateCacheFactory implements ISaveParticipant,
 								"refetch unverified CO: " + s.getPath()); //$NON-NLS-1$
 					}
 					s.updateAsync(true);
-				} else if (doNew && !s.isClearCaseElement()
-						&& !s.isUninitialized()) {
+				} else if (doNew && s.isViewprivate()) {
 					if (ClearCasePlugin.DEBUG_STATE_CACHE) {
 						ClearCasePlugin.trace(TRACE_STATECACHEFACTORY,
 								"refetch unverified viewpriv: " + s.getPath()); //$NON-NLS-1$
@@ -856,6 +855,16 @@ public class StateCacheFactory implements ISaveParticipant,
 	 */
 	StateCacheJobQueue getJobQueue() {
 		return jobQueue;
+	}
+	
+
+	/**
+	 * Determine if there are any resources in the queue for async CC state refresh
+	 * 
+	 * @return true if there is at least one element in update queue
+	 */
+	public boolean hasPendingUpdates() {
+		return !jobQueue.isEmpty();
 	}
 
 	/**

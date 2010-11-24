@@ -35,16 +35,20 @@ public class CheckoutsViewContentProvider implements ITreeContentProvider {
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		if (viewer instanceof AbstractTreeViewer) {
-			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer){
+			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer) {
 
-				/* (non-Javadoc)
-				 * @see org.eclipse.ui.progress.DeferredTreeContentManager#getFetchJobName(java.lang.Object, org.eclipse.ui.progress.IDeferredWorkbenchAdapter)
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @seeorg.eclipse.ui.progress.DeferredTreeContentManager#
+				 * getFetchJobName(java.lang.Object,
+				 * org.eclipse.ui.progress.IDeferredWorkbenchAdapter)
 				 */
 				@Override
 				protected String getFetchJobName(Object parent, IDeferredWorkbenchAdapter adapter) {
-					return "Updating view-private file list";
+					return "Recalculating content of the ViewPrivate pane ";
 				}
-				
+
 			};
 		}
 	}

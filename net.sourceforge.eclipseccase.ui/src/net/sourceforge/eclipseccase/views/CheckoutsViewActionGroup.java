@@ -4,17 +4,15 @@
  */
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.actions.OpenFileAction;
-import org.eclipse.ui.views.navigator.ShowInNavigatorAction;
-
 import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.actions.OpenFileAction;
 import org.eclipse.ui.views.navigator.MainActionGroup;
+import org.eclipse.ui.views.navigator.ShowInNavigatorAction;
 
 /**
  * TODO Provide description for CheckoutsViewActionGroup.
@@ -134,8 +132,8 @@ public class CheckoutsViewActionGroup extends MainActionGroup {
 
 			@Override
 			public void run() {
-				getCheckoutsView().refresh();
 				getCheckoutsView().refreshFromClearCase();
+				getCheckoutsView().refresh();
 			}
 		};
 		refreshAction.setToolTipText(Messages.getString("ClearCaseViewActionGroup.refresh.description")); //$NON-NLS-1$

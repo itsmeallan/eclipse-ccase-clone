@@ -428,6 +428,16 @@ public class StateCache implements Serializable {
 	}
 
 	/**
+	 * Indicates if the underlying resource is a view-privat resource (inside
+	 * the VOB area).
+	 * 
+	 * @return Returns a boolean
+	 */
+	public boolean isViewprivate() {
+		return (!getFlag(IS_ELEMENT) && getFlag(INSIDE_VIEW));
+	}
+
+	/**
 	 * Gets the isCheckedOut().
 	 * 
 	 * @return Returns a boolean
@@ -605,7 +615,10 @@ public class StateCache implements Serializable {
 			toString.append("not initialized"); //$NON-NLS-1$
 		} else if (!isClearCaseElement()) {
 			toString.append("no clearcase element"); //$NON-NLS-1$
-		} else if (isClearCaseElement()) {
+			if (!isInsideView()) {
+				toString.append(", outside VOB"); //$NON-NLS-1$
+			}
+		} else {
 			if (version != null)
 				toString.append(version);
 
@@ -630,8 +643,6 @@ public class StateCache implements Serializable {
 			if (isSnapShot()) {
 				toString.append(" [SNAPSHOT]"); //$NON-NLS-1$
 			}
-		} else {
-			toString.append("invalid"); //$NON-NLS-1$
 		}
 
 		return toString.toString();

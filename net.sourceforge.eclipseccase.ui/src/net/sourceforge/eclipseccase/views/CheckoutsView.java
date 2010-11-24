@@ -1,7 +1,5 @@
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.core.resources.IResourceDelta;
-
 import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
@@ -88,7 +86,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		}
 
 		// show new elements if enabled
-		if (!hideNewElements() && !state.isClearCaseElement()) {
+		if (!hideNewElements() && state.isViewprivate()) {
 			if (ClearCaseUI.DEBUG_VIEWPRIV) {
 				ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, " yes, viewpriv"); //$NON-NLS-1$
 			}
@@ -125,6 +123,10 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	public void setHideCheckouts(boolean hide) {
 		if (hideCheckouts() != hide) {
 			settings.put(SETTING_HIDE_CHECKOUTS, hide);
+			if (!hide) {
+				// do a full refresh if we show additional info
+				refreshFromClearCase();
+			}
 			refresh();
 		}
 	}
@@ -144,6 +146,10 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	public void setHideNewElements(boolean hide) {
 		if (hideNewElements() != hide) {
 			settings.put(SETTING_HIDE_NEW_ELEMENTS, hide);
+			if (!hide) {
+				// do a full refresh if we show additional info
+				refreshFromClearCase();
+			}
 			refresh();
 		}
 	}
@@ -163,6 +169,10 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	public void setHideHijackedElements(boolean hide) {
 		if (hideHijackedElements() != hide) {
 			settings.put(SETTING_HIDE_HIJACKED_ELEMENTS, hide);
+			if (!hide) {
+				// do a full refresh if we show additional info
+				refreshFromClearCase();
+			}
 			refresh();
 		}
 	}
@@ -181,9 +191,20 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		if (settings.get(SETTING_HIDE_NEW_ELEMENTS) == null)
 			settings.put(SETTING_HIDE_NEW_ELEMENTS, true);
 
-		// makes no sense to call refreshFromClearCase() here, as
-		// ClearCaseProvider.getUsedViewNames() always returns empty list in
-		// this stage
+		try {
+			// makes no sense to call refreshFromClearCase() here, as
+			// ClearCaseProvider.getUsedViewNames() always returns empty list in
+			// this stage at IDE startup. It's helpful if the view is opened
+			// sometime later in the session, when the caches are initialized
+			// etc.
+//			refreshFromClearCase();
+		} catch (Exception e) {
+		}
+
+		// TODO: need a way to refresh at first display of the VP view,
+		// if it is open when the IDE starts up (because it was open at last
+		// shutdown)
+
 	}
 
 	/**
@@ -379,11 +400,16 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	}
 
 	public void refreshInGuiThread() {
-		getViewer().getControl().getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				refresh();
-			}
-		});
+		try {
+			getViewer().getControl().getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					refreshFromClearCase();
+					refresh();
+				}
+			});
+		} catch (NullPointerException e) {
+			// if the getViewer() etc is not yet initialized, ignore that...
+		}
 	}
 
 	@Override
@@ -531,6 +557,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		if (null != progressService) {
 			progressService.showBusyForFamily(ClearCasePlugin.FAMILY_CLEARCASE_OPERATION);
 		}
+		refreshFromClearCase();
 	}
 
 	/**
@@ -542,6 +569,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 		return (IWorkbenchSiteProgressService) getSite().getAdapter(IWorkbenchSiteProgressService.class);
 	}
 
+	@Override
 	protected void handleDoubleClick(DoubleClickEvent event) {
 		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 		Object element = selection.getFirstElement();

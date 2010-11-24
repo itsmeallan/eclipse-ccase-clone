@@ -110,7 +110,7 @@ public class ViewprivOperationListener implements OperationListener {
 				if (isGatheringCO) {
 					trace("Found new CO(3) " + resource.getLocation());
 					cache.updateAsync(true);
-				} else {
+				} else if (cache.isViewprivate()){
 					// validate that this is still a private element
 					cache.setVpStateVerified();
 				}
