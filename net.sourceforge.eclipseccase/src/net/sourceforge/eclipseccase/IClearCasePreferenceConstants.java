@@ -142,5 +142,9 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String AUTO_PARENT_CHECKIN_AFTER_MOVE = ClearCasePlugin.PLUGIN_ID
 			+ ".auto.parent.checkin.after.move"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String COMPARE_EXTERNAL = ClearCasePlugin.PLUGIN_ID + ".compare.external"; //$NON-NLS-1$
+	
 
 }

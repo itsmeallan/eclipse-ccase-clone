@@ -118,7 +118,9 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 		addField(new BooleanFieldEditor(FORBID_CONFIG_SPEC_MODIFICATION, PreferenceMessages.getString("Preferences.General.ModifyConfigSpec"), //$NON-NLS-1$
 				getFieldEditorParent(GENERAL)));
-
+		
+		addField(new BooleanFieldEditor(COMPARE_EXTERNAL, PreferenceMessages.getString("Preferences.General.CompareWithExternalTool"), //$NON-NLS-1$
+				getFieldEditorParent(GENERAL)));
 		
 		// RadioGroupFieldEditor clearcaseLayer = new
 		// RadioGroupFieldEditor(CLEARCASE_API,

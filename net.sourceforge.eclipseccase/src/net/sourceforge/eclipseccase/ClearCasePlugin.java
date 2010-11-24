@@ -658,6 +658,15 @@ public class ClearCasePlugin extends Plugin {
 	}
 	
 	/**
+	 * Used for a
+	 * @return
+	 */
+	public static boolean isCompareExternal(){
+		return getInstance().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.COMPARE_EXTERNAL);
+	}
+	
+	/**
 	 * Logs an exception with the specified severity an message.
 	 * 
 	 * @param severity

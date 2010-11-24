@@ -9,6 +9,10 @@ Fixed Bugs:
 
 3054100 ConfigSpec save progress gui hangs but process ends
 
+New Features:
+
+3037105 Eclipse internal compare editor. (initial version). 
+
 2.2.5
 =====
 

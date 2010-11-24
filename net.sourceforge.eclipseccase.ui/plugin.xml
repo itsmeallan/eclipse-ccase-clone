@@ -538,12 +538,6 @@
 			description="Search File in Branch" id="net.sourceforge.eclipseccase.ui.actionset.branchsearch"
 			name="Search File in Branch">
 		</command>
-		<category id="net.sourceforge.eclipseccase.ui.commands.category"
-			name="Sample Category">
-		</category>
-		<command categoryId="net.sourceforge.eclipseccase.ui.commands.category"
-			id="net.sourceforge.eclipseccase.ui.commands.sampleCommand" name="Sample Command">
-		</command>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page name="%clearcasePreferences.name" category="org.eclipse.team.ui.TeamPreferences"

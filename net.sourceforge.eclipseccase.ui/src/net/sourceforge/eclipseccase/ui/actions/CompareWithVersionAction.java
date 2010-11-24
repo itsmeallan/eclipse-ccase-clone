@@ -1,5 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.compare.VersionCompareInput;
+
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
+import org.eclipse.compare.CompareConfiguration;
+import org.eclipse.compare.CompareUI;
+import org.eclipse.core.resources.IFile;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -50,34 +58,45 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
+		if (ClearCasePlugin.isCompareExternal()) {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					try {
+						String path = element.getLocation().toOSString();
 
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				try {
-					String path = element.getLocation().toOSString();
+						String v1 = path;
+						if (versionA != null) {
+							v1 = v1 + "@@" + versionA;
+						}
 
-					String v1 = path;
-					if (versionA != null) {
-						v1 = v1 + "@@" + versionA;
+						String v2 = path;
+						if (versionB != null) {
+							v2 = v2 + "@@" + versionB;
+						}
+						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
+						if (p != null)
+							p.compareWithVersion(v1, v2);
+
+					} catch (Exception ex) {
+
+					} finally {
+						monitor.done();
 					}
-
-					String v2 = path;
-					if (versionB != null) {
-						v2 = v2 + "@@" + versionB;
-					}
-					ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
-					if (p != null)
-						p.compareWithVersion(v1, v2);
-
-				} catch (Exception ex) {
-
-				} finally {
-					monitor.done();
 				}
+			};
+			executeInBackground(runnable, "Compare With Another version");
+
+		} else {
+			// 20101124 mike use new internal compare.
+			CompareConfiguration config = new CompareConfiguration();
+			config.setLeftEditable(false);
+			config.setRightEditable(false); // Could be made editable if version
+											// is null in the future.
+
+			if (element instanceof IFile) {
+				VersionCompareInput input = new VersionCompareInput(config, (IFile) element, versionA, versionB);
+				CompareUI.openCompareEditor(input);
 			}
-		};
-		executeInBackground(runnable, "Compare With Another version");
-
+		}
 	}
-
 }

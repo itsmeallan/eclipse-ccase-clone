@@ -1,5 +1,13 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.compare.PredecessorCompareInput;
+
+import org.eclipse.compare.CompareConfiguration;
+import org.eclipse.compare.CompareUI;
+import org.eclipse.core.resources.IFile;
+
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -36,25 +44,45 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 	@Override
 	public void execute(IAction action) {
 
-		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
-				try {
-					IResource[] resources = getSelectedResources();
-					for (int i = 0; i < resources.length; i++) {
-						IResource resource = resources[i];
-						String path = resource.getLocation().toOSString();
-						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-						if (p != null) {
-							p.compareWithPredecessor(path);
+		if (ClearCasePlugin.isCompareExternal()) {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					try {
+						IResource[] resources = getSelectedResources();
+						for (int i = 0; i < resources.length; i++) {
+							IResource resource = resources[i];
+							String path = resource.getLocation().toOSString();
+							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+							if (p != null) {
+								p.compareWithPredecessor(path);
+							}
 						}
+					} finally {
+						monitor.done();
 					}
-				} finally {
-					monitor.done();
+
 				}
+			};
+			executeInBackground(runnable, "Compare With Predecessor");
 
+		} else {
+			// 20101124 mike use new internal compare.
+			IResource[] resources = getSelectedResources();
+			
+			CompareConfiguration config = new CompareConfiguration();
+			config.setLeftEditable(false);	
+			config.setRightEditable(false); // Could be made editable in the future.				
+			
+			for (int i = 0; i < resources.length; i++) {
+				IResource resource = resources[i];
+				ClearCaseProvider p = ClearCaseProvider
+						.getClearCaseProvider(resource);			
+				
+				if (p != null && resource instanceof IFile) {
+				  PredecessorCompareInput input = new PredecessorCompareInput(config, (IFile) resource, p);			  
+					CompareUI.openCompareEditor(input);
+				}
 			}
-		};
-		executeInBackground(runnable, "Compare With Predecessor");
-
+		}
 	}
 }
