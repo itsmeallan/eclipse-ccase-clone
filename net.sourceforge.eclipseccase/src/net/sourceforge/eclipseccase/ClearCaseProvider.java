@@ -29,6 +29,7 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceRuleFactory;
@@ -305,7 +306,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			setComment("");
 		}
 	}
-	
+
 	public void reserved(IResource[] resources, int depth,
 			IProgressMonitor progress) throws TeamException {
 		try {
@@ -314,7 +315,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 			setComment("");
 		}
 	}
-	
 
 	/*
 	 * @see SimpleAccessOperations#moved(IPath, IResource, IProgressMonitor)
@@ -833,6 +833,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	private final class AddOperation implements IRecursiveOperation {
 
 		ArrayList<IResource> privateElement = new ArrayList<IResource>();
+		ArrayList<IResource> parentToCheckin = new ArrayList<IResource>();
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
@@ -867,19 +868,57 @@ public class ClearCaseProvider extends RepositoryProvider {
 					}
 				}
 
+				// Add operation checks out parent directory. Change state to
+				// checked-out. No resource changed event is sent since this is
+				// implicitly done by
+				// add.
+				IResource directory = resource.getParent();
+				try {
+					directory.refreshLocal(IResource.DEPTH_ZERO,
+							new SubProgressMonitor(monitor, 10));
+					updateState(directory, IResource.DEPTH_ZERO,
+							new SubProgressMonitor(monitor, 10));
+				} catch (CoreException e) {
+					System.out.println("We got an exception!");
+					e.printStackTrace();
+					result = new Status(IStatus.ERROR, ID,
+							TeamException.UNABLE, "Add failed: " + "Exception"
+									+ e.getMessage(), null);
+				}
+
 				// Add check recursive checkin of files.
 				if (ClearCasePlugin.isAddWithCheckin() && result == OK_STATUS) {
-					for (Object element : privateElement) {
-						IResource res = (IResource) element;
-						if (isCheckedOut(res)) {
-							ClearCasePlugin.getEngine().checkin(
-									new String[] { res.getLocation()
-											.toOSString() }, getComment(),
-									ClearCase.NONE, opListener);
+					try {
+						for (Object element : privateElement) {
+							IResource res = (IResource) element;
+							IResource folder = (IResource) res.getParent();
+							if (!parentToCheckin.contains(folder)) {
+								parentToCheckin.add(folder);
+							}
+
+							if (isCheckedOut(res)) {
+								checkin(new IResource[] { res },
+										IResource.DEPTH_ZERO,
+										new SubProgressMonitor(monitor, 10));
+							}
 
 						}
 
+						for (IResource parent : parentToCheckin) {
+							if (isCheckedOut(parent)) {
+								checkin(new IResource[] { parent },
+										IResource.DEPTH_ZERO,
+										new SubProgressMonitor(monitor, 10));
+							}
+						}
+
+					} catch (TeamException e) {
+						result = new Status(IStatus.ERROR, ID,
+								TeamException.UNABLE,
+								"Checkin of resource failed: " + "Exception"
+										+ e.getMessage(), null);
 					}
+
 				}
 
 				monitor.worked(40);
@@ -887,6 +926,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			} finally {
 				monitor.done();
 				privateElement.clear();
+				parentToCheckin.clear();
 			}
 		}
 
@@ -943,9 +983,15 @@ public class ClearCaseProvider extends RepositoryProvider {
 	private Status makeFileElement(IResource resource, IProgressMonitor monitor) {
 		Status result = OK_STATUS;
 
-		ClearCaseElementState state = ClearCasePlugin.getEngine().add(
-				resource.getLocation().toOSString(), false, getComment(),
-				ClearCase.PTIME | (ClearCasePlugin.isUseMasterForAdd()? ClearCase.MASTER:ClearCase.NONE), opListener);
+		ClearCaseElementState state = ClearCasePlugin
+				.getEngine()
+				.add(
+						resource.getLocation().toOSString(),
+						false,
+						getComment(),
+						ClearCase.PTIME
+								| (ClearCasePlugin.isUseMasterForAdd() ? ClearCase.MASTER
+										: ClearCase.NONE), opListener);
 
 		if (state.isElement()) {
 			// Do nothing!
@@ -992,8 +1038,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// Now time to create the original directory in
 			// clearcase.
 			ClearCaseElementState state = ClearCasePlugin.getEngine().add(
-					resource.getLocation().toOSString(), true, getComment(),
-					ClearCasePlugin.isUseMasterForAdd()? ClearCase.MASTER:ClearCase.NONE, opListener);
+					resource.getLocation().toOSString(),
+					true,
+					getComment(),
+					ClearCasePlugin.isUseMasterForAdd() ? ClearCase.MASTER
+							: ClearCase.NONE, opListener);
 			if (!state.isElement()) {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
 						"Add failed: " + "Could not add element"
@@ -1582,8 +1631,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							null);
 				IStatus result = OK_STATUS;
 				String element = resource.getLocation().toOSString();
-				ClearCasePlugin.getEngine().reserved(
-						new String[] { element }, null, 0, opListener);
+				ClearCasePlugin.getEngine().reserved(new String[] { element },
+						null, 0, opListener);
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_INFINITE,
 						new SubProgressMonitor(monitor, 10));
