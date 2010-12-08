@@ -13,6 +13,7 @@ Fixed Bugs:
 New Features:
 
 3037105 Eclipse internal compare editor. (initial version).
+2978675 Reuse checkout comment from outside Eclipse
  
 
 2.2.5

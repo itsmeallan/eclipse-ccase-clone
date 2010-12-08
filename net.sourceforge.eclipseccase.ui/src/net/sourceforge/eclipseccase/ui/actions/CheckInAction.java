@@ -1,5 +1,11 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.core.runtime.IStatus;
+
+import net.sourceforge.clearcase.ClearCase;
+
+import java.io.File;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.Arrays;
@@ -23,11 +29,18 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 	public void execute(IAction action) {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
-
+		CommentDialog dlg;
 		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentCheckin()) {
-			CommentDialog dlg = new CommentDialog(getShell(), "Checkin comment");
+			IResource[] resources = getSelectedResources();
+			String extCoComment = getLastExtCoComment(resources);
+			if (!extCoComment.equalsIgnoreCase("")) {
+				dlg = new CommentDialog(getShell(), "Checkin comment", extCoComment);
+			} else {
+				dlg = new CommentDialog(getShell(), "Checkin comment");
+			}
 			if (dlg.open() == Window.CANCEL)
 				return;
+			maybeComment = dlg.getComment();
 			maybeComment = dlg.getComment();
 			maybeDepth = dlg.isRecursive() ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 		}
@@ -103,6 +116,43 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Method retrieves the check-out comment for the last modified resource
+	 * outside the eclipse workspace.
+	 * 
+	 * @param resources
+	 * @return comment
+	 */
+	private String getLastExtCoComment(IResource[] resources) {
+		long lastModificationTime = 0L;
+		IResource lastModifiedResource = null;
+		String lastComment = "";
+		for (IResource iResource : resources) {
+			String path = iResource.getLocation().toOSString();
+			File file = new File(path);
+			long modificationTime = file.lastModified();
+			if (modificationTime == 0L) {
+				ClearCasePlugin.log(IStatus.WARNING, "Could not access resource," + iResource.getName(), null);
+			}
+			if (modificationTime > lastModificationTime) {
+				lastModificationTime = modificationTime;
+				lastModifiedResource = iResource;
+			}
+
+		}
+
+		// get comment for last modified resource.
+		ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(lastModifiedResource);
+		if (provider != null) {
+			String element = lastModifiedResource.getLocation().toOSString();
+			String[] output = provider.describe(element, ClearCase.FORMAT, "%c");
+			if (output.length > 0) {
+				lastComment = output[0];
+			}
+		}
+		return lastComment;
 	}
 
 }

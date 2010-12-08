@@ -406,6 +406,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 		ClearCasePlugin.getEngine().describeVersionGUI(element);
 
 	}
+	
+	public String [] describe(String element,int flag,String format){
+		return ClearCasePlugin.getEngine().describe(element,flag,format);
+	}
 
 	public void compareWithVersion(String element1, String element2) {
 		ClearCasePlugin.getEngine().compareWithVersion(element1, element2);
