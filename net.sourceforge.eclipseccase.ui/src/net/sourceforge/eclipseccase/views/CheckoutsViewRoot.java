@@ -79,17 +79,17 @@ public class CheckoutsViewRoot implements IDeferredWorkbenchAdapter, IAdaptable 
 		if (waited && ClearCaseUI.DEBUG_VIEWPRIV) {
 			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting for CC refresh done"); //$NON-NLS-1$
 		}
-		
+
 		waited = false;
 		while (StateCacheFactory.getInstance().hasPendingUpdates()) {
-			ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
+			// ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting..."); //$NON-NLS-1$
 			try {
 				Thread.sleep(300);
 				waited = true;
 			} catch (InterruptedException e) {
 			}
 		}
-		
+
 		if (ClearCaseUI.DEBUG_VIEWPRIV) {
 			if (waited) {
 				ClearCaseUI.trace(ClearCaseUI.VIEWPRIV, "fetchDeferredChildren: waiting for async refreshes done"); //$NON-NLS-1$
@@ -191,7 +191,7 @@ public class CheckoutsViewRoot implements IDeferredWorkbenchAdapter, IAdaptable 
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public Object getAdapter(Class adapter) {
 		return ResourcesPlugin.getWorkspace().getRoot().getAdapter(adapter);
 	}

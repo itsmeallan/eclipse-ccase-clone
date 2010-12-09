@@ -12,13 +12,13 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.OpenFileAction;
 import org.eclipse.ui.views.navigator.MainActionGroup;
-import org.eclipse.ui.views.navigator.ShowInNavigatorAction;
 
 /**
  * TODO Provide description for CheckoutsViewActionGroup.
  * 
  * @author Gunnar Wagenknecht (g.wagenknecht@intershop.de)
  */
+@SuppressWarnings("deprecation")
 public class CheckoutsViewActionGroup extends MainActionGroup {
 
 	/**
@@ -37,8 +37,6 @@ public class CheckoutsViewActionGroup extends MainActionGroup {
 	private Action hideHijackedElements;
 
 	private Action refreshAction;
-
-	private ShowInNavigatorAction showInNavigatorAction;
 
 	/*
 	 * (non-Javadoc)

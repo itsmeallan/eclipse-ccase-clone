@@ -21,6 +21,7 @@ import java.util.HashMap;
 /**
  * A simple XML writer.
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class XMLWriter extends PrintWriter {
 
 	protected int tab;
@@ -69,18 +70,15 @@ public class XMLWriter extends PrintWriter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void printTag(String name, HashMap parameters) {
 		printTag(name, parameters, true, true);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void printTag(String name, HashMap parameters, boolean printTab,
 			boolean newLine) {
 		printTag(name, parameters, printTab, newLine, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void printTag(String name, HashMap parameters, boolean printTab,
 			boolean newLine, boolean end) {
 		StringBuffer sb = new StringBuffer();
@@ -115,7 +113,6 @@ public class XMLWriter extends PrintWriter {
 	 * @param name
 	 * @param parameters
 	 */
-	@SuppressWarnings("unchecked")
 	public void startTag(String name, HashMap parameters) {
 		startTag(name, parameters, true);
 	}
@@ -125,7 +122,6 @@ public class XMLWriter extends PrintWriter {
 	 * @param parameters
 	 * @param newLine
 	 */
-	@SuppressWarnings("unchecked")
 	public void startTag(String name, HashMap parameters, boolean newLine) {
 		printTag(name, parameters, true, newLine);
 		tab++;
@@ -136,7 +132,6 @@ public class XMLWriter extends PrintWriter {
 	 * @param parameters
 	 * @param newLine
 	 */
-	@SuppressWarnings("unchecked")
 	public void startAndEndTag(String name, HashMap parameters, boolean newLine) {
 		printTag(name, parameters, true, true, true);
 	}

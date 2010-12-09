@@ -21,6 +21,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  * 
  * @see IProjectSetSerializer
  */
+@SuppressWarnings("deprecation")
 public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	private static final String VERSION = "1.0"; //$NON-NLS-1$
 

@@ -11,7 +11,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +24,8 @@ import net.sourceforge.clearcase.ClearCaseElementState;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
@@ -149,12 +146,12 @@ public class ViewPrivCollector {
 			RefreshSourceData data = (RefreshSourceData) projects.get(project);
 			if (data.isSnapshot() == true) {
 				trace("Refreshing snapshot view " + data.getViewName());
-				gatherSnapshotViewElements(data.getResources()[0], data
-						.getViewName(), queriedViews, monitor);
+				gatherSnapshotViewElements(data.getResources()[0],
+						data.getViewName(), queriedViews, monitor);
 			} else {
 				trace("Refreshing dynamic view " + data.getViewName());
-				gatherDynamicViewElements(data.getResources()[0], data
-						.getViewName(), queriedViews, monitor);
+				gatherDynamicViewElements(data.getResources()[0],
+						data.getViewName(), queriedViews, monitor);
 			}
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
@@ -167,6 +164,18 @@ public class ViewPrivCollector {
 		monitor.done();
 	}
 
+	/**
+	 * Two step process for a dynamic view, find the checked-out elements (via
+	 * lsco) and the view-private stuff (via lsprivate)
+	 * 
+	 * @param workingdir
+	 *            the top level dir
+	 * @param viewName
+	 * @param queriedViews
+	 *            in/out, protocol all handled views
+	 * @param monitor
+	 *            for cancelation
+	 */
 	private void gatherDynamicViewElements(IResource workingdir,
 			String viewName, Set<String> queriedViews, IProgressMonitor monitor) {
 
@@ -175,13 +184,15 @@ public class ViewPrivCollector {
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
 
+			// STEP 1:
 			if (findCheckedouts) {
-				addCheckedOutFiles(viewName, monitor, workingdir.getLocation());
+				addCheckedOutFiles(viewName, monitor, workingdir.getLocation(),
+						false);
+				if (monitor.isCanceled())
+					throw new OperationCanceledException();
 			}
 
-			if (monitor.isCanceled())
-				throw new OperationCanceledException();
-
+			// STEP 2:
 			if (findOthers) {
 				String taskname = "View private in " + viewName;
 				// processing getViewLSPrivateList line by line in
@@ -192,14 +203,29 @@ public class ViewPrivCollector {
 								new ViewprivOperationListener(taskname, false,
 										monitor));
 			}
-			if (monitor.isCanceled())
-				throw new OperationCanceledException();
+
 			queriedViews.add(viewName);
+
 		} else {
 			// view was already processed... (?)
 		}
 	}
 
+	/**
+	 * Three step process for a snapshot view, find the checked-out elements
+	 * (via lsco), then the hijacked elements (via a non-destructive update) and
+	 * finally the view-private stuff (via ls -view_only)
+	 * 
+	 * @param workingdir
+	 *            the top level dir, hijacked elements are searched recursively
+	 *            from here down
+	 * @param viewName
+	 *            name of the view
+	 * @param queriedViews
+	 *            in/out, protocol all handled views
+	 * @param monitor
+	 *            for cancelation
+	 */
 	private void gatherSnapshotViewElements(IResource workingdir,
 			String viewName, Set<String> queriedViews, IProgressMonitor monitor) {
 
@@ -208,23 +234,47 @@ public class ViewPrivCollector {
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
 
-			if (findCheckedouts) {
-				addCheckedOutFiles(viewName, monitor, workingdir.getLocation());
-			}
+			// ask for toplevel directory only once
+			final String cwd = workingdir.getLocation().toOSString();
+			final String topDir = ClearCasePlugin.getEngine().getViewRoot(cwd);
 
-			if (findOthers || findHijacked) {
-				// TODO: find top directory of SS view via
-				// "cleartool pwv -root",
-				// then switch to that dir and perform getViewLSViewOnlyList
-				monitor.subTask("View private in " + viewName);
-				ClearCaseElementState[] viewLSViewOnlyList = ClearCasePlugin
-						.getEngine().getViewLSViewOnlyList(
-								workingdir.getLocation().toOSString(), null);
-				updateStateCaches(viewLSViewOnlyList, monitor);
-			}
+			if (topDir != null) {
 
-			if (monitor.isCanceled()) {
-				throw new OperationCanceledException();
+				// STEP 1:
+				if (findCheckedouts) {
+					addCheckedOutFiles(viewName, monitor,
+							workingdir.getLocation(), true);
+					if (monitor.isCanceled())
+						throw new OperationCanceledException();
+				}
+
+				// STEP 2:
+				if (findHijacked) {
+					trace("gatherSnapshotViewElements, findHijacked: " + cwd);
+					ClearCasePlugin.getEngine().getUpdateList(
+							cwd,
+							new ViewprivOperationListener("Hijacked in "
+									+ viewName, topDir, monitor));
+					monitor.subTask("Hijacked in " + viewName
+							+ ", processing list...");
+					if (monitor.isCanceled())
+						throw new OperationCanceledException();
+				}
+
+				// STEP 3:
+				if (findOthers) {
+					trace("gatherSnapshotViewElements, view_only: " + cwd);
+					// process getCheckedOutElements line by line, not as array
+					ClearCasePlugin.getEngine().getViewLSViewOnlyList(
+							cwd,
+							new ViewprivOperationListener("Checked out in "
+									+ viewName, false, monitor));
+					monitor.subTask("View private in " + viewName
+							+ ", processing list...");
+					if (monitor.isCanceled())
+						throw new OperationCanceledException();
+				}
+
 			}
 			queriedViews.add(viewName);
 		} else {
@@ -233,67 +283,16 @@ public class ViewPrivCollector {
 	}
 
 	private void addCheckedOutFiles(String viewName, IProgressMonitor monitor,
-			IPath path) {
+			IPath path, boolean isSnapshot) {
 		String workingdir = path.toOSString();
 		trace("addCheckedOutFiles, dir=: " + workingdir);
 		// process getCheckedOutElements line by line, not as array
 		ClearCasePlugin.getEngine().getCheckedOutElements(
 				workingdir,
+				isSnapshot,
 				new ViewprivOperationListener("Checked out in " + viewName,
 						true, monitor));
 		monitor.subTask("Checked out in " + viewName + ", processing list...");
-	}
-
-	private void updateStateCaches(ClearCaseElementState[] elementStates,
-			IProgressMonitor monitor) {
-
-		trace("updateStateCaches, " + elementStates.length + " elements");
-		for (int i = 0; i < elementStates.length; i++) {
-			if (monitor.isCanceled()) {
-				throw new OperationCanceledException();
-			}
-			ClearCaseElementState elementState = elementStates[i];
-			File targetLocation = new File(elementState.element);
-			IResource[] resources = null;
-			if (targetLocation.isDirectory()) {
-				resources = ResourcesPlugin.getWorkspace().getRoot()
-						.findContainersForLocationURI(targetLocation.toURI());
-			} else {
-				resources = ResourcesPlugin.getWorkspace().getRoot()
-						.findFilesForLocationURI(targetLocation.toURI());
-			}
-
-			// TODO: what about found resources that are not visible in
-			// workspace yet? Must perform a refresh on parent...?
-			for (IResource resource : resources) {
-				StateCache cache = StateCacheFactory.getInstance()
-						.getWithNoUpdate(resource);
-				if (elementState.isCheckedOut()) {
-					if (cache.isCheckedOut()) {
-						cache.setVpStateVerified();
-					} else {
-						trace("Found CO " + resource.getLocation());
-						cache.doUpdate(elementState);
-					}
-				} else if (elementState.isHijacked()) {
-					if (cache.isHijacked()) {
-						cache.setVpStateVerified();
-					} else {
-						trace("Found Hijacked " + resource.getLocation());
-						cache.doUpdate(elementState);
-					}
-				} else {
-					// this is a view-private file
-					if (cache.isUninitialized()) {
-						trace("Found ViewPriv " + resource.getLocation());
-						cache.doUpdate(elementState);
-					} else if (cache.isViewprivate()) {
-						cache.setVpStateVerified();
-					}
-				}
-			}
-		}
-		trace("updateStateCaches done");
 	}
 
 	public ClearCaseElementState getElementState(StateCache stateCache) {

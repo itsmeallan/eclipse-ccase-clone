@@ -33,6 +33,7 @@ public class CheckoutsViewContentProvider implements ITreeContentProvider {
 	 * org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface
 	 * .viewers.Viewer, java.lang.Object, java.lang.Object)
 	 */
+	@SuppressWarnings("deprecation")
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		if (viewer instanceof AbstractTreeViewer) {
 			manager = new DeferredTreeContentManager(this, (AbstractTreeViewer) viewer) {

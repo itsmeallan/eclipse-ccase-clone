@@ -2,8 +2,6 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 
-import net.sourceforge.clearcase.ClearCase;
-import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.events.OperationListener;
 
 import org.eclipse.core.resources.IResource;
@@ -24,11 +22,26 @@ public class ViewprivOperationListener implements OperationListener {
 
 	private boolean isGatheringCO;
 
+	private boolean isGatheringHijacked;
+
+	private String basedir;
+
 	public ViewprivOperationListener(String prefix, boolean isGatheringCO,
 			IProgressMonitor monitor) {
 		this.monitor = monitor;
 		this.prefix = prefix;
 		this.isGatheringCO = isGatheringCO;
+		this.isGatheringHijacked = false;
+		updateJobStatus();
+	}
+
+	public ViewprivOperationListener(String prefix, String basedir,
+			IProgressMonitor monitor) {
+		this.monitor = monitor;
+		this.prefix = prefix;
+		this.isGatheringCO = false;
+		this.isGatheringHijacked = true;
+		this.basedir = basedir;
 		updateJobStatus();
 	}
 
@@ -60,18 +73,25 @@ public class ViewprivOperationListener implements OperationListener {
 			// VOBs on PC
 			return;
 		}
+		
+		// TODO: some refactoring, to avoid all these if/else constructs
+		
+		if (isGatheringHijacked) {
+			if (filename.startsWith("Keeping hijacked")) {
+				filename = basedir + "/" + filename.replaceFirst("^.*?\"(.*?)\".*", "$1");
+			} else {
+				return;
+			}
+		} else if (!isGatheringCO && filename.endsWith("Rule: CHECKEDOUT")) {
+			// ignore checkedout stuff in a ls -view_only listing for snapshot
+			// views, as we gather COs differently (with the lsco command, as
+			// only that lists directories too)
+			return;
+		}
+
 		// we have a valid name now
 		// System.out.println("+++ "+ filename);
-
-		File targetLocation = new File(filename);
-		IResource[] resources = null;
-		if (targetLocation.isDirectory()) {
-			resources = ResourcesPlugin.getWorkspace().getRoot()
-					.findContainersForLocationURI(targetLocation.toURI());
-		} else {
-			resources = ResourcesPlugin.getWorkspace().getRoot()
-					.findFilesForLocationURI(targetLocation.toURI());
-		}
+		IResource[] resources = findResources(filename);
 
 		// What about found resources that are not visible in
 		// workspace yet? Two possibilities:
@@ -86,7 +106,10 @@ public class ViewprivOperationListener implements OperationListener {
 			if (cache.isUninitialized()) {
 				if (isGatheringCO) {
 					trace("Found new CO(1) " + resource.getLocation());
-					cache.doUpdate();
+					cache.updateAsync(true);
+				} else if (isGatheringHijacked) {
+					trace("Found new HJ(1) " + resource.getLocation());
+					cache.updateAsync(true);
 				} else {
 					trace("Found new ViewPriv " + resource.getLocation());
 				}
@@ -100,6 +123,14 @@ public class ViewprivOperationListener implements OperationListener {
 						trace("Found new CO(2) " + resource.getLocation());
 						cache.updateAsync(true);
 					}
+				} else if (isGatheringHijacked) {
+					if (cache.isHijacked()) {
+						// validate that this is still a hijacked element
+						cache.setVpStateVerified();
+					} else {
+						trace("Found new HJ(2) " + resource.getLocation());
+						cache.updateAsync(true);
+					}
 				} else {
 					trace("Found ViewPriv, but cache wrong "
 							+ resource.getLocation());
@@ -110,12 +141,28 @@ public class ViewprivOperationListener implements OperationListener {
 				if (isGatheringCO) {
 					trace("Found new CO(3) " + resource.getLocation());
 					cache.updateAsync(true);
-				} else if (cache.isViewprivate()){
+				} else if (isGatheringHijacked) {
+					trace("Found new HJ(3) " + resource.getLocation());
+					cache.updateAsync(true);
+				} else if (cache.isViewprivate()) {
 					// validate that this is still a private element
 					cache.setVpStateVerified();
 				}
 			}
 		}
+	}
+
+	private IResource[] findResources(String filename) {
+		File targetLocation = new File(filename);
+		IResource[] resources = null;
+		if (targetLocation.isDirectory()) {
+			resources = ResourcesPlugin.getWorkspace().getRoot()
+					.findContainersForLocationURI(targetLocation.toURI());
+		} else {
+			resources = ResourcesPlugin.getWorkspace().getRoot()
+					.findFilesForLocationURI(targetLocation.toURI());
+		}
+		return resources;
 	}
 
 	private void updateJobStatus() {

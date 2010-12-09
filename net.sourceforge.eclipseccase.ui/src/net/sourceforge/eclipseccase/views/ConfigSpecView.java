@@ -1,12 +1,9 @@
 package net.sourceforge.eclipseccase.views;
 
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ui.actions.SetConfigSpecAction;
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsole;
-import net.sourceforge.eclipseccase.ui.console.ClearCaseConsoleFactory;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -158,9 +155,8 @@ public class ConfigSpecView extends ViewPart {
 					refreshAction.setEnabled(false);
 					configSpec.setText("");
 				} else {
-					
-					if(!(ClearCasePlugin.isConfigSpecModificationForbidden()))
-					{
+
+					if (!(ClearCasePlugin.isConfigSpecModificationForbidden())) {
 						configSpecLabel.setText("Base: " + resource.getLocation().toString());
 
 						configSpec.setEditable(true);
@@ -169,9 +165,7 @@ public class ConfigSpecView extends ViewPart {
 						} else {
 							saveAction.setEnabled(false);
 						}
-					}
-					else
-					{
+					} else {
 						configSpecLabel.setText("Base: " + resource.getLocation().toString() + " - Config Spec cannot be modified");
 						configSpec.setEditable(false);
 						saveAction.setEnabled(false);
@@ -219,7 +213,7 @@ public class ConfigSpecView extends ViewPart {
 			saveAction.execute((IAction) null);
 			bConfigSpecModified = false;
 		} catch (Exception e) {
-			//Already handled in SaveAction.
+			// Already handled in SaveAction.
 		} finally {
 		}
 	}
@@ -230,5 +224,5 @@ public class ConfigSpecView extends ViewPart {
 		configSpec.setText("");
 		focusOnConfigSpec();
 	}
-	
+
 }

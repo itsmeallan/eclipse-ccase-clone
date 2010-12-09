@@ -14,13 +14,7 @@ package net.sourceforge.eclipseccase;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -28,25 +22,10 @@ import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceRuleFactory;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.core.RepositoryProvider;
@@ -87,7 +66,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	CheckoutReservedOperation CO_RESERVED = new CheckoutReservedOperation();
 
-	private IMoveDeleteHook moveHandler = new MoveHandler(this);
+	private final IMoveDeleteHook moveHandler = new MoveHandler(this);
 
 	private String comment = ""; //$NON-NLS-1$
 
@@ -406,9 +385,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 		ClearCasePlugin.getEngine().describeVersionGUI(element);
 
 	}
-	
-	public String [] describe(String element,int flag,String format){
-		return ClearCasePlugin.getEngine().describe(element,flag,format);
+
+	public String[] describe(String element, int flag, String format) {
+		return ClearCasePlugin.getEngine().describe(element, flag, format);
 	}
 
 	public void compareWithVersion(String element1, String element2) {
@@ -768,6 +747,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	// provider example =)
 	private final class RefreshStateOperation implements IRecursiveOperation {
 
+		@SuppressWarnings("deprecation")
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
 				checkCanceled(monitor);
@@ -895,7 +875,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					try {
 						for (Object element : privateElement) {
 							IResource res = (IResource) element;
-							IResource folder = (IResource) res.getParent();
+							IResource folder = res.getParent();
 							if (!parentToCheckin.contains(folder)) {
 								parentToCheckin.add(folder);
 							}
@@ -2028,6 +2008,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return the final CC element, no symlink. If the symlink can't be
 	 *         resolved in CC null is returned
 	 */
+	@SuppressWarnings("deprecation")
 	public StateCache getFinalTargetElement(StateCache cache) {
 		if (!cache.isSymbolicLink() || null == cache.getSymbolicLinkTarget())
 			return cache;

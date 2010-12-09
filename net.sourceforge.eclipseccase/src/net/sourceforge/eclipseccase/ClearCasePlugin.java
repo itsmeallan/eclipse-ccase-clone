@@ -64,6 +64,7 @@ import sun.misc.BASE64Encoder;
 /**
  * The main plugin class to be used in the desktop.
  */
+@SuppressWarnings("deprecation")
 public class ClearCasePlugin extends Plugin {
 
 	private static final BASE64Decoder BASE64_DECODER = new BASE64Decoder();
@@ -148,8 +149,8 @@ public class ClearCasePlugin extends Plugin {
 
 	/** debug option */
 	private static final String DEBUG_OPTION_UPDATE_QUEUE = ClearCasePlugin.PLUGIN_ID
-	+ "/debug/updateQueue"; //$NON-NLS-1$
-	
+			+ "/debug/updateQueue"; //$NON-NLS-1$
+
 	/** debug option */
 	private static final String DEBUG_OPTION_SUBPROCESS = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/subprocess"; //$NON-NLS-1$
@@ -187,7 +188,7 @@ public class ClearCasePlugin extends Plugin {
 				trace("debugging " + DEBUG_OPTION_UPDATE_QUEUE); //$NON-NLS-1$
 				ClearCasePlugin.DEBUG_UPDATE_QUEUE = true;
 			}
-			
+
 			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
 				trace("debugging " + DEBUG_OPTION_SUBPROCESS); //$NON-NLS-1$
 				ClearCasePlugin.getEngine().setDebugLevel(100);
@@ -263,8 +264,8 @@ public class ClearCasePlugin extends Plugin {
 					// ignore
 				}
 			}
-			log(IStatus.ERROR, Messages
-					.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
+			log(IStatus.ERROR,
+					Messages.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
 			debug = null;
 			return;
 		}
@@ -281,8 +282,8 @@ public class ClearCasePlugin extends Plugin {
 					// ignore
 				}
 			}
-			log(IStatus.ERROR, Messages
-					.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
+			log(IStatus.ERROR,
+					Messages.getString("ClearCasePlugin.error.debug") + debug, e); //$NON-NLS-1$
 			debug = null;
 		}
 	}
@@ -300,8 +301,8 @@ public class ClearCasePlugin extends Plugin {
 		try {
 			impl = ClearCasePlugin.getInstance().getClearCase();
 		} catch (CoreException e) {
-			log(IStatus.ERROR, Messages
-					.getString("ClearCasePlugin.error.noClearCase"), e); //$NON-NLS-1$
+			log(IStatus.ERROR,
+					Messages.getString("ClearCasePlugin.error.noClearCase"), e); //$NON-NLS-1$
 		}
 		return impl;
 	}
@@ -392,7 +393,7 @@ public class ClearCasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.FULL_REFRESH);
 	}
-	
+
 	/**
 	 * Returns the preference value for <code>COMMENT_ADD</code>.
 	 * 
@@ -574,8 +575,10 @@ public class ClearCasePlugin extends Plugin {
 	 * @return the preference value
 	 */
 	public static boolean isUnneededChildrenRefreshPrevented() {
-		return getInstance().getPluginPreferences().getBoolean(
-				IClearCasePreferenceConstants.PREVENT_UNNEEDED_CHILDREN_REFRESH);
+		return getInstance()
+				.getPluginPreferences()
+				.getBoolean(
+						IClearCasePreferenceConstants.PREVENT_UNNEEDED_CHILDREN_REFRESH);
 	}
 
 	/**
@@ -587,7 +590,7 @@ public class ClearCasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getString(
 				IClearCasePreferenceConstants.CLEARCASE_PRIMARY_GROUP);
 	}
-	
+
 	public static String getBranchPrefix() {
 		return getInstance().getPluginPreferences().getString(
 				IClearCasePreferenceConstants.BRANCH_PREFIX);
@@ -625,47 +628,50 @@ public class ClearCasePlugin extends Plugin {
 		return getInstance().getPluginPreferences().getInt(
 				IClearCasePreferenceConstants.JOB_QUEUE_PRIORITY);
 	}
-	
-	public static void setGraphicalToolTimeout(){
+
+	public static void setGraphicalToolTimeout() {
 		/* Set timeout as an environment variable */
-		System.setProperty("TIMEOUT_GRAPHICAL_TOOLS", getInstance().getPluginPreferences().getString(
-				IClearCasePreferenceConstants.TIMEOUT_GRAPHICAL_TOOLS));
+		System.setProperty(
+				"TIMEOUT_GRAPHICAL_TOOLS",
+				getInstance().getPluginPreferences().getString(
+						IClearCasePreferenceConstants.TIMEOUT_GRAPHICAL_TOOLS));
 	}
 
-	
 	public static boolean UseGraphicalExternalUpdateView() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW);
 	}
-	
 
 	/**
 	 * Used to know if config spec modification has been forbidden
+	 * 
 	 * @return true if modification forbidden; false else.
 	 */
 	public static boolean isConfigSpecModificationForbidden() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION);
 	}
-	
+
 	/**
 	 * Used for a
+	 * 
 	 * @return
 	 */
-	public static boolean isUseMasterForAdd(){
+	public static boolean isUseMasterForAdd() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.ADD_WITH_MASTER);
 	}
-	
+
 	/**
 	 * Used for a
+	 * 
 	 * @return
 	 */
-	public static boolean isCompareExternal(){
+	public static boolean isCompareExternal() {
 		return getInstance().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.COMPARE_EXTERNAL);
 	}
-	
+
 	/**
 	 * Logs an exception with the specified severity an message.
 	 * 
@@ -704,7 +710,7 @@ public class ClearCasePlugin extends Plugin {
 
 	/** debug flag */
 	public static boolean DEBUG_UPDATE_QUEUE = false;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -796,8 +802,7 @@ public class ClearCasePlugin extends Plugin {
 							IStatus.ERROR,
 							ClearCasePlugin.PLUGIN_ID,
 							TeamException.UNABLE,
-							Messages
-									.getString("ClearCasePlugin.error.noValidClearCase"), e)); //$NON-NLS-1$
+							Messages.getString("ClearCasePlugin.error.noValidClearCase"), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -823,7 +828,6 @@ public class ClearCasePlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#initializeDefaultPluginPreferences()
 	 */
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void initializeDefaultPluginPreferences() {
 		Preferences pref = getPluginPreferences();
@@ -844,17 +848,15 @@ public class ClearCasePlugin extends Plugin {
 
 		pref.setDefault(IClearCasePreferenceConstants.TIMEOUT_GRAPHICAL_TOOLS,
 				"2");
-		
+
 		pref.setDefault(IClearCasePreferenceConstants.USE_CLEARDLG, false);
 		pref.setDefault(IClearCasePreferenceConstants.PRESERVE_TIMES, false);
 		pref.setDefault(IClearCasePreferenceConstants.IGNORE_NEW, false);
 		pref.setDefault(IClearCasePreferenceConstants.RECURSIVE, true);
 		pref.setDefault(IClearCasePreferenceConstants.SAVE_DIRTY_EDITORS,
 				IClearCasePreferenceConstants.PROMPT);
-		pref
-				.setDefault(
-						IClearCasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY,
-						true);
+		pref.setDefault(
+				IClearCasePreferenceConstants.HIDE_REFRESH_STATE_ACTIVITY, true);
 
 		// source management
 		pref.setDefault(IClearCasePreferenceConstants.ADD_AUTO, true);
@@ -891,13 +893,11 @@ public class ClearCasePlugin extends Plugin {
 		pref.setDefault(
 				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW,
 				true);
-		pref.setDefault(
-				IClearCasePreferenceConstants.BRANCH_PREFIX,
-				"");
+		pref.setDefault(IClearCasePreferenceConstants.BRANCH_PREFIX, "");
 		pref.setDefault(
 				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION,
 				false);
-		
+
 		/* Set timeout as an environment variable */
 		setGraphicalToolTimeout();
 	}
@@ -930,15 +930,13 @@ public class ClearCasePlugin extends Plugin {
 				is.close();
 			}
 		} catch (IOException e) {
-			getLog()
-					.log(
-							new Status(
-									IStatus.ERROR,
-									PLUGIN_ID,
-									TeamException.UNABLE,
-									Messages
-											.getString("ClearCasePlugin.error.readingConfig.1") //$NON-NLS-1$
-											+ e.getLocalizedMessage(), e));
+			getLog().log(
+					new Status(
+							IStatus.ERROR,
+							PLUGIN_ID,
+							TeamException.UNABLE,
+							Messages.getString("ClearCasePlugin.error.readingConfig.1") //$NON-NLS-1$
+									+ e.getLocalizedMessage(), e));
 		} catch (CoreException e) {
 			getLog().log(e.getStatus());
 		}
@@ -977,8 +975,10 @@ public class ClearCasePlugin extends Plugin {
 									String comment = commentNode
 											.getFirstChild().getNodeValue();
 									if (null != comment) {
-										comment = new String(BASE64_DECODER
-												.decodeBuffer(comment), UTF_8);
+										comment = new String(
+												BASE64_DECODER
+														.decodeBuffer(comment),
+												UTF_8);
 										if (!previousComments.contains(comment)) {
 											previousComments.addLast(comment);
 										}
@@ -995,8 +995,7 @@ public class ClearCasePlugin extends Plugin {
 							IStatus.ERROR,
 							PLUGIN_ID,
 							TeamException.UNABLE,
-							Messages
-									.getString("ClearCasePlugin.error.readingConfig.2"), e)); //$NON-NLS-1$
+							Messages.getString("ClearCasePlugin.error.readingConfig.2"), e)); //$NON-NLS-1$
 		}
 	}
 
@@ -1009,7 +1008,7 @@ public class ClearCasePlugin extends Plugin {
 		StateCacheFactory.getInstance().getJobQueue().cancel(true);
 
 		setGraphicalToolTimeout();
-		
+
 		// destroy clearcase engine
 		if (clearcaseImpl != null) {
 			clearcaseImpl.dispose();
@@ -1087,8 +1086,8 @@ public class ClearCasePlugin extends Plugin {
 		// process deltas since last activated in another thread
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=67449
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=60566
-		Job processSavedState = new Job(Messages
-				.getString("savedState.jobName")) { //$NON-NLS-1$
+		Job processSavedState = new Job(
+				Messages.getString("savedState.jobName")) { //$NON-NLS-1$
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -1168,9 +1167,10 @@ public class ClearCasePlugin extends Plugin {
 		synchronized (previousComments) {
 			writer.startTag(ELEMENT_COMMENT_HISTORY, null, false);
 			for (int i = 0; i < previousComments.size() && i < MAX_COMMENTS; i++) {
-				writer.printSimpleTag(ELEMENT_COMMENT, BASE64_ENCODER
-						.encode(previousComments.get(i)
-								.getBytes(UTF_8)));
+				writer.printSimpleTag(
+						ELEMENT_COMMENT,
+						BASE64_ENCODER.encode(previousComments.get(i).getBytes(
+								UTF_8)));
 			}
 			writer.endTag(ELEMENT_COMMENT_HISTORY);
 		}
