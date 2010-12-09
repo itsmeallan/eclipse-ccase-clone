@@ -11,13 +11,7 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -63,7 +57,7 @@ public class ViewPrivCollector {
 
 	private final Set<IResource> startupDirectories = new HashSet<IResource>();
 
-	private Map<String, ClearCaseElementState> elementStates = new HashMap<String, ClearCaseElementState>();
+	private final Map<String, ClearCaseElementState> elementStates = new HashMap<String, ClearCaseElementState>();
 
 	private boolean findCheckedouts = true;
 
@@ -143,15 +137,15 @@ public class ViewPrivCollector {
 		Set<String> queriedViews = new HashSet<String>();
 		while (projectIterator.hasNext()) {
 			IProject project = projectIterator.next();
-			RefreshSourceData data = (RefreshSourceData) projects.get(project);
+			RefreshSourceData data = projects.get(project);
 			if (data.isSnapshot() == true) {
 				trace("Refreshing snapshot view " + data.getViewName());
-				gatherSnapshotViewElements(data.getResources()[0],
-						data.getViewName(), queriedViews, monitor);
+				gatherSnapshotViewElements(data.getResources()[0], data
+						.getViewName(), queriedViews, monitor);
 			} else {
 				trace("Refreshing dynamic view " + data.getViewName());
-				gatherDynamicViewElements(data.getResources()[0],
-						data.getViewName(), queriedViews, monitor);
+				gatherDynamicViewElements(data.getResources()[0], data
+						.getViewName(), queriedViews, monitor);
 			}
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
@@ -197,11 +191,9 @@ public class ViewPrivCollector {
 				String taskname = "View private in " + viewName;
 				// processing getViewLSPrivateList line by line in
 				// ViewprivOperationListener
-				ClearCasePlugin.getEngine()
-						.getViewLSPrivateList(
-								workingdir.getLocation().toOSString(),
-								new ViewprivOperationListener(taskname, false,
-										monitor));
+				ClearCasePlugin.getEngine().getViewLSPrivateList(
+						workingdir.getLocation().toOSString(),
+						new ViewprivOperationListenerNF(taskname, monitor));
 			}
 
 			queriedViews.add(viewName);
@@ -242,8 +234,8 @@ public class ViewPrivCollector {
 
 				// STEP 1:
 				if (findCheckedouts) {
-					addCheckedOutFiles(viewName, monitor,
-							workingdir.getLocation(), true);
+					addCheckedOutFiles(viewName, monitor, workingdir
+							.getLocation(), true);
 					if (monitor.isCanceled())
 						throw new OperationCanceledException();
 				}
@@ -253,7 +245,7 @@ public class ViewPrivCollector {
 					trace("gatherSnapshotViewElements, findHijacked: " + cwd);
 					ClearCasePlugin.getEngine().getUpdateList(
 							cwd,
-							new ViewprivOperationListener("Hijacked in "
+							new ViewprivOperationListenerHJ("Hijacked in "
 									+ viewName, topDir, monitor));
 					monitor.subTask("Hijacked in " + viewName
 							+ ", processing list...");
@@ -267,8 +259,8 @@ public class ViewPrivCollector {
 					// process getCheckedOutElements line by line, not as array
 					ClearCasePlugin.getEngine().getViewLSViewOnlyList(
 							cwd,
-							new ViewprivOperationListener("Checked out in "
-									+ viewName, false, monitor));
+							new ViewprivOperationListenerNF("Checked out in "
+									+ viewName, monitor));
 					monitor.subTask("View private in " + viewName
 							+ ", processing list...");
 					if (monitor.isCanceled())
@@ -290,8 +282,8 @@ public class ViewPrivCollector {
 		ClearCasePlugin.getEngine().getCheckedOutElements(
 				workingdir,
 				isSnapshot,
-				new ViewprivOperationListener("Checked out in " + viewName,
-						true, monitor));
+				new ViewprivOperationListenerCO("Checked out in " + viewName,
+						monitor));
 		monitor.subTask("Checked out in " + viewName + ", processing list...");
 	}
 

@@ -9,7 +9,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
-public class ViewprivOperationListener implements OperationListener {
+public abstract class ViewprivOperationListener implements OperationListener {
 
 	private static final String TRACE_ID = ViewprivOperationListener.class
 			.getSimpleName();
@@ -18,30 +18,11 @@ public class ViewprivOperationListener implements OperationListener {
 
 	private int receivedLines = 0;
 
-	private String prefix;
+	private final String prefix;
 
-	private boolean isGatheringCO;
-
-	private boolean isGatheringHijacked;
-
-	private String basedir;
-
-	public ViewprivOperationListener(String prefix, boolean isGatheringCO,
-			IProgressMonitor monitor) {
+	public ViewprivOperationListener(String prefix, IProgressMonitor monitor) {
 		this.monitor = monitor;
 		this.prefix = prefix;
-		this.isGatheringCO = isGatheringCO;
-		this.isGatheringHijacked = false;
-		updateJobStatus();
-	}
-
-	public ViewprivOperationListener(String prefix, String basedir,
-			IProgressMonitor monitor) {
-		this.monitor = monitor;
-		this.prefix = prefix;
-		this.isGatheringCO = false;
-		this.isGatheringHijacked = true;
-		this.basedir = basedir;
 		updateJobStatus();
 	}
 
@@ -55,7 +36,7 @@ public class ViewprivOperationListener implements OperationListener {
 	public void ping() {
 	}
 
-	public void print(String filename) {
+	public void print(String line) {
 		receivedLines++;
 
 		if (monitor.isCanceled())
@@ -64,95 +45,22 @@ public class ViewprivOperationListener implements OperationListener {
 		if (receivedLines % 50 == 0) {
 			updateJobStatus();
 		}
-		if (filename.length() == 0) {
+		if (line.length() == 0) {
 			// ignore empty filenames
 			return;
 		}
-		if (filename.charAt(0) == '#') {
+		if (line.charAt(0) == '#') {
 			// ignore filenames starting with #, as these are in non-mounted
 			// VOBs on PC
 			return;
 		}
-		
-		// TODO: some refactoring, to avoid all these if/else constructs
-		
-		if (isGatheringHijacked) {
-			if (filename.startsWith("Keeping hijacked")) {
-				filename = basedir + "/" + filename.replaceFirst("^.*?\"(.*?)\".*", "$1");
-			} else {
-				return;
-			}
-		} else if (!isGatheringCO && filename.endsWith("Rule: CHECKEDOUT")) {
-			// ignore checkedout stuff in a ls -view_only listing for snapshot
-			// views, as we gather COs differently (with the lsco command, as
-			// only that lists directories too)
-			return;
-		}
 
-		// we have a valid name now
-		// System.out.println("+++ "+ filename);
-		IResource[] resources = findResources(filename);
-
-		// What about found resources that are not visible in
-		// workspace yet? Two possibilities:
-		// 1) If it would be visible after a manual refresh, we get a
-		// valid IResource here, but resource.isAccessible() is false.
-		// That is handled in cache.doUpdate() later
-		// 2) If the workspace does not have a possible access path to the
-		// resource, resources is empty, the for loop is not executed
-		for (IResource resource : resources) {
-			StateCache cache = StateCacheFactory.getInstance().getWithNoUpdate(
-					resource);
-			if (cache.isUninitialized()) {
-				if (isGatheringCO) {
-					trace("Found new CO(1) " + resource.getLocation());
-					cache.updateAsync(true);
-				} else if (isGatheringHijacked) {
-					trace("Found new HJ(1) " + resource.getLocation());
-					cache.updateAsync(true);
-				} else {
-					trace("Found new ViewPriv " + resource.getLocation());
-				}
-				cache.updateAsync(true);
-			} else if (cache.isClearCaseElement()) {
-				if (isGatheringCO) {
-					if (cache.isCheckedOut()) {
-						// validate that this is still a checkedout element
-						cache.setVpStateVerified();
-					} else {
-						trace("Found new CO(2) " + resource.getLocation());
-						cache.updateAsync(true);
-					}
-				} else if (isGatheringHijacked) {
-					if (cache.isHijacked()) {
-						// validate that this is still a hijacked element
-						cache.setVpStateVerified();
-					} else {
-						trace("Found new HJ(2) " + resource.getLocation());
-						cache.updateAsync(true);
-					}
-				} else {
-					trace("Found ViewPriv, but cache wrong "
-							+ resource.getLocation());
-					cache.updateAsync(true);
-				}
-			} else {
-				// cached state is not (yet) a CC element
-				if (isGatheringCO) {
-					trace("Found new CO(3) " + resource.getLocation());
-					cache.updateAsync(true);
-				} else if (isGatheringHijacked) {
-					trace("Found new HJ(3) " + resource.getLocation());
-					cache.updateAsync(true);
-				} else if (cache.isViewprivate()) {
-					// validate that this is still a private element
-					cache.setVpStateVerified();
-				}
-			}
-		}
+		analyseLine(line);
 	}
 
-	private IResource[] findResources(String filename) {
+	protected abstract void analyseLine(String line);
+
+	protected IResource[] findResources(String filename) {
 		File targetLocation = new File(filename);
 		IResource[] resources = null;
 		if (targetLocation.isDirectory()) {
@@ -185,7 +93,7 @@ public class ViewprivOperationListener implements OperationListener {
 	public void worked(int ticks) {
 	}
 
-	private void trace(String message) {
+	protected void trace(String message) {
 		if (ClearCasePlugin.DEBUG_STATE_CACHE) {
 			ClearCasePlugin.trace(TRACE_ID, message);
 		}
