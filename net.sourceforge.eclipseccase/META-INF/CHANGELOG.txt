@@ -9,6 +9,7 @@ Fixed Bugs:
 
 3054100 ConfigSpec save progress gui hangs but process ends
 3120442 Add new element does not show directory as checked-out
+3131512 Checkout reserve/unreserve menu layout.
 
 New Features:
 

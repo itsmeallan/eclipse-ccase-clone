@@ -178,41 +178,8 @@
 				</separator>
 				<separator name="group3">
 				</separator>
-
+				
 			</menu>
-			<menu id="net.sourceforge.eclipseccase.ui.actionset.checkedoutstate"
-				label="Checkedout State" icon="icons/full/checkedout.png" path="eclipseccase_menu/group2">
-				<separator name="res2unres" />
-				<separator name="unres2res" />
-			</menu>
-			<action
-				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
-				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
-				icon="icons/full/unreserve.png"
-				id="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
-				label="Reserved --&gt;Unreserved"
-				menubarPath="eclipseccase_menu/net.sourceforge.eclipseccase.ui.actionset.checkedoutstate/res2unres">
-				<enablement>
-					<and>
-						<pluginState value="activated" id="net.sourceforge.eclipseccase">
-						</pluginState>
-					</and>
-				</enablement>
-			</action>
-			<action
-				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToReservedAction"
-				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
-				icon="icons/full/reserve.png"
-				id="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
-				label="UnReserved --&gt;Reserved"
-				menubarPath="eclipseccase_menu/net.sourceforge.eclipseccase.ui.actionset.checkedoutstate/unres2res">
-				<enablement>
-					<and>
-						<pluginState value="activated" id="net.sourceforge.eclipseccase">
-						</pluginState>
-					</and>
-				</enablement>
-			</action>
 			<action
 				class="net.sourceforge.eclipseccase.ui.actions.DissociateProjectAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.dissociate"
@@ -407,6 +374,35 @@
 					</pluginState>
 				</enablement>
 			</action>
+			<action
+				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToUnreservedAction"
+				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
+				icon="icons/full/unreserve.png"
+				id="net.sourceforge.eclipseccase.ui.actionset.checkouttounreserved"
+				label="Reserved --&gt;Unreserved"
+				menubarPath="eclipseccase_menu/group2">
+				<enablement>
+					<and>
+						<pluginState value="activated" id="net.sourceforge.eclipseccase">
+						</pluginState>
+					</and>
+				</enablement>
+			</action>
+			<action
+				class="net.sourceforge.eclipseccase.ui.actions.CheckoutToReservedAction"
+				definitionId="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
+				icon="icons/full/reserve.png"
+				id="net.sourceforge.eclipseccase.ui.actionset.checkouttoreserved"
+				label="UnReserved --&gt;Reserved"
+				menubarPath="eclipseccase_menu/group2">
+				<enablement>
+					<and>
+						<pluginState value="activated" id="net.sourceforge.eclipseccase">
+						</pluginState>
+					</and>
+				</enablement>
+			</action>
+			
 			<action class="net.sourceforge.eclipseccase.ui.actions.UnHijackAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.unhijack"
 				icon="icons/full/unhijack.png" id="net.sourceforge.eclipseccase.ui.actionset.unhijack"
