@@ -12,9 +12,14 @@ Fixed Bugs:
 3131512 Checkout reserve/unreserve menu layout.
 
 New Features:
-
+2972459 ViewPrivate view: Add toolbar buttons for show groups ( final release)
+		- improved reliability of VP view, even for snapshot views
 3037105 Eclipse internal compare editor. (initial version).
 2978675 Reuse checkout comment from outside Eclipse
+
+Improvements:
+
+ 
  
 
 2.2.5
