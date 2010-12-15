@@ -15,35 +15,55 @@
 
 		<!-- General params -->
 		<property name="plugin.id" value="net.sourceforge.eclipseccase" />
-
+		<property name="staging.dir" value="${basedir}" />
 
 		<!-- Setting of version parameter -->
 		<timestampselector property="most.recent.release" count="1">
 			<path>
-				<fileset dir="${basedir}/features">
+				<fileset dir="${staging.dir}/features">
 					<include name="${plugin.id}*.jar" />
 				</fileset>
 			</path>
 		</timestampselector>
-		<basename property="jar.name" file="${basedir}/features/${most.recent.release}" suffix=".jar" />
-		<echo message="newest feature jar name is: ${jar.name}" />
+		<basename property="jar.name" file="${staging.dir}/features/${most.recent.release}" suffix=".jar" />
+		<echo message="Latest feature jar name is: ${jar.name}" />
 
 		<propertyregex property="version" input="${jar.name}" regexp="${plugin.id}_([0-9]\.[0-9]\.[0-9]\.[0-9 A-Z]*)" select="\1" casesensitive="false" />
 		<echo message="version is set to: ${version}" />
 
+		<timestampselector property="most.recent.zip.release" count="1">
+			<path>
+				<fileset dir="${staging.dir}/full">
+					<include name="${plugin.id}*.zip" />
+				</fileset>
+			</path>
+		</timestampselector>
+
+		<echo message="Latest zip release: ${most.recent.zip.release}" />
+		<!--As it is now output a zip file that does not have the 		              
+	    version in it. It is net.soucreforge.eclipseccase_2.2.6.zip but
+	    needs to have net.soucreforge.eclipseccase_2.2.6.201011051900.zip  
+	    So we need to make sure it has the same as the 
+	    update site version has.-->
+		<move file="${most.recent.zip.release}" tofile="${staging.dir}/full/${plugin.id}_${version}.zip" />
+		<delete file="${most.recent.zip.release}">
+		</delete>
+		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${plugin.id}_${version}.zip" />
+		<echo message="Renamed zip release: ${feature.eclipseccase.package}" />
+
+
 		<!-- File management params -->
-		<property name="zip.version" value="${plugin.id}_${version}.zip" />
 		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
 		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
 		<property name="filemanagement.deploy.host" value="frs.sourceforge.net" />
-		<property name="changelog" value="${basedir}/../net.sourceforge.eclipseccase/CHANGELOG.txt" />
-		
+		<property name="changelog" value="${basedir}/../net.sourceforge.eclipseccase/META-INF/CHANGELOG.txt" />
+
+
 
 		<!-- Update site params -->
-		<property name="staging.dir" value="${basedir}" />
 		<property name="features.dir" value="${staging.dir}/features" />
 		<property name="plugins.dir" value="${staging.dir}/plugins" />
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${zip.version}" />
+
 
 		<property name="site.deploy.host" value="web.sourceforge.net" />
 		<property name="site.deploy.root" value="/home/groups/e/ec/eclipse-ccase/htdocs/update" />
@@ -125,7 +145,7 @@
 			<fileset refid="site.deploy.files" />
 		</copy>
 	</target>
-	
+
 	<!-- ================================================================== 
 		 target: deploy-sf-file-release              
 		 Transfers the zip files in net.sourceforge.eclipseccase.updatesite/full to sf-site.
@@ -140,7 +160,7 @@
 			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host} ${changelog}" />
 		</exec>
 	</target>
-	
-	
+
+
 
 </project>
