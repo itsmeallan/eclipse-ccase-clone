@@ -13,7 +13,6 @@ package net.sourceforge.eclipseccase.ui.actions;
 
 import org.eclipse.core.resources.ResourceAttributes;
 
-
 import net.sourceforge.eclipseccase.*;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -22,7 +21,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-
 
 import org.eclipse.jface.action.IAction;
 
@@ -42,7 +40,6 @@ public class HijackAction extends ClearCaseWorkspaceAction {
 		public void run() {
 			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 			MessageDialog unhijackQuestion = new MessageDialog(activeShell, "Hijack", null, "Do you really want to Hijack file (make local file writeable)?", MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
-
 			returncode = unhijackQuestion.open();
 		}
 	}
@@ -61,7 +58,7 @@ public class HijackAction extends ClearCaseWorkspaceAction {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
 					IResource[] resources = getSelectedResources();
-					beginTask(monitor, "Removing Hijacked files...", resources.length);
+					beginTask(monitor, "Hijacking files...", resources.length);
 
 					HijackQuestion question = new HijackQuestion();
 
@@ -69,15 +66,15 @@ public class HijackAction extends ClearCaseWorkspaceAction {
 
 					/* Yes=0 No=1 Cancel=2 */
 					if (question.getReturncode() == 0) {
-						
-							for (int i = 0; i < resources.length; i++) {
+
+						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							ResourceAttributes attributes = resource.getResourceAttributes();
 							if (attributes != null && attributes.isReadOnly()) {
 								attributes.setReadOnly(false);
-							resource.setResourceAttributes(attributes);
-							}else{
-								System.out.println("Error: Could not set resource "+resource.getName()+" writeable!");
+								resource.setResourceAttributes(attributes);
+							} else {
+								System.out.println("Error: Could not make resource " + resource.getName() + " writeable!");
 							}
 						}
 					}

@@ -74,6 +74,10 @@
 				icon="icons/full/refresh_state.png" id="net.sourceforge.eclipseccase.popups.refresh"
 				label="Refresh State" menubarPath="team.main/group1">
 			</action>
+			<action class="net.sourceforge.eclipseccase.ui.actions.HijackAction"
+				icon="icons/full/elem_hj.png" id="net.sourceforge.eclipseccase.popups.hijack"
+				label="Hi&amp;jack" menubarPath="team.main/group1">
+			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.UnHijackAction"
 				icon="icons/full/unhijack.png" id="net.sourceforge.eclipseccase.popups.unhijack"
 				label="UnHi&amp;jack" menubarPath="team.main/group1">
@@ -412,6 +416,16 @@
 					<pluginState id="net.sourceforge.eclipseccase" value="activated">
 					</pluginState>
 				</enablement>
+			</action>
+			<action class="net.sourceforge.eclipseccase.ui.actions.HijackAction"
+				definitionId="net.sourceforge.eclipseccase.ui.actionset.hijack"
+				icon="icons/full/elem_hj.png" id="net.sourceforge.eclipseccase.ui.actionset.hijack"
+				label="Hi&amp;jack" menubarPath="eclipseccase_menu/group1"
+				toolbarPath="Normal/additions" tooltip="Hijack a file">
+				<enablement>
+					<pluginState id="net.sourceforge.eclipseccase" value="activated">
+					</pluginState>
+				</enablement>	
 			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.UndoCheckOutAction"
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.uncheckout"
