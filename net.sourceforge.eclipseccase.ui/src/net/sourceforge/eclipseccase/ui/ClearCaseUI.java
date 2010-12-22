@@ -142,7 +142,7 @@ public class ClearCaseUI extends AbstractUIPlugin {
 
 		configureDebugOptions();
 
-		ClearCasePlugin.getInstance().setClearCaseModificationHandler(new ClearCaseUIModificationHandler());
+		ClearCasePlugin.getDefault().setClearCaseModificationHandler(new ClearCaseUIModificationHandler());
 
 		PlatformUI.getWorkbench().addWindowListener(partListener);
 	}

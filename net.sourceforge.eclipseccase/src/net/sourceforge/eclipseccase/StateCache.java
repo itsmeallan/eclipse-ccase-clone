@@ -227,7 +227,7 @@ public class StateCache implements Serializable {
 					}
 
 					if (newState == null
-							&& ClearCasePlugin
+							&& ClearCasePreferences
 									.isUnneededChildrenRefreshPrevented()
 							&& resource.isSynchronized(0)) {
 						// check parent for CC state, don't update if parent is

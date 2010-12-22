@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import org.eclipse.ui.PlatformUI;
 
 import net.sourceforge.eclipseccase.views.ConfigSpecView;
@@ -28,8 +30,8 @@ import org.eclipse.ui.IActionDelegate;
  * Updates the resources in a clearcase snapshot view.
  */
 public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
-	private IResource [] resources =null;
-	
+	private IResource[] resources = null;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -47,7 +49,7 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
@@ -76,18 +78,14 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 								element = resource.getParent().getLocation().toOSString();
 							}
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-							if (p != null)
-							{
-								if (ClearCasePlugin.UseGraphicalExternalUpdateView())
-								{
+							if (p != null) {
+								if (ClearCasePreferences.UseGraphicalExternalUpdateView()) {
 									p.update(element, ClearCase.GRAPHICAL, true);
-								}
-								else
-								{
-			                    	ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
-			                    	String viewName = cci.getViewName(resources[0].getLocation().toOSString());
-			                    	String workingDir = resources[0].getProject().getLocation().toOSString();
-			                    	cci.setViewConfigSpec(viewName, "-current", workingDir, new ConsoleOperationListener(monitor));
+								} else {
+									ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);
+									String viewName = cci.getViewName(resources[0].getLocation().toOSString());
+									String workingDir = resources[0].getProject().getLocation().toOSString();
+									cci.setViewConfigSpec(viewName, "-current", workingDir, new ConsoleOperationListener(monitor));
 								}
 							}
 

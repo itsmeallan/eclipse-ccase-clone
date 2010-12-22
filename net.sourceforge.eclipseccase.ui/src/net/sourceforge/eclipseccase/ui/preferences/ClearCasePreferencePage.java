@@ -49,7 +49,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 	 */
 	public ClearCasePreferencePage() {
 		setDescription(PreferenceMessages.getString("Preferences.Description")); //$NON-NLS-1$
-
+		
 		// Set the preference store for the preference page.
 		setPreferenceStore(new ClearCasePreferenceStore());
 	}
@@ -196,7 +196,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 	@Override
 	public boolean performOk() {
 		if (super.performOk()) {
-			ClearCasePlugin.getInstance().resetClearCase();
+			ClearCasePlugin.getDefault().resetClearCase();
 			return true;
 		}
 		return false;

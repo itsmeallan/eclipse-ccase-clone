@@ -18,6 +18,7 @@ Require-Bundle: net.sourceforge.eclipseccase;visibility:=reexport,
  org.eclipse.team.ui;visibility:=reexport,
  org.eclipse.ui.console;visibility:=reexport,
  org.eclipse.ui.forms,
- org.eclipse.compare
+ org.eclipse.compare,
+ org.eclipse.core.runtime
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -192,7 +192,7 @@ public class MoveHandler implements IMoveDeleteHook {
 				TeamException.OK, "OK", null);
 		IContainer destParent = destination.getParent();
 		if (!provider.isClearCaseElement(destParent)) {
-			if (ClearCasePlugin.isAddAuto()) {
+			if (ClearCasePreferences.isAddAuto()) {
 				try {
 					LinkedList<IContainer> toAdd = new LinkedList<IContainer>();
 					while (null != destParent

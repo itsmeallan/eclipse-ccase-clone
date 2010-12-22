@@ -65,10 +65,10 @@ class StateCacheJobQueue extends Job {
 		this.queue = new PriorityBuffer(400, false);
 
 		// execute as system job if hidden
-		setSystem(ClearCasePlugin.isHideRefreshActivity());
+		setSystem(ClearCasePreferences.isHideRefreshActivity());
 
 		// set priority for long running jobs
-		setPriority(ClearCasePlugin.jobQueuePriority());
+		setPriority(ClearCasePreferences.jobQueuePriority());
 
 		// NOT: set the rule to the clearcase engine
 		// NOT: setRule(ClearCasePlugin.RULE_CLEARCASE_REFRESH);

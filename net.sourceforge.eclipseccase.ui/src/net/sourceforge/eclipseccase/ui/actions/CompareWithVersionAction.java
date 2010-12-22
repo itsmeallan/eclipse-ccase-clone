@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ui.compare.VersionCompareInput;
 
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -58,7 +60,7 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
-		if (ClearCasePlugin.isCompareExternal()) {
+		if (ClearCasePreferences.isCompareExternal()) {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
@@ -91,7 +93,7 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 			CompareConfiguration config = new CompareConfiguration();
 			config.setLeftEditable(false);
 			config.setRightEditable(false); // Could be made editable if version
-											// is null in the future.
+			// is null in the future.
 
 			if (element instanceof IFile) {
 				VersionCompareInput input = new VersionCompareInput(config, (IFile) element, versionA, versionB);

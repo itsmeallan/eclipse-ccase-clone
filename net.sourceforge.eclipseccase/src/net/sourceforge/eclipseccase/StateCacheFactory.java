@@ -367,7 +367,7 @@ public class StateCacheFactory implements ISaveParticipant,
 		int previousSaveNumber = context.getPreviousSaveNumber();
 		String oldFileName = SAVE_FILE_NAME
 				+ Integer.toString(previousSaveNumber);
-		File file = ClearCasePlugin.getInstance().getStateLocation().append(
+		File file = ClearCasePlugin.getDefault().getStateLocation().append(
 				oldFileName).toFile();
 		file.delete();
 	}
@@ -409,7 +409,7 @@ public class StateCacheFactory implements ISaveParticipant,
 				int saveNumber = context.getSaveNumber();
 				String saveFileName = SAVE_FILE_NAME
 						+ Integer.toString(saveNumber);
-				IPath statePath = ClearCasePlugin.getInstance()
+				IPath statePath = ClearCasePlugin.getDefault()
 						.getStateLocation().append(saveFileName);
 
 				// save state cache
@@ -533,7 +533,7 @@ public class StateCacheFactory implements ISaveParticipant,
 			if (context != null) {
 				String saveFileName = context.lookup(new Path(SAVE_FILE_NAME))
 						.toString();
-				File stateFile = ClearCasePlugin.getInstance()
+				File stateFile = ClearCasePlugin.getDefault()
 						.getStateLocation().append(saveFileName).toFile();
 				if (stateFile.exists()) {
 					try {
@@ -856,10 +856,10 @@ public class StateCacheFactory implements ISaveParticipant,
 	StateCacheJobQueue getJobQueue() {
 		return jobQueue;
 	}
-	
 
 	/**
-	 * Determine if there are any resources in the queue for async CC state refresh
+	 * Determine if there are any resources in the queue for async CC state
+	 * refresh
 	 * 
 	 * @return true if there is at least one element in update queue
 	 */

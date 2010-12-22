@@ -136,18 +136,18 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 	 */
 	private IStatus checkout(final IFile[] files) {
 
-		if (ClearCasePlugin.isCheckoutAutoNever())
+		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 
-		if (!ClearCasePlugin.isCheckoutAutoAlways()) {
+		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
 			if (checkoutQuestion.isRemember()) {
 				if (returncode == IDialogConstants.YES_ID)
-					ClearCasePlugin.setCheckoutAutoAlways();
+					ClearCasePreferences.setCheckoutAutoAlways();
 				else if (returncode == IDialogConstants.NO_ID)
-					ClearCasePlugin.setCheckoutAutoNever();
+					ClearCasePreferences.setCheckoutAutoNever();
 			}
 			if (returncode != IDialogConstants.YES_ID)
 				return new Status(IStatus.CANCEL, ClearCasePlugin.PLUGIN_ID,
@@ -167,12 +167,12 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 			synchronized (provider) {
 				boolean refreshing = setResourceRefreshing(provider, false);
 				try {
-					if (ClearCasePlugin.isUseClearDlg()) {
+					if (ClearCasePreferences.isUseClearDlg()) {
 						ClearDlgHelper.checkout(files);
 					}
 					for (int i = 0; i < files.length; i++) {
 						IFile file = files[i];
-						if (!ClearCasePlugin.isUseClearDlg()) {
+						if (!ClearCasePreferences.isUseClearDlg()) {
 							provider.checkout(new IFile[] { file },
 									IResource.DEPTH_ZERO, null);
 						}

@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import org.eclipse.core.resources.IResource;
 
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -64,7 +66,7 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 						for (IResource res : resources) {
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(res);
 							if (p != null) {
-								if (ClearCasePlugin.isFullRefreshOnAssociate())
+								if (ClearCasePreferences.isFullRefreshOnAssociate())
 									p.ensureInitialized(res);
 							}
 							submonitor.worked(1);
@@ -78,7 +80,7 @@ public class AssociateProjectAction extends ClearCaseWorkspaceAction {
 						if (manager.getEnabled(ClearCaseDecorator.ID) && !submonitor.isCanceled()) {
 							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
-								if (ClearCasePlugin.isFullRefreshOnAssociate())
+								if (ClearCasePreferences.isFullRefreshOnAssociate())
 									activeDecorator.refresh(project);
 								else {
 									activeDecorator.refresh(new IResource[] {project});  // refresh first level

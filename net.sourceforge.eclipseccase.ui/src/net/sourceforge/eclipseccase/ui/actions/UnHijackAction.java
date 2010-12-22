@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
@@ -46,7 +48,7 @@ public class UnHijackAction extends ClearCaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Removing Hijacked files...", resources.length);
 
-					if (ClearCasePlugin.isUseClearDlg()) {
+					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.uncheckout(resources);
 					} else {

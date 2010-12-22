@@ -9,5 +9,10 @@
             id="net.sourceforge.eclipseccase.ClearcaseProvider">
       </repository>
    </extension>
+   <extension point="org.eclipse.core.runtime.preferences">
+   <initializer
+			class="net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferences">
+	</initializer>
+   </extension>
 
 </plugin>

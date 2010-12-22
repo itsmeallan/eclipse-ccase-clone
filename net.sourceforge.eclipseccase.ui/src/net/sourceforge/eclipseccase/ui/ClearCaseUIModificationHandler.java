@@ -76,8 +76,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 			return CANCEL;
 		}
 
-		final boolean useClearDlg = ClearCasePlugin.isUseClearDlg();
-		final boolean askForComment = ClearCasePlugin.isCommentCheckout() && !ClearCasePlugin.isCommentCheckoutNeverOnAuto();
+		final boolean useClearDlg = ClearCasePreferences.isUseClearDlg();
+		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 
 		try {
 			// use workbench window as preferred runnable context
@@ -110,7 +110,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 							boolean refreshing = setResourceRefreshing(provider, false);
 							try {
 								monitor.beginTask(Messages.getString("ClearCaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
-								if (ClearCasePlugin.isUseClearDlg()) {
+								if (ClearCasePreferences.isUseClearDlg()) {
 									monitor.subTask("Executing ClearCase user interface...");
 									ClearDlgHelper.checkout(files);
 								} else {
@@ -173,11 +173,11 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
-		if (ClearCasePlugin.isCheckoutAutoNever())
+		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 
 		final Shell shell = getShell(context);
-		final boolean askForComment = ClearCasePlugin.isCommentCheckout() && !ClearCasePlugin.isCommentCheckoutNeverOnAuto();
+		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment)
 			return super.validateEdit(files, context);
 

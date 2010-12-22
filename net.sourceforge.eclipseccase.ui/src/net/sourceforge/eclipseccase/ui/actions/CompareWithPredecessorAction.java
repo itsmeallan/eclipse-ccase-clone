@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ui.compare.PredecessorCompareInput;
 
 import org.eclipse.compare.CompareConfiguration;
@@ -44,7 +46,7 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 	@Override
 	public void execute(IAction action) {
 
-		if (ClearCasePlugin.isCompareExternal()) {
+		if (ClearCasePreferences.isCompareExternal()) {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
 					try {
@@ -68,18 +70,18 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 		} else {
 			// 20101124 mike use new internal compare.
 			IResource[] resources = getSelectedResources();
-			
+
 			CompareConfiguration config = new CompareConfiguration();
-			config.setLeftEditable(false);	
-			config.setRightEditable(false); // Could be made editable in the future.				
-			
+			config.setLeftEditable(false);
+			config.setRightEditable(false); // Could be made editable in the
+			// future.
+
 			for (int i = 0; i < resources.length; i++) {
 				IResource resource = resources[i];
-				ClearCaseProvider p = ClearCaseProvider
-						.getClearCaseProvider(resource);			
-				
+				ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+
 				if (p != null && resource instanceof IFile) {
-				  PredecessorCompareInput input = new PredecessorCompareInput(config, (IFile) resource, p);			  
+					PredecessorCompareInput input = new PredecessorCompareInput(config, (IFile) resource, p);
 					CompareUI.openCompareEditor(input);
 				}
 			}

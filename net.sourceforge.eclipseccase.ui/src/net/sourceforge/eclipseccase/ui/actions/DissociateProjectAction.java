@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -60,7 +62,7 @@ public class DissociateProjectAction extends ClearCaseWorkspaceAction {
 						if (manager.getEnabled(ClearCaseDecorator.ID)) {
 							ClearCaseDecorator activeDecorator = (ClearCaseDecorator) manager.getBaseLabelProvider(ClearCaseDecorator.ID);
 							if (activeDecorator != null) {
-								if (ClearCasePlugin.isFullRefreshOnAssociate())
+								if (ClearCasePreferences.isFullRefreshOnAssociate())
 									activeDecorator.refresh(project);
 								else
 									activeDecorator.refresh(activeDecorator.getShownResources(project));

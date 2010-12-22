@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -156,7 +158,7 @@ public class ConfigSpecView extends ViewPart {
 					configSpec.setText("");
 				} else {
 
-					if (!(ClearCasePlugin.isConfigSpecModificationForbidden())) {
+					if (!(ClearCasePreferences.isConfigSpecModificationForbidden())) {
 						configSpecLabel.setText("Base: " + resource.getLocation().toString());
 
 						configSpec.setEditable(true);

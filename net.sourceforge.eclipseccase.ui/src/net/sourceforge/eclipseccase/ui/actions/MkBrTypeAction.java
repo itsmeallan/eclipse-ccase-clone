@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 import java.io.File;
@@ -53,7 +55,7 @@ public class MkBrTypeAction extends ClearCaseWorkspaceAction {
 	public void execute(IAction action) throws InvocationTargetException, InterruptedException {
 		resources = getSelectedResources();
 
-		InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), "Create a branch", "Branch name:", ClearCasePlugin.getBranchPrefix(), null);
+		InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), "Create a branch", "Branch name:", ClearCasePreferences.getBranchPrefix(), null);
 		if (dlg.open() == Window.OK) {
 			// User clicked OK; update the label with the input
 			// System.out.println(dlg.getValue());
@@ -61,8 +63,7 @@ public class MkBrTypeAction extends ClearCaseWorkspaceAction {
 		} else
 			return;
 
-		
-		branchComment = branchName.replaceAll(ClearCasePlugin.getBranchPrefix(), "") +  ": ";
+		branchComment = branchName.replaceAll(ClearCasePreferences.getBranchPrefix(), "") + ": ";
 		CommentDialog commentDlg = new CommentDialog(getShell(), "Make Branch comment", branchComment);
 		if (commentDlg.open() == Window.CANCEL)
 			return;

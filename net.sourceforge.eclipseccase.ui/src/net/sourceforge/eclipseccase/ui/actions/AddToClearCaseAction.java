@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -25,7 +27,7 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentAdd()) {
+		if (!ClearCasePreferences.isUseClearDlg() && ClearCasePreferences.isCommentAdd()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Add to ClearCase comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -45,7 +47,7 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 					ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 					if (provider != null) {
-						if (ClearCasePlugin.isUseClearDlg()) {
+						if (ClearCasePreferences.isUseClearDlg()) {
 							monitor.subTask("Executing ClearCase user interface...");
 							ClearDlgHelper.add(resources);
 						} else {

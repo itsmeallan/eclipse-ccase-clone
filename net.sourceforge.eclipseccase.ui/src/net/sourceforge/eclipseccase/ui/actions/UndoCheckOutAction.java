@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import org.eclipse.core.resources.IFile;
 
 import net.sourceforge.eclipseccase.ClearDlgHelper;
@@ -47,7 +49,7 @@ public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Undoing checkout...", resources.length);
 
-					if (ClearCasePlugin.isUseClearDlg()) {
+					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.uncheckout(resources);
 					} else {

@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import org.eclipse.core.runtime.IStatus;
 
 import net.sourceforge.clearcase.ClearCase;
@@ -30,7 +32,7 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 		CommentDialog dlg;
-		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentCheckin()) {
+		if (!ClearCasePreferences.isUseClearDlg() && ClearCasePreferences.isCommentCheckin()) {
 			IResource[] resources = getSelectedResources();
 			String extCoComment = getLastExtCoComment(resources);
 			if (!extCoComment.equalsIgnoreCase("")) {
@@ -66,7 +68,7 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 						if (resources.length > 0) {
 							beginTask(monitor, "Checking in...", resources.length);
 
-							if (ClearCasePlugin.isUseClearDlg()) {
+							if (ClearCasePreferences.isUseClearDlg()) {
 								monitor.subTask("Executing ClearCase user interface...");
 								ClearDlgHelper.checkin(resources);
 							} else {

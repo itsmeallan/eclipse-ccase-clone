@@ -582,7 +582,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 			ClearCaseElementState[] state = null;
 
-			if (ClearCasePlugin.isAutoCheckinParentAfterMoveAllowed()) {
+			if (ClearCasePreferences.isAutoCheckinParentAfterMoveAllowed()) {
 				state = ClearCasePlugin.getEngine()
 						.move(
 								source.getLocation().toOSString(),
@@ -718,7 +718,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	@Override
 	public FileModificationValidator getFileModificationValidator2() {
-		return ClearCasePlugin.getInstance().getClearCaseModificationHandler();
+		return ClearCasePlugin.getDefault().getClearCaseModificationHandler();
 	}
 
 	/**
@@ -871,7 +871,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				}
 
 				// Add check recursive checkin of files.
-				if (ClearCasePlugin.isAddWithCheckin() && result == OK_STATUS) {
+				if (ClearCasePreferences.isAddWithCheckin() && result == OK_STATUS) {
 					try {
 						for (Object element : privateElement) {
 							IResource res = (IResource) element;
@@ -974,7 +974,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 						false,
 						getComment(),
 						ClearCase.PTIME
-								| (ClearCasePlugin.isUseMasterForAdd() ? ClearCase.MASTER
+								| (ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER
 										: ClearCase.NONE), opListener);
 
 		if (state.isElement()) {
@@ -1025,7 +1025,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					resource.getLocation().toOSString(),
 					true,
 					getComment(),
-					ClearCasePlugin.isUseMasterForAdd() ? ClearCase.MASTER
+					ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER
 							: ClearCase.NONE, opListener);
 			if (!state.isElement()) {
 				result = new Status(IStatus.ERROR, ID, TeamException.UNABLE,
@@ -1066,7 +1066,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private Status forceSetChgrp(IResource resource) {
 		Status result = OK_STATUS;
-		String group = ClearCasePlugin.getClearCasePrimaryGroup().trim();
+		String group = ClearCasePreferences.getClearCasePrimaryGroup().trim();
 		if (group.length() > 0) {
 			try {
 				ClearCasePlugin.getEngine().setGroup(
@@ -1118,7 +1118,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 				// Yes continue checking out.
 				int flags = ClearCase.RECURSIVE;
-				if (ClearCasePlugin.isKeepChangesAfterUncheckout()) {
+				if (ClearCasePreferences.isKeepChangesAfterUncheckout()) {
 					flags |= ClearCase.KEEP;
 				}
 
@@ -1219,7 +1219,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							null);
 				IStatus result = OK_STATUS;
 
-				if (ClearCasePlugin.isCheckinIdenticalAllowed()) {
+				if (ClearCasePreferences.isCheckinIdenticalAllowed()) {
 					ClearCasePlugin.getEngine().checkin(
 							new String[] { targetElement.getPath() },
 							getComment(),
@@ -1354,7 +1354,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				IStatus result = OK_STATUS;
 
 				// update if necessary
-				if (ClearCasePlugin.isCheckoutLatest()
+				if (ClearCasePreferences.isCheckoutLatest()
 						&& targetElement.isSnapShot()) {
 					monitor.subTask("Updating " + targetElement.getPath());
 					update(resource.getFullPath().toOSString(), 0, false);
@@ -1502,7 +1502,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 				if (result == OK_STATUS) {
 					// update if necessary
-					if (ClearCasePlugin.isCheckoutLatest()
+					if (ClearCasePreferences.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
 						update(resource.getLocation().toOSString(), 0, false);
@@ -1984,9 +1984,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	private int getCheckoutType() {
-		if (ClearCasePlugin.isReservedCheckoutsAlways())
+		if (ClearCasePreferences.isReservedCheckoutsAlways())
 			return ClearCase.RESERVED;
-		else if (ClearCasePlugin.isReservedCheckoutsIfPossible())
+		else if (ClearCasePreferences.isReservedCheckoutsIfPossible())
 			return ClearCase.RESERVED_IF_POSSIBLE;
 		else
 			return ClearCase.UNRESERVED;

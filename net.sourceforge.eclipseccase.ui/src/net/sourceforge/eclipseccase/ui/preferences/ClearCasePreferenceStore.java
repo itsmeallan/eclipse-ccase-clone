@@ -71,7 +71,7 @@ public final class ClearCasePreferenceStore implements IPersistentPreferenceStor
 		// here's where we first ask for the plug-in's core runtime
 		// preferences;
 		// note that this causes this method to be reentered
-		this.prefs = ClearCasePlugin.getInstance().getPluginPreferences();
+		this.prefs = ClearCasePlugin.getDefault().getPluginPreferences();
 		// avoid adding the listener a second time when reentered
 		if (!this.listenerAdded) {
 			// register listener that funnels everything to
@@ -355,7 +355,7 @@ public final class ClearCasePreferenceStore implements IPersistentPreferenceStor
 	 * @see org.eclipse.jface.preference.IPersistentPreferenceStore#save()
 	 */
 	public void save() throws IOException {
-		ClearCasePlugin.getInstance().savePluginPreferences();
+		ClearCasePlugin.getDefault().savePluginPreferences();
 	}
 
 }

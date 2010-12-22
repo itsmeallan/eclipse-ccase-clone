@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
@@ -22,7 +24,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearCasePlugin.isUseClearDlg() && ClearCasePlugin.isCommentCheckout()) {
+		if (!ClearCasePreferences.isUseClearDlg() && ClearCasePreferences.isCommentCheckout()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Checkout comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -41,7 +43,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Checking out...", resources.length);
 
-					if (ClearCasePlugin.isUseClearDlg()) {
+					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
 					} else {

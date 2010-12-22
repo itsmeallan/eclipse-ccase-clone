@@ -62,7 +62,7 @@ public class CancelPendingRefreshesAction extends ActionDelegate implements IObj
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		if (action != null) {
-			action.setEnabled(null != shell && ClearCasePlugin.getInstance().hasPendingRefreshes());
+			action.setEnabled(null != shell && ClearCasePlugin.getDefault().hasPendingRefreshes());
 		}
 	}
 
