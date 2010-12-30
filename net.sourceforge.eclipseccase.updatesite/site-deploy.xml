@@ -159,6 +159,9 @@
 		<exec executable="/usr/bin/expect" os="Unix,Linux">
 			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host} ${changelog}" />
 		</exec>
+		<exec dir="." executable="cmd" os="Windows NT">
+		  <arg line="/c rsync.bat"/>
+		</exec>
 	</target>
 
 
