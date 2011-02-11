@@ -4,10 +4,14 @@
 
 2.2.7
 =====
+Fixed Bugs:
+
+3165182: Linked Child folders inherit parent CC state.
+3161412: UnHijack problem
 
 New Features:
 
-2963175 Hijack File
+2963175: Hijack File
 
 
 
