@@ -21,6 +21,7 @@ import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
+import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
@@ -1505,7 +1506,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePreferences.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
-						update(resource.getLocation().toOSString(), 0, false);
+						update(resource.getLocation().toOSString(), ClearCase.GRAPHICAL, false);
 
 					}
 				}
