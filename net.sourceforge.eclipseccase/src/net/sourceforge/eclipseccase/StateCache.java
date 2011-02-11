@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
+import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -140,9 +141,8 @@ public class StateCache implements Serializable {
 	void doUpdate(IProgressMonitor monitor) throws CoreException,
 			OperationCanceledException {
 		try {
-			monitor
-					.beginTask(
-							Messages.getString("StateCache.updating") + getResource(), 10); //$NON-NLS-1$
+			monitor.beginTask(
+					Messages.getString("StateCache.updating") + getResource(), 10); //$NON-NLS-1$
 			doUpdate();
 			monitor.worked(10);
 		} finally {
@@ -237,8 +237,10 @@ public class StateCache implements Serializable {
 								&& !(parent instanceof IWorkspaceRoot)) {
 							StateCache parentCache = StateCacheFactory
 									.getInstance().getWithNoUpdate(parent);
+
 							if (!parentCache.isUninitialized()
-									&& !parentCache.isClearCaseElement()) {
+									&& !parentCache.isClearCaseElement()
+									&& !resource.isLinked()) {
 								// parent is no CC element, so don't call CC for
 								// state
 								newState = new ClearCaseElementState(osPath,
