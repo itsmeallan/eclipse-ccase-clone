@@ -11,7 +11,7 @@
    </extension>
    <extension point="org.eclipse.core.runtime.preferences">
    <initializer
-			class="net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferences">
+			class="net.sourceforge.eclipseccase.ClearCasePreferences">
 	</initializer>
    </extension>
 
