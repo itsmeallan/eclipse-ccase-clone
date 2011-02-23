@@ -6,6 +6,7 @@
 =====
 Fixed Bugs:
 
+3190039 Move when parent folder is checkedout fails.
 3165182: Linked Child folders inherit parent CC state.
 3161412: UnHijack problem
 
