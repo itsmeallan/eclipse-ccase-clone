@@ -872,7 +872,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 				}
 
 				// Add check recursive checkin of files.
-				if (ClearCasePreferences.isAddWithCheckin() && result == OK_STATUS) {
+				if (ClearCasePreferences.isAddWithCheckin()
+						&& result == OK_STATUS) {
 					try {
 						for (Object element : privateElement) {
 							IResource res = (IResource) element;
@@ -1194,6 +1195,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				monitor.beginTask("Checkin in " + resource.getFullPath(), 100);
 				StateCache cache = getCache(resource);
 				final StateCache targetElement = getFinalTargetElement(cache);
+				IStatus result = OK_STATUS;
 				// Sanity check - can't check in something that is not part of
 				// clearcase
 				if (targetElement == null
@@ -1218,7 +1220,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 									"Resource \"{0}\" is not checked out!",
 									new Object[] { targetElement.getPath() }),
 							null);
-				IStatus result = OK_STATUS;
 
 				if (ClearCasePreferences.isCheckinIdenticalAllowed()) {
 					ClearCasePlugin.getEngine().checkin(
@@ -1268,18 +1269,65 @@ public class ClearCaseProvider extends RepositoryProvider {
 							String latestVersion = resource.getLocation()
 									.toOSString()
 									+ "@@" + branchName + "LATEST";
-							// TODO: merge method void but state is set to
-							// MERGED when ok. Need handling for this.
-							ClearCasePlugin.getEngine().merge(
-									targetElement.getPath(),
-									new String[] { latestVersion },
-									ClearCase.GRAPHICAL);
-							// Now it should be ok to checkin.
-							// TODO: Check if merge was successful then checkin.
-							// if not clean up.
-							ClearCasePlugin.getEngine().checkin(
-									new String[] { targetElement.getPath() },
-									getComment(), ClearCase.PTIME, opListener);
+
+							ClearCaseElementState myState = ClearCasePlugin
+									.getEngine().merge(targetElement.getPath(),
+											new String[] { latestVersion },
+											ClearCase.GRAPHICAL);
+
+							if (myState.isMerged()) {
+								// TODO: Shall we ask if you want to checkin
+								// merged file.
+
+								PlatformUI.getWorkbench().getDisplay()
+										.syncExec(new Runnable() {
+
+											public void run() {
+												Shell activeShell = PlatformUI
+														.getWorkbench()
+														.getDisplay()
+														.getActiveShell();
+												MessageDialog checkoutQuestion = new MessageDialog(
+														activeShell,
+														"Checkin",
+														null,
+														"Do you want to checkin the merged result?",
+														MessageDialog.QUESTION,
+														new String[] { "Yes",
+																"No", "Cancel" },
+														0);
+												int returncode = checkoutQuestion
+														.open();
+												/* Yes=0 No=1 Cancel=2 */
+												if (returncode == 0) {
+													// Yes continue checkin
+													ClearCasePlugin
+															.getEngine()
+															.checkin(
+																	new String[] { targetElement
+																			.getPath() },
+																	getComment(),
+																	ClearCase.PTIME,
+																	opListener);
+
+												}
+
+											}
+										});
+							} else {
+
+								result = new Status(
+										IStatus.ERROR,
+										ID,
+										TeamException.CONFLICT,
+										MessageFormat
+												.format(
+														Messages
+																.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
+														new Object[] { cce
+																.getElements() }),
+										null);
+							}
 
 							break;
 
@@ -1506,7 +1554,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 					if (ClearCasePreferences.isCheckoutLatest()
 							&& isSnapShot(resource)) {
 						monitor.subTask("Updating " + resource.getName());
-						update(resource.getLocation().toOSString(), ClearCase.GRAPHICAL, false);
+						update(resource.getLocation().toOSString(),
+								ClearCase.GRAPHICAL, false);
 
 					}
 				}
