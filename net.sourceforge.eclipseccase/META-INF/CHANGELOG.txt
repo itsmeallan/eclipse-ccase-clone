@@ -5,6 +5,8 @@
 2.2.7
 =====
 Fixed Bugs:
+
+3190172 After merge to latest checkin fails with NullPointer
 3194838 Add two elements in dir and both not in comment
 3190039 Move when parent folder is checkedout fails.
 3165182 Linked Child folders inherit parent CC state.
