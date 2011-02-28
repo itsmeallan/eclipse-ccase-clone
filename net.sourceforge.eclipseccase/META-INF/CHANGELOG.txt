@@ -5,10 +5,10 @@
 2.2.7
 =====
 Fixed Bugs:
-
+3194838 Add two elements in dir and both not in comment
 3190039 Move when parent folder is checkedout fails.
-3165182: Linked Child folders inherit parent CC state.
-3161412: UnHijack problem
+3165182 Linked Child folders inherit parent CC state.
+3161412 UnHijack problem
 
 New Features:
 
