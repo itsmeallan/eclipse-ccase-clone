@@ -130,6 +130,7 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 	private String getLastExtCoComment(IResource[] resources) {
 		long lastModificationTime = 0L;
 		IResource lastModifiedResource = null;
+		StringBuffer comment = new StringBuffer();
 		String lastComment = "";
 		for (IResource iResource : resources) {
 			String path = iResource.getLocation().toOSString();
@@ -151,8 +152,12 @@ public class CheckInAction extends ClearCaseWorkspaceAction {
 			String element = lastModifiedResource.getLocation().toOSString();
 			String[] output = provider.describe(element, ClearCase.FORMAT, "%c");
 			if (output.length > 0) {
-				lastComment = output[0];
+				for (int i = 0; i < output.length; i++) {
+					comment.append(output[i] + "\n");
+				}
+
 			}
+			lastComment = comment.toString();
 		}
 		return lastComment;
 	}
