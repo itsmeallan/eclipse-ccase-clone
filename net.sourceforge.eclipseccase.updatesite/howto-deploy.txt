@@ -12,11 +12,11 @@ Prerequesites
       
 ##################### Steps ####################
 
-1. Set version in clearcase project and build.xml
+#1. Set version in clearcase project and build.xml
 
  <property name="project.version" value="net.sourceforge.clearcase_2.2.0.v201002231500"/>
  
-2. Build project manually. Use target  'release'.     
+#2. Build project manually. Use target  'release'.     
 
 3. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
    Use same as in step 1.
@@ -29,9 +29,6 @@ Prerequesites
 
 
 5. 
-    
-   - New category if the plugin only supports a new version of Eclipse.
-   - Add feature in category.
 
    Select feature.xml (Overview) under 'Exporting' --> 'Synchronize' --> Copy versions from ...
 
@@ -54,16 +51,20 @@ Prerequesites
   The update-site project build option will erase every build.xml it finds in the features and 
   plugins required by the site which leads to lost work.
   
-  Use build.xml for this.
-  http://svn.apache.org/viewvc/incubator/uima/uimaj/trunk/uimaj-eclipse-update-site/
+ 1. Select site.xml
+    
+   - New category if the plugin only supports a new version of Eclipse.
+   - Add feature in category.
+   - Build
+  
    
 //FIXME: This has to be updated:
 http://www.vogella.de/articles/EclipseP2Update/article.html#introduction   
    
-1. build update site
+2. build update site
    (right click site.xml->PDE Tools->Build Site)
    
-2. check directories for content:
+3. check directories for content:
    "net.sourceforge.eclipseccase.updatesite/full/" 
      -> one zip with features and plugins for each feature
    "net.sourceforge.eclipseccase.updatesite/features/" 
@@ -71,7 +72,7 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
    "net.sourceforge.eclipseccase.updatesite/plugins/" 
      -> one plugin jar for each plugin
      
-3. Testing and install plugin from local site. 
+4. Testing and install plugin from local site. 
    machine if it works, only upload/deploy a release that works.
    Help --> Install New Software --> Add --> 
    Point to the following directory:
