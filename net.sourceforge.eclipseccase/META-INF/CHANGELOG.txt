@@ -5,7 +5,9 @@
 2.2.8
 =====
 
+Fixed Bugs:
 
+3198472 New workspace and associate project does not decorate
 
 
 2.2.7
