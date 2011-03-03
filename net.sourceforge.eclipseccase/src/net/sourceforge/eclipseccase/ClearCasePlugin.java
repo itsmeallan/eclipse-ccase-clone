@@ -704,6 +704,7 @@ public class ClearCasePlugin extends Plugin {
 								savedState
 										.processResourceChangeEvents(cacheFactory);
 							}
+							cacheFactory.setIsInitialized(true);
 							workspace.addResourceChangeListener(cacheFactory,
 									IResourceChangeEvent.POST_CHANGE);
 						}

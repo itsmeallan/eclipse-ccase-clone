@@ -887,6 +887,14 @@ public class StateCacheFactory implements ISaveParticipant,
 	public boolean isInitialized() {
 		return isStateCacheLoaded;
 	}
+	
+	/**
+	 * Sets isStateCacheLoaded. Needed for ClearCaseDecorator.decorate().
+	 * @param initialized
+	 */
+	public void setIsInitialized(boolean initialized){
+		isStateCacheLoaded = initialized;
+	}
 
 	/**
 	 * Cancels all pending state refreshes.
