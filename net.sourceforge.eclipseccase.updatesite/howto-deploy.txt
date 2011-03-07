@@ -12,23 +12,19 @@ Prerequesites
       
 ##################### Steps ####################
 
-#1. Set version in clearcase project and build.xml
+  
 
- <property name="project.version" value="net.sourceforge.clearcase_2.2.0.v201002231500"/>
- 
-#2. Build project manually. Use target  'release'.     
-
-3. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
-   Use same as in step 1.
+1. Make sure all plug-in and feature projects (clearcase,eclipseccase,eclipseccase.feature,eclipseccase.ui) have a new version in  META-INF/MANIFEST.MF.          
+  
 
 
    
-4. Update CHANGELOG.txt in eclipseccase-project.
+2. Update CHANGELOG.txt in eclipseccase-project.
    New heading stating the new version number.
    Same releasenotes.txt in eclipseccase.feature-project.   
 
 
-5. 
+3. 
 
    Select feature.xml (Overview) under 'Exporting' --> 'Synchronize' --> Copy versions from ...
 

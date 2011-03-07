@@ -133,7 +133,7 @@
 	      copies local update site to sf-update wwww.
 	     ================================================================== -->
 	<target name="deploy-sf-update-site" depends="init" unless="site.local">
-		<scp verbose="true" todir="${webuser}:${password}@${site.deploy.host}:${site.deploy.root}">
+		<scp verbose="true" trust="true" todir="${webuser}:${password}@${site.deploy.host}:${site.deploy.root}">
 			<fileset refid="site.deploy.files" />
 		</scp>
 
