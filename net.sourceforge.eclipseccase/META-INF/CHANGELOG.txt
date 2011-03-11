@@ -2,6 +2,14 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.9
+=====
+
+New Features:
+
+3190171 Add command in menu to request file mastership
+
+
 2.2.8
 =====
 
