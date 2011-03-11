@@ -569,8 +569,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 						ID,
 						TeamException.NO_REMOTE_RESOURCE,
 						MessageFormat
-								.format(
-										"Resource \"{0}\" is not under source control!",
+								.format("Resource \"{0}\" is not under source control!",
 										new Object[] { source.getFullPath()
 												.toString() }), null);
 
@@ -585,8 +584,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 			if (ClearCasePreferences.isAutoCheckinParentAfterMoveAllowed()) {
 				state = ClearCasePlugin.getEngine()
-						.move(
-								source.getLocation().toOSString(),
+						.move(source.getLocation().toOSString(),
 								destination.getLocation().toOSString(),
 								getComment(),
 								ClearCase.FORCE | ClearCase.CHECKIN
@@ -771,25 +769,25 @@ public class ClearCaseProvider extends RepositoryProvider {
 						&& null != cache.getSymbolicLinkTarget()) {
 					File target = new File(cache.getSymbolicLinkTarget());
 					if (!target.isAbsolute()) {
-						target = null != cache.getPath() ? new File(cache
-								.getPath()).getParentFile() : null;
+						target = null != cache.getPath() ? new File(
+								cache.getPath()).getParentFile() : null;
 						if (null != target) {
-							target = new File(target, cache
-									.getSymbolicLinkTarget());
+							target = new File(target,
+									cache.getSymbolicLinkTarget());
 						}
 					}
 					if (null != target && target.exists()) {
-						IPath targetLocation = new Path(target
-								.getAbsolutePath());
+						IPath targetLocation = new Path(
+								target.getAbsolutePath());
 						IResource[] resources = null;
 						if (target.isDirectory()) {
 							resources = ResourcesPlugin.getWorkspace()
-									.getRoot().findContainersForLocation(
-											targetLocation);
+									.getRoot()
+									.findContainersForLocation(targetLocation);
 						} else {
 							resources = ResourcesPlugin.getWorkspace()
-									.getRoot().findFilesForLocation(
-											targetLocation);
+									.getRoot()
+									.findFilesForLocation(targetLocation);
 						}
 						if (null != resources) {
 							for (int i = 0; i < resources.length; i++) {
@@ -797,8 +795,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 								ClearCaseProvider provider = ClearCaseProvider
 										.getClearCaseProvider(foundResource);
 								if (null != provider) {
-									StateCacheFactory.getInstance().get(
-											foundResource).updateAsync(false);
+									StateCacheFactory.getInstance()
+											.get(foundResource)
+											.updateAsync(false);
 									// after the target is updated, we must
 									// update the
 									// symlink itself again :-(
@@ -833,8 +832,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.UNABLE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is already under source control!",
+									.format("Resource \"{0}\" is already under source control!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -971,8 +969,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		ClearCaseElementState state = ClearCasePlugin
 				.getEngine()
-				.add(
-						resource.getLocation().toOSString(),
+				.add(resource.getLocation().toOSString(),
 						false,
 						getComment(),
 						ClearCase.PTIME
@@ -1101,8 +1098,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1157,8 +1153,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1166,9 +1161,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 						new SubProgressMonitor(monitor, 10));
 				if (result.isOK()) {
 					ClearCasePlugin.getEngine()
-							.delete(
-									new String[] { resource.getLocation()
-											.toOSString() }, getComment(),
+							.delete(new String[] { resource.getLocation()
+									.toOSString() }, getComment(),
 									ClearCase.RECURSIVE | ClearCase.KEEP,
 									opListener);
 					monitor.worked(40);
@@ -1192,6 +1186,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
+				int returnCode = 1;// Used in messge dialog.
 				monitor.beginTask("Checkin in " + resource.getFullPath(), 100);
 				StateCache cache = getCache(resource);
 				final StateCache targetElement = getFinalTargetElement(cache);
@@ -1205,8 +1200,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1240,12 +1234,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat
-											.format(
-													Messages
-															.getString("ClearCasePlugin.error.checkin.identicalPredecessor"),
-													new Object[] { cce
-															.getElements() }),
+									MessageFormat.format(
+											Messages.getString("ClearCasePlugin.error.checkin.identicalPredecessor"),
+											new Object[] { cce.getElements() }),
 									null);
 							break;
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
@@ -1253,12 +1244,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat
-											.format(
-													Messages
-															.getString("ClearCasePlugin.error.checkin.elementHasCheckouts"),
-													new Object[] { cce
-															.getElements() }),
+									MessageFormat.format(
+											Messages.getString("ClearCasePlugin.error.checkin.elementHasCheckouts"),
+											new Object[] { cce.getElements() }),
 									null);
 							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
@@ -1268,7 +1256,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 							String branchName = getBranchName(getVersion(resource));
 							String latestVersion = resource.getLocation()
 									.toOSString()
-									+ "@@" + branchName + "LATEST";
+									+ "@@"
+									+ branchName
+									+ "LATEST";
 
 							ClearCaseElementState myState = ClearCasePlugin
 									.getEngine().merge(targetElement.getPath(),
@@ -1276,57 +1266,31 @@ public class ClearCaseProvider extends RepositoryProvider {
 											ClearCase.GRAPHICAL);
 
 							if (myState.isMerged()) {
-								// TODO: Shall we ask if you want to checkin
-								// merged file.
 
-								PlatformUI.getWorkbench().getDisplay()
-										.syncExec(new Runnable() {
+								returnCode = showMessageDialog("Checkin",
+										"Do you want to checkin the merged result?");
 
-											public void run() {
-												Shell activeShell = PlatformUI
-														.getWorkbench()
-														.getDisplay()
-														.getActiveShell();
-												MessageDialog checkoutQuestion = new MessageDialog(
-														activeShell,
-														"Checkin",
-														null,
-														"Do you want to checkin the merged result?",
-														MessageDialog.QUESTION,
-														new String[] { "Yes",
-																"No", "Cancel" },
-														0);
-												int returncode = checkoutQuestion
-														.open();
-												/* Yes=0 No=1 Cancel=2 */
-												if (returncode == 0) {
-													// Yes continue checkin
-													ClearCasePlugin
-															.getEngine()
-															.checkin(
-																	new String[] { targetElement
-																			.getPath() },
-																	getComment(),
-																	ClearCase.PTIME,
-																	opListener);
+								if (returnCode == 0) {
+									// Yes continue checkin
+									ClearCasePlugin
+											.getEngine()
+											.checkin(
+													new String[] { targetElement
+															.getPath() },
+													getComment(),
+													ClearCase.PTIME, opListener);
+								}
 
-												}
-
-											}
-										});
 							} else {
 
 								result = new Status(
 										IStatus.ERROR,
 										ID,
 										TeamException.CONFLICT,
-										MessageFormat
-												.format(
-														Messages
-																.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
-														new Object[] { cce
-																.getElements() }),
-										null);
+										MessageFormat.format(
+												Messages.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
+												new Object[] { cce
+														.getElements() }), null);
 							}
 
 							break;
@@ -1336,12 +1300,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat
-											.format(
-													Messages
-															.getString("ClearCasePlugin.error.checkin.unknown"),
-													new Object[] { cce
-															.getElements() }),
+									MessageFormat.format(
+											Messages.getString("ClearCasePlugin.error.checkin.unknown"),
+											new Object[] { cce.getElements() }),
 									null);
 
 							break;
@@ -1353,11 +1314,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				monitor.worked(40);
 				updateState(resource, IResource.DEPTH_ZERO,
 						new SubProgressMonitor(monitor, 10));
-				// if (!status.status) {
-				// result = new Status(IStatus.ERROR, ID,
-				// TeamException.UNABLE, "Checkin failed: "
-				// + status.message, null);
-				// }
+
 				return result;
 			} finally {
 				monitor.done();
@@ -1370,9 +1327,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 		public IStatus visit(final IResource resource,
 				final IProgressMonitor monitor) {
 			try {
-				monitor
-						.beginTask("Checking out " + resource.getFullPath(),
-								100);
+				int returnCode = 1;// Used for message dialogs.
+				monitor.beginTask("Checking out " + resource.getFullPath(), 100);
 				StateCache cache = getCache(resource);
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't checkout something that is not part of
@@ -1384,8 +1340,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1428,61 +1383,45 @@ public class ClearCaseProvider extends RepositoryProvider {
 					} catch (ClearCaseException cce) {
 						switch (cce.getErrorCode()) {
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
-							// Ask if you wan't to check-out unreserved since we
-							// only accepted
-							// reserved checkouts.
-							PlatformUI.getWorkbench().getDisplay().syncExec(
-									new Runnable() {
+							returnCode = showMessageDialog("Checkout",
+									"Resource already checked-out reserved.\nDo you want to check-out unreserved?");
 
-										public void run() {
-											Shell activeShell = PlatformUI
-													.getWorkbench()
-													.getDisplay()
-													.getActiveShell();
-											MessageDialog checkoutQuestion = new MessageDialog(
-													activeShell,
-													"Checkout",
-													null,
-													"Resource already checked-out reserved.\nDo you want to check-out unreserved?",
-													MessageDialog.QUESTION,
-													new String[] { "Yes", "No",
-															"Cancel" }, 0);
-											int returncode = checkoutQuestion
-													.open();
-											/* Yes=0 No=1 Cancel=2 */
-											if (returncode == 0) {
-												// Yes continue checking out but
-												// unreserved.
-												ClearCasePlugin
-														.getEngine()
-														.checkout(
-																new String[] { targetElement
-																		.getPath() },
-																getComment(),
-																ClearCase.UNRESERVED
-																		| ClearCase.PTIME,
-																opListener);
-												monitor.worked(40);
-												updateState(resource,
-														IResource.DEPTH_ZERO,
-														new SubProgressMonitor(
-																monitor, 10));
-											}
-										}
-									});
+							if (returnCode == 0) {
+								// Yes continue checking out but
+								// unreserved.
+								ClearCasePlugin
+										.getEngine()
+										.checkout(
+												new String[] { targetElement
+														.getPath() },
+												getComment(),
+												ClearCase.UNRESERVED
+														| ClearCase.PTIME,
+												opListener);
+								monitor.worked(40);
+								updateState(resource, IResource.DEPTH_ZERO,
+										new SubProgressMonitor(monitor, 10));
+							}
+
 							break;
+						case ClearCase.ERROR_BRANCH_IS_MASTERED_BY_REPLICA:
+							returnCode = showMessageDialog("Checkout",
+									"Resource could not be checked out since not your replica.\nDo you want change mastership?");
+							changeMastershipSequence(returnCode, targetElement,
+									opListener);
+							monitor.worked(40);
+							updateState(resource, IResource.DEPTH_ZERO,
+									new SubProgressMonitor(monitor, 10));
 
+							break;
 						default:
 							result = new Status(
 									IStatus.ERROR,
 									ID,
 									TeamException.UNABLE,
-									MessageFormat
-											.format(
-													Messages
-															.getString("ClearCasePlugin.error.checkin.unknown"),
-													new Object[] { cce
-															.getElements() }),
+									MessageFormat.format(
+											Messages.getString("ClearCasePlugin.error.checkin.unknown"),
+											new Object[] { cce.getElements() }),
 									null);
 
 							break;
@@ -1521,8 +1460,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NOT_AUTHORIZED,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a Hijacked ClearCase element!",
+									.format("Resource \"{0}\" is not a Hijacked ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1541,8 +1479,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 					keep = new File(resource.getLocation().toOSString());
 					if (keep.exists()) {
 						keep.renameTo(new File(resource.getLocation()
-								.toOSString()
-								+ ".keep"));
+								.toOSString() + ".keep"));
 					}
 				} catch (Exception e) {
 					result = FAILED_STATUS;
@@ -1587,8 +1524,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1611,8 +1547,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 		public IStatus visit(IResource resource, int depth,
 				IProgressMonitor monitor) {
 			try {
-				monitor.beginTask("Changing checkout to unreserved "
-						+ resource.getFullPath(), 100);
+				monitor.beginTask(
+						"Changing checkout to unreserved "
+								+ resource.getFullPath(), 100);
 
 				// Sanity check - can't update something that is not part of
 				// clearcase
@@ -1622,8 +1559,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1647,8 +1583,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 		public IStatus visit(IResource resource, int depth,
 				IProgressMonitor monitor) {
 			try {
-				monitor.beginTask("Changing checkout to reserved "
-						+ resource.getFullPath(), 100);
+				monitor.beginTask(
+						"Changing checkout to reserved "
+								+ resource.getFullPath(), 100);
 
 				// Sanity check - can't update something that is not part of
 				// clearcase
@@ -1658,8 +1595,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format(
-											"Resource \"{0}\" is not a ClearCase element!",
+									.format("Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1740,8 +1676,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 						: "The requested operation finished with warnings.";
 				throw new TeamException(new MultiStatus(
 						multiStatus.getPlugin(), multiStatus.getCode(),
-						multiStatus.getChildren(), message, multiStatus
-								.getException()));
+						multiStatus.getChildren(), message,
+						multiStatus.getException()));
 			}
 			// Cause all the resource changes to be broadcast to listeners.
 			// TeamPlugin.getManager().broadcastResourceStateChanges(resources);
@@ -1785,8 +1721,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// There are children and we are going deep, the response will be a
 			// multi-status.
 			MultiStatus multiStatus = new MultiStatus(status.getPlugin(),
-					status.getCode(), status.getMessage(), status
-							.getException());
+					status.getCode(), status.getMessage(),
+					status.getException());
 			// The next level will be one less than the current level...
 			int childDepth = (depth == IResource.DEPTH_ONE) ? IResource.DEPTH_ZERO
 					: IResource.DEPTH_INFINITE;
@@ -2118,4 +2054,43 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return success;
 	}
 
+	/**
+	 * Shows a message dialog where user can select: Yes=0 No=1 Cancel=2
+	 * 
+	 * @param operationType
+	 * @param msg
+	 * @return result
+	 */
+	private int showMessageDialog(String operationType, String msg) {
+		DialogMessageRunnable dm = new DialogMessageRunnable(operationType, msg);
+		PlatformUI.getWorkbench().getDisplay().syncExec(dm);
+		return dm.getResult();
+	}
+
+	/**
+	 * Request mastership and then checkout sequence.
+	 * 
+	 * @param returnCode
+	 * @param targetElement
+	 * @param opListener
+	 */
+	private void changeMastershipSequence(int returnCode,
+			StateCache targetElement, OperationListener opListener) {
+		if (returnCode == 0) {
+			// Request mastership
+			ClearCaseElementState[] cces = ClearCasePlugin
+					.getEngine()
+					.requestMastership(targetElement.getPath(), getComment(), 0);
+			if (cces[0].state == ClearCase.MASTERSHIP_CHANGED) {
+				// Now possible to checkout.
+				ClearCasePlugin.getEngine().checkout(
+						new String[] { targetElement.getPath() },
+						getComment(),
+						getCheckoutType() | ClearCase.PTIME
+								| ClearCase.UNRESERVED | ClearCase.NMASTER,
+						opListener);
+			}
+
+		}
+	}
 }
