@@ -672,10 +672,6 @@
 			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
 			sequence="Alt+C Alt+J">
 		</key>
-		<key commandId="net.sourceforge.eclipseccase.ui.commands.sampleCommand"
-			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-			sequence="M1+6">
-		</key>
 	</extension>
 	<extension point="org.eclipse.ui.bindings">
 		<key platform="gtk"

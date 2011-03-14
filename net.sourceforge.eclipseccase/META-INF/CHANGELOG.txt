@@ -5,6 +5,10 @@
 2.2.9
 =====
 
+Fixed Bugs:
+
+3206198 Cannot bind to an undefined command
+
 New Features:
 
 3190171 Add command in menu to request file mastership
