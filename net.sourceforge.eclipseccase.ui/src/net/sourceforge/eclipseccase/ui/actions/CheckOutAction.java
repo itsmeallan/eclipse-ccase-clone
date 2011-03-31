@@ -46,6 +46,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
+										
 					} else {
 						// Sort resources with directories last so that the
 						// modification of a

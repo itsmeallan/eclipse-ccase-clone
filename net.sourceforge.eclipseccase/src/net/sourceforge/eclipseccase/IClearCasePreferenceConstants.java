@@ -102,6 +102,10 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String KEEP_CHANGES_AFTER_UNCHECKOUT = ClearCasePlugin.PLUGIN_ID
 			+ ".keepAfterUncheckout"; // //$NON-NLS-1$;
+	
+	/** ClearCase preference */
+	String USE_UCM = ClearCasePlugin.PLUGIN_ID
+	+ ".useUcm"; // //$NON-NLS-1$;
 
 	/** preference value for <code>CLEARCASE_API</code> */
 	String CLEARCASE_NATIVE = "native_cal"; //$NON-NLS-1$

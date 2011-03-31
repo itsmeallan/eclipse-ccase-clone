@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
+import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
+
 /**
  * Class for setting default clearcase preferences.
  * 
@@ -241,7 +243,7 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 	}
 
 	/**
-	 * Returns the preference value for <code>WIP_REFRESH_CHILDREN</code>.
+	 * Returns the preference value for <code>PREVENT_UNNEEDED_CHILDREN_REFRESH</code>.
 	 * 
 	 * @return the preference value
 	 */
@@ -251,6 +253,14 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				.getPluginPreferences()
 				.getBoolean(
 						IClearCasePreferenceConstants.PREVENT_UNNEEDED_CHILDREN_REFRESH);
+	}
+	
+	/**
+	 * 
+	 * @return the preference value
+	 */
+	public static boolean isUCM(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(IClearCasePreferenceConstants.USE_UCM);
 	}
 
 	/**
@@ -385,6 +395,7 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 		defaults.putBoolean(IClearCasePreferenceConstants.FULL_REFRESH, false);
 		defaults
 				.putBoolean(IClearCasePreferenceConstants.ADD_WITH_MASTER, true); //$NON-NLS-1$
+		defaults.putBoolean(IClearCasePreferenceConstants.USE_UCM, false);
 		// comments
 		defaults.putBoolean(IClearCasePreferenceConstants.COMMENT_ADD, true); //$NON-NLS-1$
 		defaults.putBoolean(

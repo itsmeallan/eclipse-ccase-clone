@@ -1370,6 +1370,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + targetElement.getPath());
 					try {
+						if(ClearCasePreferences.isUCM()){
+							//check activity for current view.
+						}
 						ClearCasePlugin
 								.getEngine()
 								.checkout(
