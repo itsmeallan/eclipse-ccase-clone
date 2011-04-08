@@ -12,6 +12,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase;
 
+
+
+
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -159,6 +163,9 @@ public class ClearCasePlugin extends Plugin {
 
 	/** indicates if debugging is enabled */
 	public static boolean DEBUG = false;
+	
+	// the list of all repositories currently handled by this provider
+	private ClearCaseRepositories repositories;
 
 	/**
 	 * Configures debug settings.
@@ -734,6 +741,11 @@ public class ClearCasePlugin extends Plugin {
 
 		getWorkspace().removeResourceChangeListener(
 				StateCacheFactory.getInstance());
+		
+		// save the state which includes the known repositories
+		if (repositories != null) {
+			repositories.shutdown();
+		}
 
 		StateCacheFactory.getInstance().getJobQueue().cancel();
 
@@ -788,6 +800,18 @@ public class ClearCasePlugin extends Plugin {
 	public void setClearCaseModificationHandler(
 			ClearCaseModificationHandler clearCaseModificationHandler) {
 		this.clearCaseModificationHandler = clearCaseModificationHandler;
+	}
+	
+	/**
+	 * get all the known repositories
+	 */
+	public ClearCaseRepositories getRepositories() {
+	    if (repositories == null) {
+	        // load the state which includes the known repositories
+	        repositories = new ClearCaseRepositories();
+	        repositories.startup();
+	    }
+		return repositories;
 	}
 
 }
