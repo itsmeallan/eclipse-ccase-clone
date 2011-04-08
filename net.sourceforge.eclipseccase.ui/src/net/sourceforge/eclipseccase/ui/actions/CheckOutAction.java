@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.dialogs.ActivityDialog;
+
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.eclipseccase.ClearDlgHelper;
@@ -24,7 +26,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearCasePreferences.isUseClearDlg() && ClearCasePreferences.isCommentCheckout()) {
+		if (!ClearCasePreferences.isUseClearDlg() || !ClearCasePreferences.isUCM() && ClearCasePreferences.isCommentCheckout()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Checkout comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -46,7 +48,22 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
-										
+					}else if(ClearCasePreferences.isUCM()){
+						ActivityDialog dlg = new ActivityDialog(getShell());
+						String activityName = dlg.getActivity();
+						
+						ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
+						for (int i = 0; i < resources.length; i++) {
+							IResource resource = resources[i];
+							ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+							if (provider != null) {
+								provider.setActivity(activityName);
+								provider.setComment(dlg.getComment());//
+								
+								provider.setOperationListener(opListener);
+								provider.checkout(new IResource[] { resource }, depth, subMonitor(monitor));
+							}
+						}
 					} else {
 						// Sort resources with directories last so that the
 						// modification of a

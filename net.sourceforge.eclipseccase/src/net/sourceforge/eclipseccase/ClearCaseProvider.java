@@ -23,12 +23,11 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
+
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
@@ -540,6 +539,16 @@ public class ClearCaseProvider extends RepositoryProvider {
 						.toString();
 		}
 		return null;
+	}
+	
+	public boolean setActivity(String name){
+		ClearCaseElementState [] cces = ClearCasePlugin.getEngine().setActivity(name);
+		if(cces[0].state == ClearCase.ACTIVITY_SET){
+			return true;
+		}else{
+			return false;
+		}
+		
 	}
 
 	/**
@@ -1370,9 +1379,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + targetElement.getPath());
 					try {
-						if(ClearCasePreferences.isUCM()){
-							//check activity for current view.
-						}
+						
 						ClearCasePlugin
 								.getEngine()
 								.checkout(
@@ -1408,7 +1415,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 							break;
 						case ClearCase.ERROR_BRANCH_IS_MASTERED_BY_REPLICA:
-							returnCode = showMessageDialog("Checkout",
+							returnCode = showMessageDialog(
+									"Checkout",
 									"Resource could not be checked out since not your replica.\nDo you want change mastership?");
 							changeMastershipSequence(returnCode, targetElement,
 									opListener);
