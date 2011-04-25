@@ -23,7 +23,6 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
-
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
@@ -540,15 +539,58 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 		return null;
 	}
-	
-	public boolean setActivity(String name){
-		ClearCaseElementState [] cces = ClearCasePlugin.getEngine().setActivity(name);
-		if(cces[0].state == ClearCase.ACTIVITY_SET){
+
+	public boolean setActivity(String name) {
+		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(
+				name);
+		if (cces[0].state == ClearCase.ACTIVITY_SET) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
+
+	}
+
+	public ArrayList<Activity> listActivities() {
+		ArrayList<Activity> activities = new ArrayList<Activity>();
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.CVIEW);
+		if (output.length == 0) {
+			return activities;
+		}
+		for (int i = 0; i < output.length; i++) {
+			
+			// 06-Jun-00.17:16:12 update_date ktessier "Update for new date convention"
+			String myOutput = output[i];// one line
+			String delims = "[ ]+";
+			String[] tokens = myOutput.split(delims);// 4 tokens date,actvitySelector,user,headline
+			Activity newActivity = new Activity(tokens[0], tokens[1],
+					tokens[2], tokens[3]);
+			if (newActivity != null) {
+				activities.add(newActivity);
+			}
+
+		}
+
+		return activities;
+
+	}
+
+	public Activity getCurrentActivity() {
+		// Should return a oneliner like:06-Jun-00.17:16:12 update_date ktessier
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.CACT);
 		
+		return null;
+	}
+	
+	public boolean createActivity(String headline, String activitySelector){
+		ClearCaseElementState [] cces = ClearCasePlugin.getEngine().createActivity(ClearCase.HEADLINE,headline,activitySelector);
+		if (cces[0].state == ClearCase.ACTIVITY_SET) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -1379,7 +1421,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				if (result == OK_STATUS) {
 					monitor.subTask("Checking out " + targetElement.getPath());
 					try {
-						
+
 						ClearCasePlugin
 								.getEngine()
 								.checkout(

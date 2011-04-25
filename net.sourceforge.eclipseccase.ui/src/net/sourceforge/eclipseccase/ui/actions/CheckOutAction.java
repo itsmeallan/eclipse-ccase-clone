@@ -7,7 +7,7 @@ import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.ClearDlgHelper;
 
 import java.util.*;
-import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
@@ -49,15 +49,19 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
 					}else if(ClearCasePreferences.isUCM()){
-						ActivityDialog dlg = new ActivityDialog(getShell());
-						String activityName = dlg.getActivity();
+						
 						
 						ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
 						for (int i = 0; i < resources.length; i++) {
 							IResource resource = resources[i];
 							ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 							if (provider != null) {
-								provider.setActivity(activityName);
+								
+								ActivityDialog dlg = new ActivityDialog(getShell(),provider);
+								//
+								String activitySelector = dlg.getActivity().getActivitySelector();
+								
+								provider.setActivity(activitySelector);
 								provider.setComment(dlg.getComment());//
 								
 								provider.setOperationListener(opListener);

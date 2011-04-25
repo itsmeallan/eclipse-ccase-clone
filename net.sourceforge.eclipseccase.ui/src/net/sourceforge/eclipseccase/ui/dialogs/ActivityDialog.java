@@ -11,10 +11,18 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.swt.widgets.Display;
 
+import java.util.Date;
 
+import org.eclipse.core.resources.IResource;
 
+import net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer;
 
+import java.util.ArrayList;
+
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.Activity;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -54,16 +62,27 @@ import org.eclipse.swt.widgets.Shell;
 public class ActivityDialog extends Dialog {
 
 	private Combo activityCombo;
-	
+
 	private Button newButton;
-	
+
 	private String activity;
-	
+
 	private CommentDialogArea commentDialogArea;
 
-	public ActivityDialog(Shell parentShell) {
+	private ClearCaseProvider provider;
+
+	private ArrayList<Activity> activities;
+
+	private static final String NO_ACTIVITY = "NONE";
+	
+	private boolean test = false;
+
+	
+
+	public ActivityDialog(Shell parentShell, ClearCaseProvider provider) {
 		super(parentShell);
 		this.setShellStyle(SWT.CLOSE);
+		this.provider = provider;
 		commentDialogArea = new CommentDialogArea(this, null);
 
 	}
@@ -75,7 +94,7 @@ public class ActivityDialog extends Dialog {
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
 		composite.setLayout(layout);
-		
+
 		Label descriptionLabel = new Label(composite, SWT.NONE);
 		descriptionLabel.setText(Messages.getString("ActivityDialog.activityDescription")); //$NON-NLS-1$
 		descriptionLabel.setLayoutData(new GridData());
@@ -89,14 +108,14 @@ public class ActivityDialog extends Dialog {
 		activityCombo.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event e) {
 				activity = ((Combo) e.widget).getText();
-				
+
 			}
 		});
 
 		activityCombo.setFocus();
-		
+
 		addButton(parent);
-		
+
 		commentDialogArea.createArea(composite);
 		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
@@ -105,15 +124,14 @@ public class ActivityDialog extends Dialog {
 				}
 			}
 		});
-		
+
 		initContent();
-		
+
 		return composite;
 
 	}
-	
-	
-	private void addButton(Composite parent){
+
+	private void addButton(Composite parent) {
 		Composite buttons = new Composite(parent, SWT.NONE);
 		buttons.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		GridLayout layout = new GridLayout();
@@ -131,29 +149,82 @@ public class ActivityDialog extends Dialog {
 		newButton.setEnabled(true);
 		SelectionListener listener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//Open new Dialog to add activity.
-				Shell activeShell = PlatformUI.getWorkbench()
-				.getDisplay().getActiveShell();
-				NewActivityDialog dlg = new NewActivityDialog(activeShell);
-				//FIXME: mike 20110407 update list
+				// Open new Dialog to add activity.
+				Shell activeShell;
+				if(isTest()){
+					activeShell = Display.getDefault().getActiveShell();
+				}else{
+					activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+
+				}
+					
+				NewActivityDialog dlg = new NewActivityDialog(activeShell,provider);
+				// FIXME: mike 20110407 update list
+				//dlg.getActivity();
 				initContent();
-				
+				dlg.open();
+
 			}
 		};
 		newButton.addSelectionListener(listener);
 	}
-	
-	private void initContent(){
 
-		//FIXME: mike 20110407 get a list of activities.
-		String [] activity = new String [] {"ActOne","ActTwo" };
-		for (int i = 0; i < activity.length; i++) {
-			activityCombo.add(activity[i]);
+	private void initContent() {
+		if (provider != null) {
+			activities = provider.listActivities();
+		} else {
+			// for testing
+			activities = new ArrayList<Activity>();
+			// 06-Jun-00.17:16:12
+			activities.add(new Activity("06-Jun-00.17:16:12", "test", "eraonel", "test comment"));
+			activities.add(new Activity("04-Jun-00.17:10:00", "test2","eraonel", "another test comment"));
 		}
-		activityCombo.select(0);
+
+		if (activities.size() == 0) {
+			activityCombo.add(NO_ACTIVITY);
+			activityCombo.select(0);
+		} else {
+			for (int i = 0; i < activities.size(); i++) {
+				activityCombo.add(activities.get(i).getHeadline());
+			}
+			if (provider != null) {
+				//Select last create
+				Activity myLastCreatedAct = getLastCreatedActvity(activities);
+				int index = activities.indexOf(myLastCreatedAct);
+				activityCombo.select(index);
+			}
+		}
+
 	}
-	
-		
+
+	/**
+	 * Retrieve last created activity.
+	 * 
+	 * @param activities
+	 * @return
+	 */
+	private Activity getLastCreatedActvity(ArrayList<Activity> activities) {
+		Activity myLast = null;
+		Date newestDate = null;
+		for (int i = 0; i < activities.size(); i++) {
+			Activity currentActivity = activities.get(i);
+			Date activityDate = currentActivity.getDate();
+			if (newestDate == null) {
+				newestDate = activityDate;
+			}
+			int results = newestDate.compareTo(activityDate);
+
+			if (results < 0) {
+				// newestTime is before activityTime
+				newestDate = activityDate;
+				myLast = currentActivity;
+			}
+
+		}
+
+		return myLast;
+	}
+
 	/*
 	 * Utility method that creates a combo box
 	 * 
@@ -168,8 +239,7 @@ public class ActivityDialog extends Dialog {
 		combo.setLayoutData(data);
 		return combo;
 	}
-		
-	
+
 	/**
 	 * Returns the comment.
 	 * 
@@ -178,18 +248,35 @@ public class ActivityDialog extends Dialog {
 	public String getComment() {
 		return commentDialogArea.getComment();
 	}
+
+	public Activity getActivity() {
+		Activity currentActivity = null;
+		int index = activityCombo.getSelectionIndex();
+		String headline = activityCombo.getItem(index);
+		for (int i = 0; i < activities.size(); i++) {
+			currentActivity = activities.get(i);
+			if(currentActivity.getHeadline().equalsIgnoreCase(headline)){
+				return currentActivity;
+			}
+		}
+		return currentActivity;
+	}
 	
-	
-	
-	public String getActivity() {
-		return activity;
+	public boolean isTest() {
+		return test;
+	}
+
+	public void setTest(boolean test) {
+		this.test = test;
 	}
 
 	// For testing of Dialog.
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		ActivityDialog dlg = new ActivityDialog(shell);
+		ActivityDialog dlg = new ActivityDialog(shell, null);
+		dlg.setTest(true);
 		dlg.open();
 	}
+
 }
