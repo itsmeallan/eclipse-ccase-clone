@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.team.core.TeamException;
+
 import net.sourceforge.eclipseccase.ui.dialogs.ActivityDialog;
 
 import net.sourceforge.eclipseccase.ClearCasePreferences;
@@ -26,7 +28,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if (!ClearCasePreferences.isUseClearDlg() || !ClearCasePreferences.isUCM() && ClearCasePreferences.isCommentCheckout()) {
+		if ((!ClearCasePreferences.isUseClearDlg() || !ClearCasePreferences.isUCM()) && ClearCasePreferences.isCommentCheckout()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Checkout comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
@@ -36,6 +38,13 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		final String comment = maybeComment;
 		final int depth = maybeDepth;
+		
+		//UCM checkout.
+		if(ClearCasePreferences.isUCM()){
+			checkoutWithActivity(depth);
+			return;
+		}
+		
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
@@ -48,26 +57,6 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					if (ClearCasePreferences.isUseClearDlg()) {
 						monitor.subTask("Executing ClearCase user interface...");
 						ClearDlgHelper.checkout(resources);
-					}else if(ClearCasePreferences.isUCM()){
-						
-						
-						ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-						for (int i = 0; i < resources.length; i++) {
-							IResource resource = resources[i];
-							ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-							if (provider != null) {
-								
-								ActivityDialog dlg = new ActivityDialog(getShell(),provider);
-								//
-								String activitySelector = dlg.getActivity().getActivitySelector();
-								
-								provider.setActivity(activitySelector);
-								provider.setComment(dlg.getComment());//
-								
-								provider.setOperationListener(opListener);
-								provider.checkout(new IResource[] { resource }, depth, subMonitor(monitor));
-							}
-						}
 					} else {
 						// Sort resources with directories last so that the
 						// modification of a
@@ -94,7 +83,9 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 				}
 			}
 		};
+		
 		executeInBackground(runnable, "Checking out resources from ClearCase");
+		
 	}
 
 	@Override
@@ -112,5 +103,32 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		}
 		return true;
 	}
-
+	
+	
+	private void checkoutWithActivity(int depth){
+		IResource[] resources = getSelectedResources();
+		for (int i = 0; i < resources.length; i++) {
+			IResource resource = resources[i];
+			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
+			if (provider != null) {
+				
+				ActivityDialog dlg = new ActivityDialog(getShell(),provider);
+				if (dlg.open() == Window.CANCEL)
+					return;
+				//
+				String activitySelector = dlg.getActivity().getActivitySelector();
+				
+				provider.setActivity(activitySelector);
+				provider.setComment(dlg.getComment());//
+				
+				
+				try {
+					provider.checkout(new IResource[] { resource }, depth, null);
+				} catch (TeamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

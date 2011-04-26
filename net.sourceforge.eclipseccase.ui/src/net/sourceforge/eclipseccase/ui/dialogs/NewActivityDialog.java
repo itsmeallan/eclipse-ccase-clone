@@ -1,40 +1,14 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-
-import org.eclipse.swt.layout.RowLayout;
-
-import org.eclipse.swt.widgets.Event;
-
-import org.eclipse.swt.widgets.Listener;
-
-import org.eclipse.swt.widgets.Button;
-
-import org.eclipse.swt.widgets.Group;
-
 import java.util.regex.Pattern;
-
-import net.sourceforge.eclipseccase.ui.dialogs.Messages;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-
-import org.eclipse.swt.widgets.Text;
-
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
-import org.eclipse.swt.widgets.Label;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
-
-
+import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseException;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class NewActivityDialog extends Dialog {
 
@@ -44,7 +18,7 @@ public class NewActivityDialog extends Dialog {
 
 	private static long current = System.currentTimeMillis();
 
-	private static Pattern p = Pattern.compile("^[A-Za-z0-9]+$");
+	private static Pattern p = Pattern.compile("[^A-Za-z0-9]");
 
 	private static final String GENERATE_ID = "Auto-genrate ID";
 
@@ -53,26 +27,23 @@ public class NewActivityDialog extends Dialog {
 	private boolean autoGen = true;
 
 	private Text idText;
-	
+
 	private ClearCaseProvider provider;
 
 	public NewActivityDialog(Shell parentShell, ClearCaseProvider provider) {
 		super(parentShell);
 		this.provider = provider;
-		
+
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		composite.setLayout(layout);
-
-		// Label descriptionLabel = new Label(composite, SWT.NULL);
-		//		descriptionLabel.setText(Messages.getString("NewActivityDialog.activityDescription")); //$NON-NLS-1$
-		// descriptionLabel.setLayoutData(new GridData());
 
 		Label label = new Label(composite, SWT.NONE);
 		label.setText(Messages.getString("NewActivityDialog.addNew")); //$NON-NLS-1$
@@ -114,13 +85,14 @@ public class NewActivityDialog extends Dialog {
 		return composite;
 	}
 
+	@Override
 	protected void okPressed() {
 		if (activityText.getText().trim().length() == 0) {
 			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString(("NewActivityDialog.noActivity"))); //$NON-NLS-1$ //$NON-NLS-2$
 			activityText.selectAll();
 			activityText.setFocus();
-			return; //$NON-NLS-1$
-		} else if (match(activityText.getText().trim())) {
+			return;
+		} else if (!match(activityText.getText().trim())) {
 			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString(("NewActivityDialog.onlyAlphaNumericCharacters")));
 			activityText.selectAll();
 			activityText.setFocus();
@@ -143,7 +115,20 @@ public class NewActivityDialog extends Dialog {
 		//
 		// cleartool mkactivity –headline “Create Directories”
 		// create_directories
-		provider.createActivity(headline,activitySelector);
+		try {
+			provider.createActivity(headline, activitySelector);
+		} catch (ClearCaseException cce) {
+			switch (cce.getErrorCode()) {
+			case ClearCase.ERROR_UNABLE_TO_GET_STREAM:
+				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), cce.getMessage());
+				break;
+			default:
+				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), cce.getMessage());
+				break;
+			}
+			return;
+		}
+
 		//
 		// The Rational® ClearCase® GUI tools use the name specified with
 		// –headline to identify the activity. The last argument,
@@ -177,7 +162,7 @@ public class NewActivityDialog extends Dialog {
 
 	// Make sure string only contains alaphanumeric characters.
 	private static boolean match(String s) {
-		return p.matcher(s).matches();
+		return !p.matcher(s).find();
 	}
 
 	private void doSelection(Button button) {
@@ -187,7 +172,7 @@ public class NewActivityDialog extends Dialog {
 				idText.setFocus();
 				autoGen = false;
 
-			}else{
+			} else {
 				idText.setEnabled(false);
 				idText.setFocus();
 				autoGen = true;
@@ -200,7 +185,7 @@ public class NewActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		NewActivityDialog dlg = new NewActivityDialog(shell,null);
+		NewActivityDialog dlg = new NewActivityDialog(shell, null);
 		dlg.open();
 	}
 

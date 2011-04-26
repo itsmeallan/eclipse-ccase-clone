@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.jface.window.Window;
+
 import org.eclipse.swt.widgets.Display;
 
 import java.util.Date;
@@ -159,10 +161,11 @@ public class ActivityDialog extends Dialog {
 				}
 					
 				NewActivityDialog dlg = new NewActivityDialog(activeShell,provider);
-				// FIXME: mike 20110407 update list
-				//dlg.getActivity();
+				if (dlg.open() == Window.CANCEL)
+					return;
+				// FIXME: mike 20110407 update list to get new activity
 				initContent();
-				dlg.open();
+				
 
 			}
 		};

@@ -584,13 +584,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return null;
 	}
 	
-	public boolean createActivity(String headline, String activitySelector){
+	public ClearCaseElementState createActivity(String headline, String activitySelector)throws ClearCaseException{
 		ClearCaseElementState [] cces = ClearCasePlugin.getEngine().createActivity(ClearCase.HEADLINE,headline,activitySelector);
-		if (cces[0].state == ClearCase.ACTIVITY_SET) {
-			return true;
-		} else {
-			return false;
-		}
+		return cces[0];
+
 	}
 
 	/**
