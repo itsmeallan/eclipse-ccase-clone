@@ -1,9 +1,13 @@
 package net.sourceforge.eclipseccase.ui;
 
+import java.io.Serializable;
+
 import java.util.Comparator;
 import org.eclipse.core.resources.IResource;
 
-public class DirectoryLastComparator implements Comparator {
+public class DirectoryLastComparator implements Comparator,Serializable {
+
+	private static final long serialVersionUID = -4385139244573729694L;
 
 	public DirectoryLastComparator() {
 		super();
