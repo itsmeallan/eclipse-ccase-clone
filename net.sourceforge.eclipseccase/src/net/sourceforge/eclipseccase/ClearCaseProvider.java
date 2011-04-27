@@ -49,6 +49,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
 
+	private ArrayList<Activity> activities = new ArrayList<Activity>();
+
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
 	CheckInOperation CHECK_IN = new CheckInOperation();
@@ -552,40 +554,60 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	public ArrayList<Activity> listActivities() {
-		ArrayList<Activity> activities = new ArrayList<Activity>();
+
 		String[] output = ClearCasePlugin.getEngine().getActivity(
 				ClearCase.CVIEW);
 		if (output.length == 0) {
 			return activities;
 		}
 		for (int i = 0; i < output.length; i++) {
-			
-			// 06-Jun-00.17:16:12 update_date ktessier "Update for new date convention"
+
+			// Example output: 06-Jun-00.17:16:12 update_date ktessier
+			// "Update for new date convention"
 			String myOutput = output[i];// one line
 			String delims = "[ ]+";
-			String[] tokens = myOutput.split(delims);// 4 tokens date,actvitySelector,user,headline
-			Activity newActivity = new Activity(tokens[0], tokens[1],
-					tokens[2], tokens[3]);
-			if (newActivity != null) {
-				activities.add(newActivity);
+			String[] tokens = myOutput.split(delims);// 4 tokens:
+														// date,actvitySelector,user,headline
+			// check if activity exists.
+			String date = tokens[0];
+			String activitySelector = tokens[1];
+			String user = tokens[2];
+			String headline = tokens[3];
+			if (!activityAlreadyExist(activitySelector)) {
+				Activity newActivity = new Activity(date, activitySelector,
+						user, headline);
+				if (newActivity != null) {
+					activities.add(newActivity);
+				}
 			}
-
 		}
 
 		return activities;
 
+	}
+	
+	private boolean activityAlreadyExist(String activitySelector){
+		for(int i = 0; i < activities.size(); i++) {
+			String currentSelector = activities.get(i).getActivitySelector();
+			if(currentSelector.equalsIgnoreCase(activitySelector)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Activity getCurrentActivity() {
 		// Should return a oneliner like:06-Jun-00.17:16:12 update_date ktessier
 		String[] output = ClearCasePlugin.getEngine().getActivity(
 				ClearCase.CACT);
-		
+
 		return null;
 	}
-	
-	public ClearCaseElementState createActivity(String headline, String activitySelector)throws ClearCaseException{
-		ClearCaseElementState [] cces = ClearCasePlugin.getEngine().createActivity(ClearCase.HEADLINE,headline,activitySelector);
+
+	public ClearCaseElementState createActivity(String headline,
+			String activitySelector) throws ClearCaseException {
+		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
+				.createActivity(ClearCase.HEADLINE, headline, activitySelector);
 		return cces[0];
 
 	}
@@ -617,7 +639,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 						ID,
 						TeamException.NO_REMOTE_RESOURCE,
 						MessageFormat
-								.format("Resource \"{0}\" is not under source control!",
+								.format(
+										"Resource \"{0}\" is not under source control!",
 										new Object[] { source.getFullPath()
 												.toString() }), null);
 
@@ -632,7 +655,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 			if (ClearCasePreferences.isAutoCheckinParentAfterMoveAllowed()) {
 				state = ClearCasePlugin.getEngine()
-						.move(source.getLocation().toOSString(),
+						.move(
+								source.getLocation().toOSString(),
 								destination.getLocation().toOSString(),
 								getComment(),
 								ClearCase.FORCE | ClearCase.CHECKIN
@@ -817,25 +841,25 @@ public class ClearCaseProvider extends RepositoryProvider {
 						&& null != cache.getSymbolicLinkTarget()) {
 					File target = new File(cache.getSymbolicLinkTarget());
 					if (!target.isAbsolute()) {
-						target = null != cache.getPath() ? new File(
-								cache.getPath()).getParentFile() : null;
+						target = null != cache.getPath() ? new File(cache
+								.getPath()).getParentFile() : null;
 						if (null != target) {
-							target = new File(target,
-									cache.getSymbolicLinkTarget());
+							target = new File(target, cache
+									.getSymbolicLinkTarget());
 						}
 					}
 					if (null != target && target.exists()) {
-						IPath targetLocation = new Path(
-								target.getAbsolutePath());
+						IPath targetLocation = new Path(target
+								.getAbsolutePath());
 						IResource[] resources = null;
 						if (target.isDirectory()) {
 							resources = ResourcesPlugin.getWorkspace()
-									.getRoot()
-									.findContainersForLocation(targetLocation);
+									.getRoot().findContainersForLocation(
+											targetLocation);
 						} else {
 							resources = ResourcesPlugin.getWorkspace()
-									.getRoot()
-									.findFilesForLocation(targetLocation);
+									.getRoot().findFilesForLocation(
+											targetLocation);
 						}
 						if (null != resources) {
 							for (int i = 0; i < resources.length; i++) {
@@ -843,9 +867,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 								ClearCaseProvider provider = ClearCaseProvider
 										.getClearCaseProvider(foundResource);
 								if (null != provider) {
-									StateCacheFactory.getInstance()
-											.get(foundResource)
-											.updateAsync(false);
+									StateCacheFactory.getInstance().get(
+											foundResource).updateAsync(false);
 									// after the target is updated, we must
 									// update the
 									// symlink itself again :-(
@@ -880,7 +903,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.UNABLE,
 							MessageFormat
-									.format("Resource \"{0}\" is already under source control!",
+									.format(
+											"Resource \"{0}\" is already under source control!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1017,7 +1041,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		ClearCaseElementState state = ClearCasePlugin
 				.getEngine()
-				.add(resource.getLocation().toOSString(),
+				.add(
+						resource.getLocation().toOSString(),
 						false,
 						getComment(),
 						ClearCase.PTIME
@@ -1146,7 +1171,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1201,7 +1227,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1209,8 +1236,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 						new SubProgressMonitor(monitor, 10));
 				if (result.isOK()) {
 					ClearCasePlugin.getEngine()
-							.delete(new String[] { resource.getLocation()
-									.toOSString() }, getComment(),
+							.delete(
+									new String[] { resource.getLocation()
+											.toOSString() }, getComment(),
 									ClearCase.RECURSIVE | ClearCase.KEEP,
 									opListener);
 					monitor.worked(40);
@@ -1248,7 +1276,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1282,9 +1311,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat.format(
-											Messages.getString("ClearCasePlugin.error.checkin.identicalPredecessor"),
-											new Object[] { cce.getElements() }),
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearCasePlugin.error.checkin.identicalPredecessor"),
+													new Object[] { cce
+															.getElements() }),
 									null);
 							break;
 						case ClearCase.ERROR_ELEMENT_HAS_CHECKOUTS:
@@ -1292,9 +1324,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat.format(
-											Messages.getString("ClearCasePlugin.error.checkin.elementHasCheckouts"),
-											new Object[] { cce.getElements() }),
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearCasePlugin.error.checkin.elementHasCheckouts"),
+													new Object[] { cce
+															.getElements() }),
 									null);
 							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
@@ -1304,9 +1339,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							String branchName = getBranchName(getVersion(resource));
 							String latestVersion = resource.getLocation()
 									.toOSString()
-									+ "@@"
-									+ branchName
-									+ "LATEST";
+									+ "@@" + branchName + "LATEST";
 
 							ClearCaseElementState myState = ClearCasePlugin
 									.getEngine().merge(targetElement.getPath(),
@@ -1320,13 +1353,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 								if (returnCode == 0) {
 									// Yes continue checkin
-									ClearCasePlugin
-											.getEngine()
-											.checkin(
-													new String[] { targetElement
-															.getPath() },
-													getComment(),
-													ClearCase.PTIME, opListener);
+									ClearCasePlugin.getEngine().checkin(
+											new String[] { targetElement
+													.getPath() }, getComment(),
+											ClearCase.PTIME, opListener);
 								}
 
 							} else {
@@ -1335,10 +1365,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 										IStatus.ERROR,
 										ID,
 										TeamException.CONFLICT,
-										MessageFormat.format(
-												Messages.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
-												new Object[] { cce
-														.getElements() }), null);
+										MessageFormat
+												.format(
+														Messages
+																.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
+														new Object[] { cce
+																.getElements() }),
+										null);
 							}
 
 							break;
@@ -1348,9 +1381,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.NOT_CHECKED_IN,
-									MessageFormat.format(
-											Messages.getString("ClearCasePlugin.error.checkin.unknown"),
-											new Object[] { cce.getElements() }),
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearCasePlugin.error.checkin.unknown"),
+													new Object[] { cce
+															.getElements() }),
 									null);
 
 							break;
@@ -1376,7 +1412,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 				final IProgressMonitor monitor) {
 			try {
 				int returnCode = 1;// Used for message dialogs.
-				monitor.beginTask("Checking out " + resource.getFullPath(), 100);
+				monitor
+						.beginTask("Checking out " + resource.getFullPath(),
+								100);
 				StateCache cache = getCache(resource);
 				final StateCache targetElement = getFinalTargetElement(cache);
 				// Sanity check - can't checkout something that is not part of
@@ -1388,7 +1426,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1438,8 +1477,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							if (returnCode == 0) {
 								// Yes continue checking out but
 								// unreserved.
-								ClearCasePlugin
-										.getEngine()
+								ClearCasePlugin.getEngine()
 										.checkout(
 												new String[] { targetElement
 														.getPath() },
@@ -1469,9 +1507,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 									IStatus.ERROR,
 									ID,
 									TeamException.UNABLE,
-									MessageFormat.format(
-											Messages.getString("ClearCasePlugin.error.checkin.unknown"),
-											new Object[] { cce.getElements() }),
+									MessageFormat
+											.format(
+													Messages
+															.getString("ClearCasePlugin.error.checkin.unknown"),
+													new Object[] { cce
+															.getElements() }),
 									null);
 
 							break;
@@ -1510,7 +1551,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NOT_AUTHORIZED,
 							MessageFormat
-									.format("Resource \"{0}\" is not a Hijacked ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a Hijacked ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1529,7 +1571,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 					keep = new File(resource.getLocation().toOSString());
 					if (keep.exists()) {
 						keep.renameTo(new File(resource.getLocation()
-								.toOSString() + ".keep"));
+								.toOSString()
+								+ ".keep"));
 					}
 				} catch (Exception e) {
 					result = FAILED_STATUS;
@@ -1574,7 +1617,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1597,9 +1641,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 		public IStatus visit(IResource resource, int depth,
 				IProgressMonitor monitor) {
 			try {
-				monitor.beginTask(
-						"Changing checkout to unreserved "
-								+ resource.getFullPath(), 100);
+				monitor.beginTask("Changing checkout to unreserved "
+						+ resource.getFullPath(), 100);
 
 				// Sanity check - can't update something that is not part of
 				// clearcase
@@ -1609,7 +1652,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1633,9 +1677,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 		public IStatus visit(IResource resource, int depth,
 				IProgressMonitor monitor) {
 			try {
-				monitor.beginTask(
-						"Changing checkout to reserved "
-								+ resource.getFullPath(), 100);
+				monitor.beginTask("Changing checkout to reserved "
+						+ resource.getFullPath(), 100);
 
 				// Sanity check - can't update something that is not part of
 				// clearcase
@@ -1645,7 +1688,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ID,
 							TeamException.NO_REMOTE_RESOURCE,
 							MessageFormat
-									.format("Resource \"{0}\" is not a ClearCase element!",
+									.format(
+											"Resource \"{0}\" is not a ClearCase element!",
 											new Object[] { resource
 													.getFullPath().toString() }),
 							null);
@@ -1726,8 +1770,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 						: "The requested operation finished with warnings.";
 				throw new TeamException(new MultiStatus(
 						multiStatus.getPlugin(), multiStatus.getCode(),
-						multiStatus.getChildren(), message,
-						multiStatus.getException()));
+						multiStatus.getChildren(), message, multiStatus
+								.getException()));
 			}
 			// Cause all the resource changes to be broadcast to listeners.
 			// TeamPlugin.getManager().broadcastResourceStateChanges(resources);
@@ -1771,8 +1815,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// There are children and we are going deep, the response will be a
 			// multi-status.
 			MultiStatus multiStatus = new MultiStatus(status.getPlugin(),
-					status.getCode(), status.getMessage(),
-					status.getException());
+					status.getCode(), status.getMessage(), status
+							.getException());
 			// The next level will be one less than the current level...
 			int childDepth = (depth == IResource.DEPTH_ONE) ? IResource.DEPTH_ZERO
 					: IResource.DEPTH_INFINITE;
