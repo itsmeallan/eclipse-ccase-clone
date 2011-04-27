@@ -29,8 +29,6 @@ public class HistoryView extends ViewPart {
 
 	private Action compareAction;
 
-	private Action openAction;
-
 	private Menu historyMenu;
 
 	MenuItem versionTreeItem;
@@ -139,13 +137,7 @@ public class HistoryView extends ViewPart {
 				versionTree();
 			}
 		};
-		openAction = new Action() {
-			@Override
-			public void run() {
-				open();
-			}
-		};
-
+		
 		compareAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/diff.png"));
 		compareAction.setToolTipText("Compare with history");
 		compareAction.setEnabled(false);
