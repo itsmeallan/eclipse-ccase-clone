@@ -79,7 +79,7 @@ public class ExternalUpdateAction extends ClearCaseWorkspaceAction {
 							}
 							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
 							if (p != null) {
-								if (ClearCasePreferences.UseGraphicalExternalUpdateView()) {
+								if (ClearCasePreferences.useGraphicalExternalUpdateView()) {
 									p.update(element, ClearCase.GRAPHICAL, true);
 								} else {
 									ClearCaseInterface cci = ClearCase.createInterface(ClearCase.INTERFACE_CLI);

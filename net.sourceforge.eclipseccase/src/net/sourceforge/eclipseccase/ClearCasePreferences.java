@@ -311,7 +311,7 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.JOB_QUEUE_PRIORITY);
 	}
 
-	public static boolean UseGraphicalExternalUpdateView() {
+	public static boolean useGraphicalExternalUpdateView() {
 		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.GRAPHICAL_EXTERNAL_UPDATE_VIEW);
 	}
