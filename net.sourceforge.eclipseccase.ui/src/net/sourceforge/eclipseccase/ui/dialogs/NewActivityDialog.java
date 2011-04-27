@@ -9,7 +9,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-
+/**
+ * Class creates a new Activity dialog and then let the user enter a headline.
+ * Id can be generated or manually entered.
+ * @author mikael
+ *
+ */
 public class NewActivityDialog extends Dialog {
 
 	private Text activityText;
