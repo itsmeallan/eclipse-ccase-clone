@@ -67,8 +67,6 @@ public class ActivityDialog extends Dialog {
 
 	private Button newButton;
 
-	private String activity;
-
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
@@ -109,7 +107,7 @@ public class ActivityDialog extends Dialog {
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		activityCombo.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event e) {
-				activity = ((Combo) e.widget).getText();
+				((Combo) e.widget).getText();
 
 			}
 		});
