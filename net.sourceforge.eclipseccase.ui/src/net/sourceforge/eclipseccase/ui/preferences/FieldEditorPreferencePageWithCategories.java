@@ -35,7 +35,7 @@ public abstract class FieldEditorPreferencePageWithCategories extends FieldEdito
 	/**
 	 * A special tab folder layout for borders around tab folders
 	 */
-	private final class TabFolderLayout extends Layout {
+	private static final class TabFolderLayout extends Layout {
 
 		/*
 		 * (non-Javadoc)

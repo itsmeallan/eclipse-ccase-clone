@@ -8,7 +8,7 @@ import org.eclipse.ui.part.IPageBookViewPage;
 
 public class ClearCaseConsolePageParticipant implements IConsolePageParticipant {
 
-	class ConsoleRemoveAction extends Action {
+	static class ConsoleRemoveAction extends Action {
 
 		ConsoleRemoveAction() {
 			this.setText("Remove ClearCase Console"); //$NON-NLS-1$

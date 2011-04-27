@@ -34,11 +34,15 @@ public class ActivatePluginAction extends ActionDelegate implements IObjectActio
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-		if (action != null && firstTime) {
-			firstTime = false;
-			action.setEnabled(true);
-		} else {
-			action.setEnabled(false);
+		if (action != null) {
+			if (firstTime) {
+				firstTime = false;
+				action.setEnabled(true);
+			} else {
+
+				action.setEnabled(false);
+			}
+
 		}
 	}
 

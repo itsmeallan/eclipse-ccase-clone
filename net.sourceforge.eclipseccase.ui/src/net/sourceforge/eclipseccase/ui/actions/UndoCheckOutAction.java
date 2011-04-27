@@ -25,7 +25,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class UndoCheckOutAction extends ClearCaseWorkspaceAction {
 
-	class UndoCheckOutQuestion implements Runnable {
+	static class UndoCheckOutQuestion implements Runnable {
 		private int returncode;
 
 		public int getReturncode() {

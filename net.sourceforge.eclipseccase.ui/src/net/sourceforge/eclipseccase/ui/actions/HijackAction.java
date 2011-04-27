@@ -30,7 +30,7 @@ import org.eclipse.jface.action.IAction;
  */
 public class HijackAction extends ClearCaseWorkspaceAction {
 
-	class HijackQuestion implements Runnable {
+	static class HijackQuestion implements Runnable {
 		private int returncode;
 
 		public int getReturncode() {

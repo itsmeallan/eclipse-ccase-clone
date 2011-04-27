@@ -24,7 +24,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class UnHijackAction extends ClearCaseWorkspaceAction {
 
-	class UnHijackQuestion implements Runnable {
+	static class UnHijackQuestion implements Runnable {
 		private int returncode;
 
 		public int getReturncode() {
