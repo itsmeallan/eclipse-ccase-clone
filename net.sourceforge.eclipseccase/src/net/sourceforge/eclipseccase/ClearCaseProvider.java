@@ -596,13 +596,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return false;
 	}
 
-	public Activity getCurrentActivity() {
-		// Should return a oneliner like:06-Jun-00.17:16:12 update_date ktessier
-		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CACT);
-
-		return null;
-	}
 
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector) throws ClearCaseException {
@@ -816,7 +809,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	// Out of sheer laziness, I appropriated the following code from the team
 	// provider example =)
-	private final class RefreshStateOperation implements IRecursiveOperation {
+	private static final class RefreshStateOperation implements IRecursiveOperation {
 
 		@SuppressWarnings("deprecation")
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {

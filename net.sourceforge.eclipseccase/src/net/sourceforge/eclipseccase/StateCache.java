@@ -673,7 +673,7 @@ public class StateCache implements Serializable {
 		if (this == obj)
 			return true;
 
-		if (null == obj || StateCache.class != obj.getClass())
+		if (null == obj || this.getClass() != obj.getClass())
 			return false;
 
 		if (null == resource)

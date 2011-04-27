@@ -72,7 +72,7 @@ public class ViewPrivCollector {
 		}
 	}
 
-	private class RefreshSourceData {
+	private static  class RefreshSourceData {
 		private final String viewName;
 		private final boolean isSnapshot;
 		private final List<IResource> resources = new ArrayList<IResource>();
@@ -133,11 +133,11 @@ public class ViewPrivCollector {
 		}
 
 		// For each project, perform the dynamic or snapshot listing strategy
-		Iterator<IProject> projectIterator = projects.keySet().iterator();
 		Set<String> queriedViews = new HashSet<String>();
-		while (projectIterator.hasNext()) {
-			IProject project = projectIterator.next();
-			RefreshSourceData data = projects.get(project);
+
+		for (Map.Entry<IProject, RefreshSourceData> e : projects.entrySet()) {
+			RefreshSourceData data = e.getValue();
+			// now do something with key and value
 			if (data.isSnapshot() == true) {
 				trace("Refreshing snapshot view " + data.getViewName());
 				gatherSnapshotViewElements(data.getResources()[0], data
@@ -150,7 +150,6 @@ public class ViewPrivCollector {
 			if (monitor.isCanceled()) {
 				throw new OperationCanceledException();
 			}
-
 		}
 
 		StateCacheFactory.getInstance().refreshAllUnverifiedStates(
