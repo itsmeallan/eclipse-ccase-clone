@@ -31,7 +31,9 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 
 	/** the dialog settings */
 	private IDialogSettings settings;
-
+	
+	private final Object lock = new Object();// private final lock object
+	
 	private Boolean inClearCaseRefresh = false;
 
 	private CheckoutsViewContentProvider contentProvider;
@@ -219,7 +221,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 	 * 
 	 */
 	public void refreshFromClearCase() {
-		synchronized (inClearCaseRefresh) {
+		synchronized (lock) {
 			// guard against second refresh while first one is not finished yet
 			if (inClearCaseRefresh) {
 				return;
@@ -247,7 +249,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 					try {
 						collector.collectElements(monitor);
 					} finally {
-						synchronized (inClearCaseRefresh) {
+						synchronized (lock) {
 							inClearCaseRefresh = false;
 						}
 					}
@@ -257,7 +259,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 			gatherViewPrivateStuff.setPriority(Job.LONG);
 			gatherViewPrivateStuff.schedule();
 		} else {
-			synchronized (inClearCaseRefresh) {
+			synchronized (lock) {
 				inClearCaseRefresh = false;
 			}
 		}
