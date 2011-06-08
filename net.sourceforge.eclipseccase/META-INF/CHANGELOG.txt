@@ -6,7 +6,7 @@
 =====
 
 Fixed Bugs:
-
+3313561 Cannot save changed compare results.
 3206198 Cannot bind to an undefined command
 3293626 Various Findbugs  comments.
 
