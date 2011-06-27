@@ -28,7 +28,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
-		if ((!ClearCasePreferences.isUseClearDlg() || !ClearCasePreferences.isUCM()) && ClearCasePreferences.isCommentCheckout()) {
+		if (!ClearCasePreferences.isUseClearDlg() && !ClearCasePreferences.isUCM() && ClearCasePreferences.isCommentCheckout()) {
 			CommentDialog dlg = new CommentDialog(getShell(), "Checkout comment");
 			if (dlg.open() == Window.CANCEL)
 				return;
