@@ -2,6 +2,13 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.10
+======
+
+Fixed Bugs:
+3323197 Option "... (cleardlg executable)" not always respected. 
+<No number> Removed deault enabled debug for commands sent to clearcase.
+
 2.2.9
 =====
 
