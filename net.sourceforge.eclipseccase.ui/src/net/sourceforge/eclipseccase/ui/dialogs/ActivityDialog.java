@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import org.eclipse.jface.window.Window;
 
 import org.eclipse.swt.widgets.Display;
@@ -62,6 +64,9 @@ import org.eclipse.swt.widgets.Shell;
  * 
  */
 public class ActivityDialog extends Dialog {
+	
+	/** trace id */
+	private static final String TRACE_ACTIVITYDIALOG = "ActivityDialog"; //$NON-NLS-1$
 
 	private Combo activityCombo;
 
@@ -179,6 +184,8 @@ public class ActivityDialog extends Dialog {
 			// 06-Jun-00.17:16:12
 			activities.add(new Activity("06-Jun-00.17:16:12", "test", "eraonel", "test comment"));
 			activities.add(new Activity("04-Jun-00.17:10:00", "test2","eraonel", "another test comment"));
+			activities.add(new Activity("2011-06-14T16:16:04+03:00",
+					"bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
 		}
 
 		if (activities.size() == 0) {
@@ -210,6 +217,10 @@ public class ActivityDialog extends Dialog {
 		for (int i = 0; i < activities.size(); i++) {
 			Activity currentActivity = activities.get(i);
 			Date activityDate = currentActivity.getDate();
+			if (ClearCasePlugin.DEBUG_UCM) {
+				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG,
+						"Date: " + activityDate.getTime()); //$NON-NLS-1$
+			}
 			if (newestDate == null) {
 				newestDate = activityDate;
 			}

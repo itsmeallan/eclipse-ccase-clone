@@ -160,6 +160,10 @@ public class ClearCasePlugin extends Plugin {
 	/** debug option */
 	private static final String DEBUG_OPTION_SUBPROCESS = ClearCasePlugin.PLUGIN_ID
 			+ "/debug/subprocess"; //$NON-NLS-1$
+	
+	/** debug option */
+	private static final String DEBUG_OPTION_UCM = ClearCasePlugin.PLUGIN_ID
+			+ "/debug/ucm"; //$NON-NLS-1$
 
 	/** indicates if debugging is enabled */
 	public static boolean DEBUG = false;
@@ -196,6 +200,11 @@ public class ClearCasePlugin extends Plugin {
 			if (getDebugOption(DEBUG_OPTION_UPDATE_QUEUE)) {
 				trace("debugging " + DEBUG_OPTION_UPDATE_QUEUE); //$NON-NLS-1$
 				ClearCasePlugin.DEBUG_UPDATE_QUEUE = true;
+			}
+			
+			if (getDebugOption(DEBUG_OPTION_UCM)) {
+				trace("debugging " + DEBUG_OPTION_UCM); //$NON-NLS-1$
+				ClearCasePlugin.DEBUG_UCM = true;
 			}
 
 			if (getDebugOption(DEBUG_OPTION_SUBPROCESS)) {
@@ -381,6 +390,9 @@ public class ClearCasePlugin extends Plugin {
 
 	/** debug flag */
 	public static boolean DEBUG_UPDATE_QUEUE = false;
+	
+	/** debug flag */
+	public static boolean DEBUG_UCM = false;
 
 	/**
 	 * The constructor.
