@@ -15,6 +15,8 @@ package net.sourceforge.eclipseccase;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
@@ -561,18 +563,31 @@ public class ClearCaseProvider extends RepositoryProvider {
 			return activities;
 		}
 		for (int i = 0; i < output.length; i++) {
+			
+			//Example of output from cc.
+			//06-Jun-00.17:16:12 update_date ktessier "Update for new date convention"
+			
+			//Get headline between "". And remove it afterwards from String.
+			String headlinePattern = "\"(.*)\"";
+			Pattern p1 = Pattern.compile(headlinePattern);
+			Matcher m1 = p1.matcher(output[i]);
+			boolean headlineFound = m1.find();
+			
+			String headline = null;
+			if (headlineFound) {
+				// Get file name within ""
+				headline = m1.group(1);
+				//remove headline from string.
+				output[i].replace("\"headline\"", "");
 
-			// Example output: 06-Jun-00.17:16:12 update_date ktessier
-			// "Update for new date convention"
-			String myOutput = output[i];// one line
+			}
 			String delims = "[ ]+";
-			String[] tokens = myOutput.split(delims);// 4 tokens:
-														// date,actvitySelector,user,headline
+			String[] tokens = output[i].split(delims);// 3 tokens:
+														// date,actvitySelector,user
 			// check if activity exists.
 			String date = tokens[0];
 			String activitySelector = tokens[1];
 			String user = tokens[2];
-			String headline = tokens[3];
 			if (!activityAlreadyExist(activitySelector)) {
 				Activity newActivity = new Activity(date, activitySelector,
 						user, headline);
