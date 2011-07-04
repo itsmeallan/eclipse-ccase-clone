@@ -38,13 +38,12 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		final String comment = maybeComment;
 		final int depth = maybeDepth;
-		
-		//UCM checkout.
-		if(ClearCasePreferences.isUCM()){
+
+		// UCM checkout.
+		if (ClearCasePreferences.isUCM()) {
 			checkoutWithActivity(depth);
 			return;
 		}
-		
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
@@ -83,9 +82,9 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 				}
 			}
 		};
-		
+
 		executeInBackground(runnable, "Checking out resources from ClearCase");
-		
+
 	}
 
 	@Override
@@ -103,30 +102,29 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		}
 		return true;
 	}
-	
-	
-	private void checkoutWithActivity(int depth){
+
+	private void checkoutWithActivity(int depth) {
 		IResource[] resources = getSelectedResources();
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null) {
-				
-				ActivityDialog dlg = new ActivityDialog(getShell(),provider);
-				if (dlg.open() == Window.CANCEL)
-					return;
-				//
-				String activitySelector = dlg.getActivity().getActivitySelector();
-				
-				provider.setActivity(activitySelector);
-				provider.setComment(dlg.getComment());//
-				
-				
-				try {
-					provider.checkout(new IResource[] { resource }, depth, null);
-				} catch (TeamException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				ActivityDialog dlg = new ActivityDialog(getShell(), provider);
+				if (dlg.open() == Window.OK) {
+
+					//
+					String activitySelector = dlg.getActivity().getActivitySelector();
+
+					provider.setActivity(activitySelector);
+					provider.setComment(dlg.getComment());//
+
+					try {
+						provider.checkout(new IResource[] { resource }, depth, null);
+					} catch (TeamException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
