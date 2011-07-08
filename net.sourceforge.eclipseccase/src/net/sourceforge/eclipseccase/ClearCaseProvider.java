@@ -68,6 +68,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	CheckoutUnreservedOperation CO_UNRESERVED = new CheckoutUnreservedOperation();
 
 	CheckoutReservedOperation CO_RESERVED = new CheckoutReservedOperation();
+	
+	
 
 	private final IMoveDeleteHook moveHandler = new MoveHandler(this);
 
@@ -305,7 +307,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 			throws TeamException {
 		// moved
 	}
-
+	
+		
 	/**
 	 * @see SimpleAccessOperations#isCheckedOut(IResource)
 	 */
@@ -544,14 +547,20 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return null;
 	}
 
+	// FIXME: We need to handle exceptions.
 	public boolean setActivity(String name) {
-		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(
-				name);
-		if (cces[0].state == ClearCase.ACTIVITY_SET) {
-			return true;
-		} else {
-			return false;
-		}
+		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(name);
+			if (cces == null) {
+				System.out.println("ERROR: Could not set activity: " + name
+						+ " Got null response.");
+				return false;
+			}
+
+			if (cces[0].state == ClearCase.ACTIVITY_SET) {
+				return true;
+			} else {
+				return false;
+			}
 
 	}
 
@@ -563,31 +572,38 @@ public class ClearCaseProvider extends RepositoryProvider {
 			return activities;
 		}
 		for (int i = 0; i < output.length; i++) {
-			
-			//Example of output from cc.
-			//06-Jun-00.17:16:12 update_date ktessier "Update for new date convention"
-			
-			//Get headline between "". And remove it afterwards from String.
+
+			// Example of output from cc.
+			// 06-Jun-00.17:16:12 update_date ktessier
+			// "Update for new date convention"
+
+			// Get headline between "". And remove it afterwards from String.
 			String headlinePattern = "\"(.*)\"";
 			Pattern p1 = Pattern.compile(headlinePattern);
 			Matcher m1 = p1.matcher(output[i]);
 			boolean headlineFound = m1.find();
-			
+
 			String headline = null;
 			if (headlineFound) {
 				// Get file name within ""
 				headline = m1.group(1);
-				//remove headline from string.
+				// remove headline from string.
 				output[i].replace("\"headline\"", "");
 
 			}
 			String delims = "[ ]+";
-			String[] tokens = output[i].split(delims);// 3 tokens:
-														// date,actvitySelector,user
+			String[] tokens = output[i].split(delims);// 3 tokens left:
+			// date,actvitySelector,user
 			// check if activity exists.
 			String date = tokens[0];
 			String activitySelector = tokens[1];
 			String user = tokens[2];
+			// FIXME: Add as a trace instead.
+			StringBuffer sb = new StringBuffer();
+			sb.append("Date: " + date).append(
+					" ActivitySelector: " + activitySelector).append(
+					" User: " + user).append(" Headline: " + headline + "\n");
+			System.out.println(sb);
 			if (!activityAlreadyExist(activitySelector)) {
 				Activity newActivity = new Activity(date, activitySelector,
 						user, headline);
@@ -600,17 +616,30 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return activities;
 
 	}
-	
-	private boolean activityAlreadyExist(String activitySelector){
-		for(int i = 0; i < activities.size(); i++) {
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean activityAssociated(){
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.CVIEW |ClearCase.SHORT);
+		//FIXME: Not sure about this needs input from Michael.
+		if(output[0].length() > 0){
+			System.out.println("Activity "+output[0]+" is associated!");
+		return true;
+		}
+		return false;
+	}
+
+	private boolean activityAlreadyExist(String activitySelector) {
+		for (int i = 0; i < activities.size(); i++) {
 			String currentSelector = activities.get(i).getActivitySelector();
-			if(currentSelector.equalsIgnoreCase(activitySelector)){
+			if (currentSelector.equalsIgnoreCase(activitySelector)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector) throws ClearCaseException {
@@ -824,7 +853,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	// Out of sheer laziness, I appropriated the following code from the team
 	// provider example =)
-	private static final class RefreshStateOperation implements IRecursiveOperation {
+	private static final class RefreshStateOperation implements
+			IRecursiveOperation {
 
 		@SuppressWarnings("deprecation")
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
@@ -1723,6 +1753,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public static interface IOperation {
 		// empty
+		
 	}
 
 	public static interface IIterativeOperation extends IOperation {
@@ -1735,7 +1766,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		public IStatus visit(IResource resource, IProgressMonitor progress);
 	}
-
+	
+		
 	/**
 	 * Perform the given operation on the array of resources, each to the
 	 * specified depth. Throw an exception if a problem ocurs, otherwise remain
@@ -2194,5 +2226,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 			}
 
 		}
+	}
+	
+	public static void main(String [] args ) {
+	ClearCaseProvider ccp = new ClearCaseProvider();
+	ccp.setActivity("kalle");
+		
 	}
 }

@@ -1,5 +1,11 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.actions.HijackAction.HijackQuestion;
+
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+
 import org.eclipse.team.core.TeamException;
 
 import net.sourceforge.eclipseccase.ui.dialogs.ActivityDialog;
@@ -22,6 +28,20 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
 
 public class CheckOutAction extends ClearCaseWorkspaceAction {
+
+	static class ActivityQuestion implements Runnable {
+		private int returncode;
+
+		public int getReturncode() {
+			return returncode;
+		}
+
+		public void run() {
+			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity?", MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
+			returncode = activityQuestion.open();
+		}
+	}
 
 	@Override
 	public void execute(IAction action) {
@@ -109,22 +129,33 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null) {
+				// check if current view has an activity associated.
+				ActivityQuestion question = new ActivityQuestion();
+				
+				if (provider.activityAssociated()) {
+					// Want to change//create activity?
+					PlatformUI.getWorkbench().getDisplay().syncExec(question);
 
-				ActivityDialog dlg = new ActivityDialog(getShell(), provider);
-				if (dlg.open() == Window.OK) {
+				}
+				/* Yes=0 No=1 Cancel=2 */
+				if (!provider.activityAssociated() || question.getReturncode() == 0) {
+					ActivityDialog dlg = new ActivityDialog(getShell(), provider);
+					if (dlg.open() == Window.OK) {
 
-					//
-					String activitySelector = dlg.getActivity().getActivitySelector();
+						//
+						String activitySelector = dlg.getSelectedActivity().getActivitySelector();
 
-					provider.setActivity(activitySelector);
-					provider.setComment(dlg.getComment());//
+						provider.setActivity(activitySelector);
+						provider.setComment(dlg.getComment());//
 
-					try {
-						provider.checkout(new IResource[] { resource }, depth, null);
-					} catch (TeamException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
+				}
+
+				try {
+					provider.checkout(new IResource[] { resource }, depth, null);
+				} catch (TeamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
