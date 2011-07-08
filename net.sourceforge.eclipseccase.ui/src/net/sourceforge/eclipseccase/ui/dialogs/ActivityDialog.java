@@ -64,7 +64,7 @@ import org.eclipse.swt.widgets.Shell;
  * 
  */
 public class ActivityDialog extends Dialog {
-	
+
 	/** trace id */
 	private static final String TRACE_ACTIVITYDIALOG = "ActivityDialog"; //$NON-NLS-1$
 
@@ -80,15 +80,17 @@ public class ActivityDialog extends Dialog {
 
 	private static final String NO_ACTIVITY = "NONE";
 	
-	private boolean test = false;
+	private Activity selectedActivity = null;
 
-	
+
+	private boolean test = false;
 
 	public ActivityDialog(Shell parentShell, ClearCaseProvider provider) {
 		super(parentShell);
 		this.setShellStyle(SWT.CLOSE);
 		this.provider = provider;
 		commentDialogArea = new CommentDialogArea(this, null);
+		initContent();
 
 	}
 
@@ -109,10 +111,31 @@ public class ActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 
 		activityCombo = createCombo(composite);
+		if (activities.size() == 0) {
+			activityCombo.add(NO_ACTIVITY);
+			activityCombo.select(0);
+		} else {
+			for (int i = 0; i < activities.size(); i++) {
+				activityCombo.add(activities.get(i).getHeadline());
+			}
+			if (provider != null) {
+				// Select last create
+				Activity myLastCreatedAct = getLastCreatedActvity(activities);
+				int index = activities.indexOf(myLastCreatedAct);
+				activityCombo.select(index);
+			}
+		}
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		activityCombo.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event e) {
 				((Combo) e.widget).getText();
+				System.out.println("Debug selected: "+((Combo) e.widget).getText());
+				for (int i = 0; i < activities.size(); i++) {
+					Activity currentActivity = activities.get(i);
+					if (currentActivity.getHeadline().equalsIgnoreCase(((Combo) e.widget).getText())) {
+						setSelectedActivity(currentActivity);
+					}
+				}
 
 			}
 		});
@@ -129,9 +152,6 @@ public class ActivityDialog extends Dialog {
 				}
 			}
 		});
-
-		initContent();
-
 		return composite;
 
 	}
@@ -155,20 +175,11 @@ public class ActivityDialog extends Dialog {
 		SelectionListener listener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
-				Shell activeShell;
-				if(isTest()){
-					activeShell = Display.getDefault().getActiveShell();
-				}else{
-					activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-
-				}
-					
-				NewActivityDialog dlg = new NewActivityDialog(activeShell,provider);
-				if (dlg.open() == Window.CANCEL)
-					return;
+				Shell	activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider);
+				if (dlg.open() == Window.CANCEL)return;
 				// FIXME: mike 20110407 update list to get new activity
 				initContent();
-				
 
 			}
 		};
@@ -178,30 +189,8 @@ public class ActivityDialog extends Dialog {
 	private void initContent() {
 		if (provider != null) {
 			activities = provider.listActivities();
-		} else {
-			// for testing
-			activities = new ArrayList<Activity>();
-			// 06-Jun-00.17:16:12
-			activities.add(new Activity("06-Jun-00.17:16:12", "test", "eraonel", "test comment"));
-			activities.add(new Activity("04-Jun-00.17:10:00", "test2","eraonel", "another test comment"));
-			activities.add(new Activity("2011-06-14T16:16:04+03:00",
-					"bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
-		}
-
-		if (activities.size() == 0) {
-			activityCombo.add(NO_ACTIVITY);
-			activityCombo.select(0);
-		} else {
-			for (int i = 0; i < activities.size(); i++) {
-				activityCombo.add(activities.get(i).getHeadline());
-			}
-			if (provider != null) {
-				//Select last create
-				Activity myLastCreatedAct = getLastCreatedActvity(activities);
-				int index = activities.indexOf(myLastCreatedAct);
-				activityCombo.select(index);
-			}
-		}
+			
+		} 
 
 	}
 
@@ -218,8 +207,7 @@ public class ActivityDialog extends Dialog {
 			Activity currentActivity = activities.get(i);
 			Date activityDate = currentActivity.getDate();
 			if (ClearCasePlugin.DEBUG_UCM) {
-				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG,
-						"Date: " + activityDate.getTime()); //$NON-NLS-1$
+				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Date: " + activityDate.getTime()); //$NON-NLS-1$
 			}
 			if (newestDate == null) {
 				newestDate = activityDate;
@@ -261,34 +249,25 @@ public class ActivityDialog extends Dialog {
 		return commentDialogArea.getComment();
 	}
 
-	public Activity getActivity() {
-		Activity currentActivity = null;
-		int index = activityCombo.getSelectionIndex();
-		String headline = activityCombo.getItem(index);
-		for (int i = 0; i < activities.size(); i++) {
-			currentActivity = activities.get(i);
-			if(currentActivity.getHeadline().equalsIgnoreCase(headline)){
-				return currentActivity;
-			}
-		}
-		return currentActivity;
+
+	public Activity getSelectedActivity() {
+		return selectedActivity;
+	}
+
+	public void setSelectedActivity(Activity selectedActivity) {
+		this.selectedActivity = selectedActivity;
 	}
 	
-	public boolean isTest() {
-		return test;
+	public ArrayList<Activity> getActivities() {
+		return activities;
 	}
 
-	public void setTest(boolean test) {
-		this.test = test;
+	public void setActivities(ArrayList<Activity> activities) {
+		this.activities = activities;
 	}
 
-	// For testing of Dialog.
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Shell shell = new Shell(display);
-		ActivityDialog dlg = new ActivityDialog(shell, null);
-		dlg.setTest(true);
-		dlg.open();
-	}
+	
+
+	
 
 }
