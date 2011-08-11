@@ -1,7 +1,5 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ui.actions.HijackAction.HijackQuestion;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -131,12 +129,10 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 			if (provider != null) {
 				// check if current view has an activity associated.
 				ActivityQuestion question = new ActivityQuestion();
-				
-				if (provider.activityAssociated()) {
-					// Want to change//create activity?
-					PlatformUI.getWorkbench().getDisplay().syncExec(question);
 
-				}
+				// Want to change//create activity?
+				PlatformUI.getWorkbench().getDisplay().syncExec(question);
+
 				/* Yes=0 No=1 Cancel=2 */
 				if (!provider.activityAssociated() || question.getReturncode() == 0) {
 					ActivityDialog dlg = new ActivityDialog(getShell(), provider);
@@ -160,4 +156,5 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 			}
 		}
 	}
+
 }
