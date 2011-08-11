@@ -68,14 +68,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 	CheckoutUnreservedOperation CO_UNRESERVED = new CheckoutUnreservedOperation();
 
 	CheckoutReservedOperation CO_RESERVED = new CheckoutReservedOperation();
-	
-	
 
 	private final IMoveDeleteHook moveHandler = new MoveHandler(this);
 
 	private String comment = ""; //$NON-NLS-1$
 
 	public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider"; //$NON-NLS-1$
+
+	private static final String TRACE_ID = "ClearCaseProvider"; //$NON-NLS-1$
 
 	public static final Status OK_STATUS = new Status(IStatus.OK, ID,
 			TeamException.OK, "OK", null); //$NON-NLS-1$
@@ -307,8 +307,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			throws TeamException {
 		// moved
 	}
-	
-		
+
 	/**
 	 * @see SimpleAccessOperations#isCheckedOut(IResource)
 	 */
@@ -549,18 +548,19 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	// FIXME: We need to handle exceptions.
 	public boolean setActivity(String name) {
-		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(name);
-			if (cces == null) {
-				System.out.println("ERROR: Could not set activity: " + name
-						+ " Got null response.");
-				return false;
-			}
+		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(
+				name);
+		if (cces == null) {
+			System.out.println("ERROR: Could not set activity: " + name
+					+ " Got null response.");
+			return false;
+		}
 
-			if (cces[0].state == ClearCase.ACTIVITY_SET) {
-				return true;
-			} else {
-				return false;
-			}
+		if (cces[0].state == ClearCase.ACTIVITY_SET) {
+			return true;
+		} else {
+			return false;
+		}
 
 	}
 
@@ -616,18 +616,24 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return activities;
 
 	}
+
 	/**
 	 * 
 	 * @return
 	 */
-	public boolean activityAssociated(){
+	public boolean activityAssociated() {
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW |ClearCase.SHORT);
-		//FIXME: Not sure about this needs input from Michael.
-		if(output[0].length() > 0){
-			System.out.println("Activity "+output[0]+" is associated!");
-		return true;
+				ClearCase.CVIEW | ClearCase.SHORT);
+
+		if (output.length > 0) {
+			if (ClearCasePlugin.DEBUG_PROVIDER) {
+				ClearCasePlugin.trace(TRACE_ID,
+						"Activity " + output[0] + " is associated!"); //$NON-NLS-1$
+			}
+
+			return true;
 		}
+
 		return false;
 	}
 
@@ -1753,7 +1759,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public static interface IOperation {
 		// empty
-		
+
 	}
 
 	public static interface IIterativeOperation extends IOperation {
@@ -1766,8 +1772,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		public IStatus visit(IResource resource, IProgressMonitor progress);
 	}
-	
-		
+
 	/**
 	 * Perform the given operation on the array of resources, each to the
 	 * specified depth. Throw an exception if a problem ocurs, otherwise remain
@@ -2227,10 +2232,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		}
 	}
-	
-	public static void main(String [] args ) {
-	ClearCaseProvider ccp = new ClearCaseProvider();
-	ccp.setActivity("kalle");
-		
+
+	public static void main(String[] args) {
+		ClearCaseProvider ccp = new ClearCaseProvider();
+		ccp.setActivity("kalle");
+
 	}
 }
