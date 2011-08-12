@@ -14,6 +14,7 @@ set changelog "[lindex $argv 7]"
 spawn rsync -avP -e ssh  ${zip} ${webuser}@${host}:${rootdir}/${eclipsecategory}/${version}/
 expect "*password:" 
 send "${password}\r"
+expect "total size*\r"
 #send changelog
 spawn rsync -avP -e ssh  ${changelog} ${webuser}@${host}:${rootdir}/${eclipsecategory}/${version}/
 expect "*password:" 
