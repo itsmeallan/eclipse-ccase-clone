@@ -63,8 +63,8 @@ REM ** CUSTOMIZE ** Enter your rsync command(s) here
 
 REM ** This script has not been tested yet will be in release 2.2.7.
 
-rsync -e ssh -av %zip%  %webuser%@$%host%:%rootdir%/%eclipsecategory%/%version%/
+rsync -e ssh -avP %zip%  %webuser%@$%host%:%rootdir%/%eclipsecategory%/%version%/
 
-rsync -e ssh -av %changelog%  %webuser%@$%host%:%rootdir%/%eclipsecategory%/%version%/
+rsync -e ssh -avP %changelog%  %webuser%@$%host%:%rootdir%/%eclipsecategory%/%version%/
 
 

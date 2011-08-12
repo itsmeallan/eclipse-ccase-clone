@@ -36,9 +36,6 @@ Prerequesites
 
    "net.sourceforge.eclipseccase.updatesite/full/net.sourceforge.eclipseccase_2.2.0.v201002231900.zip
    
-   
- 
-  - update version numbers in site.xml ( Use Feature editor).
  
  Build update site
  =================

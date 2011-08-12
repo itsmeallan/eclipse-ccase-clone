@@ -8,6 +8,8 @@
 Fixed Bugs:
 3323197 Option "... (cleardlg executable)" not always respected. 
 <No number> Removed deault enabled debug for commands sent to clearcase.
+3324575 Check-out doesn't ask for activity
+
 
 2.2.9
 =====
