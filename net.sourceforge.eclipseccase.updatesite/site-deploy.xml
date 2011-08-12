@@ -28,7 +28,7 @@
 		<basename property="jar.name" file="${staging.dir}/features/${most.recent.release}" suffix=".jar" />
 		<echo message="Latest feature jar name is: ${jar.name}" />
 
-		<propertyregex property="version" input="${jar.name}" regexp="${plugin.id}_([0-9]\.[0-9]\.[0-9]\.[0-9 A-Z]*)" select="\1" casesensitive="false" />
+		<propertyregex property="version" input="${jar.name}" regexp="${plugin.id}_([0-9]\.[0-9]\.[0-9]*\.[0-9 A-Z]*)" select="\1" casesensitive="false" />
 		<echo message="version is set to: ${version}" />
 
 		<timestampselector property="most.recent.zip.release" count="1">
@@ -45,9 +45,9 @@
 	    needs to have net.soucreforge.eclipseccase_2.2.6.201011051900.zip  
 	    So we need to make sure it has the same as the 
 	    update site version has.-->
-		<move file="${most.recent.zip.release}" tofile="${staging.dir}/full/${plugin.id}_${version}.zip" />
-		<delete file="${most.recent.zip.release}">
-		</delete>
+		<copy file="${most.recent.zip.release}" tofile="${staging.dir}/full/${plugin.id}_${version}.zip" />
+		<!--<delete file="${most.recent.zip.release}">
+		</delete>-->
 		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${plugin.id}_${version}.zip" />
 		<echo message="Renamed zip release: ${feature.eclipseccase.package}" />
 
