@@ -11,53 +11,21 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-
-import org.eclipse.jface.window.Window;
-
-import org.eclipse.swt.widgets.Display;
-
-import java.util.Date;
-
-import org.eclipse.core.resources.IResource;
-
-import net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer;
-
 import java.util.ArrayList;
-
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-import net.sourceforge.eclipseccase.Activity;
-
+import java.util.Date;
+import net.sourceforge.eclipseccase.*;
+import net.sourceforge.eclipseccase.ui.CommentDialogArea;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-
-import net.sourceforge.eclipseccase.ui.CommentDialogArea;
-
-import net.sourceforge.eclipseccase.ui.dialogs.Messages;
-
-import org.eclipse.ui.PlatformUI;
-
-import org.eclipse.swt.events.*;
-
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Text;
-
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
-import org.eclipse.swt.widgets.Label;
-
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
-
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * @author mikael petterson
@@ -72,6 +40,8 @@ public class ActivityDialog extends Dialog {
 
 	private Button newButton;
 
+	private Button oKButton;
+
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
@@ -79,9 +49,8 @@ public class ActivityDialog extends Dialog {
 	private ArrayList<Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
-	
-	private Activity selectedActivity = null;
 
+	private Activity selectedActivity = null;
 
 	private boolean test = false;
 
@@ -94,6 +63,7 @@ public class ActivityDialog extends Dialog {
 
 	}
 
+	@Override
 	protected Control createDialogArea(Composite parent) {
 		getShell().setText(Messages.getString("ActivityDialog.title"));
 		Composite composite = new Composite(parent, SWT.NULL);
@@ -125,15 +95,17 @@ public class ActivityDialog extends Dialog {
 				activityCombo.select(index);
 			}
 		}
+
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		activityCombo.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event e) {
 				((Combo) e.widget).getText();
-				System.out.println("Debug selected: "+((Combo) e.widget).getText());
+				System.out.println("Debug selected: " + ((Combo) e.widget).getText());
 				for (int i = 0; i < activities.size(); i++) {
 					Activity currentActivity = activities.get(i);
 					if (currentActivity.getHeadline().equalsIgnoreCase(((Combo) e.widget).getText())) {
 						setSelectedActivity(currentActivity);
+						updateOkButtonEnablement(true);
 					}
 				}
 
@@ -173,11 +145,13 @@ public class ActivityDialog extends Dialog {
 		newButton.setLayoutData(data);
 		newButton.setEnabled(true);
 		SelectionListener listener = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
-				Shell	activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider);
-				if (dlg.open() == Window.CANCEL)return;
+				if (dlg.open() == Window.CANCEL)
+					return;
 				// FIXME: mike 20110407 update list to get new activity
 				initContent();
 
@@ -186,11 +160,38 @@ public class ActivityDialog extends Dialog {
 		newButton.addSelectionListener(listener);
 	}
 
+	/*
+	 * To be able to (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
+	 * .swt.widgets.Composite)
+	 */
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		super.createButtonsForButtonBar(parent);
+		// Update the button enablement only after the button is created
+		oKButton = getButton(IDialogConstants.OK_ID);
+		if (activityCombo.getSelectionIndex() == 0) {
+			updateOkButtonEnablement(false);
+			return;
+		}
+
+	}
+
+	private void updateOkButtonEnablement(boolean enabled) {
+		if (oKButton != null) {
+			oKButton.setEnabled(enabled);
+		}
+	}
+
 	private void initContent() {
 		if (provider != null) {
 			activities = provider.listActivities();
-			
-		} 
+
+		} else {
+			activities = new ArrayList<Activity>();
+		}
 
 	}
 
@@ -249,7 +250,6 @@ public class ActivityDialog extends Dialog {
 		return commentDialogArea.getComment();
 	}
 
-
 	public Activity getSelectedActivity() {
 		return selectedActivity;
 	}
@@ -257,7 +257,7 @@ public class ActivityDialog extends Dialog {
 	public void setSelectedActivity(Activity selectedActivity) {
 		this.selectedActivity = selectedActivity;
 	}
-	
+
 	public ArrayList<Activity> getActivities() {
 		return activities;
 	}
@@ -266,8 +266,12 @@ public class ActivityDialog extends Dialog {
 		this.activities = activities;
 	}
 
-	
-
-	
+	// TODO: For testing only.
+	public static void main(String[] args) {
+		Display display = Display.getCurrent();
+		Shell activeShell = new Shell(display);
+		ActivityDialog ad = new ActivityDialog(activeShell, null);
+		ad.open();
+	}
 
 }
