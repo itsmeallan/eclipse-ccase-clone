@@ -161,7 +161,8 @@ public class ActivityDialog extends Dialog {
 	}
 
 	/*
-	 * To be able to (non-Javadoc)
+	 * Sets OK button is disabled when NO_ACTVITY is selected. To enable
+	 * OK button create a new activity or select one from list. 
 	 * 
 	 * @see
 	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
