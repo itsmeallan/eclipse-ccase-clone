@@ -58,7 +58,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		final int depth = maybeDepth;
 
 		// UCM checkout.
-		if (ClearCasePreferences.isUCM()) {
+		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
 			checkoutWithActivity(depth);
 			return;
 		}
@@ -138,8 +138,9 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					ActivityDialog dlg = new ActivityDialog(getShell(), provider);
 					if (dlg.open() == Window.OK) {
 
-						//
+						System.out.println("DEBUG: Before activitySelector");
 						String activitySelector = dlg.getSelectedActivity().getActivitySelector();
+						System.out.println("DBUG: After activitySelector");
 
 						provider.setActivity(activitySelector);
 						provider.setComment(dlg.getComment());//

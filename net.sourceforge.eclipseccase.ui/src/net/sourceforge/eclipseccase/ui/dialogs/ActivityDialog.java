@@ -87,12 +87,34 @@ public class ActivityDialog extends Dialog {
 		} else {
 			for (int i = 0; i < activities.size(); i++) {
 				activityCombo.add(activities.get(i).getHeadline());
+
 			}
 			if (provider != null) {
 				// Select last create
 				Activity myLastCreatedAct = getLastCreatedActvity(activities);
 				int index = activities.indexOf(myLastCreatedAct);
 				activityCombo.select(index);
+
+				// Set selected activity in class.
+				String selected = activityCombo.getItem(activityCombo.getSelectionIndex());
+				for (int i = 0; i < activities.size(); i++) {
+					Activity currentActivity = activities.get(i);
+					if (currentActivity.getHeadline().equalsIgnoreCase(selected)) {
+						setSelectedActivity(currentActivity);
+					}
+
+				}
+
+			}
+
+			String selected = activityCombo.getItem(activityCombo.getSelectionIndex());
+			// Set selected activity in class.
+			for (int i = 0; i < activities.size(); i++) {
+				Activity currentActivity = activities.get(i);
+				if (currentActivity.getHeadline().equalsIgnoreCase(selected)) {
+					setSelectedActivity(currentActivity);
+				}
+
 			}
 		}
 
@@ -100,7 +122,6 @@ public class ActivityDialog extends Dialog {
 		activityCombo.addListener(SWT.Modify, new Listener() {
 			public void handleEvent(Event e) {
 				((Combo) e.widget).getText();
-				System.out.println("Debug selected: " + ((Combo) e.widget).getText());
 				for (int i = 0; i < activities.size(); i++) {
 					Activity currentActivity = activities.get(i);
 					if (currentActivity.getHeadline().equalsIgnoreCase(((Combo) e.widget).getText())) {
@@ -149,7 +170,7 @@ public class ActivityDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider);
+				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this);
 				if (dlg.open() == Window.CANCEL)
 					return;
 				// FIXME: mike 20110407 update list to get new activity
@@ -161,8 +182,8 @@ public class ActivityDialog extends Dialog {
 	}
 
 	/*
-	 * Sets OK button is disabled when NO_ACTVITY is selected. To enable
-	 * OK button create a new activity or select one from list. 
+	 * Sets OK button is disabled when NO_ACTVITY is selected. To enable OK
+	 * button create a new activity or select one from list.
 	 * 
 	 * @see
 	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
@@ -173,7 +194,7 @@ public class ActivityDialog extends Dialog {
 		super.createButtonsForButtonBar(parent);
 		// Update the button enablement only after the button is created
 		oKButton = getButton(IDialogConstants.OK_ID);
-		if (activityCombo.getSelectionIndex() == 0) {
+		if (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY)) {
 			updateOkButtonEnablement(false);
 			return;
 		}
@@ -256,6 +277,7 @@ public class ActivityDialog extends Dialog {
 	}
 
 	public void setSelectedActivity(Activity selectedActivity) {
+		System.out.println("DEBUG: setSelectedActivity " + selectedActivity.getHeadline());
 		this.selectedActivity = selectedActivity;
 	}
 
@@ -265,6 +287,16 @@ public class ActivityDialog extends Dialog {
 
 	public void setActivities(ArrayList<Activity> activities) {
 		this.activities = activities;
+	}
+
+	public boolean activityExist(String headline) {
+		for (int i = 0; i < activities.size(); i++) {
+			Activity currentActivity = activities.get(i);
+			if (currentActivity.getHeadline().equalsIgnoreCase(headline)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// TODO: For testing only.

@@ -9,11 +9,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+
 /**
  * Class creates a new Activity dialog and then let the user enter a headline.
  * Id can be generated or manually entered.
+ * 
  * @author mikael
- *
+ * 
  */
 public class NewActivityDialog extends Dialog {
 
@@ -23,7 +25,8 @@ public class NewActivityDialog extends Dialog {
 
 	private static long current = System.currentTimeMillis();
 
-	private static Pattern p = Pattern.compile("[^A-Za-z0-9]");
+	// The string can contain the following characters.
+	private static Pattern p = Pattern.compile("[^A-Za-z0-9_\\-]");
 
 	private static final String GENERATE_ID = "Auto-genrate ID";
 
@@ -35,9 +38,12 @@ public class NewActivityDialog extends Dialog {
 
 	private ClearCaseProvider provider;
 
-	public NewActivityDialog(Shell parentShell, ClearCaseProvider provider) {
+	private ActivityDialog activityDialog;
+
+	public NewActivityDialog(Shell parentShell, ClearCaseProvider provider, ActivityDialog ad) {
 		super(parentShell);
 		this.provider = provider;
+		this.activityDialog = ad;
 
 		// TODO Auto-generated constructor stub
 	}
@@ -97,18 +103,25 @@ public class NewActivityDialog extends Dialog {
 			activityText.selectAll();
 			activityText.setFocus();
 			return;
-		} else if (!match(activityText.getText().trim())) {
+		}
+
+		// replace all spaces to underscore since it is not allowed.
+		String noSpaceHeadline = activityText.getText().trim().replaceAll(" ", "_");
+
+		if (!match(noSpaceHeadline)) {
 			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString(("NewActivityDialog.onlyAlphaNumericCharacters")));
 			activityText.selectAll();
 			activityText.setFocus();
+			return;
 		}
 
-		String headline = activityText.getText().trim();
 		if (autoGen) {
-			activitySelector = headline.concat(getUniqueId());
+			if (activityDialog.activityExist(noSpaceHeadline))
+				//if duplicate then add unique id to headline.
+				activitySelector = noSpaceHeadline.concat(getUniqueId());
 		} else {
 			String id = idText.getText().trim();
-			activitySelector = headline.concat(id);
+			activitySelector = noSpaceHeadline.concat(id);
 		}
 		// Create activity
 		// 1. Set your integration view if it is a dynamic view. For example:
@@ -121,7 +134,7 @@ public class NewActivityDialog extends Dialog {
 		// cleartool mkactivity –headline “Create Directories”
 		// create_directories
 		try {
-			provider.createActivity(headline, activitySelector);
+			provider.createActivity(noSpaceHeadline, activitySelector);
 		} catch (ClearCaseException cce) {
 			switch (cce.getErrorCode()) {
 			case ClearCase.ERROR_UNABLE_TO_GET_STREAM:
@@ -190,7 +203,7 @@ public class NewActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		NewActivityDialog dlg = new NewActivityDialog(shell, null);
+		NewActivityDialog dlg = new NewActivityDialog(shell, null,null);
 		dlg.open();
 	}
 

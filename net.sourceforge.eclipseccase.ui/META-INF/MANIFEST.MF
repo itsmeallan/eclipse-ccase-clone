@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Export-Package: net.sourceforge.eclipseccase,
  net.sourceforge.eclipseccase.ui,
  net.sourceforge.eclipseccase.ui.actions,
+ net.sourceforge.eclipseccase.ui.dialogs,
  net.sourceforge.eclipseccase.ui.preferences,
  net.sourceforge.eclipseccase.ui.viewsupport,
  net.sourceforge.eclipseccase.views

@@ -567,7 +567,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public ArrayList<Activity> listActivities() {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW);
+				ClearCase.CVIEW|ClearCase.ME);
 		if (output.length == 0) {
 			return activities;
 		}
