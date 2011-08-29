@@ -567,7 +567,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public ArrayList<Activity> listActivities() {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW|ClearCase.ME);
+				ClearCase.ME);
 		if (output.length == 0) {
 			return activities;
 		}
@@ -650,7 +650,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector) throws ClearCaseException {
 		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
-				.createActivity(ClearCase.HEADLINE, headline, activitySelector);
+				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE, headline, activitySelector);
 		return cces[0];
 
 	}
