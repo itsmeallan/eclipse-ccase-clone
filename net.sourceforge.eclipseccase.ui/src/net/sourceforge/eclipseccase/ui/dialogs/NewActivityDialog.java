@@ -1,9 +1,9 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
 import java.util.regex.Pattern;
-import net.sourceforge.clearcase.ClearCase;
-import net.sourceforge.clearcase.ClearCaseException;
+import net.sourceforge.clearcase.*;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -40,10 +40,15 @@ public class NewActivityDialog extends Dialog {
 
 	private ActivityDialog activityDialog;
 
-	public NewActivityDialog(Shell parentShell, ClearCaseProvider provider, ActivityDialog ad) {
+	private String snapshotPath;
+
+	private IResource resource;
+
+	public NewActivityDialog(Shell parentShell, ClearCaseProvider provider, ActivityDialog ad, IResource resource) {
 		super(parentShell);
 		this.provider = provider;
 		this.activityDialog = ad;
+		this.resource = resource;
 
 		// TODO Auto-generated constructor stub
 	}
@@ -115,26 +120,39 @@ public class NewActivityDialog extends Dialog {
 			return;
 		}
 
+		if (provider.isSnapShot(resource)) {
+			DirectoryDialog dialog = new DirectoryDialog(getShell());
+			String platform = SWT.getPlatform();
+			dialog.setText(Messages.getString("NewActivityDialog.snapshotDirectory"));
+			dialog.setMessage(Messages.getString("NewActivityDialog.selectSnapshotDir"));
+			dialog.setFilterPath(platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
+			snapshotPath = dialog.open();
+
+		}
+
+		if (snapshotPath == null) {
+			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString("NewActivityDialog.noSnapshotDirectory")); //$NON-NLS-1$ //$NON-NLS-2$
+			activityText.selectAll();
+			activityText.setFocus();
+			return;
+		}
+
 		if (autoGen) {
-			if (activityDialog.activityExist(noSpaceHeadline))
-				//if duplicate then add unique id to headline.
+			if (activityDialog.activityExist(noSpaceHeadline)) {
+				// if duplicate then add unique id to headline.
 				activitySelector = noSpaceHeadline.concat(getUniqueId());
+			}
 		} else {
 			String id = idText.getText().trim();
 			activitySelector = noSpaceHeadline.concat(id);
 		}
-		// Create activity
-		// 1. Set your integration view if it is a dynamic view. For example:
-		//
-		// cleartool setview kmt_Integration
-		//
-		// If your integration view is a snapshot view, change directory to it.
-		// 2. Issue the cleartool mkactivity command. For example:
-		//
-		// cleartool mkactivity –headline “Create Directories”
-		// create_directories
+
 		try {
-			provider.createActivity(noSpaceHeadline, activitySelector);
+			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
+			if (state.state == ClearCase.ACTIVITY_CREATED) {
+				System.out.println("Actvity created " + noSpaceHeadline);
+				super.okPressed();
+			}
 		} catch (ClearCaseException cce) {
 			switch (cce.getErrorCode()) {
 			case ClearCase.ERROR_UNABLE_TO_GET_STREAM:
@@ -147,22 +165,7 @@ public class NewActivityDialog extends Dialog {
 			return;
 		}
 
-		//
-		// The Rational® ClearCase® GUI tools use the name specified with
-		// –headline to identify the activity. The last argument,
-		// create_directories, is the activity-selector. Use the
-		// activity-selector when you issue cleartool commands.
-		// 3. If you need to set your integration view to the activity, use the
-		// cleartool setactivity command. For example:
-		//
-		// cleartool setactivity create_directories
-		//
-		// By default, when you make an activity with the cleartool mkactivity
-		// command, your view is set to that activity. Your view is not set to
-		// an activity if you create multiple activities in the same command
-		// line or if you specify a stream with the –in option.
-
-		super.okPressed();
+		
 	}
 
 	public String getActivity() {
@@ -203,7 +206,7 @@ public class NewActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		NewActivityDialog dlg = new NewActivityDialog(shell, null,null);
+		NewActivityDialog dlg = new NewActivityDialog(shell, null, null, null);
 		dlg.open();
 	}
 

@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.core.resources.IResource;
+
 import java.util.ArrayList;
 import java.util.Date;
 import net.sourceforge.eclipseccase.*;
@@ -53,11 +55,14 @@ public class ActivityDialog extends Dialog {
 	private Activity selectedActivity = null;
 
 	private boolean test = false;
+	
+	private IResource resource;
 
-	public ActivityDialog(Shell parentShell, ClearCaseProvider provider) {
+	public ActivityDialog(Shell parentShell, ClearCaseProvider provider,IResource resource) {
 		super(parentShell);
 		this.setShellStyle(SWT.CLOSE);
 		this.provider = provider;
+		this.resource = resource;
 		commentDialogArea = new CommentDialogArea(this, null);
 		initContent();
 
@@ -170,7 +175,7 @@ public class ActivityDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this);
+				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this,resource);
 				if (dlg.open() == Window.CANCEL)
 					return;
 				// FIXME: mike 20110407 update list to get new activity
@@ -303,7 +308,7 @@ public class ActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		Display display = Display.getCurrent();
 		Shell activeShell = new Shell(display);
-		ActivityDialog ad = new ActivityDialog(activeShell, null);
+		ActivityDialog ad = new ActivityDialog(activeShell, null,null);
 		ad.open();
 	}
 

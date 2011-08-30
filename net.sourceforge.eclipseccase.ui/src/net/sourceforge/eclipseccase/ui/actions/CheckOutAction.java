@@ -135,7 +135,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 				/* Yes=0 No=1 Cancel=2 */
 				if (!provider.activityAssociated() || question.getReturncode() == 0) {
-					ActivityDialog dlg = new ActivityDialog(getShell(), provider);
+					ActivityDialog dlg = new ActivityDialog(getShell(), provider, resource);
 					if (dlg.open() == Window.OK) {
 
 						System.out.println("DEBUG: Before activitySelector");
