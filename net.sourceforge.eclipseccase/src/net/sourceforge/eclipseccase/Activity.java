@@ -52,7 +52,7 @@ public class Activity {
 		} else {
 			//Other format: 06-Jun-00.17:16:12
 			System.out.println("Other Date used\n");
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			DateFormat formatter = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
 			String myModDateString = date.replace('.', ' ');// replace dot with
 			myDate = (Date) formatter.parse(myModDateString);
 					

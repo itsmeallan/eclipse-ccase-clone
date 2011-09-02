@@ -11,6 +11,12 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import java.util.Map;
+
+import java.util.HashMap;
+
+import net.sourceforge.eclipseccase.Activity;
+
 import org.eclipse.core.resources.IResource;
 
 import java.util.ArrayList;
@@ -48,23 +54,24 @@ public class ActivityDialog extends Dialog {
 
 	private ClearCaseProvider provider;
 
-	private ArrayList<Activity> activities;
+	// private ArrayList<Activity> activities;
+
+	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
 
 	private Activity selectedActivity = null;
 
-	private boolean test = false;
-	
+	private static boolean test = true;
+
 	private IResource resource;
 
-	public ActivityDialog(Shell parentShell, ClearCaseProvider provider,IResource resource) {
+	public ActivityDialog(Shell parentShell, ClearCaseProvider provider, IResource resource) {
 		super(parentShell);
 		this.setShellStyle(SWT.CLOSE);
 		this.provider = provider;
 		this.resource = resource;
 		commentDialogArea = new CommentDialogArea(this, null);
-		initContent();
 
 	}
 
@@ -86,57 +93,26 @@ public class ActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 
 		activityCombo = createCombo(composite);
-		if (activities.size() == 0) {
-			activityCombo.add(NO_ACTIVITY);
-			activityCombo.select(0);
-		} else {
-			for (int i = 0; i < activities.size(); i++) {
-				activityCombo.add(activities.get(i).getHeadline());
 
-			}
-			if (provider != null) {
-				// Select last create
-				Activity myLastCreatedAct = getLastCreatedActvity(activities);
-				int index = activities.indexOf(myLastCreatedAct);
-				activityCombo.select(index);
-
-				// Set selected activity in class.
-				String selected = activityCombo.getItem(activityCombo.getSelectionIndex());
-				for (int i = 0; i < activities.size(); i++) {
-					Activity currentActivity = activities.get(i);
-					if (currentActivity.getHeadline().equalsIgnoreCase(selected)) {
-						setSelectedActivity(currentActivity);
-					}
-
-				}
-
-			}
-
-			String selected = activityCombo.getItem(activityCombo.getSelectionIndex());
-			// Set selected activity in class.
-			for (int i = 0; i < activities.size(); i++) {
-				Activity currentActivity = activities.get(i);
-				if (currentActivity.getHeadline().equalsIgnoreCase(selected)) {
-					setSelectedActivity(currentActivity);
-				}
-
-			}
-		}
+		initContent();
 
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		activityCombo.addListener(SWT.Modify, new Listener() {
-			public void handleEvent(Event e) {
-				((Combo) e.widget).getText();
-				for (int i = 0; i < activities.size(); i++) {
-					Activity currentActivity = activities.get(i);
-					if (currentActivity.getHeadline().equalsIgnoreCase(((Combo) e.widget).getText())) {
-						setSelectedActivity(currentActivity);
-						updateOkButtonEnablement(true);
-					}
-				}
+		
+		activityCombo.addSelectionListener(new SelectionListener() {
+		      public void widgetSelected(SelectionEvent e) {
+		        System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()) );
+		        String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+		        setSelectedActivity(activities.get(activitySelector));
+		        updateOkButtonEnablement(true);
+		      }
 
-			}
-		});
+		      public void widgetDefaultSelected(SelectionEvent e) {
+		        System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())) );
+		        String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+		        setSelectedActivity(activities.get(activitySelector));
+		        updateOkButtonEnablement(true);
+		      }
+		    });
 
 		activityCombo.setFocus();
 
@@ -175,7 +151,7 @@ public class ActivityDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this,resource);
+				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.CANCEL)
 					return;
 				// FIXME: mike 20110407 update list to get new activity
@@ -194,31 +170,60 @@ public class ActivityDialog extends Dialog {
 	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
 	 * .swt.widgets.Composite)
 	 */
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		// Update the button enablement only after the button is created
-		oKButton = getButton(IDialogConstants.OK_ID);
-		if (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY)) {
-			updateOkButtonEnablement(false);
-			return;
-		}
-
-	}
+	// @Override
+	// protected void createButtonsForButtonBar(Composite parent) {
+	// super.createButtonsForButtonBar(parent);
+	// // Update the button enablement only after the button is created
+	// oKButton = getButton(IDialogConstants.OK_ID);
+	// if
+	// (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY))
+	// {
+	// updateOkButtonEnablement(false);
+	// return;
+	// }
+	//
+	// }
 
 	private void updateOkButtonEnablement(boolean enabled) {
+		oKButton = getButton(IDialogConstants.OK_ID);
 		if (oKButton != null) {
 			oKButton.setEnabled(enabled);
 		}
 	}
 
 	private void initContent() {
-		if (provider != null) {
-			activities = provider.listActivities();
+
+		if (isTest()) {
+			activities = new HashMap<String, Activity>();
+//			activities.put("test", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
+//			activities.put("test2", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
+//			activities.put("bmn011_quick_bug_fixnew", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
 
 		} else {
-			activities = new ArrayList<Activity>();
+			activities = provider.listActivities();
 		}
+		if (activities.size() == 0) {
+			activityCombo.add(NO_ACTIVITY);
+			activityCombo.select(0);
+			updateOkButtonEnablement(false);
+		} else {
+			Activity last = getLastCreatedActvity(activities);
+			String activitySelector = last.getActivitySelector();
+			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
+				
+				if (activitySelector.equalsIgnoreCase(entry.getKey())) {
+					activityCombo.add(entry.getKey());
+					activityCombo.select(0);
+				}else{
+					activityCombo.add(entry.getKey());
+				}
+				activityCombo.setData(entry.getKey(), entry.getValue());
+
+			}
+
+		}
+
+		
 
 	}
 
@@ -228,12 +233,12 @@ public class ActivityDialog extends Dialog {
 	 * @param activities
 	 * @return
 	 */
-	private Activity getLastCreatedActvity(ArrayList<Activity> activities) {
+	private Activity getLastCreatedActvity(HashMap<String, Activity> activities) {
 		Activity myLast = null;
 		Date newestDate = null;
-		for (int i = 0; i < activities.size(); i++) {
-			Activity currentActivity = activities.get(i);
-			Date activityDate = currentActivity.getDate();
+
+		for (Activity activity : activities.values()) {
+			Date activityDate = activity.getDate();
 			if (ClearCasePlugin.DEBUG_UCM) {
 				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Date: " + activityDate.getTime()); //$NON-NLS-1$
 			}
@@ -245,12 +250,12 @@ public class ActivityDialog extends Dialog {
 			if (results < 0) {
 				// newestTime is before activityTime
 				newestDate = activityDate;
-				myLast = currentActivity;
+				myLast = activity;
 			}
-
 		}
 
 		return myLast;
+
 	}
 
 	/*
@@ -282,15 +287,15 @@ public class ActivityDialog extends Dialog {
 	}
 
 	public void setSelectedActivity(Activity selectedActivity) {
-		System.out.println("DEBUG: setSelectedActivity " + selectedActivity.getHeadline());
+		System.out.println("DEBUG: setSelectedActivity " + selectedActivity.getActivitySelector());
 		this.selectedActivity = selectedActivity;
 	}
 
-	public ArrayList<Activity> getActivities() {
+	public HashMap<String, Activity> getActivities() {
 		return activities;
 	}
 
-	public void setActivities(ArrayList<Activity> activities) {
+	public void setActivities(HashMap<String, Activity> activities) {
 		this.activities = activities;
 	}
 
@@ -308,8 +313,16 @@ public class ActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		Display display = Display.getCurrent();
 		Shell activeShell = new Shell(display);
-		ActivityDialog ad = new ActivityDialog(activeShell, null,null);
+		ActivityDialog ad = new ActivityDialog(activeShell, null, null);
 		ad.open();
+	}
+
+	public void setTest(boolean value) {
+		test = value;
+	}
+
+	public boolean isTest() {
+		return test;
 	}
 
 }

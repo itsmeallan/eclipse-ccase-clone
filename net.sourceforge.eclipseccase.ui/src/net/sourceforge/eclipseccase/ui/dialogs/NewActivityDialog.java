@@ -141,6 +141,8 @@ public class NewActivityDialog extends Dialog {
 			if (activityDialog.activityExist(noSpaceHeadline)) {
 				// if duplicate then add unique id to headline.
 				activitySelector = noSpaceHeadline.concat(getUniqueId());
+			}else{
+				activitySelector = noSpaceHeadline;
 			}
 		} else {
 			String id = idText.getText().trim();

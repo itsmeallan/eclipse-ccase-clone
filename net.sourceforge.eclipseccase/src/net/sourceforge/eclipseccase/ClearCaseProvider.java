@@ -51,7 +51,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
 
-	private ArrayList<Activity> activities = new ArrayList<Activity>();
+	private HashMap<String,Activity> activities = new HashMap<String,Activity>();
 
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
@@ -564,7 +564,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
-	public ArrayList<Activity> listActivities() {
+	public HashMap<String,Activity> listActivities() {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(
 				ClearCase.ME);
@@ -608,7 +608,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 				Activity newActivity = new Activity(date, activitySelector,
 						user, headline);
 				if (newActivity != null) {
-					activities.add(newActivity);
+					activities.put(activitySelector,newActivity);
 				}
 			}
 		}
@@ -638,13 +638,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	private boolean activityAlreadyExist(String activitySelector) {
-		for (int i = 0; i < activities.size(); i++) {
-			String currentSelector = activities.get(i).getActivitySelector();
-			if (currentSelector.equalsIgnoreCase(activitySelector)) {
-				return true;
-			}
-		}
-		return false;
+		return activities.containsKey(activitySelector);
 	}
 
 	public ClearCaseElementState createActivity(String headline,
