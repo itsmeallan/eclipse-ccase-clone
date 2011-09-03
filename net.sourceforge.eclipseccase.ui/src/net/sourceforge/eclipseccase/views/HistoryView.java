@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase.views;
 
+
 import java.util.Vector;
 import net.sourceforge.clearcase.ElementHistory;
 import net.sourceforge.eclipseccase.ui.actions.CompareWithVersionAction;
@@ -28,6 +29,8 @@ public class HistoryView extends ViewPart {
 	private Action versionTreeAction;
 
 	private Action compareAction;
+
+	private Action openAction;
 
 	private Menu historyMenu;
 
@@ -60,8 +63,8 @@ public class HistoryView extends ViewPart {
 		gd.horizontalSpan = 4;
 		historyTable.setLayoutData(gd);
 		historyTable.setHeaderVisible(true);
-		TableColumn date = new TableColumn(historyTable, SWT.LEFT);
-		TableColumn user = new TableColumn(historyTable, SWT.LEFT);
+		final TableColumn date = new TableColumn(historyTable, SWT.LEFT);
+		final TableColumn user = new TableColumn(historyTable, SWT.LEFT);
 		TableColumn version = new TableColumn(historyTable, SWT.LEFT);
 		TableColumn label = new TableColumn(historyTable, SWT.LEFT);
 		TableColumn comment = new TableColumn(historyTable, SWT.LEFT);
@@ -75,6 +78,12 @@ public class HistoryView extends ViewPart {
 		version.setWidth(200);
 		label.setWidth(200);
 		comment.setWidth(400);
+
+		date.addSelectionListener(new HistoryColumnSorter(this, HistoryColumnSorter.HistoryColumn.date));
+		user.addSelectionListener(new HistoryColumnSorter(this, HistoryColumnSorter.HistoryColumn.user));
+		version.addSelectionListener(new HistoryColumnSorter(this, HistoryColumnSorter.HistoryColumn.version));
+		label.addSelectionListener(new HistoryColumnSorter(this, HistoryColumnSorter.HistoryColumn.label));
+		comment.addSelectionListener(new HistoryColumnSorter(this, HistoryColumnSorter.HistoryColumn.comment));
 
 		historyMenu = new Menu(parent.getShell(), SWT.POP_UP);
 		compareMenuItem = new MenuItem(historyMenu, SWT.PUSH);
@@ -137,7 +146,13 @@ public class HistoryView extends ViewPart {
 				versionTree();
 			}
 		};
-		
+		openAction = new Action() {
+			@Override
+			public void run() {
+				open();
+			}
+		};
+
 		compareAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/diff.png"));
 		compareAction.setToolTipText("Compare with history");
 		compareAction.setEnabled(false);
@@ -154,6 +169,14 @@ public class HistoryView extends ViewPart {
 	@Override
 	public void setFocus() {
 
+	}
+
+	public Table getHistoryTable() {
+		return historyTable;
+	}
+
+	public Vector<ElementHistory> getElemHistory() {
+		return elemHistory;
 	}
 
 	public void setHistoryInformation(IResource element, Vector<ElementHistory> history) {
