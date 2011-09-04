@@ -53,16 +53,14 @@ public class ActivityDialog extends Dialog {
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-
-	// private ArrayList<Activity> activities;
-
+	
 	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
 
 	private Activity selectedActivity = null;
 
-	private static boolean test = true;
+	private static boolean test = false;
 
 	private IResource resource;
 
@@ -170,19 +168,17 @@ public class ActivityDialog extends Dialog {
 	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
 	 * .swt.widgets.Composite)
 	 */
-	// @Override
-	// protected void createButtonsForButtonBar(Composite parent) {
-	// super.createButtonsForButtonBar(parent);
-	// // Update the button enablement only after the button is created
-	// oKButton = getButton(IDialogConstants.OK_ID);
-	// if
-	// (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY))
-	// {
-	// updateOkButtonEnablement(false);
-	// return;
-	// }
-	//
-	// }
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		super.createButtonsForButtonBar(parent);
+		// Update the button enablement only after the button is created
+		oKButton = getButton(IDialogConstants.OK_ID);
+		if (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY)) {
+			updateOkButtonEnablement(false);
+			return;
+		}
+
+	}
 
 	private void updateOkButtonEnablement(boolean enabled) {
 		oKButton = getButton(IDialogConstants.OK_ID);
@@ -195,9 +191,9 @@ public class ActivityDialog extends Dialog {
 
 		if (isTest()) {
 			activities = new HashMap<String, Activity>();
-//			activities.put("test", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
-//			activities.put("test2", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
-//			activities.put("bmn011_quick_bug_fixnew", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
+			activities.put("test", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
+			activities.put("test2", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
+			activities.put("bmn011_quick_bug_fixnew", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
 
 		} else {
 			activities = provider.listActivities();
@@ -289,14 +285,6 @@ public class ActivityDialog extends Dialog {
 	public void setSelectedActivity(Activity selectedActivity) {
 		System.out.println("DEBUG: setSelectedActivity " + selectedActivity.getActivitySelector());
 		this.selectedActivity = selectedActivity;
-	}
-
-	public HashMap<String, Activity> getActivities() {
-		return activities;
-	}
-
-	public void setActivities(HashMap<String, Activity> activities) {
-		this.activities = activities;
 	}
 
 	public boolean activityExist(String headline) {

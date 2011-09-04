@@ -49,8 +49,7 @@ public class NewActivityDialog extends Dialog {
 		this.provider = provider;
 		this.activityDialog = ad;
 		this.resource = resource;
-
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override
