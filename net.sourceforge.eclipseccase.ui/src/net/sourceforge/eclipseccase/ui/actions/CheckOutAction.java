@@ -123,8 +123,9 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 	private void checkoutWithActivity(int depth) {
 		IResource[] resources = getSelectedResources();
-		for (int i = 0; i < resources.length; i++) {
-			IResource resource = resources[i];
+
+		IResource resource = resources[0];
+		if (resource != null) {
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null) {
 				// check if current view has an activity associated.
@@ -148,14 +149,18 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 					}
 				}
 
-				try {
-					provider.checkout(new IResource[] { resource }, depth, null);
-				} catch (TeamException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				for (int i = 0; i < resources.length; i++) {
+					try {
+						provider.checkout(new IResource[] { resource }, depth, null);
+					} catch (TeamException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
+
 		}
+
 	}
 
 }
