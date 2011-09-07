@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.swt.events.ModifyEvent;
+
+import org.eclipse.swt.events.ModifyListener;
+
 import java.util.regex.Pattern;
 import net.sourceforge.clearcase.*;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -67,7 +71,7 @@ public class NewActivityDialog extends Dialog {
 		GridData data = new GridData();
 		data.widthHint = 150;
 		activityText.setLayoutData(data);
-
+		
 		// Add radio button for generating Activity Id.
 		Group group = new Group(composite, SWT.SHADOW_IN);
 		group.setText("Activity ID");
@@ -99,7 +103,10 @@ public class NewActivityDialog extends Dialog {
 
 		return composite;
 	}
+	
+	
 
+	
 	@Override
 	protected void okPressed() {
 		if (activityText.getText().trim().length() == 0) {
@@ -119,13 +126,14 @@ public class NewActivityDialog extends Dialog {
 			return;
 		}
 
-		if (provider.isSnapShot(resource)) {
+		if (provider.isSnapShot(resource) && snapshotPath == null) {
 			DirectoryDialog dialog = new DirectoryDialog(getShell());
 			String platform = SWT.getPlatform();
 			dialog.setText(Messages.getString("NewActivityDialog.snapshotDirectory"));
 			dialog.setMessage(Messages.getString("NewActivityDialog.selectSnapshotDir"));
 			dialog.setFilterPath(platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
 			snapshotPath = dialog.open();
+			
 
 		}
 
@@ -135,12 +143,13 @@ public class NewActivityDialog extends Dialog {
 			activityText.setFocus();
 			return;
 		}
-
+		
+		System.out.println("snapshotPath is "+snapshotPath);
 		if (autoGen) {
 			if (activityDialog.activityExist(noSpaceHeadline)) {
 				// if duplicate then add unique id to headline.
 				activitySelector = noSpaceHeadline.concat(getUniqueId());
-			}else{
+			} else {
 				activitySelector = noSpaceHeadline;
 			}
 		} else {
@@ -152,7 +161,7 @@ public class NewActivityDialog extends Dialog {
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
 			if (state.state == ClearCase.ACTIVITY_CREATED) {
 				System.out.println("Actvity created " + noSpaceHeadline);
-				super.okPressed();
+
 			}
 		} catch (ClearCaseException cce) {
 			switch (cce.getErrorCode()) {
@@ -165,7 +174,8 @@ public class NewActivityDialog extends Dialog {
 			}
 			return;
 		}
-
+		
+		super.okPressed();
 		
 	}
 

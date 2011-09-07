@@ -53,7 +53,7 @@ public class ActivityDialog extends Dialog {
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-	
+
 	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
@@ -95,22 +95,22 @@ public class ActivityDialog extends Dialog {
 		initContent();
 
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		activityCombo.addSelectionListener(new SelectionListener() {
-		      public void widgetSelected(SelectionEvent e) {
-		        System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()) );
-		        String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-		        setSelectedActivity(activities.get(activitySelector));
-		        updateOkButtonEnablement(true);
-		      }
 
-		      public void widgetDefaultSelected(SelectionEvent e) {
-		        System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())) );
-		        String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-		        setSelectedActivity(activities.get(activitySelector));
-		        updateOkButtonEnablement(true);
-		      }
-		    });
+		activityCombo.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
+				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+				setSelectedActivity(activities.get(activitySelector));
+				updateOkButtonEnablement(true);
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
+				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+				setSelectedActivity(activities.get(activitySelector));
+				updateOkButtonEnablement(true);
+			}
+		});
 
 		activityCombo.setFocus();
 
@@ -160,26 +160,7 @@ public class ActivityDialog extends Dialog {
 		newButton.addSelectionListener(listener);
 	}
 
-	/*
-	 * Sets OK button is disabled when NO_ACTVITY is selected. To enable OK
-	 * button create a new activity or select one from list.
-	 * 
-	 * @see
-	 * org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse
-	 * .swt.widgets.Composite)
-	 */
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		// Update the button enablement only after the button is created
-		oKButton = getButton(IDialogConstants.OK_ID);
-		if (activityCombo.getItem(activityCombo.getSelectionIndex()).equalsIgnoreCase(NO_ACTIVITY)) {
-			updateOkButtonEnablement(false);
-			return;
-		}
-
-	}
-
+	
 	private void updateOkButtonEnablement(boolean enabled) {
 		oKButton = getButton(IDialogConstants.OK_ID);
 		if (oKButton != null) {
@@ -203,23 +184,23 @@ public class ActivityDialog extends Dialog {
 			activityCombo.select(0);
 			updateOkButtonEnablement(false);
 		} else {
-			Activity last = getLastCreatedActvity(activities);
-			String activitySelector = last.getActivitySelector();
+
 			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
-				
-				if (activitySelector.equalsIgnoreCase(entry.getKey())) {
-					activityCombo.add(entry.getKey());
-					activityCombo.select(0);
-				}else{
-					activityCombo.add(entry.getKey());
+				activityCombo.add(entry.getValue().getHeadline());
+				activityCombo.setData(entry.getValue().getHeadline(), entry.getValue());
+			}
+			// Make last created selected.
+			if (activities != null) {
+				Activity last = getLastCreatedActvity(activities);
+				if (last != null) {
+					String headline = last.getHeadline();
+					//get index for it
+					int index	= activityCombo.indexOf(headline);
+					activityCombo.select(index);
 				}
-				activityCombo.setData(entry.getKey(), entry.getValue());
 
 			}
-
 		}
-
-		
 
 	}
 
