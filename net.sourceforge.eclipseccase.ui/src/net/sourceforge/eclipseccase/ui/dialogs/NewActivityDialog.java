@@ -137,7 +137,7 @@ public class NewActivityDialog extends Dialog {
 
 		}
 
-		if (snapshotPath == null) {
+		if (provider.isSnapShot(resource) && snapshotPath == null) {
 			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString("NewActivityDialog.noSnapshotDirectory")); //$NON-NLS-1$ //$NON-NLS-2$
 			activityText.selectAll();
 			activityText.setFocus();
@@ -172,10 +172,12 @@ public class NewActivityDialog extends Dialog {
 				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), cce.getMessage());
 				break;
 			}
-			return;
+			
+		}finally{
+			super.okPressed();
 		}
 		
-		super.okPressed();
+		
 		
 	}
 

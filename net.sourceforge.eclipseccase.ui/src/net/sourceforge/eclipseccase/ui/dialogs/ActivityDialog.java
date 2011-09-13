@@ -63,6 +63,7 @@ public class ActivityDialog extends Dialog {
 	private static boolean test = false;
 
 	private IResource resource;
+	 
 
 	public ActivityDialog(Shell parentShell, ClearCaseProvider provider, IResource resource) {
 		super(parentShell);
@@ -70,6 +71,7 @@ public class ActivityDialog extends Dialog {
 		this.provider = provider;
 		this.resource = resource;
 		commentDialogArea = new CommentDialogArea(this, null);
+		
 
 	}
 
@@ -160,7 +162,6 @@ public class ActivityDialog extends Dialog {
 		newButton.addSelectionListener(listener);
 	}
 
-	
 	private void updateOkButtonEnablement(boolean enabled) {
 		oKButton = getButton(IDialogConstants.OK_ID);
 		if (oKButton != null) {
@@ -169,6 +170,7 @@ public class ActivityDialog extends Dialog {
 	}
 
 	private void initContent() {
+		
 
 		if (isTest()) {
 			activities = new HashMap<String, Activity>();
@@ -177,7 +179,10 @@ public class ActivityDialog extends Dialog {
 			activities.put("bmn011_quick_bug_fixnew", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
 
 		} else {
-			activities = provider.listActivities();
+			String viewName = ClearCaseProvider.getViewName(resource);
+			if(viewName != null){
+			activities = provider.listActivities(viewName);
+			}
 		}
 		if (activities.size() == 0) {
 			activityCombo.add(NO_ACTIVITY);
@@ -194,9 +199,10 @@ public class ActivityDialog extends Dialog {
 				Activity last = getLastCreatedActvity(activities);
 				if (last != null) {
 					String headline = last.getHeadline();
-					//get index for it
-					int index	= activityCombo.indexOf(headline);
+					// get index for it
+					int index = activityCombo.indexOf(headline);
 					activityCombo.select(index);
+					setSelectedActivity(last);
 				}
 
 			}
@@ -271,6 +277,9 @@ public class ActivityDialog extends Dialog {
 	public boolean activityExist(String headline) {
 		for (int i = 0; i < activities.size(); i++) {
 			Activity currentActivity = activities.get(i);
+			if (null == currentActivity) {
+				return false;
+			}
 			if (currentActivity.getHeadline().equalsIgnoreCase(headline)) {
 				return true;
 			}

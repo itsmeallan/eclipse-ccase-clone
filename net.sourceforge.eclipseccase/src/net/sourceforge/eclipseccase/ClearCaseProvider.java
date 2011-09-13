@@ -547,11 +547,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	// FIXME: We need to handle exceptions.
-	public boolean setActivity(String name) {
-		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(
-				name);
+	public boolean setActivity(String activitySelector,String viewName) {
+		ClearCaseElementState[] cces = ClearCasePlugin.getEngine().setActivity(ClearCase.VIEW,
+				activitySelector,viewName);
 		if (cces == null) {
-			System.out.println("ERROR: Could not set activity: " + name
+			System.out.println("ERROR: Could not set activity: " + activitySelector
 					+ " Got null response.");
 			return false;
 		}
@@ -564,10 +564,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
-	public HashMap<String,Activity> listActivities() {
+	public HashMap<String,Activity> listActivities(String viewName) {
 
-		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.ME);
+		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
+				ClearCase.ME|ClearCase.VIEW);
 		if (output.length == 0) {
 			return activities;
 		}
@@ -621,9 +621,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * 
 	 * @return
 	 */
-	public boolean activityAssociated() {
-		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW | ClearCase.SHORT);
+	public boolean activityAssociated(String viewName) {
+		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
+				ClearCase.VIEW | ClearCase.SHORT);
 
 		if (output.length > 0) {
 			if (ClearCasePlugin.DEBUG_PROVIDER) {
@@ -2227,9 +2227,5 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 	}
 
-	public static void main(String[] args) {
-		ClearCaseProvider ccp = new ClearCaseProvider();
-		ccp.setActivity("kalle");
-
-	}
+	
 }

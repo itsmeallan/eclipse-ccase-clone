@@ -59,6 +59,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		// UCM checkout.
 		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+		
 			checkoutWithActivity(depth);
 			return;
 		}
@@ -126,6 +127,8 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		IResource resource = resources[0];
 		if (resource != null) {
+			System.err.println("VIEW at checkout is: "+ClearCaseProvider.getViewName(resource));
+			
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null) {
 				// check if current view has an activity associated.
@@ -135,7 +138,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 				PlatformUI.getWorkbench().getDisplay().syncExec(question);
 
 				/* Yes=0 No=1 Cancel=2 */
-				if (!provider.activityAssociated() || question.getReturncode() == 0) {
+				if (!provider.activityAssociated(ClearCaseProvider.getViewName(resource)) || question.getReturncode() == 0) {
 					ActivityDialog dlg = new ActivityDialog(getShell(), provider, resource);
 					if (dlg.open() == Window.OK) {
 
@@ -143,7 +146,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 						String activitySelector = dlg.getSelectedActivity().getActivitySelector();
 						System.out.println("DBUG: After activitySelector");
 
-						provider.setActivity(activitySelector);
+						provider.setActivity(activitySelector,ClearCaseProvider.getViewName(resource));
 						provider.setComment(dlg.getComment());//
 
 					}
