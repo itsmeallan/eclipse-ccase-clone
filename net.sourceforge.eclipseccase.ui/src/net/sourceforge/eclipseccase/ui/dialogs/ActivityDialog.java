@@ -53,7 +53,7 @@ public class ActivityDialog extends Dialog {
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-
+	//<headline,Activity>
 	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
@@ -117,7 +117,8 @@ public class ActivityDialog extends Dialog {
 		activityCombo.setFocus();
 
 		addButton(parent);
-
+		
+		//FIXME: Is code needed?? 
 		commentDialogArea.createArea(composite);
 		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
@@ -161,7 +162,8 @@ public class ActivityDialog extends Dialog {
 		};
 		newButton.addSelectionListener(listener);
 	}
-
+	
+	
 	private void updateOkButtonEnablement(boolean enabled) {
 		oKButton = getButton(IDialogConstants.OK_ID);
 		if (oKButton != null) {
@@ -174,9 +176,9 @@ public class ActivityDialog extends Dialog {
 
 		if (isTest()) {
 			activities = new HashMap<String, Activity>();
-			activities.put("test", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
-			activities.put("test2", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
-			activities.put("bmn011_quick_bug_fixnew", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
+			activities.put("test comment", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
+			activities.put("another test comment", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
+			activities.put("bmn011_quick_bug_fix", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
 
 		} else {
 			String viewName = ClearCaseProvider.getViewName(resource);
@@ -240,6 +242,14 @@ public class ActivityDialog extends Dialog {
 		return myLast;
 
 	}
+	
+	protected void buttonPressed(int buttonId) {
+        if (buttonId == IDialogConstants.CANCEL_ID) {
+        	//make sure no new activity is set when dialog is cancelled.
+            selectedActivity = null;
+        }
+        super.buttonPressed(buttonId);
+    }
 
 	/*
 	 * Utility method that creates a combo box
@@ -270,7 +280,6 @@ public class ActivityDialog extends Dialog {
 	}
 
 	public void setSelectedActivity(Activity selectedActivity) {
-		System.out.println("DEBUG: setSelectedActivity " + selectedActivity.getActivitySelector());
 		this.selectedActivity = selectedActivity;
 	}
 

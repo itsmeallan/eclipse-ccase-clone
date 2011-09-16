@@ -642,11 +642,16 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	public ClearCaseElementState createActivity(String headline,
-			String activitySelector,String path) throws ClearCaseException {
+			String activitySelector,String path,String streamSelector) throws ClearCaseException {
 		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
-				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE, headline, activitySelector,path);
+				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE|ClearCase.STREAM, headline, activitySelector,path,streamSelector);
 		return cces[0];
 
+	}
+	
+	public String getStream(String viewName){
+		 return ClearCasePlugin.getEngine()
+		.getStream(ClearCase.SHORT|ClearCase.VIEW, viewName);
 	}
 
 	/**

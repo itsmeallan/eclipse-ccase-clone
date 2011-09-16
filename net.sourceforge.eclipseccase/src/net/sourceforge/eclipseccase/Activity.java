@@ -46,12 +46,10 @@ public class Activity {
 		// ISO8601 time format.
 		if (date.indexOf("T") != -1 ) {
 			// ISO8601 time format like: 2011-05-22T16:02:37+03:00
-			System.out.println("ISO Date used\n");
 			myDate = (Date) parseIso(date);
 		
 		} else {
 			//Other format: 06-Jun-00.17:16:12
-			System.out.println("Other Date used\n");
 			DateFormat formatter = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
 			String myModDateString = date.replace('.', ' ');// replace dot with
 			myDate = (Date) formatter.parse(myModDateString);

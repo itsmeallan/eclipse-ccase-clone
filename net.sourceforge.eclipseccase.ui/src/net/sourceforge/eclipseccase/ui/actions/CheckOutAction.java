@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.Activity;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -127,8 +129,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		IResource resource = resources[0];
 		if (resource != null) {
-			System.err.println("VIEW at checkout is: "+ClearCaseProvider.getViewName(resource));
-			
+						
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 			if (provider != null) {
 				// check if current view has an activity associated.
@@ -141,13 +142,14 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 				if (!provider.activityAssociated(ClearCaseProvider.getViewName(resource)) || question.getReturncode() == 0) {
 					ActivityDialog dlg = new ActivityDialog(getShell(), provider, resource);
 					if (dlg.open() == Window.OK) {
-
-						System.out.println("DEBUG: Before activitySelector");
-						String activitySelector = dlg.getSelectedActivity().getActivitySelector();
-						System.out.println("DBUG: After activitySelector");
-
-						provider.setActivity(activitySelector,ClearCaseProvider.getViewName(resource));
-						provider.setComment(dlg.getComment());//
+						Activity activity = (Activity)dlg.getSelectedActivity();
+						if(activity != null){
+							String activitySelector = activity.getActivitySelector();
+							provider.setActivity(activitySelector,ClearCaseProvider.getViewName(resource));
+							provider.setComment(dlg.getComment());//
+						}
+						//FIXME:How to handle when we have no activity set. Still co?
+						
 
 					}
 				}
