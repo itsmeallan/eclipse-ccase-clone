@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+
 import java.util.Map;
 
 import java.util.HashMap;
@@ -183,6 +185,8 @@ public class ActivityDialog extends Dialog {
 		} else {
 			String viewName = ClearCaseProvider.getViewName(resource);
 			if(viewName != null){
+				//FIXME: To be removed.
+				MessageDialog.openInformation(getShell(), viewName, "Current view name :"+viewName);
 			activities = provider.listActivities(viewName);
 			}
 		}
@@ -246,8 +250,10 @@ public class ActivityDialog extends Dialog {
 	protected void buttonPressed(int buttonId) {
         if (buttonId == IDialogConstants.CANCEL_ID) {
         	//make sure no new activity is set when dialog is cancelled.
-            selectedActivity = null;
+        	selectedActivity = null;
         }
+        //remove data.
+        activityCombo.removeAll();
         super.buttonPressed(buttonId);
     }
 

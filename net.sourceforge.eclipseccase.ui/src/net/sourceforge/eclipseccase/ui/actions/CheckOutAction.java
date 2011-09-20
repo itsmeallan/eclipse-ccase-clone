@@ -151,6 +151,9 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 						//FIXME:How to handle when we have no activity set. Still co?
 						
 
+					}else{
+						//No checkout.
+						return;
 					}
 				}
 
