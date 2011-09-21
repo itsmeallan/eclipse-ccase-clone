@@ -11,22 +11,12 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import org.eclipse.jface.dialogs.MessageDialog;
-
-import java.util.Map;
-
-import java.util.HashMap;
-
-import net.sourceforge.eclipseccase.Activity;
-
-import org.eclipse.core.resources.IResource;
-
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.CommentDialogArea;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.Window;
@@ -55,7 +45,8 @@ public class ActivityDialog extends Dialog {
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-	//<headline,Activity>
+
+	// <headline,Activity>
 	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
@@ -65,7 +56,6 @@ public class ActivityDialog extends Dialog {
 	private static boolean test = false;
 
 	private IResource resource;
-	 
 
 	public ActivityDialog(Shell parentShell, ClearCaseProvider provider, IResource resource) {
 		super(parentShell);
@@ -73,7 +63,6 @@ public class ActivityDialog extends Dialog {
 		this.provider = provider;
 		this.resource = resource;
 		commentDialogArea = new CommentDialogArea(this, null);
-		
 
 	}
 
@@ -119,8 +108,8 @@ public class ActivityDialog extends Dialog {
 		activityCombo.setFocus();
 
 		addButton(parent);
-		
-		//FIXME: Is code needed?? 
+
+		// FIXME: Is code needed??
 		commentDialogArea.createArea(composite);
 		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
@@ -157,15 +146,13 @@ public class ActivityDialog extends Dialog {
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.CANCEL)
 					return;
-				// FIXME: mike 20110407 update list to get new activity
 				initContent();
 
 			}
 		};
 		newButton.addSelectionListener(listener);
 	}
-	
-	
+
 	private void updateOkButtonEnablement(boolean enabled) {
 		oKButton = getButton(IDialogConstants.OK_ID);
 		if (oKButton != null) {
@@ -174,7 +161,6 @@ public class ActivityDialog extends Dialog {
 	}
 
 	private void initContent() {
-		
 
 		if (isTest()) {
 			activities = new HashMap<String, Activity>();
@@ -184,10 +170,10 @@ public class ActivityDialog extends Dialog {
 
 		} else {
 			String viewName = ClearCaseProvider.getViewName(resource);
-			if(viewName != null){
-				//FIXME: To be removed.
-				MessageDialog.openInformation(getShell(), viewName, "Current view name :"+viewName);
-			activities = provider.listActivities(viewName);
+			if (viewName != null) {
+				// FIXME: To be removed.
+				MessageDialog.openInformation(getShell(), viewName, "Current view name :" + viewName);
+				activities = provider.listActivities(viewName);
 			}
 		}
 		if (activities.size() == 0) {
@@ -246,16 +232,19 @@ public class ActivityDialog extends Dialog {
 		return myLast;
 
 	}
-	
+
+	@Override
 	protected void buttonPressed(int buttonId) {
-        if (buttonId == IDialogConstants.CANCEL_ID) {
-        	//make sure no new activity is set when dialog is cancelled.
-        	selectedActivity = null;
-        }
-        //remove data.
-        activityCombo.removeAll();
-        super.buttonPressed(buttonId);
-    }
+		if (buttonId == IDialogConstants.CANCEL_ID) {
+			// make sure no new activity is set when dialog is cancelled.
+			selectedActivity = null;
+
+		}
+		// remove data in HashMap and Combo.
+		activities.clear();
+		activityCombo.removeAll();
+		super.buttonPressed(buttonId);
+	}
 
 	/*
 	 * Utility method that creates a combo box
@@ -292,12 +281,10 @@ public class ActivityDialog extends Dialog {
 	public boolean activityExist(String headline) {
 		for (int i = 0; i < activities.size(); i++) {
 			Activity currentActivity = activities.get(i);
-			if (null == currentActivity) {
+			if (null == currentActivity)
 				return false;
-			}
-			if (currentActivity.getHeadline().equalsIgnoreCase(headline)) {
+			if (currentActivity.getHeadline().equalsIgnoreCase(headline))
 				return true;
-			}
 		}
 		return false;
 	}

@@ -1,9 +1,5 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import org.eclipse.swt.events.ModifyEvent;
-
-import org.eclipse.swt.events.ModifyListener;
-
 import java.util.regex.Pattern;
 import net.sourceforge.clearcase.*;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -53,7 +49,7 @@ public class NewActivityDialog extends Dialog {
 		this.provider = provider;
 		this.activityDialog = ad;
 		this.resource = resource;
-		
+
 	}
 
 	@Override
@@ -71,7 +67,7 @@ public class NewActivityDialog extends Dialog {
 		GridData data = new GridData();
 		data.widthHint = 150;
 		activityText.setLayoutData(data);
-		
+
 		// Add radio button for generating Activity Id.
 		Group group = new Group(composite, SWT.SHADOW_IN);
 		group.setText("Activity ID");
@@ -103,10 +99,7 @@ public class NewActivityDialog extends Dialog {
 
 		return composite;
 	}
-	
-	
 
-	
 	@Override
 	protected void okPressed() {
 		if (activityText.getText().trim().length() == 0) {
@@ -133,7 +126,6 @@ public class NewActivityDialog extends Dialog {
 			dialog.setMessage(Messages.getString("NewActivityDialog.selectSnapshotDir"));
 			dialog.setFilterPath(platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
 			snapshotPath = dialog.open();
-			
 
 		}
 
@@ -143,8 +135,8 @@ public class NewActivityDialog extends Dialog {
 			activityText.setFocus();
 			return;
 		}
-		
-		System.out.println("snapshotPath is "+snapshotPath);
+
+		System.out.println("snapshotPath is " + snapshotPath);
 		if (autoGen) {
 			if (activityDialog.activityExist(noSpaceHeadline)) {
 				// if duplicate then add unique id to headline.
@@ -158,9 +150,8 @@ public class NewActivityDialog extends Dialog {
 		}
 
 		try {
-			//TODO: mike 20110916 currently we send the stream-name but it could be in the format [stream:]stream-name[@vob-selector]
 			String streamName = provider.getStream(ClearCaseProvider.getViewName(resource));
-			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath,streamName);
+			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath, streamName);
 			if (state.state == ClearCase.ACTIVITY_CREATED) {
 				System.out.println("Actvity created " + noSpaceHeadline);
 
@@ -174,13 +165,11 @@ public class NewActivityDialog extends Dialog {
 				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), cce.getMessage());
 				break;
 			}
-			
-		}finally{
+
+		} finally {
 			super.okPressed();
 		}
-		
-		
-		
+
 	}
 
 	public String getActivity() {
