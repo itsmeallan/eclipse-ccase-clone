@@ -176,7 +176,8 @@ public class ViewPrivCollector {
 
 			if (monitor.isCanceled())
 				throw new OperationCanceledException();
-
+			int steps = 0;
+			
 			// STEP 1:
 			if (findCheckedouts) {
 				addCheckedOutFiles(viewName, monitor, workingdir.getLocation(),
@@ -278,12 +279,13 @@ public class ViewPrivCollector {
 		String workingdir = path.toOSString();
 		trace("addCheckedOutFiles, dir=: " + workingdir);
 		// process getCheckedOutElements line by line, not as array
+		monitor.subTask("Checked out in " + viewName + ", processing list...");
 		ClearCasePlugin.getEngine().getCheckedOutElements(
 				workingdir,
 				isSnapshot,
 				new ViewprivOperationListenerCO("Checked out in " + viewName,
 						monitor));
-		monitor.subTask("Checked out in " + viewName + ", processing list...");
+		
 	}
 
 	public ClearCaseElementState getElementState(StateCache stateCache) {

@@ -12,10 +12,6 @@
 
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-
-import net.sourceforge.eclipseccase.ClearDlgHelper;
-
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferenceStore;
@@ -78,6 +74,13 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 		final boolean useClearDlg = ClearCasePreferences.isUseClearDlg();
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
+
+		// UCM checkout.
+		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+			if (!UcmActivity.checkoutWithActivity(provider, files, shell))
+				// no checkout
+				return CANCEL;
+		}
 
 		try {
 			// use workbench window as preferred runnable context

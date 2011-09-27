@@ -151,6 +151,7 @@ public class NewActivityDialog extends Dialog {
 
 		try {
 			String streamName = provider.getStream(ClearCaseProvider.getViewName(resource));
+			
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath, streamName);
 			if (state.state == ClearCase.ACTIVITY_CREATED) {
 				System.out.println("Actvity created " + noSpaceHeadline);

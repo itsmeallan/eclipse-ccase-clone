@@ -11,6 +11,9 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.CommentDialogArea;
@@ -85,20 +88,24 @@ public class ActivityDialog extends Dialog {
 
 		activityCombo = createCombo(composite);
 
-		initContent();
+		updateData();
 
 		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		activityCombo.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
+				if (ClearCasePlugin.DEBUG_UCM) {
+					System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
+				}
 				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
 				setSelectedActivity(activities.get(activitySelector));
 				updateOkButtonEnablement(true);
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
+				if (ClearCasePlugin.DEBUG_UCM) {
+					System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
+				}
 				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
 				setSelectedActivity(activities.get(activitySelector));
 				updateOkButtonEnablement(true);
@@ -144,9 +151,12 @@ public class ActivityDialog extends Dialog {
 				// Open new Dialog to add activity.
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
-				if (dlg.open() == Window.CANCEL)
+				if (dlg.open() == Window.OK){
+					updateData();
+					MessageDialog.openInformation(getShell(), "Info", "currentActivity is :"+selectedActivity.getActivitySelector()+" View :"+ClearCaseProvider.getViewName(resource));
+				}else{
 					return;
-				initContent();
+				}
 
 			}
 		};
@@ -160,7 +170,7 @@ public class ActivityDialog extends Dialog {
 		}
 	}
 
-	private void initContent() {
+	private void updateData() {
 
 		if (isTest()) {
 			activities = new HashMap<String, Activity>();
@@ -171,8 +181,6 @@ public class ActivityDialog extends Dialog {
 		} else {
 			String viewName = ClearCaseProvider.getViewName(resource);
 			if (viewName != null) {
-				// FIXME: To be removed.
-				MessageDialog.openInformation(getShell(), viewName, "Current view name :" + viewName);
 				activities = provider.listActivities(viewName);
 			}
 		}
@@ -181,7 +189,9 @@ public class ActivityDialog extends Dialog {
 			activityCombo.select(0);
 			updateOkButtonEnablement(false);
 		} else {
-
+			//remove old items.
+			activityCombo.removeAll();
+			activityCombo.redraw();
 			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
 				activityCombo.add(entry.getValue().getHeadline());
 				activityCombo.setData(entry.getValue().getHeadline(), entry.getValue());

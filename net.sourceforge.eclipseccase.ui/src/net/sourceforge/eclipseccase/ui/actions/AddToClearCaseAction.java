@@ -1,12 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.ClearCasePreferences;
-
-import net.sourceforge.eclipseccase.ClearDlgHelper;
-
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.CommentDialog;
+import net.sourceforge.eclipseccase.ui.UcmActivity;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -24,6 +20,9 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
+		final IResource[] resources = getSelectedResources();
+		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
+
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 
@@ -38,14 +37,19 @@ public class AddToClearCaseAction extends ClearCaseWorkspaceAction {
 		final String comment = maybeComment;
 		final int depth = maybeDepth;
 
+		// UCM checkout.
+		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+			if (UcmActivity.checkoutWithActivity(provider, resources, getShell()))
+				// no checkout
+				return;
+		}
+
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
 			public void run(IProgressMonitor monitor) throws CoreException {
 				try {
-					IResource[] resources = getSelectedResources();
 					beginTask(monitor, "Adding...", resources.length);
 					ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-					ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 					if (provider != null) {
 						if (ClearCasePreferences.isUseClearDlg()) {
 							monitor.subTask("Executing ClearCase user interface...");

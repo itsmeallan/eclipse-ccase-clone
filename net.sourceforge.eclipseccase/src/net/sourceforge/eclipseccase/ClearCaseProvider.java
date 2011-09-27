@@ -29,6 +29,7 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.*;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
@@ -50,8 +51,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
-
-	private HashMap<String,Activity> activities = new HashMap<String,Activity>();
+	//cachedActivity has the information about each activity.
+	private HashMap<String,Activity> cachedActivities = new HashMap<String,Activity>();
 
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
@@ -563,13 +564,19 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 
 	}
-
+	/**
+	 * Returns a list of actvities. Makes a new request each time and
+	 * does not cache.
+	 * @param viewName
+	 * @return
+	 */
 	public HashMap<String,Activity> listActivities(String viewName) {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
-				ClearCase.ME|ClearCase.VIEW);
+				ClearCase.VIEW);
+		cachedActivities.clear();
 		if (output.length == 0) {
-			return activities;
+			return cachedActivities;
 		}
 		for (int i = 0; i < output.length; i++) {
 
@@ -608,12 +615,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 				Activity newActivity = new Activity(date, activitySelector,
 						user, headline);
 				if (newActivity != null) {
-					activities.put(activitySelector,newActivity);
+					cachedActivities.put(activitySelector,newActivity);
 				}
 			}
 		}
 
-		return activities;
+		return cachedActivities;
 
 	}
 
@@ -638,14 +645,19 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	private boolean activityAlreadyExist(String activitySelector) {
-		return activities.containsKey(activitySelector);
+		return cachedActivities.containsKey(activitySelector);
 	}
 
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector,String path,String streamSelector) throws ClearCaseException {
 		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
-				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE|ClearCase.STREAM, headline, activitySelector,path,streamSelector);
+				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE|ClearCase.STREAM|ClearCase.NSET, headline, activitySelector,path,streamSelector);
+		if(cces != null){
 		return cces[0];
+		
+		}else{
+			return null;
+		}
 
 	}
 	
