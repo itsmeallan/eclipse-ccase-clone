@@ -85,6 +85,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public static final IStatus CANCEL_STATUS = Status.CANCEL_STATUS;
 
+	
+	public static final String SNAIL = "@";
+	
 	boolean refreshResources = true;
 
 	private OperationListener opListener = null;
@@ -665,7 +668,32 @@ public class ClearCaseProvider extends RepositoryProvider {
 		 return ClearCasePlugin.getEngine()
 		.getStream(ClearCase.SHORT|ClearCase.VIEW, viewName);
 	}
-
+	
+	/**
+	 * Extract pvob tag.
+	 * (Unix) activity:<activity_name>@/vobs/$pvob or /vob/$pvob
+	 * (Windows) activity:<activity_name@\$pvob
+	 * 
+	 * @param activitySelector
+	 * @return pVobTag $pvob
+	 */
+	public String getPvobTag(String activitySelector){
+		
+		
+		int index = activitySelector.indexOf(SNAIL)+1;
+		String path = activitySelector.substring(index).trim();
+		if(path.startsWith("\\")){
+			//Windows
+			return path.substring(1);
+		}else if(path.startsWith("/vobs")){
+			
+			return path.substring(6);
+		}
+		//vob
+		return path.substring(5);
+				
+	}
+	
 	/**
 	 * Before the move operation we check if parent directories are checked out.
 	 * We use that after the move has been performed in clearcase to set
