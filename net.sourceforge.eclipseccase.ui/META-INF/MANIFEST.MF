@@ -13,6 +13,7 @@ Export-Package: net.sourceforge.eclipseccase,
  net.sourceforge.eclipseccase.ui.preferences,
  net.sourceforge.eclipseccase.ui.viewsupport,
  net.sourceforge.eclipseccase.views
+Eclipse-ExtensibleAPI: true
 Require-Bundle: net.sourceforge.eclipseccase;visibility:=reexport,
  org.eclipse.ui,
  org.eclipse.ui.ide,
