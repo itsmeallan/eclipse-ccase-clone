@@ -150,6 +150,7 @@ public class NewActivityDialog extends Dialog {
 		}
 
 		try {
+			//FIXME: Add setview for Unix here.
 			String streamName = provider.getStream(ClearCaseProvider.getViewName(resource));
 			
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath, streamName);

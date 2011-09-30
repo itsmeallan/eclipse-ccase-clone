@@ -695,6 +695,30 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 	
 	/**
+	 *  Retrives a list of activities for a specific view
+	 * Command returns a string of:
+	 * activity:<activityname>@/vobs/$pvob, activity:<activityname>@/vobs/$pvob, activity: ...
+	 * 
+	 * @return list of activitySelectors
+	 */
+	public String [] getActivitySelectors(String view){
+		String [] result = new String [] {""};		 
+	    HashMap<Integer,String> args = new HashMap<Integer,String>();
+	    args.put(Integer.valueOf(ClearCase.FORMAT),"%[activities]CXp" );
+	    args.put(Integer.valueOf(ClearCase.VIEW),view);
+		String[] output = ClearCasePlugin.getEngine().getActivity(ClearCase.FORMAT|ClearCase.VIEW,args);
+		if(output == null | output.length == 0){
+			return result;
+		}
+		if(output[0] != null && output[0].length() > 0){
+			result = output[0].split(", ");
+		}
+		
+		return result;
+		
+	}
+	
+	/**
 	 * Before the move operation we check if parent directories are checked out.
 	 * We use that after the move has been performed in clearcase to set
 	 * directories state (co/ci) as prior to move operation. If checkout is need
