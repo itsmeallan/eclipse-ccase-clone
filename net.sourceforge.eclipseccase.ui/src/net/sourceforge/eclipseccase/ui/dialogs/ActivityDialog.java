@@ -11,6 +11,24 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
+
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+
+import net.sourceforge.eclipseccase.Activity;
+
+import org.eclipse.jface.viewers.Viewer;
+
+import org.eclipse.jface.viewers.ViewerSorter;
+
+import org.eclipse.jface.viewers.ArrayContentProvider;
+
+import org.eclipse.jface.viewers.ListViewer;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 
@@ -38,8 +56,10 @@ public class ActivityDialog extends Dialog {
 
 	/** trace id */
 	private static final String TRACE_ACTIVITYDIALOG = "ActivityDialog"; //$NON-NLS-1$
-
-	private Combo activityCombo;
+	
+	private ListViewer listViewer;
+	
+	//private Combo activityCombo;
 
 	private Button newButton;
 
@@ -48,9 +68,6 @@ public class ActivityDialog extends Dialog {
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-
-	// <headline,Activity>
-	private HashMap<String, Activity> activities;
 
 	private static final String NO_ACTIVITY = "NONE";
 
@@ -65,7 +82,7 @@ public class ActivityDialog extends Dialog {
 		this.setShellStyle(SWT.CLOSE);
 		this.provider = provider;
 		this.resource = resource;
-		commentDialogArea = new CommentDialogArea(this, null);
+		//commentDialogArea = new CommentDialogArea(this, null);
 
 	}
 
@@ -85,46 +102,72 @@ public class ActivityDialog extends Dialog {
 		Label label = new Label(composite, SWT.NONE);
 		label.setText(Messages.getString("ActivityDialog.activity")); //$NON-NLS-1$
 		label.setLayoutData(new GridData());
-
-		activityCombo = createCombo(composite);
-
-		updateData();
-
-		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		activityCombo.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				if (ClearCasePlugin.DEBUG_UCM) {
-					System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
-				}
-				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-				setSelectedActivity(activities.get(activitySelector));
+		
+		//get data
+		String viewName = ClearCaseProvider.getViewName(resource);
+		if (viewName != null) {
+			provider.listActivities(viewName);
+			ArrayList<Activity> activityList = Activity.getActivities();
+			Activity [] activities =  activityList.toArray(new Activity[activityList.size()]);
+			listViewer = createListViewer(composite,activities);
+		}
+		
+		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
+				System.out.println("Selected: "+selection.getFirstElement());
+				if(null != selection.getFirstElement()){
+				setSelectedActivity((Activity)(selection.getFirstElement()));
+				
 				updateOkButtonEnablement(true);
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				if (ClearCasePlugin.DEBUG_UCM) {
-					System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
 				}
-				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-				setSelectedActivity(activities.get(activitySelector));
-				updateOkButtonEnablement(true);
 			}
 		});
+		
+		
+			
+		
+		
+		//activityCombo = createCombo(composite);
 
-		activityCombo.setFocus();
+		//updateData();
+
+//		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//
+//		activityCombo.addSelectionListener(new SelectionListener() {
+//			public void widgetSelected(SelectionEvent e) {
+//				if (ClearCasePlugin.DEBUG_UCM) {
+//					System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
+//				}
+//				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+//				setSelectedActivity(activities.get(activitySelector));
+//				updateOkButtonEnablement(true);
+//			}
+//
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				if (ClearCasePlugin.DEBUG_UCM) {
+//					System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
+//				}
+//				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
+//				setSelectedActivity(activities.get(activitySelector));
+//				updateOkButtonEnablement(true);
+//			}
+//		});
+//
+//		activityCombo.setFocus();
 
 		addButton(parent);
 
 		// FIXME: Is code needed??
-		commentDialogArea.createArea(composite);
-		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty() == CommentDialogArea.OK_REQUESTED) {
-					okPressed();
-				}
-			}
-		});
+//		commentDialogArea.createArea(composite);
+//		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
+//			public void propertyChange(PropertyChangeEvent event) {
+//				if (event.getProperty() == CommentDialogArea.OK_REQUESTED) {
+//					okPressed();
+//				}
+//			}
+//		});
 		return composite;
 
 	}
@@ -152,7 +195,7 @@ public class ActivityDialog extends Dialog {
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.OK){
-					updateData();
+					//updateData();
 					MessageDialog.openInformation(getShell(), "Info", "currentActivity is :"+selectedActivity.getActivitySelector()+" View :"+ClearCaseProvider.getViewName(resource));
 				}else{
 					return;
@@ -170,47 +213,48 @@ public class ActivityDialog extends Dialog {
 		}
 	}
 
-	private void updateData() {
-
-		if (isTest()) {
-			activities = new HashMap<String, Activity>();
-			activities.put("test comment", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
-			activities.put("another test comment", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
-			activities.put("bmn011_quick_bug_fix", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
-
-		} else {
-			String viewName = ClearCaseProvider.getViewName(resource);
-			if (viewName != null) {
-				activities = provider.listActivities(viewName);
-			}
-		}
-		if (activities.size() == 0) {
-			activityCombo.add(NO_ACTIVITY);
-			activityCombo.select(0);
-			updateOkButtonEnablement(false);
-		} else {
-			//remove old items.
-			activityCombo.removeAll();
-			activityCombo.redraw();
-			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
-				activityCombo.add(entry.getValue().getHeadline());
-				activityCombo.setData(entry.getValue().getHeadline(), entry.getValue());
-			}
-			// Make last created selected.
-			if (activities != null) {
-				Activity last = getLastCreatedActvity(activities);
-				if (last != null) {
-					String headline = last.getHeadline();
-					// get index for it
-					int index = activityCombo.indexOf(headline);
-					activityCombo.select(index);
-					setSelectedActivity(last);
-				}
-
-			}
-		}
-
-	}
+//	private void updateData() {
+//
+//		if (isTest()) {
+//			activities = new HashMap<String, Activity>();
+//			activities.put("test comment", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
+//			activities.put("another test comment", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
+//			activities.put("bmn011_quick_bug_fix", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
+//
+//		} else {
+//			String viewName = ClearCaseProvider.getViewName(resource);
+//			if (viewName != null) {
+//				provider.listActivities(viewName);
+//			
+//			}
+//		}
+//		if (activities.size() == 0) {
+//			activityCombo.add(NO_ACTIVITY);
+//			activityCombo.select(0);
+//			updateOkButtonEnablement(false);
+//		} else {
+//			//remove old items.
+//			activityCombo.removeAll();
+//			activityCombo.redraw();
+//			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
+//				activityCombo.add(entry.getValue().getHeadline());
+//				activityCombo.setData(entry.getValue().getHeadline(), entry.getValue());
+//			}
+//			// Make last created selected.
+//			if (activities != null) {
+//				Activity last = getLastCreatedActvity(activities);
+//				if (last != null) {
+//					String headline = last.getHeadline();
+//					// get index for it
+//					int index = activityCombo.indexOf(headline);
+//					activityCombo.select(index);
+//					setSelectedActivity(last);
+//				}
+//
+//			}
+//		}
+//
+//	}
 
 	/**
 	 * Retrieve last created activity.
@@ -218,30 +262,30 @@ public class ActivityDialog extends Dialog {
 	 * @param activities
 	 * @return
 	 */
-	private Activity getLastCreatedActvity(HashMap<String, Activity> activities) {
-		Activity myLast = null;
-		Date newestDate = null;
-
-		for (Activity activity : activities.values()) {
-			Date activityDate = activity.getDate();
-			if (ClearCasePlugin.DEBUG_UCM) {
-				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Date: " + activityDate.getTime()); //$NON-NLS-1$
-			}
-			if (newestDate == null) {
-				newestDate = activityDate;
-			}
-			int results = newestDate.compareTo(activityDate);
-
-			if (results < 0) {
-				// newestTime is before activityTime
-				newestDate = activityDate;
-				myLast = activity;
-			}
-		}
-
-		return myLast;
-
-	}
+//	private Activity getLastCreatedActvity(HashMap<String, Activity> activities) {
+//		Activity myLast = null;
+//		Date newestDate = null;
+//
+//		for (Activity activity : activities.values()) {
+//			Date activityDate = activity.getDate();
+//			if (ClearCasePlugin.DEBUG_UCM) {
+//				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Date: " + activityDate.getTime()); //$NON-NLS-1$
+//			}
+//			if (newestDate == null) {
+//				newestDate = activityDate;
+//			}
+//			int results = newestDate.compareTo(activityDate);
+//
+//			if (results < 0) {
+//				// newestTime is before activityTime
+//				newestDate = activityDate;
+//				myLast = activity;
+//			}
+//		}
+//
+//		return myLast;
+//
+//	}
 
 	@Override
 	protected void buttonPressed(int buttonId) {
@@ -251,11 +295,27 @@ public class ActivityDialog extends Dialog {
 
 		}
 		// remove data in HashMap and Combo.
-		activities.clear();
-		activityCombo.removeAll();
+		//activities.clear();
+		//activityCombo.removeAll();
 		super.buttonPressed(buttonId);
 	}
-
+	
+	protected ListViewer createListViewer(Composite parent,Activity [] activities){
+		ListViewer listViewer = new ListViewer(parent, SWT.SINGLE);
+		listViewer.setLabelProvider(new ActivityListLabelProvider());
+		listViewer.setContentProvider(new ArrayContentProvider());
+		listViewer.setInput(activities);
+		listViewer.setSorter(new ViewerSorter(){
+			public int compare(Viewer viewer,Object p1,Object p2){
+				return ((Activity)p1).getHeadline().compareToIgnoreCase(((Activity)p2).getHeadline());
+			}
+			
+		});
+		
+		return listViewer;
+		
+	}
+	
 	/*
 	 * Utility method that creates a combo box
 	 * 
@@ -263,22 +323,22 @@ public class ActivityDialog extends Dialog {
 	 * 
 	 * @return the new widget
 	 */
-	protected Combo createCombo(Composite parent) {
-		Combo combo = new Combo(parent, SWT.READ_ONLY);
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
-		combo.setLayoutData(data);
-		return combo;
-	}
+//	protected Combo createCombo(Composite parent) {
+//		Combo combo = new Combo(parent, SWT.READ_ONLY);
+//		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+//		data.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
+//		combo.setLayoutData(data);
+//		return combo;
+//	}
 
 	/**
 	 * Returns the comment.
 	 * 
 	 * @return String
 	 */
-	public String getComment() {
-		return commentDialogArea.getComment();
-	}
+//	public String getComment() {
+//		return commentDialogArea.getComment();
+//	}
 
 	public Activity getSelectedActivity() {
 		return selectedActivity;
@@ -289,13 +349,13 @@ public class ActivityDialog extends Dialog {
 	}
 
 	public boolean activityExist(String headline) {
-		for (int i = 0; i < activities.size(); i++) {
-			Activity currentActivity = activities.get(i);
-			if (null == currentActivity)
-				return false;
-			if (currentActivity.getHeadline().equalsIgnoreCase(headline))
-				return true;
-		}
+//		for (int i = 0; i < activities.size(); i++) {
+//			Activity currentActivity = activities.get(i);
+//			if (null == currentActivity)
+//				return false;
+//			if (currentActivity.getHeadline().equalsIgnoreCase(headline))
+//				return true;
+//		}
 		return false;
 	}
 
@@ -314,5 +374,7 @@ public class ActivityDialog extends Dialog {
 	public boolean isTest() {
 		return test;
 	}
+	
+	
 
 }
