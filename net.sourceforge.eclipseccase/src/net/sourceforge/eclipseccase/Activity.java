@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
  * All rights reserved. This program and the accompanying materials 
@@ -9,7 +10,7 @@
  *    mikael petterson - initial API and implementation
  *     IBM Corporation - concepts and ideas taken from Eclipse code
  *******************************************************************************/
-package net.sourceforge.eclipseccase;
+
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,30 +30,33 @@ public class Activity {
 	private String activitySelector;
 	private String user;
 	private String headline;
+	private String stream;
 	private boolean current;
 	private Date myDate;
 
 	public Activity(String date, String activitySelector, String user,
-			String headline) {
+			String headline,String stream) {
 		this.date = date;
 		this.activitySelector = activitySelector;
 		this.user = user;
 		this.headline = headline;
+		this.stream = stream;
+		
 
 	}
 	
 	public static Activity [] refreshActivities(String view, ClearCaseProvider provider){
 		if (view == "" && provider == null) {
 			Activity.setTest(true);
-			activities.add(new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
-			activities.add(new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
-			activities.add( new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
+			activities.add(new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment","mystream@/pvob1"));
+			activities.add(new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment","yourstream@/pvob1"));
+			activities.add( new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix","teststream@/pvob1"));
 			ArrayList<Activity> activityList = Activity.getActivities();
 			return activityList.toArray(new Activity[activityList.size()]);
 
 		}
 		
-		provider.listActivities(view);
+		activities = provider.listActivities(view);
 		//create new activities
 		ArrayList<Activity> activityList = Activity.getActivities();
 		return activityList.toArray(new Activity[activityList.size()]);
@@ -123,7 +127,7 @@ public class Activity {
 		// "bmn011_quick_bug_fix"
 		// ISO 8601 Format
 		Activity a = new Activity("2011-06-14T16:16:04+03:00",
-				"bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix");
+				"bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix","bugfixstream@/pvob2");
 		Date date = a.getDate();
 		System.out.println("Date is " + date.getTime());
 
@@ -183,6 +187,14 @@ public class Activity {
 		Activity.activities = activities;
 	}
 
+	public String getStream() {
+		return stream;
+	}
+
+	public void setStream(String stream) {
+		this.stream = stream;
+	}
+
 	public static void setTest(boolean value) {
 		test = value;
 	}
@@ -192,3 +204,4 @@ public class Activity {
 	}
 
 }
+
