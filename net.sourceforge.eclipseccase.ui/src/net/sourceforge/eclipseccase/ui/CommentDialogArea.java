@@ -47,7 +47,9 @@ public class CommentDialogArea extends DialogArea {
 	 */
 	public CommentDialogArea(Dialog parentDialog, IDialogSettings settings) {
 		super(parentDialog, settings);
-		comments = ClearCasePlugin.getDefault().getPreviousComments();
+		if (null != ClearCasePlugin.getDefault()) {
+			comments = ClearCasePlugin.getDefault().getPreviousComments();
+		}
 	}
 
 	@Override

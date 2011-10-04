@@ -11,6 +11,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+
+import org.eclipse.jface.viewers.IDoubleClickListener;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -56,10 +60,10 @@ public class ActivityDialog extends Dialog {
 
 	/** trace id */
 	private static final String TRACE_ACTIVITYDIALOG = "ActivityDialog"; //$NON-NLS-1$
-	
+
 	private ListViewer listViewer;
-	
-	//private Combo activityCombo;
+
+	// private Combo activityCombo;
 
 	private Button newButton;
 
@@ -82,7 +86,7 @@ public class ActivityDialog extends Dialog {
 		this.setShellStyle(SWT.CLOSE);
 		this.provider = provider;
 		this.resource = resource;
-		//commentDialogArea = new CommentDialogArea(this, null);
+		commentDialogArea = new CommentDialogArea(this, null);
 
 	}
 
@@ -102,72 +106,41 @@ public class ActivityDialog extends Dialog {
 		Label label = new Label(composite, SWT.NONE);
 		label.setText(Messages.getString("ActivityDialog.activity")); //$NON-NLS-1$
 		label.setLayoutData(new GridData());
-		
-		//get data
+		// refresh
 		String viewName = ClearCaseProvider.getViewName(resource);
-		if (viewName != null) {
-			provider.listActivities(viewName);
-			ArrayList<Activity> activityList = Activity.getActivities();
-			Activity [] activities =  activityList.toArray(new Activity[activityList.size()]);
-			listViewer = createListViewer(composite,activities);
-		}
-		
+		Activity[] activities = Activity.refreshActivities(viewName, provider);
+		listViewer = createListViewer(composite, activities);
 		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			
+
 			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
-				System.out.println("Selected: "+selection.getFirstElement());
-				if(null != selection.getFirstElement()){
-				setSelectedActivity((Activity)(selection.getFirstElement()));
-				
-				updateOkButtonEnablement(true);
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				if (ClearCasePlugin.DEBUG_UCM) {
+					ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Selected: " + selection.getFirstElement()); //$NON-NLS-1$
 				}
+				setSelectedActivity((Activity) (selection.getFirstElement()));
 			}
 		});
-		
-		
-			
-		
-		
-		//activityCombo = createCombo(composite);
 
-		//updateData();
-
-//		activityCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//
-//		activityCombo.addSelectionListener(new SelectionListener() {
-//			public void widgetSelected(SelectionEvent e) {
-//				if (ClearCasePlugin.DEBUG_UCM) {
-//					System.out.println("Selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + activityCombo.getItem(activityCombo.getSelectionIndex()));
-//				}
-//				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-//				setSelectedActivity(activities.get(activitySelector));
-//				updateOkButtonEnablement(true);
-//			}
-//
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				if (ClearCasePlugin.DEBUG_UCM) {
-//					System.out.println("Default selected index: " + activityCombo.getSelectionIndex() + ", selected item: " + (activityCombo.getSelectionIndex() == -1 ? "<null>" : activityCombo.getItem(activityCombo.getSelectionIndex())));
-//				}
-//				String activitySelector = activityCombo.getItem(activityCombo.getSelectionIndex());
-//				setSelectedActivity(activities.get(activitySelector));
-//				updateOkButtonEnablement(true);
-//			}
-//		});
-//
-//		activityCombo.setFocus();
+		listViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				if (ClearCasePlugin.DEBUG_UCM) {
+					ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Double Clicked: " + selection.getFirstElement()); //$NON-NLS-1$
+				}
+				setSelectedActivity((Activity) (selection.getFirstElement()));
+			}
+		});
 
 		addButton(parent);
 
-		// FIXME: Is code needed??
-//		commentDialogArea.createArea(composite);
-//		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
-//			public void propertyChange(PropertyChangeEvent event) {
-//				if (event.getProperty() == CommentDialogArea.OK_REQUESTED) {
-//					okPressed();
-//				}
-//			}
-//		});
+		commentDialogArea.createArea(composite);
+		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty() == CommentDialogArea.OK_REQUESTED) {
+					okPressed();
+				}
+			}
+		});
 		return composite;
 
 	}
@@ -194,10 +167,13 @@ public class ActivityDialog extends Dialog {
 				// Open new Dialog to add activity.
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
-				if (dlg.open() == Window.OK){
-					//updateData();
-					MessageDialog.openInformation(getShell(), "Info", "currentActivity is :"+selectedActivity.getActivitySelector()+" View :"+ClearCaseProvider.getViewName(resource));
-				}else{
+				if (dlg.open() == Window.OK) {
+					// refresh
+					String viewName = ClearCaseProvider.getViewName(resource);
+					Activity[] activities = Activity.refreshActivities(viewName, provider);
+					listViewer.setInput(activities);
+					MessageDialog.openInformation(getShell(), "Info", "currentActivity is :" + selectedActivity.getActivitySelector() + " View :" + ClearCaseProvider.getViewName(resource));
+				} else {
 					return;
 				}
 
@@ -206,87 +182,6 @@ public class ActivityDialog extends Dialog {
 		newButton.addSelectionListener(listener);
 	}
 
-	private void updateOkButtonEnablement(boolean enabled) {
-		oKButton = getButton(IDialogConstants.OK_ID);
-		if (oKButton != null) {
-			oKButton.setEnabled(enabled);
-		}
-	}
-
-//	private void updateData() {
-//
-//		if (isTest()) {
-//			activities = new HashMap<String, Activity>();
-//			activities.put("test comment", new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment"));
-//			activities.put("another test comment", new Activity("04-Jun-00.17:10:00", "test2", "mike", "another test comment"));
-//			activities.put("bmn011_quick_bug_fix", new Activity("2011-06-14T16:16:04+03:00", "bmn011_quick_bug_fix", "bmn011", "bmn011_quick_bug_fix"));
-//
-//		} else {
-//			String viewName = ClearCaseProvider.getViewName(resource);
-//			if (viewName != null) {
-//				provider.listActivities(viewName);
-//			
-//			}
-//		}
-//		if (activities.size() == 0) {
-//			activityCombo.add(NO_ACTIVITY);
-//			activityCombo.select(0);
-//			updateOkButtonEnablement(false);
-//		} else {
-//			//remove old items.
-//			activityCombo.removeAll();
-//			activityCombo.redraw();
-//			for (Map.Entry<String, Activity> entry : activities.entrySet()) {
-//				activityCombo.add(entry.getValue().getHeadline());
-//				activityCombo.setData(entry.getValue().getHeadline(), entry.getValue());
-//			}
-//			// Make last created selected.
-//			if (activities != null) {
-//				Activity last = getLastCreatedActvity(activities);
-//				if (last != null) {
-//					String headline = last.getHeadline();
-//					// get index for it
-//					int index = activityCombo.indexOf(headline);
-//					activityCombo.select(index);
-//					setSelectedActivity(last);
-//				}
-//
-//			}
-//		}
-//
-//	}
-
-	/**
-	 * Retrieve last created activity.
-	 * 
-	 * @param activities
-	 * @return
-	 */
-//	private Activity getLastCreatedActvity(HashMap<String, Activity> activities) {
-//		Activity myLast = null;
-//		Date newestDate = null;
-//
-//		for (Activity activity : activities.values()) {
-//			Date activityDate = activity.getDate();
-//			if (ClearCasePlugin.DEBUG_UCM) {
-//				ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Date: " + activityDate.getTime()); //$NON-NLS-1$
-//			}
-//			if (newestDate == null) {
-//				newestDate = activityDate;
-//			}
-//			int results = newestDate.compareTo(activityDate);
-//
-//			if (results < 0) {
-//				// newestTime is before activityTime
-//				newestDate = activityDate;
-//				myLast = activity;
-//			}
-//		}
-//
-//		return myLast;
-//
-//	}
-
 	@Override
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == IDialogConstants.CANCEL_ID) {
@@ -294,51 +189,25 @@ public class ActivityDialog extends Dialog {
 			selectedActivity = null;
 
 		}
-		// remove data in HashMap and Combo.
-		//activities.clear();
-		//activityCombo.removeAll();
+
 		super.buttonPressed(buttonId);
 	}
-	
-	protected ListViewer createListViewer(Composite parent,Activity [] activities){
-		ListViewer listViewer = new ListViewer(parent, SWT.SINGLE);
+
+	protected ListViewer createListViewer(Composite parent, Activity[] activities) {
+		ListViewer listViewer = new ListViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
 		listViewer.setLabelProvider(new ActivityListLabelProvider());
 		listViewer.setContentProvider(new ArrayContentProvider());
 		listViewer.setInput(activities);
-		listViewer.setSorter(new ViewerSorter(){
-			public int compare(Viewer viewer,Object p1,Object p2){
-				return ((Activity)p1).getHeadline().compareToIgnoreCase(((Activity)p2).getHeadline());
+		listViewer.setSorter(new ViewerSorter() {
+			public int compare(Viewer viewer, Object p1, Object p2) {
+				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
 			}
-			
-		});
-		
-		return listViewer;
-		
-	}
-	
-	/*
-	 * Utility method that creates a combo box
-	 * 
-	 * @param parent the parent for the new label
-	 * 
-	 * @return the new widget
-	 */
-//	protected Combo createCombo(Composite parent) {
-//		Combo combo = new Combo(parent, SWT.READ_ONLY);
-//		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-//		data.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
-//		combo.setLayoutData(data);
-//		return combo;
-//	}
 
-	/**
-	 * Returns the comment.
-	 * 
-	 * @return String
-	 */
-//	public String getComment() {
-//		return commentDialogArea.getComment();
-//	}
+		});
+
+		return listViewer;
+
+	}
 
 	public Activity getSelectedActivity() {
 		return selectedActivity;
@@ -349,13 +218,13 @@ public class ActivityDialog extends Dialog {
 	}
 
 	public boolean activityExist(String headline) {
-//		for (int i = 0; i < activities.size(); i++) {
-//			Activity currentActivity = activities.get(i);
-//			if (null == currentActivity)
-//				return false;
-//			if (currentActivity.getHeadline().equalsIgnoreCase(headline))
-//				return true;
-//		}
+		ArrayList<Activity> activities = Activity.getActivities();
+		for (Activity activity : activities) {
+			if (headline.equalsIgnoreCase(activity.getHeadline())) {
+				return true;
+			}
+
+		}
 		return false;
 	}
 
@@ -363,18 +232,17 @@ public class ActivityDialog extends Dialog {
 	public static void main(String[] args) {
 		Display display = Display.getCurrent();
 		Shell activeShell = new Shell(display);
+		ActivityDialog.setTest(true);
 		ActivityDialog ad = new ActivityDialog(activeShell, null, null);
 		ad.open();
 	}
 
-	public void setTest(boolean value) {
+	public static void setTest(boolean value) {
 		test = value;
 	}
 
-	public boolean isTest() {
+	public static boolean isTest() {
 		return test;
 	}
-	
-	
 
 }

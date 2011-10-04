@@ -92,7 +92,6 @@ public class NewActivityDialog extends Dialog {
 		button.addListener(SWT.Selection, listener);
 
 		// Input field
-
 		idText = new Text(group, SWT.BORDER);
 		idText.setEditable(true);
 		idText.setEnabled(false);
@@ -135,8 +134,7 @@ public class NewActivityDialog extends Dialog {
 			activityText.setFocus();
 			return;
 		}
-
-		System.out.println("snapshotPath is " + snapshotPath);
+		
 		if (autoGen) {
 			if (activityDialog.activityExist(noSpaceHeadline)) {
 				// if duplicate then add unique id to headline.
@@ -150,7 +148,6 @@ public class NewActivityDialog extends Dialog {
 		}
 
 		try {
-			//FIXME: Add setview for Unix here.
 			String streamName = provider.getStream(ClearCaseProvider.getViewName(resource));
 			
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath, streamName);
