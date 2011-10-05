@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase;
+package net.sourceforge.eclipseccase.ucm;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,19 +34,19 @@ public class DataParser {
 	
 	public static String[] processLine(String line) {
 		if (timeMatcher.find()) {
-			System.out.print("Match " + timeMatcher.group(1));
+			System.out.print("Match " + timeMatcher.group(1)+"\n");
 			return new String[] { TIME, timeMatcher.group(1) };
 
 		} else if (userMatcher.find()) {
-			System.out.print("Match " + userMatcher.group(1));
+			System.out.print("Match " + userMatcher.group(1)+"\n");
 			return new String[] { USER, userMatcher.group(1) };
 
 		} else if (streamMatcher.find()) {
-			System.out.print("Match " + streamMatcher.group(1));
+			System.out.print("Match " + streamMatcher.group(1)+"\n");
 			return new String[] { STREAM, streamMatcher.group(1) };
 
 		}else if(headlineMatcher.find()){
-			System.out.print("Match " + headlineMatcher.group(1));
+			System.out.print("Match " + headlineMatcher.group(1)+"\n");
 			return new String[] { HEADLINE, headlineMatcher.group(1) };
 
 		}

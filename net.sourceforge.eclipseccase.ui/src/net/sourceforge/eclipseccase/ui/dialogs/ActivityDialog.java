@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ucm.Activity;
+
 import org.eclipse.jface.viewers.DoubleClickEvent;
 
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -23,7 +25,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
-import net.sourceforge.eclipseccase.Activity;
 
 import org.eclipse.jface.viewers.Viewer;
 

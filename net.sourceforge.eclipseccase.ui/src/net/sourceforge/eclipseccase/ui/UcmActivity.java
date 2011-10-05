@@ -11,7 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.Activity;
+import net.sourceforge.eclipseccase.ucm.Activity;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.dialogs.ActivityDialog;
 import org.eclipse.core.resources.IResource;

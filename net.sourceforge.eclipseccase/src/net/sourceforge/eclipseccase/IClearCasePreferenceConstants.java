@@ -65,6 +65,9 @@ public interface IClearCasePreferenceConstants {
 
 	/** ClearCase preference */
 	String PRESERVE_TIMES = ClearCasePlugin.PLUGIN_ID + ".preserveTimes"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String PREVENT_CHECKOUT = ClearCasePlugin.PLUGIN_ID + ".preventCheckout";//$NON-NLS-1$
 
 	/** ClearCase preference */
 	String RECURSIVE = ClearCasePlugin.PLUGIN_ID + ".recursive"; //$NON-NLS-1$

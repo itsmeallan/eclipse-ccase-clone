@@ -24,6 +24,8 @@ import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
+import net.sourceforge.eclipseccase.ucm.Activity;
+import net.sourceforge.eclipseccase.ucm.Parser;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
@@ -573,58 +575,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @param viewName
 	 * @return
 	 */
-	public HashMap<String,Activity> listActivities(String viewName) {
+	public ArrayList<Activity> listActivities(String viewName) {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
-				ClearCase.VIEW);
-		cachedActivities.clear();
-		if (output.length == 0) {
-			return cachedActivities;
-		}
-		for (int i = 0; i < output.length; i++) {
-
-			// Example of output from cc.
-			// 06-Jun-00.17:16:12 update_date ktessier
-			// "Update for new date convention"
-
-			// Get headline between "". And remove it afterwards from String.
-			String headlinePattern = "\"(.*)\"";
-			Pattern p1 = Pattern.compile(headlinePattern);
-			Matcher m1 = p1.matcher(output[i]);
-			boolean headlineFound = m1.find();
-
-			String headline = null;
-			if (headlineFound) {
-				// Get file name within ""
-				headline = m1.group(1);
-				// remove headline from string.
-				output[i].replace("\"headline\"", "");
-
-			}
-			String delims = "[ ]+";
-			String[] tokens = output[i].split(delims);// 3 tokens left:
-			// date,actvitySelector,user
-			// check if activity exists.
-			String date = tokens[0];
-			String activitySelector = tokens[1];
-			String user = tokens[2];
-			// FIXME: Add as a trace instead.
-			StringBuffer sb = new StringBuffer();
-			sb.append("Date: " + date).append(
-					" ActivitySelector: " + activitySelector).append(
-					" User: " + user).append(" Headline: " + headline + "\n");
-			System.out.println(sb);
-			if (!activityAlreadyExist(activitySelector)) {
-				Activity newActivity = new Activity(date, activitySelector,
-						user, headline);
-				if (newActivity != null) {
-					cachedActivities.put(activitySelector,newActivity);
-				}
-			}
-		}
-
-		return cachedActivities;
-
+				ClearCase.VIEW|ClearCase.LONG);
+		Parser.process(output);
+		return Parser.listActivties();
 	}
 
 	/**
@@ -1985,7 +1941,31 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public boolean canHandleLinkedResourceURI() {
 		return true;
 	}
-
+	
+	/**
+	 * Used to prevent co of resources like .project, .cproject ..
+	 * @param resource
+	 * @return
+	 */
+	public boolean isPreventCheckout(IResource resource){
+		String list_csv = ClearCasePreferences.isPreventCheckOut().trim();
+		String [] preventCoElements = null;
+		if(list_csv != null && list_csv.length() > 0){
+			if(!list_csv.endsWith(",")){
+			preventCoElements = list_csv.split(",");
+			}else{
+				//no list just one file.
+				preventCoElements = new String []{list_csv};
+			}
+			for (String element : preventCoElements) {
+				if(resource.getName().equals(element)){
+					return true;
+				}
+			}
+			
+		}
+		return false;
+	}
 	/**
 	 * Indicates if a resource is ignored and not handled.
 	 * <p>

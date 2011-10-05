@@ -62,6 +62,9 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
+		if (isPreventedFromCheckOut(shell, provider, files,false)) {
+			return CANCEL;
+		}
 
 		// check for provider
 		if (null == provider) {
@@ -176,14 +179,18 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
-		if (ClearCasePreferences.isCheckoutAutoNever())
+		if (ClearCasePreferences.isCheckoutAutoNever()) {
 			return CANCEL;
-
+		}
+		final ClearCaseProvider provider = getProvider(files);
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
-		if (null == shell || !askForComment)
+		if (null == shell || !askForComment){
+			if(isPreventedFromCheckOut(shell, provider, files, false)){
+				return CANCEL;
+			}
 			return super.validateEdit(files, context);
-
+		}
 		try {
 			this.validateEditLock.acquire();
 			final IFile[] readOnlyFiles = getFilesToCheckout(files);
@@ -230,5 +237,25 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		} finally {
 			this.validateEditLock.release();
 		}
+	}
+
+	private boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources, boolean silent) {
+		for (final IResource resource : resources) {
+			if (provider.isPreventCheckout(resource)) {
+				if (!silent) {
+					PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+
+						public void run() {
+							Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+							MessageDialog.openInformation(activeShell, Messages.getString("ClearCaseUIModificationHandler.infoDialog.title"), Messages.getString("ClearCaseUIModificationHandler.infoDialog.message")+resource.getName());
+
+						}
+					});
+				}
+
+				return true;
+			}
+		}
+		return false;
 	}
 }

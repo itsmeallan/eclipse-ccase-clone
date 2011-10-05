@@ -1,3 +1,4 @@
+package net.sourceforge.eclipseccase.ucm;
 
 /*******************************************************************************
  * Copyright (c) 2002, 2004 eclipse-ccase.sourceforge.net.
@@ -17,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import net.sourceforge.eclipseccase.ClearCaseProvider;
 
 /**
  * @author mikael petterson

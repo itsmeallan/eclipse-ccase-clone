@@ -345,6 +345,11 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.COMPARE_EXTERNAL);
 	}
+	
+	public static String isPreventCheckOut() {
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.PREVENT_CHECKOUT);
+	}
 
 	/**
 	 * Clients should not call this method. It will be called automatically by
