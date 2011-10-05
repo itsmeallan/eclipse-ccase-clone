@@ -21,7 +21,7 @@ public class NewActivityDialog extends Dialog {
 
 	private Text activityText;
 
-	private String activitySelector;
+	private String activityId;
 
 	private static long current = System.currentTimeMillis();
 
@@ -134,23 +134,36 @@ public class NewActivityDialog extends Dialog {
 			activityText.setFocus();
 			return;
 		}
-		
+
 		if (autoGen) {
 			if (activityDialog.activityExist(noSpaceHeadline)) {
 				// if duplicate then add unique id to headline.
-				activitySelector = noSpaceHeadline.concat(getUniqueId());
+				activityId = noSpaceHeadline.concat(getUniqueId());
 			} else {
-				activitySelector = noSpaceHeadline;
+				activityId = noSpaceHeadline;
 			}
 		} else {
 			String id = idText.getText().trim();
-			activitySelector = noSpaceHeadline.concat(id);
+			activityId = noSpaceHeadline.concat(id);
 		}
 
 		try {
-			String streamName = provider.getStream(ClearCaseProvider.getViewName(resource));
-			
-			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath, streamName);
+			String[] actvitySelectors = provider.getActivitySelectors(ClearCaseProvider.getViewName(resource));
+			String pVob = null;
+			String activitySelector = null;
+			if (actvitySelectors != null && actvitySelectors.length > 0) {
+				String myActivitySelector = actvitySelectors[0];
+				pVob = provider.getPvobTag(myActivitySelector);
+			}
+
+			// Create activitySelector [activity]:name@vob-selector
+			if (null != pVob) {
+				activitySelector = "[activity]:" + activityId + "@" + pVob;
+			} else {
+				activitySelector = activityId;
+			}
+			// create
+			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
 			if (state.state == ClearCase.ACTIVITY_CREATED) {
 				System.out.println("Actvity created " + noSpaceHeadline);
 
@@ -172,11 +185,11 @@ public class NewActivityDialog extends Dialog {
 	}
 
 	public String getActivity() {
-		return activitySelector;
+		return activityId;
 	}
 
 	public void setActivity(String activitySelector) {
-		this.activitySelector = activitySelector;
+		this.activityId = activitySelector;
 	}
 
 	private static synchronized String getUniqueId() {

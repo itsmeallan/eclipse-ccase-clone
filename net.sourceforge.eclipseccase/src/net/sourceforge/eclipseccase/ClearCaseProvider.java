@@ -599,14 +599,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return false;
 	}
 
-	private boolean activityAlreadyExist(String activitySelector) {
-		return cachedActivities.containsKey(activitySelector);
-	}
+	
 
 	public ClearCaseElementState createActivity(String headline,
-			String activitySelector,String path,String streamSelector) throws ClearCaseException {
+			String activitySelector,String path) throws ClearCaseException {
 		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
-				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE|ClearCase.STREAM|ClearCase.NSET, headline, activitySelector,path,streamSelector);
+				.createActivity(ClearCase.HEADLINE|ClearCase.FORCE|ClearCase.NSET, headline, activitySelector,path);
 		if(cces != null){
 		return cces[0];
 		
@@ -647,9 +645,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 	
 	/**
-	 *  Retrives a list of activities for a specific view
+	 *  Retrives a list of activitySelectors for a specific view
 	 * Command returns a string of:
-	 * activity:<activityname>@/vobs/$pvob, activity:<activityname>@/vobs/$pvob, activity: ...
+	 * activity:<activityId>@/vobs/$pvob, activity:<activityId>@/vobs/$pvob, activity: ...
 	 * 
 	 * @return list of activitySelectors
 	 */
