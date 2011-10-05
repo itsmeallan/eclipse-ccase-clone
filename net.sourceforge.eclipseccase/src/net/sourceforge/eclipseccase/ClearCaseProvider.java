@@ -15,9 +15,6 @@ package net.sourceforge.eclipseccase;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
@@ -25,13 +22,12 @@ import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.ucm.Activity;
-import net.sourceforge.eclipseccase.ucm.Parser;
+import net.sourceforge.eclipseccase.ucm.ActivityParser;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
 import org.eclipse.core.runtime.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.team.core.RepositoryProvider;
 import org.eclipse.team.core.Team;
 import org.eclipse.team.core.TeamException;
@@ -579,8 +575,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
 				ClearCase.VIEW|ClearCase.LONG);
-		Parser.process(output);
-		return Parser.listActivties();
+		ActivityParser.process(output);
+		return ActivityParser.listActivties();
 	}
 
 	/**
