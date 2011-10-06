@@ -1942,7 +1942,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public boolean isPreventCheckout(IResource resource){
-		String list_csv = ClearCasePreferences.isPreventCheckOut().trim();
+		String list_csv = ClearCasePreferences.isPreventCheckOut().trim().replaceAll(" ", "");
 		String [] preventCoElements = null;
 		if(list_csv != null && list_csv.length() > 0){
 			if(!list_csv.endsWith(",")){
