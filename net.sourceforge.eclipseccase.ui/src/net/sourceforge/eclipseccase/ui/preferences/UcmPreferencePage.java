@@ -12,6 +12,10 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import net.sourceforge.eclipseccase.ui.DialogArea;
+
+import org.eclipse.swt.widgets.Group;
+
 import org.eclipse.jface.preference.FieldEditor;
 
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -32,6 +36,7 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	private BooleanFieldEditor useUcm;
 	private BooleanFieldEditor silentPrevent;
 	private StringFieldEditor preventCheckout;
+	private StringFieldEditor activityPattern;
 
 	/**
 	 * Creates a new instance.
@@ -47,28 +52,31 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.LEFT);
 
-		// Sets the layout data for the top composite's
+		// Sets the layout data for the top composite's 
 		// place in its parent's layout.
-		composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		// Sets the layout for the top composite's
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		// Sets the layout for the top composite's 
 		// children to populate.
-		composite.setLayout(new GridLayout());
+		composite.setLayout(layout);
 
 		useUcm = new BooleanFieldEditor(IClearCasePreferenceConstants.USE_UCM, PreferenceMessages.getString("UcmPreferences.UseUcm"), //$NON-NLS-1$
 				composite);
+		useUcm.fillIntoGrid(composite, 2);
 		addFieldEditor(useUcm);
-		
-		
-		preventCheckout = new StringFieldEditor(IClearCasePreferenceConstants.PREVENT_CHECKOUT, PreferenceMessages.getString("UcmPreferences.PreventCheckOut"),composite);
+		Group group = new Group(composite,SWT.NULL);
+		group.setText(PreferenceMessages.getString("UcmPreferences.group.preventCheckout"));
+		group.setBounds(25,150,150,125);
+		preventCheckout = new StringFieldEditor(IClearCasePreferenceConstants.PREVENT_CHECKOUT, PreferenceMessages.getString("UcmPreferences.PreventCheckOut"),group);
 		addFieldEditor(preventCheckout);
-		silentPrevent = new BooleanFieldEditor(IClearCasePreferenceConstants.SILENT_PREVENT, PreferenceMessages.getString("UcmPreferences.SilentPrevent"),composite);
+		silentPrevent = new BooleanFieldEditor(IClearCasePreferenceConstants.SILENT_PREVENT, PreferenceMessages.getString("UcmPreferences.SilentPrevent"),group);
 		addFieldEditor(silentPrevent);
 		
-		// getFieldEditorParent(SOURCE_MANAGEMENT)));
-		// Label listLabel = new Label(top, SWT.NONE);
-		// listLabel.setText("Tags which do not require closing tags:");
-
+		Group group2 = new Group(composite,SWT.NULL);
+		group2.setText("ActivityPattern");
+		group2.setBounds(25,150,150,125);
+		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.activityPattern"),group2);
+		addFieldEditor(activityPattern);		
 		return composite;
 	}
 
@@ -79,6 +87,7 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	
 	
 	private void addFieldEditor(FieldEditor fieldEditor){
+		
 		fieldEditor.setPreferencePage(this);
 		fieldEditor.setPreferenceStore(getPreferenceStore());
 		fieldEditor.load();

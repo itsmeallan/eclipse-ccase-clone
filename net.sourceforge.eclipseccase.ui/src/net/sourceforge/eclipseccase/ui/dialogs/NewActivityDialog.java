@@ -165,7 +165,7 @@ public class NewActivityDialog extends Dialog {
 		
 		
 		String format = ClearCasePreferences.activityPattern();
-		if(format != null || format.length() > 0){
+		if(format != null && format.length() > 0){
 			if(!activityConformsToSiteSpecificFormat(activityId,format)){
 				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), ClearCasePreferences.getNewActivityFormatMsg());
 				activityText.selectAll();
