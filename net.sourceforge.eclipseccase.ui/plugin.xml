@@ -558,6 +558,10 @@
 			class="net.sourceforge.eclipseccase.ui.preferences.DecoratorPreferencePage"
 			id="net.sourceforge.eclipseccase.preferences.decorator">
 		</page>
+		<page name="%clearcaseUcmPreferences.name" category="net.sourceforge.eclipseccase.preferences"
+			class="net.sourceforge.eclipseccase.ui.preferences.UcmPreferencePage"
+			id="net.sourceforge.eclipseccase.preferences.ucm">
+		</page>
 	</extension>
 	<extension point="org.eclipse.ui.decorators">
 		<decorator lightweight="true" adaptable="true"

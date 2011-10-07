@@ -41,7 +41,9 @@ public class ActivityParser {
 
 				}
 				if (ctr > 1) {
-
+					StringBuffer sb = new StringBuffer();
+					sb.append("Date "+date).append("actvityId "+activityId).append("user "+user).append("headline "+headline).append("stream "+stream);
+					System.out.println("Creating activity "+sb.toString());
 					activities.add(new Activity(date, activityId, user,
 							headline, stream));
 					activityId = matcher.group(1);

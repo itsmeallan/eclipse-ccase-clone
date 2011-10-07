@@ -62,7 +62,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
-		if (isPreventedFromCheckOut(shell, provider, files,false)) {
+		if (isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
 			return CANCEL;
 		}
 
@@ -186,7 +186,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment){
-			if(isPreventedFromCheckOut(shell, provider, files, false)){
+			if(isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())){
 				return CANCEL;
 			}
 			return super.validateEdit(files, context);

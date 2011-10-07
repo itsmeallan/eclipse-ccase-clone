@@ -1,5 +1,12 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
+import java.util.regex.Matcher;
+
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Label;
+
 import java.util.regex.Pattern;
 import net.sourceforge.clearcase.*;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -54,14 +61,20 @@ public class NewActivityDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		getShell().setText(Messages.getString("NewActivityDialog.title"));
+		
+		Label descriptionLabel = new Label(parent, SWT.NONE);
+		descriptionLabel.setText(Messages.getString("NewActivityDialog.activityDescription")); //$NON-NLS-1$
+		
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+				
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		composite.setLayout(layout);
 
 		Label label = new Label(composite, SWT.NONE);
-		label.setText(Messages.getString("NewActivityDialog.addNew")); //$NON-NLS-1$
+		label.setText(Messages.getString("NewActivityDialog.label.addNew")); //$NON-NLS-1$
 		label.setLayoutData(new GridData());
 		activityText = new Text(composite, SWT.BORDER);
 		GridData data = new GridData();
@@ -70,7 +83,7 @@ public class NewActivityDialog extends Dialog {
 
 		// Add radio button for generating Activity Id.
 		Group group = new Group(composite, SWT.SHADOW_IN);
-		group.setText("Activity ID");
+		group.setText(Messages.getString("NewActivityDialog.label.activityId"));
 		group.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button button;
@@ -81,13 +94,13 @@ public class NewActivityDialog extends Dialog {
 		};
 
 		button = new Button(group, SWT.RADIO);
-		button.setText(GENERATE_ID);
+		button.setText(Messages.getString("NewActivityDialog.label.generateId"));
 		button.addListener(SWT.Selection, listener);
 		button.setSelection(true);
 
 		// group.setLayoutData(layout);
 		button = new Button(group, SWT.RADIO);
-		button.setText(NO_GENERATE_ID);
+		button.setText(Messages.getString("NewActivityDialog.label.noGenerateId"));
 
 		button.addListener(SWT.Selection, listener);
 
@@ -117,6 +130,9 @@ public class NewActivityDialog extends Dialog {
 			activityText.setFocus();
 			return;
 		}
+		
+				
+		
 
 		if (provider.isSnapShot(resource) && snapshotPath == null) {
 			DirectoryDialog dialog = new DirectoryDialog(getShell());
@@ -146,7 +162,18 @@ public class NewActivityDialog extends Dialog {
 			String id = idText.getText().trim();
 			activityId = noSpaceHeadline.concat(id);
 		}
-
+		
+		
+		String format = ClearCasePreferences.activityPattern();
+		if(format != null || format.length() > 0){
+			if(!activityConformsToSiteSpecificFormat(activityId,format)){
+				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), ClearCasePreferences.getNewActivityFormatMsg());
+				activityText.selectAll();
+				activityText.setFocus();
+				return;
+			}
+		}
+		
 		try {
 			String[] actvitySelectors = provider.getActivitySelectors(ClearCaseProvider.getViewName(resource));
 			String pVob = null;
@@ -200,6 +227,15 @@ public class NewActivityDialog extends Dialog {
 	// Make sure string only contains alaphanumeric characters.
 	private static boolean match(String s) {
 		return !p.matcher(s).find();
+	}
+	//Checks if 
+	private static boolean activityConformsToSiteSpecificFormat(String activityId,String regexp){
+		Pattern pattern = Pattern.compile(regexp);
+		Matcher matcher = pattern.matcher(activityId);
+		if(matcher.find()){
+			return true;
+		}
+		return false;
 	}
 
 	private void doSelection(Button button) {

@@ -93,6 +93,7 @@ public class ActivityDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		System.out.println("Enter: createDialogArea()");
 		getShell().setText(Messages.getString("ActivityDialog.title"));
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -109,6 +110,7 @@ public class ActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 		// refresh
 		String viewName = ClearCaseProvider.getViewName(resource);
+		System.out.println("view "+viewName);
 		Activity[] activities = Activity.refreshActivities(viewName, provider);
 		listViewer = createListViewer(composite, activities);
 		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {

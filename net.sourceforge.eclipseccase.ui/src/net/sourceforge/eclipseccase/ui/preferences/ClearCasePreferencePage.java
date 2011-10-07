@@ -162,13 +162,14 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(ADD_WITH_MASTER, PreferenceMessages.getString("Preferences.Source.AddWithMaster"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 		
-		// general settings
+		// comment settings
+		
+		addField(new BooleanFieldEditor(SILENT_PREVENT, PreferenceMessages.getString("Preferences.Source.SilentPrevent"), //$NON-NLS-1$
+				getFieldEditorParent(SOURCE_MANAGEMENT)));
 		addField(new StringFieldEditor(PREVENT_CHECKOUT, PreferenceMessages.getString("Preferences.Source.PreventCheckOut"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 		
-		//FIXME: mike 20110331
-		addField(new BooleanFieldEditor(USE_UCM, PreferenceMessages.getString("Preferences.Source.UseUcm"), //$NON-NLS-1$
-				getFieldEditorParent(SOURCE_MANAGEMENT)));
+		
 		// comments
 
 		addField(new BooleanFieldEditor(COMMENT_ADD, PreferenceMessages.getString("Preferences.Comments.CommentAdd"), //$NON-NLS-1$

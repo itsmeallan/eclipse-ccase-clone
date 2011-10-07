@@ -49,6 +49,7 @@ public class Activity {
 	}
 	
 	public static Activity [] refreshActivities(String view, ClearCaseProvider provider){
+		System.out.println("Enter: refreshActivities()");
 		if (view == "" && provider == null) {
 			Activity.setTest(true);
 			activities.add(new Activity("06-Jun-00.17:16:12", "test", "mike", "test comment","mystream@/pvob1"));
@@ -62,6 +63,9 @@ public class Activity {
 		activities = provider.listActivities(view);
 		//create new activities
 		ArrayList<Activity> activityList = Activity.getActivities();
+		for (Activity activity : activityList) {
+			System.out.println("Activity "+activity.getHeadline());
+		}
 		return activityList.toArray(new Activity[activityList.size()]);
 		
 		
