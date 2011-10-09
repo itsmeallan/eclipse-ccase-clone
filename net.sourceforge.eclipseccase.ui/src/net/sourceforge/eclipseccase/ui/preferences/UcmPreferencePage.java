@@ -12,6 +12,11 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+
+import org.eclipse.swt.layout.FillLayout;
+
 import net.sourceforge.eclipseccase.ui.DialogArea;
 
 import org.eclipse.swt.widgets.Group;
@@ -32,7 +37,11 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class UcmPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+	
+	private static final int WIDTH_HINT = 350;
 
+	private static final int HEIGHT_HINT = 150;
+	
 	private BooleanFieldEditor useUcm;
 	private BooleanFieldEditor silentPrevent;
 	private StringFieldEditor preventCheckout;
@@ -51,32 +60,60 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	@Override
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.LEFT);
-
-		// Sets the layout data for the top composite's 
-		// place in its parent's layout.
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		// Sets the layout for the top composite's 
-		// children to populate.
-		composite.setLayout(layout);
-
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		composite.setLayout(gridLayout);
+		
 		useUcm = new BooleanFieldEditor(IClearCasePreferenceConstants.USE_UCM, PreferenceMessages.getString("UcmPreferences.UseUcm"), //$NON-NLS-1$
 				composite);
-		useUcm.fillIntoGrid(composite, 2);
 		addFieldEditor(useUcm);
+		
 		Group group = new Group(composite,SWT.NULL);
+		group.setLayout(gridLayout);
+		GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridData.horizontalSpan = 2;
+		group.setLayoutData(gridData);
 		group.setText(PreferenceMessages.getString("UcmPreferences.group.preventCheckout"));
 		group.setBounds(25,150,150,125);
 		preventCheckout = new StringFieldEditor(IClearCasePreferenceConstants.PREVENT_CHECKOUT, PreferenceMessages.getString("UcmPreferences.PreventCheckOut"),group);
 		addFieldEditor(preventCheckout);
 		silentPrevent = new BooleanFieldEditor(IClearCasePreferenceConstants.SILENT_PREVENT, PreferenceMessages.getString("UcmPreferences.SilentPrevent"),group);
 		addFieldEditor(silentPrevent);
+//		Group activity =new Group(composite , SWT.NULL);
+//		activity.setLayout(gridLayout);
+//		activity.setLayoutData(gridData);
 		
-		Group group2 = new Group(composite,SWT.NULL);
-		group2.setText("ActivityPattern");
-		group2.setBounds(25,150,150,125);
-		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.activityPattern"),group2);
-		addFieldEditor(activityPattern);		
+		Group activity =new Group(composite , SWT.NULL);
+		activity.setLayout(gridLayout);
+		activity.setLayoutData(gridData);
+		activity.setText("Activity ID");
+		
+		Label activityPaternLabel = new Label(activity, SWT.NULL);
+		activityPaternLabel.setText(PreferenceMessages.getString("UcmPreferences.label.activityPattern"));
+		// Create a single line text field with no label.
+	    Text text = new Text(activity, SWT.FILL);
+	    //text.setSize(width, height)
+	    
+		
+		//activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, "",activity);
+	    //addFieldEditor(activityPattern);
+		
+		
+		//Create activity pattern text area.
+		Label label = new Label(activity, SWT.NULL);
+		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
+		label.setText(PreferenceMessages.getString("UcmPreferences.activityPattern"));
+
+		
+		
+		Text activityFormatText = new Text(activity, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+//		GridData gridData2 = new GridData(GridData.FILL, GridData.BEGINNING, true, false);
+//		gridData2.widthHint = WIDTH_HINT;
+//		gridData2.heightHint = HEIGHT_HINT;
+		activityFormatText.setText(PreferenceMessages.getString("UcmPreferences.activityPattern"));
+		//activityFormatText.setLayoutData(gridData2);
+		activityFormatText.selectAll();
+		
 		return composite;
 	}
 
