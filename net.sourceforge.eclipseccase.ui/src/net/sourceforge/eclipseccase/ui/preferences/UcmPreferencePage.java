@@ -12,6 +12,8 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -38,14 +40,14 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class UcmPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	
-	private static final int WIDTH_HINT = 350;
-
-	private static final int HEIGHT_HINT = 150;
+	
 	
 	private BooleanFieldEditor useUcm;
 	private BooleanFieldEditor silentPrevent;
 	private StringFieldEditor preventCheckout;
 	private StringFieldEditor activityPattern;
+	
+	private TextAreaFieldEditor activityId;
 
 	/**
 	 * Creates a new instance.
@@ -53,8 +55,7 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	public UcmPreferencePage() {
 		setDescription(PreferenceMessages.getString("UcmPreferences.Description")); //$NON-NLS-1$
 
-		// Set the preference store for the preference page.
-		setPreferenceStore(new ClearCasePreferenceStore());
+		
 	}
 
 	@Override
@@ -68,51 +69,25 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 				composite);
 		addFieldEditor(useUcm);
 		
-		Group group = new Group(composite,SWT.NULL);
-		group.setLayout(gridLayout);
-		GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
-		gridData.horizontalSpan = 2;
-		group.setLayoutData(gridData);
-		group.setText(PreferenceMessages.getString("UcmPreferences.group.preventCheckout"));
-		group.setBounds(25,150,150,125);
-		preventCheckout = new StringFieldEditor(IClearCasePreferenceConstants.PREVENT_CHECKOUT, PreferenceMessages.getString("UcmPreferences.PreventCheckOut"),group);
-		addFieldEditor(preventCheckout);
-		silentPrevent = new BooleanFieldEditor(IClearCasePreferenceConstants.SILENT_PREVENT, PreferenceMessages.getString("UcmPreferences.SilentPrevent"),group);
-		addFieldEditor(silentPrevent);
-//		Group activity =new Group(composite , SWT.NULL);
+		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), composite);
+		addFieldEditor(activityPattern);
+		
+		//		Group activity =new Group(composite , SWT.NULL);
+//		GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
+//		gridData.horizontalSpan = 2;
 //		activity.setLayout(gridLayout);
 //		activity.setLayoutData(gridData);
-		
-		Group activity =new Group(composite , SWT.NULL);
-		activity.setLayout(gridLayout);
-		activity.setLayoutData(gridData);
-		activity.setText("Activity ID");
-		
-		Label activityPaternLabel = new Label(activity, SWT.NULL);
-		activityPaternLabel.setText(PreferenceMessages.getString("UcmPreferences.label.activityPattern"));
-		// Create a single line text field with no label.
-	    Text text = new Text(activity, SWT.FILL);
-	    //text.setSize(width, height)
+//		activity.setText("Activity ID");
+//		
+//		Label activityPaternLabel = new Label(activity, SWT.NULL);
+//		activityPaternLabel.setText(PreferenceMessages.getString("UcmPreferences.label.activityPattern"));
+//		// Create a single line text field with no label.
+//	    Text text = new Text(activity, SWT.FILL|SWT.BORDER);
+//	    text.setSize(WIDTH_HINT, HEIGHT_HINT);
 	    
-		
-		//activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, "",activity);
-	    //addFieldEditor(activityPattern);
-		
-		
-		//Create activity pattern text area.
-		Label label = new Label(activity, SWT.NULL);
-		label.setLayoutData(new GridData(GridData.BEGINNING, GridData.CENTER, true, false));
-		label.setText(PreferenceMessages.getString("UcmPreferences.activityPattern"));
-
-		
-		
-		Text activityFormatText = new Text(activity, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//		GridData gridData2 = new GridData(GridData.FILL, GridData.BEGINNING, true, false);
-//		gridData2.widthHint = WIDTH_HINT;
-//		gridData2.heightHint = HEIGHT_HINT;
-		activityFormatText.setText(PreferenceMessages.getString("UcmPreferences.activityPattern"));
-		//activityFormatText.setLayoutData(gridData2);
-		activityFormatText.selectAll();
+	    
+	    activityId = new TextAreaFieldEditor(IClearCasePreferenceConstants.ACTIVITY_MSG_FORMAT, PreferenceMessages.getString("UcmPreferences.activityFormatMsg"), composite);
+		addFieldEditor(activityId);
 		
 		return composite;
 	}
@@ -122,12 +97,37 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
 	}
 	
-	
+	//Needs to be done for each fieldeditor.
 	private void addFieldEditor(FieldEditor fieldEditor){
 		
 		fieldEditor.setPreferencePage(this);
 		fieldEditor.setPreferenceStore(getPreferenceStore());
 		fieldEditor.load();
+	}
+	
+	protected void performDefaults() {
+		useUcm.loadDefault();
+		activityPattern.loadDefault();
+		activityId.loadDefault();
+//		exemptTagsList.setItems(
+//			HTMLEditorPlugin.getDefault().
+//				getDefaultExemptTagsPreference());
+		// getDefaultExemptTagsPreference() is a convenience
+		// method which retrieves the default preference from
+		// the preference store.
+		super.performDefaults();
+	}
+
+	public boolean performOk() {
+		useUcm.store();
+		activityPattern.store();
+		activityId.store();
+		ClearCasePlugin.getDefault().savePluginPreferences();
+
+//		HTMLEditorPlugin.getDefault().
+//			setExemptTagsPreference(exemptTagsList.getItems());
+
+		return super.performOk();
 	}
 
 }

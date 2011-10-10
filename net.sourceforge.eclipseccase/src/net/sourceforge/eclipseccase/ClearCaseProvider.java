@@ -575,6 +575,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 		System.out.println("Enter: listActivities()");
 		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
 				ClearCase.VIEW|ClearCase.LONG);
+		System.out.println("Output from cc:");
+		for (String line:output){
+			System.out.println(line);
+		}
 		ActivityParser.process(output);
 		return ActivityParser.listActivties();
 	}

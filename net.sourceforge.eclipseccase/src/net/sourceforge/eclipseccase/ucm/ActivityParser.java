@@ -22,6 +22,7 @@ public class ActivityParser {
 	private static final ArrayList<Activity> activities = new ArrayList<Activity>();
 
 	public static void process(String[] lines) {
+		System.out.println("Enter: process()");
 		Pattern pattern = Pattern.compile("activity\\s+\\\"(.*)\\\"");
 		Matcher matcher = pattern.matcher("");
 
@@ -69,6 +70,9 @@ public class ActivityParser {
 	}
 
 	public static ArrayList<Activity> listActivties() {
+		for (Activity activity : activities) {
+			System.out.println("Activity :"+activity.getHeadline());
+		}
 		return activities;
 	}
 

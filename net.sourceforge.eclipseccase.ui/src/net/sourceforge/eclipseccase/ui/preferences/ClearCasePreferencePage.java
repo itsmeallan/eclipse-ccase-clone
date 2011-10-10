@@ -164,13 +164,15 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		
 		// comment settings
 		
+		
+		
 		addField(new BooleanFieldEditor(SILENT_PREVENT, PreferenceMessages.getString("Preferences.Source.SilentPrevent"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 		addField(new StringFieldEditor(PREVENT_CHECKOUT, PreferenceMessages.getString("Preferences.Source.PreventCheckOut"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 		
 		
-		// comments
+		// comment settings
 
 		addField(new BooleanFieldEditor(COMMENT_ADD, PreferenceMessages.getString("Preferences.Comments.CommentAdd"), //$NON-NLS-1$
 				getFieldEditorParent(COMMENTS)));
