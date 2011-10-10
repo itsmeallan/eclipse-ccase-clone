@@ -54,7 +54,8 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	 */
 	public UcmPreferencePage() {
 		setDescription(PreferenceMessages.getString("UcmPreferences.Description")); //$NON-NLS-1$
-
+		// Set the preference store for the preference page.
+		setPreferenceStore(new ClearCasePreferenceStore());
 		
 	}
 
@@ -72,20 +73,6 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), composite);
 		addFieldEditor(activityPattern);
 		
-		//		Group activity =new Group(composite , SWT.NULL);
-//		GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridData.horizontalSpan = 2;
-//		activity.setLayout(gridLayout);
-//		activity.setLayoutData(gridData);
-//		activity.setText("Activity ID");
-//		
-//		Label activityPaternLabel = new Label(activity, SWT.NULL);
-//		activityPaternLabel.setText(PreferenceMessages.getString("UcmPreferences.label.activityPattern"));
-//		// Create a single line text field with no label.
-//	    Text text = new Text(activity, SWT.FILL|SWT.BORDER);
-//	    text.setSize(WIDTH_HINT, HEIGHT_HINT);
-	    
-	    
 	    activityId = new TextAreaFieldEditor(IClearCasePreferenceConstants.ACTIVITY_MSG_FORMAT, PreferenceMessages.getString("UcmPreferences.activityFormatMsg"), composite);
 		addFieldEditor(activityId);
 		
@@ -109,12 +96,6 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		useUcm.loadDefault();
 		activityPattern.loadDefault();
 		activityId.loadDefault();
-//		exemptTagsList.setItems(
-//			HTMLEditorPlugin.getDefault().
-//				getDefaultExemptTagsPreference());
-		// getDefaultExemptTagsPreference() is a convenience
-		// method which retrieves the default preference from
-		// the preference store.
 		super.performDefaults();
 	}
 
@@ -122,11 +103,6 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		useUcm.store();
 		activityPattern.store();
 		activityId.store();
-		ClearCasePlugin.getDefault().savePluginPreferences();
-
-//		HTMLEditorPlugin.getDefault().
-//			setExemptTagsPreference(exemptTagsList.getItems());
-
 		return super.performOk();
 	}
 
