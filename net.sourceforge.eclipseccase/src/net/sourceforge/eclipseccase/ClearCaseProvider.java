@@ -573,9 +573,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public ArrayList<Activity> listActivities(String viewName) {
 		System.out.println("Enter: listActivities()");
-		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
-				ClearCase.VIEW|ClearCase.LONG);
-		System.out.println("Output from cc:");
+		  HashMap<Integer,String> args = new HashMap<Integer,String>();
+		  args.put(Integer.valueOf(ClearCase.VIEW),viewName);
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.VIEW|ClearCase.LONG,args );
 		for (String line:output){
 			System.out.println(line);
 		}
@@ -588,8 +589,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public boolean activityAssociated(String viewName) {
-		String[] output = ClearCasePlugin.getEngine().getActivity(viewName,
-				ClearCase.VIEW | ClearCase.SHORT);
+		 HashMap<Integer,String> args = new HashMap<Integer,String>();
+		  args.put(Integer.valueOf(ClearCase.VIEW),viewName);
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.VIEW | ClearCase.SHORT,args);
 
 		if (output.length > 0) {
 			if (ClearCasePlugin.DEBUG_PROVIDER) {

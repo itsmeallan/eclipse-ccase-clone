@@ -12,6 +12,14 @@
 
 package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferenceStore;
@@ -62,7 +70,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
-		if (isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
+		if (isPreventedFromCheckOut(shell, provider, files) && !ClearCasePreferences.isSilentPrevent()) {
 			return CANCEL;
 		}
 
@@ -185,10 +193,11 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		final ClearCaseProvider provider = getProvider(files);
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
-		if (null == shell || !askForComment){
-			if(isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())){
-				return CANCEL;
-			}
+		if (null == shell || !askForComment) {
+			//FIXME: mike
+//			if (isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
+//				return CANCEL;
+//			}
 			return super.validateEdit(files, context);
 		}
 		try {
@@ -239,23 +248,49 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		}
 	}
 
-	private boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources, boolean silent) {
+	private boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources) {
 		for (final IResource resource : resources) {
+
 			if (provider.isPreventCheckout(resource)) {
-				if (!silent) {
-					PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-
-						public void run() {
-							Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-							MessageDialog.openInformation(activeShell, Messages.getString("ClearCaseUIModificationHandler.infoDialog.title"), Messages.getString("ClearCaseUIModificationHandler.infoDialog.message")+resource.getName());
-
-						}
-					});
+				PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
+				if (question.isRemember()) {
+						ClearCasePreferences.setPreventCheckOut();
 				}
-
 				return true;
 			}
+
+			
+
+			
 		}
 		return false;
+	}
+
+	private class PreventCheckoutQuestion implements Runnable {
+		private IResource resource;
+
+		private int result;
+
+		private boolean remember;
+
+		public PreventCheckoutQuestion(IResource resource) {
+			this.resource = resource;
+		}
+
+		public void run() {
+			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Messages.getString("ClearCaseUIModificationHandler.infoDialog.title"), null, Messages.getString("ClearCaseUIModificationHandler.infoDialog.message"), MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0, "Skip this dialog in the future!", false);
+			checkoutQuestion.open();
+			result = checkoutQuestion.getReturnCode();
+			remember = checkoutQuestion.getToggleState();
+		}
+
+		public int getResult() {
+			return result;
+		}
+
+		public boolean isRemember() {
+			return remember;
+		}
+
 	}
 }

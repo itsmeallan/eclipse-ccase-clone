@@ -350,6 +350,13 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 	public static boolean isSilentPrevent() {
 		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.SILENT_PREVENT);
+		
+	}
+	
+	public static void setPreventCheckOut(){
+		ClearCasePlugin.getDefault().getPluginPreferences().setValue(
+				IClearCasePreferenceConstants.PREVENT_CHECKOUT,
+				value);
 	}
 	
 	public static String activityPattern() {
