@@ -602,8 +602,22 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		return false;
 	}
-
-	
+	/**
+	 * Get name of set activity in current view.
+	 * @return
+	 */
+	public String getCurrentActivity(){
+		String result = "";
+		String[] output = ClearCasePlugin.getEngine().getActivity(ClearCase.SHORT|ClearCase.CVIEW, null);
+		
+		if(output == null | output.length == 0){
+			return result;
+		}
+		if(output[0] != null && output[0].length() > 0){
+			return output[0] ;
+		}
+		return result;
+	}
 
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector,String path) throws ClearCaseException {

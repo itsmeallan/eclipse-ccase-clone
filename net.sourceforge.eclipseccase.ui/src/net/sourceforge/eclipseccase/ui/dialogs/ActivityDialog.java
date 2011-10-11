@@ -175,7 +175,6 @@ public class ActivityDialog extends Dialog {
 					String viewName = ClearCaseProvider.getViewName(resource);
 					Activity[] activities = Activity.refreshActivities(viewName, provider);
 					listViewer.setInput(activities);
-					MessageDialog.openInformation(getShell(), "Info", "currentActivity is :" + selectedActivity.getActivitySelector() + " View :" + ClearCaseProvider.getViewName(resource));
 				} else {
 					return;
 				}
