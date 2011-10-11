@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.clearcase.ClearCase;
+
 import net.sourceforge.eclipseccase.ucm.Activity;
 
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -30,6 +32,13 @@ import org.eclipse.ui.PlatformUI;
 public class UcmActivity {
 
 	static class ActivityQuestion implements Runnable {
+		private ClearCaseProvider provider;
+		
+		
+		public ActivityQuestion(ClearCaseProvider provider){
+			this.provider = provider;
+		
+		}
 		private int returncode;
 
 		public int getReturncode() {
@@ -38,7 +47,7 @@ public class UcmActivity {
 
 		public void run() {
 			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity?", MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
+			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity? Current activity is: "+provider.getCurrentActivity(), MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 			returncode = activityQuestion.open();
 		}
 	}
@@ -51,32 +60,39 @@ public class UcmActivity {
 	 * @return
 	 */
 	public static boolean checkoutWithActivity(ClearCaseProvider provider, IResource[] resources, Shell shell) {
-
+		boolean allowCheckout = false;
 		IResource resource = resources[0];
 		if (resource != null) {
+			String view = ClearCaseProvider.getViewName(resource);
 			// check if current view has an activity associated.
-			ActivityQuestion question = new ActivityQuestion();
+			ActivityQuestion question = new ActivityQuestion(provider);
 			// Want to change//create activity?
 			PlatformUI.getWorkbench().getDisplay().syncExec(question);
 
 			/* Yes=0 No=1 Cancel=2 */
-			if (!provider.activityAssociated(ClearCaseProvider.getViewName(resource)) || question.getReturncode() == 0) {
+			if (!provider.activityAssociated(view) || question.getReturncode() == 0) {
 				ActivityDialog dlg = new ActivityDialog(shell, provider, resource);
 				if (dlg.open() == Window.OK) {
 					Activity activity = dlg.getSelectedActivity();
 					if (activity != null) {
 						String activitySelector = activity.getActivitySelector();
-						MessageDialog.openInformation(shell, "Info", "activitySelector :"+activitySelector+" View :"+ClearCaseProvider.getViewName(resource));
-						provider.setActivity(activitySelector, ClearCaseProvider.getViewName(resource));
+						provider.setActivity(activitySelector, view);
 						return true;
 					}
 
 				}
 			}
-
+		
+			//Now we check if we have any activity set before checking out.
+			if(provider.activityAssociated(view)){
+			//Allow checkout
+				return true;
+			}else{
+				return false;
+			}
 		}
-		// No checkout.
-		return false;
+		//resource null don't check-out.
+		return allowCheckout;
 	}
 
 }
