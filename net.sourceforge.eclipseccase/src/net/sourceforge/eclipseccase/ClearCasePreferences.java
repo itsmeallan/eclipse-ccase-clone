@@ -356,7 +356,7 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 	public static void setPreventCheckOut(){
 		ClearCasePlugin.getDefault().getPluginPreferences().setValue(
 				IClearCasePreferenceConstants.PREVENT_CHECKOUT,
-				value);
+				true);
 	}
 	
 	public static String activityPattern() {

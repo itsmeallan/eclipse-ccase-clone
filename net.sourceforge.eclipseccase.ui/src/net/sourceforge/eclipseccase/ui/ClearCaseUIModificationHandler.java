@@ -254,7 +254,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 			if (provider.isPreventCheckout(resource)) {
 				PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
 				if (question.isRemember()) {
-						ClearCasePreferences.setPreventCheckOut(question.isRemember());
+						ClearCasePreferences.setPreventCheckOut();
 				}
 				return true;
 			}
