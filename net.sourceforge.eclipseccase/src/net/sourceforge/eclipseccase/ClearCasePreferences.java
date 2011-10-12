@@ -353,9 +353,9 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 		
 	}
 	
-	public static void setPreventCheckOut(){
+	public static void setSilentPrevent(){
 		ClearCasePlugin.getDefault().getPluginPreferences().setValue(
-				IClearCasePreferenceConstants.PREVENT_CHECKOUT,
+				IClearCasePreferenceConstants.SILENT_PREVENT,
 				true);
 	}
 	

@@ -15,6 +15,8 @@ package net.sourceforge.eclipseccase;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.eclipseccase.Messages;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.team.FileModificationValidationContext;
@@ -26,8 +28,11 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.PlatformUI;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * A simple file modification handler for the ClearCase integration.
@@ -135,10 +140,11 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
-
+				
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
-
+		
+		
 		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
@@ -256,5 +262,52 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 			return OK;
 		return checkout(new IFile[] { file });
 	}
+	
+//	protected boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources,boolean silent) {
+//		for (final IResource resource : resources) {
+//
+//			if (provider.isPreventCheckout(resource) && !silent) {
+//				PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
+//				PlatformUI.getWorkbench().getDisplay().syncExec(question);
+//				if (question.isRemember()) {
+//						ClearCasePreferences.setSilentPrevent();
+//				}
+//				return true;
+//			}else if(provider.isPreventCheckout(resource) && silent){
+//				//show no message.
+//				return true;
+//			}
+//		}
+//				
+//		return false;
+//	}
+//	
+//	public class PreventCheckoutQuestion implements Runnable {
+//		private IResource resource;
+//
+//		private int result;
+//
+//		private boolean remember;
+//
+//		public PreventCheckoutQuestion(IResource resource) {
+//			this.resource = resource;
+//		}
+//
+//		public void run() {
+//			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Messages.getString("ClearCaseModificationHandler.infoDialog.title"), null, Messages.getString("ClearCaseModificationHandler.infoDialog.message.part1")+resource.getName()+" "+Messages.getString("ClearCaseModificationHandler.infoDialog.message.part2"), MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0, "Skip this dialog in the future!", false);
+//			checkoutQuestion.open();
+//			result = checkoutQuestion.getReturnCode();
+//			remember = checkoutQuestion.getToggleState();
+//		}
+//
+//		public int getResult() {
+//			return result;
+//		}
+//
+//		public boolean isRemember() {
+//			return remember;
+//		}
+//
+//	}
 
 }

@@ -12,13 +12,7 @@
 
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
@@ -70,10 +64,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
-		if (isPreventedFromCheckOut(shell, provider, files) && !ClearCasePreferences.isSilentPrevent()) {
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, true))
 			return CANCEL;
-		}
-
 		// check for provider
 		if (null == provider) {
 			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
@@ -187,17 +179,16 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
-		if (ClearCasePreferences.isCheckoutAutoNever()) {
+		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
-		}
 		final ClearCaseProvider provider = getProvider(files);
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
-			//FIXME: mike
-//			if (isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
-//				return CANCEL;
-//			}
+				
+			if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())){
+				return CANCEL;
+			}
 			return super.validateEdit(files, context);
 		}
 		try {
@@ -248,49 +239,4 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		}
 	}
 
-	private boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources) {
-		for (final IResource resource : resources) {
-
-			if (provider.isPreventCheckout(resource)) {
-				PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
-				if (question.isRemember()) {
-						ClearCasePreferences.setPreventCheckOut();
-				}
-				return true;
-			}
-
-			
-
-			
-		}
-		return false;
-	}
-
-	private class PreventCheckoutQuestion implements Runnable {
-		private IResource resource;
-
-		private int result;
-
-		private boolean remember;
-
-		public PreventCheckoutQuestion(IResource resource) {
-			this.resource = resource;
-		}
-
-		public void run() {
-			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Messages.getString("ClearCaseUIModificationHandler.infoDialog.title"), null, Messages.getString("ClearCaseUIModificationHandler.infoDialog.message"), MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0, "Skip this dialog in the future!", false);
-			checkoutQuestion.open();
-			result = checkoutQuestion.getReturnCode();
-			remember = checkoutQuestion.getToggleState();
-		}
-
-		public int getResult() {
-			return result;
-		}
-
-		public boolean isRemember() {
-			return remember;
-		}
-
-	}
 }

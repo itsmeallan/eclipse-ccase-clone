@@ -1,5 +1,8 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+import net.sourceforge.eclipseccase.PreventCheckoutHelper;
+
 import java.util.*;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.*;
@@ -15,9 +18,14 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 	@Override
 	public void execute(IAction action) {
-
+		
 		final IResource[] resources = getSelectedResources();
 		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
+		
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(getShell(), provider, resources, ClearCasePreferences.isSilentPrevent())){
+			return;
+		}
+		
 
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
@@ -89,7 +97,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
-			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource) || provider.isPreventCheckout(resource))
+			if (provider == null || provider.isUnknownState(resource) || provider.isIgnored(resource) || !provider.isClearCaseElement(resource))
 				return false;
 			if (provider.isCheckedOut(resource))
 				return false;
