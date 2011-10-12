@@ -11,40 +11,17 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import net.sourceforge.eclipseccase.ucm.Activity;
-
-import org.eclipse.jface.viewers.DoubleClickEvent;
-
-import org.eclipse.jface.viewers.IDoubleClickListener;
-
-import org.eclipse.jface.viewers.IStructuredSelection;
-
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-
-
-import org.eclipse.jface.viewers.Viewer;
-
-import org.eclipse.jface.viewers.ViewerSorter;
-
-import org.eclipse.jface.viewers.ArrayContentProvider;
-
-import org.eclipse.jface.viewers.ListViewer;
-
+import java.util.ArrayList;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
-
-import java.util.*;
-import net.sourceforge.eclipseccase.*;
+import net.sourceforge.eclipseccase.ucm.Activity;
 import net.sourceforge.eclipseccase.ui.CommentDialogArea;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.dialogs.*;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -68,13 +45,11 @@ public class ActivityDialog extends Dialog {
 
 	private Button newButton;
 
-	private Button oKButton;
+	private Button browseButton;
 
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
-
-	private static final String NO_ACTIVITY = "NONE";
 
 	private Activity selectedActivity = null;
 
@@ -110,9 +85,25 @@ public class ActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 		// refresh
 		String viewName = ClearCaseProvider.getViewName(resource);
-		System.out.println("view "+viewName);
+		System.out.println("view " + viewName);
 		Activity[] activities = Activity.refreshActivities(viewName, provider);
 		listViewer = createListViewer(composite, activities);
+
+		// if we have activity set as selected otherwise let sorter in list
+		// decide which to set.
+		if (provider != null && provider.activityAssociated(viewName)) {
+			// TODO: could this be cached for project.
+			String headline = provider.getCurrentActivity();
+			for (Activity activity : activities) {
+				if (activity.getHeadline().equalsIgnoreCase(headline)) {
+
+					listViewer.setSelection(new StructuredSelection(activity), true);
+					listViewer.refresh();
+				}
+
+			}
+		}
+
 		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -134,7 +125,7 @@ public class ActivityDialog extends Dialog {
 			}
 		});
 
-		addButton(parent);
+		addButtons(composite);
 
 		commentDialogArea.createArea(composite);
 		commentDialogArea.addPropertyChangeListener(new IPropertyChangeListener() {
@@ -148,12 +139,13 @@ public class ActivityDialog extends Dialog {
 
 	}
 
-	private void addButton(Composite parent) {
+	private void addButtons(Composite parent) {
 		Composite buttons = new Composite(parent, SWT.NONE);
 		buttons.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
+		layout.numColumns = 2;
 		buttons.setLayout(layout);
 
 		newButton = new Button(buttons, SWT.PUSH);
@@ -164,7 +156,7 @@ public class ActivityDialog extends Dialog {
 		data.widthHint = Math.max(widthHint, newButton.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 		newButton.setLayoutData(data);
 		newButton.setEnabled(true);
-		SelectionListener listener = new SelectionAdapter() {
+		SelectionListener newListener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
@@ -175,13 +167,37 @@ public class ActivityDialog extends Dialog {
 					String viewName = ClearCaseProvider.getViewName(resource);
 					Activity[] activities = Activity.refreshActivities(viewName, provider);
 					listViewer.setInput(activities);
-				} else {
+					listViewer.refresh();
+				} else
 					return;
-				}
 
 			}
 		};
-		newButton.addSelectionListener(listener);
+		newButton.addSelectionListener(newListener);
+
+		browseButton = new Button(buttons, SWT.PUSH);
+		browseButton.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
+		browseButton.setLayoutData(data);
+		browseButton.setEnabled(true);
+		
+		SelectionListener browseListener = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Open new Dialog to add activity.
+//				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
+//				ActivitiesTableView dlg = new ActivitiesTableView(activeShell, provider, ActivityDialog.this, resource);
+//				if (dlg.open() == Window.OK) {
+//					// refresh
+//					String viewName = ClearCaseProvider.getViewName(resource);
+//					Activity[] activities = Activity.refreshActivities(viewName, provider);
+//					listViewer.setInput(activities);
+//					listViewer.refresh();
+//				} 
+//					return;
+
+			}
+		};
+		browseButton.addSelectionListener(browseListener);
 	}
 
 	@Override
@@ -201,6 +217,7 @@ public class ActivityDialog extends Dialog {
 		listViewer.setContentProvider(new ArrayContentProvider());
 		listViewer.setInput(activities);
 		listViewer.setSorter(new ViewerSorter() {
+			@Override
 			public int compare(Viewer viewer, Object p1, Object p2) {
 				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
 			}
@@ -222,9 +239,8 @@ public class ActivityDialog extends Dialog {
 	public boolean activityExist(String headline) {
 		ArrayList<Activity> activities = Activity.getActivities();
 		for (Activity activity : activities) {
-			if (headline.equalsIgnoreCase(activity.getHeadline())) {
+			if (headline.equalsIgnoreCase(activity.getHeadline()))
 				return true;
-			}
 
 		}
 		return false;

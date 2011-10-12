@@ -159,5 +159,8 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String ACTIVITY_MSG_FORMAT = ClearCasePlugin.PLUGIN_ID
 			+ ".activityMsgFormat";//$NON-NLS-1$
+	/** ClearCase preference */
+	String ACTIVITY_FORMAT_HELP_STRING = ClearCasePlugin.PLUGIN_ID
+			+ ".activityFormatHelpString";//$NON-NLS-1$
 
 }

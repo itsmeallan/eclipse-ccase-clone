@@ -65,14 +65,14 @@ public class UcmActivity {
 		if (resource != null) {
 			String view = ClearCaseProvider.getViewName(resource);
 			// check if current view has an activity associated.
-			if (!provider.activityAssociated(view)) {
+			//if (!provider.activityAssociated(view)) {
 
-				ActivityQuestion question = new ActivityQuestion(provider);
+				//ActivityQuestion question = new ActivityQuestion(provider);
 				// Want to change//create activity?
-				PlatformUI.getWorkbench().getDisplay().syncExec(question);
+				//PlatformUI.getWorkbench().getDisplay().syncExec(question);
 
 				/* Yes=0 No=1 Cancel=2 */
-				if (question.getReturncode() == 0) {
+				//if (question.getReturncode() == 0) {
 					ActivityDialog dlg = new ActivityDialog(shell, provider, resource);
 					if (dlg.open() == Window.OK) {
 						Activity activity = dlg.getSelectedActivity();
@@ -82,12 +82,12 @@ public class UcmActivity {
 							return true;
 						}
 
-					}
+//				
 				}else{
 					//Answer was N or Cancel.
 					return false;
 				}
-			}
+			//}
 			return true;
 		}
 		// resource null don't check-out.

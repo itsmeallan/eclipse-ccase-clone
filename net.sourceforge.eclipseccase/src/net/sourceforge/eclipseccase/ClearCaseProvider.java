@@ -621,6 +621,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 		return result;
 	}
+	
+
 
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector,String path) throws ClearCaseException {
