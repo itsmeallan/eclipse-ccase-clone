@@ -39,10 +39,6 @@ public class ActivityDialog extends Dialog {
 	/** trace id */
 	private static final String TRACE_ACTIVITYDIALOG = "ActivityDialog"; //$NON-NLS-1$
 
-	private ListViewer listViewer;
-
-	// private Combo activityCombo;
-
 	private Button newButton;
 
 	private Button browseButton;
@@ -56,6 +52,8 @@ public class ActivityDialog extends Dialog {
 	private static boolean test = false;
 
 	private IResource resource;
+	
+	private ComboViewer comboViewer;
 
 	public ActivityDialog(Shell parentShell, ClearCaseProvider provider, IResource resource) {
 		super(parentShell);
@@ -87,24 +85,23 @@ public class ActivityDialog extends Dialog {
 		String viewName = ClearCaseProvider.getViewName(resource);
 		System.out.println("view " + viewName);
 		Activity[] activities = Activity.refreshActivities(viewName, provider);
-		listViewer = createListViewer(composite, activities);
-
+		comboViewer = createComboViewer(composite,activities);
+		
 		// if we have activity set as selected otherwise let sorter in list
 		// decide which to set.
 		if (provider != null && provider.activityAssociated(viewName)) {
 			// TODO: could this be cached for project.
 			String headline = provider.getCurrentActivity();
 			for (Activity activity : activities) {
-				if (activity.getHeadline().equalsIgnoreCase(headline)) {
-
-					listViewer.setSelection(new StructuredSelection(activity), true);
-					listViewer.refresh();
+				if (activity.getHeadline().equalsIgnoreCase(headline)) {					
+					comboViewer.setSelection(new StructuredSelection(activity), true);
+					comboViewer.refresh();
 				}
 
 			}
 		}
 
-		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -115,7 +112,7 @@ public class ActivityDialog extends Dialog {
 			}
 		});
 
-		listViewer.addDoubleClickListener(new IDoubleClickListener() {
+		comboViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (ClearCasePlugin.DEBUG_UCM) {
@@ -166,8 +163,8 @@ public class ActivityDialog extends Dialog {
 					// refresh
 					String viewName = ClearCaseProvider.getViewName(resource);
 					Activity[] activities = Activity.refreshActivities(viewName, provider);
-					listViewer.setInput(activities);
-					listViewer.refresh();
+					comboViewer.setInput(activities);
+					comboViewer.refresh();
 				} else
 					return;
 
@@ -211,12 +208,12 @@ public class ActivityDialog extends Dialog {
 		super.buttonPressed(buttonId);
 	}
 
-	protected ListViewer createListViewer(Composite parent, Activity[] activities) {
-		ListViewer listViewer = new ListViewer(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
-		listViewer.setLabelProvider(new ActivityListLabelProvider());
-		listViewer.setContentProvider(new ArrayContentProvider());
-		listViewer.setInput(activities);
-		listViewer.setSorter(new ViewerSorter() {
+	protected ComboViewer createComboViewer(Composite composite,Activity[] activities) {
+		ComboViewer comboViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY); 
+		comboViewer.setLabelProvider(new ActivityListLabelProvider());
+		comboViewer.setContentProvider(new ArrayContentProvider());
+		comboViewer.setInput(activities);
+		comboViewer.setSorter(new ViewerSorter() {
 			@Override
 			public int compare(Viewer viewer, Object p1, Object p2) {
 				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
@@ -224,8 +221,7 @@ public class ActivityDialog extends Dialog {
 
 		});
 
-		return listViewer;
-
+		return comboViewer;
 	}
 
 	public Activity getSelectedActivity() {
