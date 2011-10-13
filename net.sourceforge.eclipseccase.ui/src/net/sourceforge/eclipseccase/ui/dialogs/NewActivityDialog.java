@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ucm.RuntimeSubstitution;
+
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import java.util.regex.Matcher;
@@ -106,6 +108,8 @@ public class NewActivityDialog extends Dialog {
 
 		// Input field
 		idText = new Text(group, SWT.BORDER);
+		String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
+		idText.setText(runtimeText);
 		idText.setEditable(true);
 		idText.setEnabled(false);
 
@@ -253,6 +257,7 @@ public class NewActivityDialog extends Dialog {
 		}
 
 	}
+		
 
 	// For testing of Dialog.
 	public static void main(String[] args) {

@@ -12,6 +12,22 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import org.eclipse.ui.dialogs.ListSelectionDialog;
+
+import java.util.Iterator;
+
+import org.eclipse.jface.viewers.Viewer;
+
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+
+import org.eclipse.jface.viewers.ILabelProvider;
+
+import org.eclipse.jface.viewers.LabelProvider;
+
+import org.eclipse.swt.widgets.List;
+
+import java.util.ArrayList;
+
 import org.eclipse.swt.events.ModifyEvent;
 
 import org.eclipse.swt.widgets.Event;
@@ -80,17 +96,17 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		Group group = new Group(composite, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		group.setLayout(new GridLayout(1, false));
-		group.setText("Test");
+		group.setText("Activity ID Format:");
 		
 		TextPair format = createFormatEditorControl(group, 
-	            "format",  //$NON-NLS-1$
-	            "text", getFileBindingDescriptions()); //$NON-NLS-1$ //$NON-NLS-2$
+				PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"),  //$NON-NLS-1$
+	            "Add Variables...", getFileBindingDescriptions()); //$NON-NLS-1$ //$NON-NLS-2$
 			fileTextFormat = format.t1;
 			
-			activityIdFormatHelpString = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING, PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"), composite);
-			addFieldEditor(activityPattern);	
+//			activityIdFormatHelpString = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING, PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"), composite);
+//			addFieldEditor(activityIdFormatHelpString);	
 		
-		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), composite);
+		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), group);
 		addFieldEditor(activityPattern);
 
 		
@@ -142,12 +158,12 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	        createLabel(composite, title, 1);
 			
 	        Text format = new Text(composite, SWT.BORDER);
-			format.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			format.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {				
-					updateExamples();
-				}
-			});
+			//format.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//			format.addModifyListener(new ModifyListener() {
+//				public void modifyText(ModifyEvent e) {				
+//					updateExamples();
+//				}
+//			});
 			Button b = new Button(composite, SWT.NONE);
 			b.setText(buttonText);
 			GridData data = new GridData();
@@ -169,7 +185,7 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
      */     
     private Map getFileBindingDescriptions() {
 		Map bindings = new HashMap();
-//		bindings.put(SVNDecoratorConfiguration.RESOURCE_NAME, Policy.bind("SVNDecoratorPreferencesPage.nameResourceVariable")); //$NON-NLS-1$
+		bindings.put("stream", "current stream name"); //$NON-NLS-1$
 //		bindings.put(SVNDecoratorConfiguration.RESOURCE_REVISION, Policy.bind("SVNDecoratorPreferencesPage.revisionResourceVariable")); //$NON-NLS-1$
 //		bindings.put(SVNDecoratorConfiguration.DIRTY_FLAG, Policy.bind("SVNDecoratorPreferencesPage.flagDirtyVariable")); //$NON-NLS-1$
 //		bindings.put(SVNDecoratorConfiguration.ADDED_FLAG, Policy.bind("SVNDecoratorPreferencesPage.flagAddedVariable")); //$NON-NLS-1$
@@ -186,6 +202,11 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		}
 		Text t1;
 		Text t2;
+	}
+	
+	class StringPair {
+		String s1;
+		String s2;
 	}
 	
 	/**
@@ -213,47 +234,47 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	 * Add another variable to the given target. The variable is inserted at current position
      * A ListSelectionDialog is shown and the choose the variables to add 
 	 */
-	private void addVariables(Text target, Map bindings) {
+	private void addVariables(Text target, Map<String,String> bindings) {
 	
-//		final List variables = new ArrayList(bindings.size());
-//		
-//		ILabelProvider labelProvider = new LabelProvider() {
-//			public String getText(Object element) {
-//				return ((StringPair)element).s1 + " - " + ((StringPair)element).s2; //$NON-NLS-1$
-//			}
-//		};
-//		
-//		IStructuredContentProvider contentsProvider = new IStructuredContentProvider() {
-//			public Object[] getElements(Object inputElement) {
-//				return variables.toArray(new StringPair[variables.size()]);
-//			}
-//			public void dispose() {}
-//			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
-//		};
-//		
-//		for (Iterator it = bindings.keySet().iterator(); it.hasNext();) {
-//			StringPair variable = new StringPair();
-//			variable.s1 = (String) it.next(); // variable
-//			variable.s2 = (String) bindings.get(variable.s1); // description
-//			variables.add(variable);				
-//		}
-//	
-//		ListSelectionDialog dialog =
-//			new ListSelectionDialog(
-//				this.getShell(),
-//				this,
-//				contentsProvider,
-//				labelProvider,
-//				Policy.bind("SVNDecoratorPreferencesPage.selectVariablesToAdd")); //$NON-NLS-1$
-//		dialog.setTitle(Policy.bind("SVNDecoratorPreferencesPage.AddVariables")); //$NON-NLS-1$
-//		if (dialog.open() != ListSelectionDialog.OK)
-//			return;
-//	
-//		Object[] result = dialog.getResult();
-//		
-//		for (int i = 0; i < result.length; i++) {
-//			target.insert("{"+((StringPair)result[i]).s1 +"}"); //$NON-NLS-1$ //$NON-NLS-2$
-//		}		
+		final ArrayList variables = new ArrayList<String>(bindings.size());
+		
+		ILabelProvider labelProvider = new LabelProvider() {
+			public String getText(Object element) {
+				return ((StringPair)element).s1 + " - " + ((StringPair)element).s2; //$NON-NLS-1$
+			}
+		};
+		
+		IStructuredContentProvider contentsProvider = new IStructuredContentProvider() {
+			public Object[] getElements(Object inputElement) {
+				return variables.toArray(new StringPair[variables.size()]);
+			}
+			public void dispose() {}
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+		};
+		
+		for (Iterator it = bindings.keySet().iterator(); it.hasNext();) {
+			StringPair variable = new StringPair();
+			variable.s1 = (String) it.next(); // variable
+			variable.s2 = (String) bindings.get(variable.s1); // description
+			variables.add(variable);				
+		}
+	
+		ListSelectionDialog dialog =
+			new ListSelectionDialog(
+				this.getShell(),
+				this,
+				contentsProvider,
+				labelProvider,
+				"Select variables that will be substituted with runtime values:"); //$NON-NLS-1$
+		dialog.setTitle("Add Substitution Variables"); //$NON-NLS-1$
+		if (dialog.open() != ListSelectionDialog.OK)
+			return;
+	
+		Object[] result = dialog.getResult();
+		
+		for (int i = 0; i < result.length; i++) {
+			target.insert("{"+((StringPair)result[i]).s1 +"}"); //$NON-NLS-1$ //$NON-NLS-2$
+		}		
 	}
 
 }

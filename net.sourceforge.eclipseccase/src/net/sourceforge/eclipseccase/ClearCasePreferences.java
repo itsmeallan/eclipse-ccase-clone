@@ -369,6 +369,11 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.ACTIVITY_MSG_FORMAT);
 	}
 	
+	public static String getActivityIdFormatHelpString(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING);
+	}
+	
 	/**
 	 * Clients should not call this method. It will be called automatically by
 	 * the preference initializer when the appropriate default preference node
