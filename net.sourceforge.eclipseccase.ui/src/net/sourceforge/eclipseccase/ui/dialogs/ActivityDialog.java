@@ -99,6 +99,9 @@ public class ActivityDialog extends Dialog {
 				}
 
 			}
+		}else{
+			comboViewer.setSelection(new StructuredSelection(activities), true);
+			comboViewer.refresh();
 		}
 
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
