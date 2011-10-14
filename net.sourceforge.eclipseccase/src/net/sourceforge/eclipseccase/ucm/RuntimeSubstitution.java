@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 
 /**
@@ -19,7 +21,7 @@ public class RuntimeSubstitution {
 	private static Map<String, String> replacements = new HashMap<String, String>();
 
 	static{	
-		replacements.put("{stream}","ClearCaseProvider.getCurrentActivity()");
+		replacements.put("{stream}","net.sourceforge.eclipseccase.ClearCaseProvider:getCurrentActivity");
 	}
 
 	public static String replace(final String msg) {
@@ -51,7 +53,7 @@ public class RuntimeSubstitution {
 
 	public static String getValue(String expression) {
 
-		String[] parts = expression.split("\\.");
+		String[] parts = expression.split(":");
 
 		// Obtain the Class instance
 		String result = "";
@@ -59,7 +61,14 @@ public class RuntimeSubstitution {
 			// Obtain the Class
 			// Obtain the Class instance
 			Class cls = Class.forName(parts[0]);
-
+			
+			Method[] methods = cls.getDeclaredMethods();
+	        
+	        //Loop through the methods and print out their names
+	        for (Method method : methods) {
+	            System.out.println(method.getName());
+	        }
+			
 			// Get the method
 			Method method = cls.getMethod(parts[1]);
 

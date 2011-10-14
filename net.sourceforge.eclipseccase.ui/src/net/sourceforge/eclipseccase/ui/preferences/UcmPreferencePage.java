@@ -12,53 +12,23 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import org.eclipse.ui.dialogs.ListSelectionDialog;
+import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 
-import java.util.Iterator;
-
-import org.eclipse.jface.viewers.Viewer;
-
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-
-import org.eclipse.jface.viewers.ILabelProvider;
-
-import org.eclipse.jface.viewers.LabelProvider;
-
-import org.eclipse.swt.widgets.List;
-
-import java.util.ArrayList;
-
-import org.eclipse.swt.events.ModifyEvent;
-
-import org.eclipse.swt.widgets.Event;
-
-import org.eclipse.swt.widgets.Listener;
-
-import org.eclipse.swt.widgets.Button;
-
-import org.eclipse.swt.widgets.Label;
-
-import org.eclipse.swt.events.ModifyListener;
-
-import org.eclipse.jface.dialogs.IDialogConstants;
-
-import java.util.HashMap;
-
-import java.util.Map;
-
-import org.eclipse.swt.widgets.Text;
-
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Group;
-
+import java.util.*;
 import net.sourceforge.eclipseccase.IClearCasePreferenceConstants;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.*;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 public class UcmPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -66,11 +36,15 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
 	private StringFieldEditor activityPattern;
 
-	private StringFieldEditor activityIdFormatHelpString;
+	// private StringFieldEditor activityIdFormatHelpString;
 
 	private TextAreaFieldEditor activityId;
-	
-	private Text fileTextFormat;
+
+	private Text activityPatternText;
+
+	private Text activityIdHelpTextFormat;
+
+	private static final int SPAN = 1;
 
 	/**
 	 * Creates a new instance.
@@ -84,37 +58,36 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
 	@Override
 	protected Control createContents(Composite parent) {
-		Composite composite = new Composite(parent, SWT.LEFT);
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		composite.setLayout(gridLayout);
+
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		useUcm = new BooleanFieldEditor(IClearCasePreferenceConstants.USE_UCM, PreferenceMessages.getString("UcmPreferences.UseUcm"), //$NON-NLS-1$
 				composite);
 		addFieldEditor(useUcm);
-		
-		Group group = new Group(composite, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		group.setLayout(new GridLayout(1, false));
-		group.setText("Activity ID Format:");
-		
-		TextPair format = createFormatEditorControl(group, 
-				PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"),  //$NON-NLS-1$
-	            "Add Variables...", getFileBindingDescriptions()); //$NON-NLS-1$ //$NON-NLS-2$
-			fileTextFormat = format.t1;
-			
-//			activityIdFormatHelpString = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING, PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"), composite);
-//			addFieldEditor(activityIdFormatHelpString);	
-		
-		activityPattern = new StringFieldEditor(IClearCasePreferenceConstants.ACTIVITY_PATTERN, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), group);
-		addFieldEditor(activityPattern);
 
-		
-		
+		Group group = new Group(composite, SWT.NULL);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 3;
+		group.setLayout(layout);
+		GridData data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		group.setLayoutData(data);
+		group.setText("Activity ID Format:");
+
+		TextPair format = createFormatEditorControl(group, PreferenceMessages.getString("UcmPreferences.label.activityForHelpString"), //$NON-NLS-1$
+				PreferenceMessages.getString("UcmPreferences.button.addVariables"), getActivityIdBindingDescriptions()); //$NON-NLS-1$ 
+		activityIdHelpTextFormat = format.t1;
+
+		createLabel(group, PreferenceMessages.getString("UcmPreferences.label.activityPattern"), SPAN); //$NON-NLS-1$
+		activityPatternText = new Text(group, SWT.BORDER);
+		activityPatternText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		activityId = new TextAreaFieldEditor(IClearCasePreferenceConstants.ACTIVITY_MSG_FORMAT, PreferenceMessages.getString("UcmPreferences.activityFormatMsg"), composite);
 		addFieldEditor(activityId);
-
+		
+		initializeValues();
+		
 		return composite;
 	}
 
@@ -122,7 +95,21 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	
+	/**
+	 * Initializes values for non-FieldEditors.
+	 */
+	private void initializeValues() {
+		final IPreferenceStore store = getPreferenceStore();
+		
+		activityPatternText.setText(store.getString(IClearCasePreferenceConstants.ACTIVITY_PATTERN));
+		activityIdHelpTextFormat.setText(store.getString(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING));
+		
+		
+		setValid(true);
+	}
+	
 	// Needs to be done for each fieldeditor.
 	private void addFieldEditor(FieldEditor fieldEditor) {
 
@@ -134,8 +121,9 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	@Override
 	protected void performDefaults() {
 		useUcm.loadDefault();
-		activityIdFormatHelpString.loadDefault();
-		activityPattern.loadDefault();
+		// Since not a FieldEditor
+		activityPatternText.setText(getPreferenceStore().getDefaultString(IClearCasePreferenceConstants.ACTIVITY_PATTERN));
+		activityIdHelpTextFormat.setText(getPreferenceStore().getDefaultString(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING));
 		activityId.loadDefault();
 		super.performDefaults();
 	}
@@ -143,75 +131,71 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 	@Override
 	public boolean performOk() {
 		useUcm.store();
-		activityIdFormatHelpString.store();
-		activityPattern.store();
+		// Since not a FieldEditor
+		getPreferenceStore().setValue(IClearCasePreferenceConstants.ACTIVITY_PATTERN, activityPatternText.getText());
+		getPreferenceStore().setValue(IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING, activityIdHelpTextFormat.getText());
 		activityId.store();
+
 		return super.performOk();
 	}
-	
-	protected TextPair createFormatEditorControl(
-	        Composite composite, 
-	        String title, 
-	        String buttonText, 
-	        final Map supportedBindings) {
-	        
-	        createLabel(composite, title, 1);
-			
-	        Text format = new Text(composite, SWT.BORDER);
-			//format.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-//			format.addModifyListener(new ModifyListener() {
-//				public void modifyText(ModifyEvent e) {				
-//					updateExamples();
-//				}
-//			});
-			Button b = new Button(composite, SWT.NONE);
-			b.setText(buttonText);
-			GridData data = new GridData();
-			data.horizontalAlignment = GridData.FILL;
-			int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-			data.widthHint = Math.max(widthHint, b.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
-			b.setLayoutData(data);
-			final Text formatToInsert = format;
-			b.addListener(SWT.Selection, new Listener() {
-				public void handleEvent (Event event) {
-					addVariables(formatToInsert, supportedBindings);
-				}			
-			});
-			
-			return new TextPair(format, null);
-		}
+
+	protected TextPair createFormatEditorControl(Composite composite, String title, String buttonText, final Map<String, String> supportedBindings) {
+
+		createLabel(composite, title, SPAN);
+		Text format = new Text(composite, SWT.BORDER);
+		format.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		format.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				updateExamples();
+			}
+		});
+		Button add = new Button(composite, SWT.PUSH);
+		add.setText(buttonText);
+		GridData data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+		data.widthHint = Math.max(widthHint, add.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+		add.setLayoutData(data);
+		final Text formatToInsert = format;
+		add.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				addVariables(formatToInsert, supportedBindings);
+			}
+		});
+
+		return new TextPair(format, null);
+	}
+
 	/**
-     * get the map of {variable,description} to use for files with createFormatEditorControl
-     */     
-    private Map getFileBindingDescriptions() {
+	 * get the map of {variable,description} to use for files with
+	 * createFormatEditorControl
+	 */
+	private Map getActivityIdBindingDescriptions() {
 		Map bindings = new HashMap();
-		bindings.put("stream", "current stream name"); //$NON-NLS-1$
-//		bindings.put(SVNDecoratorConfiguration.RESOURCE_REVISION, Policy.bind("SVNDecoratorPreferencesPage.revisionResourceVariable")); //$NON-NLS-1$
-//		bindings.put(SVNDecoratorConfiguration.DIRTY_FLAG, Policy.bind("SVNDecoratorPreferencesPage.flagDirtyVariable")); //$NON-NLS-1$
-//		bindings.put(SVNDecoratorConfiguration.ADDED_FLAG, Policy.bind("SVNDecoratorPreferencesPage.flagAddedVariable")); //$NON-NLS-1$
-//        bindings.put(SVNDecoratorConfiguration.RESOURCE_AUTHOR, Policy.bind("SVNDecoratorPreferencesPage.authorVariable")); //$NON-NLS-1$
-//        bindings.put(SVNDecoratorConfiguration.RESOURCE_DATE, Policy.bind("SVNDecoratorPreferencesPage.dateVariable")); //$NON-NLS-1$                
+		bindings.put("stream", "current stream name"); //$NON-NLS-1$        
 		return bindings;
 	}
-	
-	
+
 	class TextPair {
 		TextPair(Text t1, Text t2) {
 			this.t1 = t1;
 			this.t2 = t2;
 		}
+
 		Text t1;
+
 		Text t2;
 	}
-	
+
 	class StringPair {
 		String s1;
+
 		String s2;
 	}
-	
+
 	/**
-     * creates a label
-     */
+	 * creates a label
+	 */
 	private Label createLabel(Composite parent, String text, int span) {
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(text);
@@ -221,60 +205,59 @@ public class UcmPreferencePage extends PreferencePage implements IWorkbenchPrefe
 		label.setLayoutData(data);
 		return label;
 	}
-	
+
 	/**
-    * updates the examples
-    */
-	protected void updateExamples() {
-     //  if (fPreview != null) fPreview.refresh();
-	}
-	
-	
-	/**
-	 * Add another variable to the given target. The variable is inserted at current position
-     * A ListSelectionDialog is shown and the choose the variables to add 
+	 * updates the examples
 	 */
-	private void addVariables(Text target, Map<String,String> bindings) {
-	
-		final ArrayList variables = new ArrayList<String>(bindings.size());
-		
+	protected void updateExamples() {
+		// if (fPreview != null) fPreview.refresh();
+	}
+
+	/**
+	 * Add another variable to the given target. The variable is inserted at
+	 * current position A ListSelectionDialog is shown and the choose the
+	 * variables to add
+	 */
+	private void addVariables(Text target, Map<String, String> bindings) {
+
+		final ArrayList variables = new ArrayList(bindings.size());
+
 		ILabelProvider labelProvider = new LabelProvider() {
+			@Override
 			public String getText(Object element) {
-				return ((StringPair)element).s1 + " - " + ((StringPair)element).s2; //$NON-NLS-1$
+				return ((StringPair) element).s1 + " - " + ((StringPair) element).s2; //$NON-NLS-1$
 			}
 		};
-		
+
 		IStructuredContentProvider contentsProvider = new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {
 				return variables.toArray(new StringPair[variables.size()]);
 			}
-			public void dispose() {}
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+
+			public void dispose() {
+			}
+
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			}
 		};
-		
+
 		for (Iterator it = bindings.keySet().iterator(); it.hasNext();) {
 			StringPair variable = new StringPair();
 			variable.s1 = (String) it.next(); // variable
-			variable.s2 = (String) bindings.get(variable.s1); // description
-			variables.add(variable);				
+			variable.s2 = bindings.get(variable.s1); // description
+			variables.add(variable);
 		}
-	
-		ListSelectionDialog dialog =
-			new ListSelectionDialog(
-				this.getShell(),
-				this,
-				contentsProvider,
-				labelProvider,
-				"Select variables that will be substituted with runtime values:"); //$NON-NLS-1$
+
+		ListSelectionDialog dialog = new ListSelectionDialog(this.getShell(), this, contentsProvider, labelProvider, "Select variables that will be substituted with runtime values:"); //$NON-NLS-1$
 		dialog.setTitle("Add Substitution Variables"); //$NON-NLS-1$
-		if (dialog.open() != ListSelectionDialog.OK)
+		if (dialog.open() != Window.OK)
 			return;
-	
+
 		Object[] result = dialog.getResult();
-		
+
 		for (int i = 0; i < result.length; i++) {
-			target.insert("{"+((StringPair)result[i]).s1 +"}"); //$NON-NLS-1$ //$NON-NLS-2$
-		}		
+			target.insert("{" + ((StringPair) result[i]).s1 + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 
 }
