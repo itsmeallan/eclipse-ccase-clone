@@ -79,6 +79,8 @@ public class NewActivityDialog extends Dialog {
 		label.setText(Messages.getString("NewActivityDialog.label.addNew")); //$NON-NLS-1$
 		label.setLayoutData(new GridData());
 		activityText = new Text(composite, SWT.BORDER);
+		 String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
+         activityText.setText(runtimeText);
 		GridData data = new GridData();
 		data.widthHint = 150;
 		activityText.setLayoutData(data);
@@ -108,8 +110,6 @@ public class NewActivityDialog extends Dialog {
 
 		// Input field
 		idText = new Text(group, SWT.BORDER);
-		String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
-		idText.setText(runtimeText);
 		idText.setEditable(true);
 		idText.setEnabled(false);
 
