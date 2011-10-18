@@ -47,7 +47,7 @@ public class UcmActivity {
 
 		public void run() {
 			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity? Current activity is: " + provider.getCurrentActivity(), MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
+			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity? Current activity is: " + provider.getCurrentStream(), MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
 			returncode = activityQuestion.open();
 		}
 	}

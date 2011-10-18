@@ -21,7 +21,7 @@ public class RuntimeSubstitution {
 	private static Map<String, String> replacements = new HashMap<String, String>();
 
 	static{	
-		replacements.put("{stream}","net.sourceforge.eclipseccase.ClearCaseProvider:getCurrentActivity");
+		replacements.put("{stream}","net.sourceforge.eclipseccase.ClearCaseProvider:getCurrentStream");
 	}
 
 	public static String replace(final String msg) {
