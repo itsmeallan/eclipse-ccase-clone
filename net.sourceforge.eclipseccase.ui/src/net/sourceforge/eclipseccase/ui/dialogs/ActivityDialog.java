@@ -47,13 +47,15 @@ public class ActivityDialog extends Dialog {
 
 	private ClearCaseProvider provider;
 
-	private Activity selectedActivity = null;
+	private String selectedActivity = null;
 
 	private static boolean test = false;
 
 	private IResource resource;
-	
+
 	private ComboViewer comboViewer;
+
+	private ArrayList<String> activities;
 
 	public ActivityDialog(Shell parentShell, ClearCaseProvider provider, IResource resource) {
 		super(parentShell);
@@ -84,25 +86,35 @@ public class ActivityDialog extends Dialog {
 		// refresh
 		String viewName = ClearCaseProvider.getViewName(resource);
 		System.out.println("view " + viewName);
-		Activity[] activities = Activity.refreshActivities(viewName, provider);
-		comboViewer = createComboViewer(composite,activities);
-		
+		// /Activity[] activities = Activity.refreshActivities(viewName,
+		// provider);
+		if (viewName == "" && provider == null) {
+			activities = new ArrayList<String>();
+			activities.add("test");
+			activities.add("test2");
+			activities.add("bmn011_quick_bug_fix");
+
+		}
+
+		activities = provider.listActivities(viewName);
+		comboViewer = createComboViewer(composite, activities.toArray(new String[activities.size()]));
+
 		// if we have activity set as selected otherwise let sorter in list
 		// decide which to set.
 		if (provider != null && provider.activityAssociated(viewName)) {
 			// TODO: could this be cached for project.
 			String headline = provider.getCurrentActivity();
-			System.out.println("Current activity "+headline);
-			for (Activity activity : activities) {
-				//if current activity is in list set it.
-				if (activity.getHeadline().equalsIgnoreCase(headline)) {					
+			System.out.println("Current activity " + headline);
+			for (String activity : activities) {
+				// if current activity is in list set it.
+				if (activity.equalsIgnoreCase(headline)) {
 					comboViewer.setSelection(new StructuredSelection(activity), true);
 					comboViewer.refresh();
 				}
 
 			}
-		}else{
-			//Don't set any activity.
+		} else {
+			// Don't set any activity.
 			comboViewer.setSelection(new StructuredSelection(), true);
 			comboViewer.refresh();
 		}
@@ -114,7 +126,7 @@ public class ActivityDialog extends Dialog {
 				if (ClearCasePlugin.DEBUG_UCM) {
 					ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Selected: " + selection.getFirstElement()); //$NON-NLS-1$
 				}
-				setSelectedActivity((Activity) (selection.getFirstElement()));
+				setSelectedActivity((String) (selection.getFirstElement()));
 			}
 		});
 
@@ -124,8 +136,8 @@ public class ActivityDialog extends Dialog {
 				if (ClearCasePlugin.DEBUG_UCM) {
 					ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Double Clicked: " + selection.getFirstElement()); //$NON-NLS-1$
 				}
-				
-				setSelectedActivity((Activity) (selection.getFirstElement()));
+
+				setSelectedActivity((String) (selection.getFirstElement()));
 			}
 		});
 
@@ -169,9 +181,9 @@ public class ActivityDialog extends Dialog {
 				if (dlg.open() == Window.OK) {
 					// refresh
 					String viewName = ClearCaseProvider.getViewName(resource);
-					Activity[] activities = Activity.refreshActivities(viewName, provider);
-					//Select last added array 
-					comboViewer.setSelection(new StructuredSelection(activities[activities.length-1]), true);
+					activities = provider.listActivities(viewName);
+					// Select last added array
+					comboViewer.setSelection(new StructuredSelection(activities.size() - 1), true);
 					comboViewer.refresh();
 				} else
 					return;
@@ -184,21 +196,25 @@ public class ActivityDialog extends Dialog {
 		browseButton.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
 		browseButton.setLayoutData(data);
 		browseButton.setEnabled(true);
-		
+
 		SelectionListener browseListener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// Open new Dialog to add activity.
-//				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-//				ActivitiesTableView dlg = new ActivitiesTableView(activeShell, provider, ActivityDialog.this, resource);
-//				if (dlg.open() == Window.OK) {
-//					// refresh
-//					String viewName = ClearCaseProvider.getViewName(resource);
-//					Activity[] activities = Activity.refreshActivities(viewName, provider);
-//					listViewer.setInput(activities);
-//					listViewer.refresh();
-//				} 
-//					return;
+				// Shell activeShell =
+				// PlatformUI.getWorkbench().getDisplay().getActiveShell();
+				// ActivitiesTableView dlg = new
+				// ActivitiesTableView(activeShell, provider,
+				// ActivityDialog.this, resource);
+				// if (dlg.open() == Window.OK) {
+				// // refresh
+				// String viewName = ClearCaseProvider.getViewName(resource);
+				// Activity[] activities = Activity.refreshActivities(viewName,
+				// provider);
+				// listViewer.setInput(activities);
+				// listViewer.refresh();
+				// }
+				// return;
 
 			}
 		};
@@ -216,37 +232,39 @@ public class ActivityDialog extends Dialog {
 		super.buttonPressed(buttonId);
 	}
 
-	protected ComboViewer createComboViewer(Composite composite,Activity[] activities) {
-		ComboViewer comboViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY); 
+	protected ComboViewer createComboViewer(Composite composite, String[] activities) {
+		ComboViewer comboViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		comboViewer.setLabelProvider(new ActivityListLabelProvider());
 		comboViewer.setContentProvider(new ArrayContentProvider());
 		comboViewer.setInput(activities);
-//		comboViewer.setSorter(new ViewerSorter() {
-//			@Override
-//			public int compare(Viewer viewer, Object p1, Object p2) {
-//				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
-//			}
-//
-//		});
+		// comboViewer.setSorter(new ViewerSorter() {
+		// @Override
+		// public int compare(Viewer viewer, Object p1, Object p2) {
+		// return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity)
+		// p2).getHeadline());
+		// }
+		//
+		// });
 
 		return comboViewer;
 	}
 
-	public Activity getSelectedActivity() {
+	public String getSelectedActivity() {
 		return selectedActivity;
 	}
 
-	public void setSelectedActivity(Activity selectedActivity) {
+	public void setSelectedActivity(String selectedActivity) {
 		this.selectedActivity = selectedActivity;
 	}
 
 	public boolean activityExist(String headline) {
-		ArrayList<Activity> activities = Activity.getActivities();
-		for (Activity activity : activities) {
-			if (headline.equalsIgnoreCase(activity.getHeadline()))
+		for (String activity : activities) {
+			// if current activity is in list set it.
+			if (activity.equalsIgnoreCase(headline)) {
 				return true;
-
+			}
 		}
+
 		return false;
 	}
 

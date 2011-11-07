@@ -11,19 +11,18 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import net.sourceforge.eclipseccase.ucm.Activity;
-
 import org.eclipse.jface.viewers.LabelProvider;
 
 /**
  * @author mikael petterson
- *
+ * 
  */
 public class ActivityListLabelProvider extends LabelProvider {
 
-	public String getText(Object element){
-		Activity activity = (Activity)element;
-		return activity.getHeadline();
+	@Override
+	public String getText(Object element) {
+		String activity = (String) element;
+		return activity;
 	}
 
 }
