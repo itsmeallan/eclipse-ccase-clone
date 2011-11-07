@@ -92,7 +92,9 @@ public class ActivityDialog extends Dialog {
 		if (provider != null && provider.activityAssociated(viewName)) {
 			// TODO: could this be cached for project.
 			String headline = provider.getCurrentActivity();
+			System.out.println("Current activity "+headline);
 			for (Activity activity : activities) {
+				//if current activity is in list set it.
 				if (activity.getHeadline().equalsIgnoreCase(headline)) {					
 					comboViewer.setSelection(new StructuredSelection(activity), true);
 					comboViewer.refresh();
@@ -100,7 +102,8 @@ public class ActivityDialog extends Dialog {
 
 			}
 		}else{
-			comboViewer.setSelection(new StructuredSelection(activities), true);
+			//Don't set any activity.
+			comboViewer.setSelection(new StructuredSelection(), true);
 			comboViewer.refresh();
 		}
 
@@ -121,6 +124,7 @@ public class ActivityDialog extends Dialog {
 				if (ClearCasePlugin.DEBUG_UCM) {
 					ClearCasePlugin.trace(TRACE_ACTIVITYDIALOG, "Double Clicked: " + selection.getFirstElement()); //$NON-NLS-1$
 				}
+				
 				setSelectedActivity((Activity) (selection.getFirstElement()));
 			}
 		});
@@ -166,7 +170,8 @@ public class ActivityDialog extends Dialog {
 					// refresh
 					String viewName = ClearCaseProvider.getViewName(resource);
 					Activity[] activities = Activity.refreshActivities(viewName, provider);
-					comboViewer.setInput(activities);
+					//Select last added array 
+					comboViewer.setSelection(new StructuredSelection(activities[activities.length-1]), true);
 					comboViewer.refresh();
 				} else
 					return;
@@ -216,13 +221,13 @@ public class ActivityDialog extends Dialog {
 		comboViewer.setLabelProvider(new ActivityListLabelProvider());
 		comboViewer.setContentProvider(new ArrayContentProvider());
 		comboViewer.setInput(activities);
-		comboViewer.setSorter(new ViewerSorter() {
-			@Override
-			public int compare(Viewer viewer, Object p1, Object p2) {
-				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
-			}
-
-		});
+//		comboViewer.setSorter(new ViewerSorter() {
+//			@Override
+//			public int compare(Viewer viewer, Object p1, Object p2) {
+//				return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity) p2).getHeadline());
+//			}
+//
+//		});
 
 		return comboViewer;
 	}

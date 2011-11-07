@@ -60,7 +60,16 @@ public class Activity {
 
 		}
 		
-		activities = provider.listActivities(view);
+		ArrayList<Activity>  updated = provider.listActivities(view);
+		//Update activities with new.
+		for (Activity candidate : updated) {
+			if(!activities.contains(candidate)){
+				activities.add(candidate);
+			}
+		}
+		
+		
+		
 		//create new activities
 		ArrayList<Activity> activityList = Activity.getActivities();
 		for (Activity activity : activityList) {
