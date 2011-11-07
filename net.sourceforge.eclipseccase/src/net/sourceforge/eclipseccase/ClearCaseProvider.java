@@ -577,7 +577,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.VIEW), viewName);
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.VIEW | ClearCase.LONG, args);
+				ClearCase.VIEW | ClearCase.LONG | ClearCase.ME, args);
 		for (String line : output) {
 			System.out.println(line);
 		}
