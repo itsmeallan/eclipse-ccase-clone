@@ -21,8 +21,6 @@ import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
-import net.sourceforge.eclipseccase.ucm.Activity;
-import net.sourceforge.eclipseccase.ucm.ActivityParser;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
@@ -49,8 +47,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
-	// cachedActivity has the information about each activity.
-	private HashMap<String, Activity> cachedActivities = new HashMap<String, Activity>();
+	
 
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 

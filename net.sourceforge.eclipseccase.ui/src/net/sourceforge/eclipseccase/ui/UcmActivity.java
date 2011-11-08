@@ -11,17 +11,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.clearcase.ClearCase;
-
-import net.sourceforge.eclipseccase.ucm.Activity;
-
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.dialogs.ActivityDialog;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
 /**
  * This class sets/creates a ucm activity used for checkout or add operation.
@@ -30,27 +24,6 @@ import org.eclipse.ui.PlatformUI;
  * 
  */
 public class UcmActivity {
-
-	static class ActivityQuestion implements Runnable {
-		private ClearCaseProvider provider;
-
-		private int returncode;
-
-		public ActivityQuestion(ClearCaseProvider provider) {
-			this.provider = provider;
-
-		}
-
-		public int getReturncode() {
-			return returncode;
-		}
-
-		public void run() {
-			Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-			MessageDialog activityQuestion = new MessageDialog(activeShell, "Select Activity", null, "Do you want to create a new or change activity? Current activity is: " + provider.getCurrentStream(), MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0);
-			returncode = activityQuestion.open();
-		}
-	}
 
 	/**
 	 * 
@@ -64,28 +37,19 @@ public class UcmActivity {
 		IResource resource = resources[0];
 		if (resource != null) {
 			String view = ClearCaseProvider.getViewName(resource);
-			// check if current view has an activity associated.
-			// if (!provider.activityAssociated(view)) {
-
-			// ActivityQuestion question = new ActivityQuestion(provider);
-			// Want to change//create activity?
-			// PlatformUI.getWorkbench().getDisplay().syncExec(question);
-
-			/* Yes=0 No=1 Cancel=2 */
-			// if (question.getReturncode() == 0) {
 			ActivityDialog dlg = new ActivityDialog(shell, provider, resource);
 			if (dlg.open() == Window.OK) {
 				String activity = dlg.getSelectedActivity();
 				if (activity != null) {
+					System.out.println("Selected activity is :" + activity);
 					provider.setActivity(activity, view);
 					return true;
 				}
 
-			} else {
+			} else
 				// Answer was N or Cancel.
 				return false;
-			}
-			// }
+
 			return true;
 		}
 		// resource null don't check-out.

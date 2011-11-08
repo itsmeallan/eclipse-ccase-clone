@@ -14,7 +14,6 @@ package net.sourceforge.eclipseccase.ui.dialogs;
 import java.util.ArrayList;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
-import net.sourceforge.eclipseccase.ucm.Activity;
 import net.sourceforge.eclipseccase.ui.CommentDialogArea;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.Dialog;
@@ -182,7 +181,7 @@ public class ActivityDialog extends Dialog {
 					// refresh
 					String viewName = ClearCaseProvider.getViewName(resource);
 					activities = provider.listActivities(viewName);
-					// Select last added array
+					// Select last added in arraylist
 					comboViewer.setSelection(new StructuredSelection(activities.size() - 1), true);
 					comboViewer.refresh();
 				} else
@@ -260,9 +259,8 @@ public class ActivityDialog extends Dialog {
 	public boolean activityExist(String headline) {
 		for (String activity : activities) {
 			// if current activity is in list set it.
-			if (activity.equalsIgnoreCase(headline)) {
+			if (activity.equalsIgnoreCase(headline))
 				return true;
-			}
 		}
 
 		return false;
