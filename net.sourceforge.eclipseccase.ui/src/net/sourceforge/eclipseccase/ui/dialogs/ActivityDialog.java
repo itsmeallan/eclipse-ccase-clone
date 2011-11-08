@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.views.BranchSearchView;
+
 import java.util.ArrayList;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -40,7 +42,7 @@ public class ActivityDialog extends Dialog {
 
 	private Button newButton;
 
-	private Button browseButton;
+	private Button checkBoxUsersAll;
 
 	private CommentDialogArea commentDialogArea;
 
@@ -93,9 +95,10 @@ public class ActivityDialog extends Dialog {
 			activities.add("test2");
 			activities.add("bmn011_quick_bug_fix");
 
-		}
+		} else {
 
-		activities = provider.listActivities(viewName);
+			activities = provider.listMyActivities();
+		}
 		comboViewer = createComboViewer(composite, activities.toArray(new String[activities.size()]));
 
 		// if we have activity set as selected otherwise let sorter in list
@@ -163,6 +166,15 @@ public class ActivityDialog extends Dialog {
 		layout.numColumns = 2;
 		buttons.setLayout(layout);
 
+//		checkBoxUsersAll = new Button(buttons, SWT.CHECK);
+//		checkBoxUsersAll.setText(Messages.getString("All users' activities"));
+//		checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent theEvent) {
+//				boolean documented = ((Button) (theEvent.widget)).getSelection();
+//			    activities = provider.listAllActivities(viewName);
+//
+//			}
+//		});
 		newButton = new Button(buttons, SWT.PUSH);
 		newButton.setText(Messages.getString("ActivityDialog.newActivity")); //$NON-NLS-1$
 		GridData data = new GridData();
@@ -180,7 +192,7 @@ public class ActivityDialog extends Dialog {
 				if (dlg.open() == Window.OK) {
 					// refresh
 					String viewName = ClearCaseProvider.getViewName(resource);
-					activities = provider.listActivities(viewName);
+					activities = provider.listMyActivities();
 					// Select last added in arraylist
 					comboViewer.setSelection(new StructuredSelection(activities.size() - 1), true);
 					comboViewer.refresh();
@@ -191,33 +203,19 @@ public class ActivityDialog extends Dialog {
 		};
 		newButton.addSelectionListener(newListener);
 
-		browseButton = new Button(buttons, SWT.PUSH);
-		browseButton.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
-		browseButton.setLayoutData(data);
-		browseButton.setEnabled(true);
-
-		SelectionListener browseListener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Open new Dialog to add activity.
-				// Shell activeShell =
-				// PlatformUI.getWorkbench().getDisplay().getActiveShell();
-				// ActivitiesTableView dlg = new
-				// ActivitiesTableView(activeShell, provider,
-				// ActivityDialog.this, resource);
-				// if (dlg.open() == Window.OK) {
-				// // refresh
-				// String viewName = ClearCaseProvider.getViewName(resource);
-				// Activity[] activities = Activity.refreshActivities(viewName,
-				// provider);
-				// listViewer.setInput(activities);
-				// listViewer.refresh();
-				// }
-				// return;
-
-			}
-		};
-		browseButton.addSelectionListener(browseListener);
+		//		checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
+		// checkBoxUsersAll.setLayoutData(data);
+		// checkBoxUsersAll.setEnabled(true);
+		//
+		// SelectionListener browseListener = new SelectionAdapter() {
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		//				
+		//			
+		//				
+		// }
+		// };
+		// checkBoxUsersAll.addSelectionListener(browseListener);
 	}
 
 	@Override

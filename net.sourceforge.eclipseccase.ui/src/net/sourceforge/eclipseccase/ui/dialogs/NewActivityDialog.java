@@ -184,6 +184,7 @@ public class NewActivityDialog extends Dialog {
 			String activitySelector = null;
 			if (actvitySelectors != null && actvitySelectors.length > 0) {
 				String myActivitySelector = actvitySelectors[0];
+				System.out.print("My activityselector is "+myActivitySelector);
 				pVob = provider.getPvobTag(myActivitySelector);
 			}
 

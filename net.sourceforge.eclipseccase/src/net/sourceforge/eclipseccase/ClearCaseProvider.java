@@ -569,12 +569,19 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @param viewName
 	 * @return
 	 */
-	public ArrayList<String> listActivities(String viewName) {
-		System.out.println("Enter: listActivities()");
-		HashMap<Integer, String> args = new HashMap<Integer, String>();
-		args.put(Integer.valueOf(ClearCase.VIEW), viewName);
+	public ArrayList<String> listMyActivities() {
+		System.out.println("Enter: listMyActivities()");
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.VIEW | ClearCase.LONG | ClearCase.ME |ClearCase.SHORT, args);		
+				ClearCase.CVIEW| ClearCase.ME |ClearCase.SHORT, null);		
+		return new ArrayList<String>(Arrays.asList(output)); 
+		
+	}
+	
+	public ArrayList<String> listAllActivities() {
+		System.out.println("Enter: listAllActivities()");
+		
+		String[] output = ClearCasePlugin.getEngine().getActivity(
+				ClearCase.CVIEW | ClearCase.SHORT, null);		
 		return new ArrayList<String>(Arrays.asList(output)); 
 		
 	}
@@ -663,6 +670,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			return path.substring(6);
 		}
 		// vob
+		System.out.println("Pvobtag is "+path.substring(5));
 		return path.substring(5);
 
 	}
