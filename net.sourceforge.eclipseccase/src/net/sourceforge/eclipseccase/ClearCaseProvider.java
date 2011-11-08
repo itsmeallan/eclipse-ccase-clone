@@ -638,10 +638,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
-	public String getStream(String viewName) {
-		return ClearCasePlugin.getEngine().getStream(
-				ClearCase.SHORT | ClearCase.VIEW, viewName);
-	}
+//	public String getStream(String viewName) {
+//		return ClearCasePlugin.getEngine().getStream(
+//				ClearCase.SHORT | ClearCase.VIEW, viewName);
+//	}
 
 	public String getCurrentStream() {
 		return ClearCasePlugin.getEngine().getStream(ClearCase.SHORT, null);
@@ -682,13 +682,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.FORMAT), "%[activities]CXp");
 		args.put(Integer.valueOf(ClearCase.VIEW), view);
-		String[] output = ClearCasePlugin.getEngine().getActivity(
+		String output = ClearCasePlugin.getEngine().getStream(
 				ClearCase.FORMAT | ClearCase.VIEW, args);
-		if (output == null | output.length == 0) {
-			return result;
-		}
-		if (output[0] != null && output[0].length() > 0) {
-			result = output[0].split(", ");
+		
+		if (output != null && output.length() > 0) {
+			result = output.split(", ");
 		}
 
 		return result;
