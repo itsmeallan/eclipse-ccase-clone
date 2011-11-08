@@ -171,6 +171,7 @@ public class ActivityDialog extends Dialog {
 //		checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
 //			public void widgetSelected(SelectionEvent theEvent) {
 //				boolean documented = ((Button) (theEvent.widget)).getSelection();
+//             activities.clear();		
 //			    activities = provider.listAllActivities(viewName);
 //
 //			}
@@ -203,7 +204,7 @@ public class ActivityDialog extends Dialog {
 		};
 		newButton.addSelectionListener(newListener);
 
-		//		checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
+		//checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
 		// checkBoxUsersAll.setLayoutData(data);
 		// checkBoxUsersAll.setEnabled(true);
 		//
