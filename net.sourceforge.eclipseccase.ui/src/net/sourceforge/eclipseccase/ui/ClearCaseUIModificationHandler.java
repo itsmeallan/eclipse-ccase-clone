@@ -12,8 +12,6 @@
 
 package net.sourceforge.eclipseccase.ui;
 
-import net.sourceforge.eclipseccase.ClearCasePreferences;
-
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferenceStore;
@@ -179,16 +177,24 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
+		System.out.println("In validate edit");
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 		final ClearCaseProvider provider = getProvider(files);
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
-				
-			if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())){
+
+			if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
 				return CANCEL;
 			}
+			// UCM checkout.
+			if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+				if (!UcmActivity.checkoutWithActivity(provider, files, shell))
+					// no checkout
+					return CANCEL;
+			}
+			
 			return super.validateEdit(files, context);
 		}
 		try {
