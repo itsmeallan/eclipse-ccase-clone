@@ -194,8 +194,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 					// no checkout
 					return CANCEL;
 			}
-			//TODO: To avoid Question.
-			//return super.validateEdit(files, context);
+			
+			return super.validateEdit(files, context);
 		}
 		try {
 			this.validateEditLock.acquire();

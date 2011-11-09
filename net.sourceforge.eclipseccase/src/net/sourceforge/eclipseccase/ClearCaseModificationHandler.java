@@ -144,8 +144,8 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 		
-		
-		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
+		//For UCM we already have a checkout dialog. So dialog only for non-ucm.
+		if (!ClearCasePreferences.isCheckoutAutoAlways() && !ClearCasePreferences.isUCM()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
