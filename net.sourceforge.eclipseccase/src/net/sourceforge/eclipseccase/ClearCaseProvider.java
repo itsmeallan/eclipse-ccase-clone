@@ -689,7 +689,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 		args.put(Integer.valueOf(ClearCase.VIEW), view);
 		String output = ClearCasePlugin.getEngine().getStream(
 				ClearCase.FORMAT | ClearCase.VIEW, args);
-		
+		System.out.println("output is "+output);
 		if (output != null && output.length() > 0) {
 			result = output.split(", ");
 		}

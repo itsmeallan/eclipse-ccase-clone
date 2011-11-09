@@ -166,16 +166,16 @@ public class ActivityDialog extends Dialog {
 		layout.numColumns = 2;
 		buttons.setLayout(layout);
 
-//		checkBoxUsersAll = new Button(buttons, SWT.CHECK);
-//		checkBoxUsersAll.setText(Messages.getString("All users' activities"));
-//		checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent theEvent) {
-//				boolean documented = ((Button) (theEvent.widget)).getSelection();
-//             activities.clear();		
-//			    activities = provider.listAllActivities(viewName);
-//
-//			}
-//		});
+		// checkBoxUsersAll = new Button(buttons, SWT.CHECK);
+		// checkBoxUsersAll.setText(Messages.getString("All users' activities"));
+		// checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
+		// public void widgetSelected(SelectionEvent theEvent) {
+		// boolean documented = ((Button) (theEvent.widget)).getSelection();
+		// activities.clear();
+		// activities = provider.listAllActivities(viewName);
+		//
+		// }
+		// });
 		newButton = new Button(buttons, SWT.PUSH);
 		newButton.setText(Messages.getString("ActivityDialog.newActivity")); //$NON-NLS-1$
 		GridData data = new GridData();
@@ -204,19 +204,22 @@ public class ActivityDialog extends Dialog {
 		};
 		newButton.addSelectionListener(newListener);
 
-		//checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
-		// checkBoxUsersAll.setLayoutData(data);
-		// checkBoxUsersAll.setEnabled(true);
-		//
-		// SelectionListener browseListener = new SelectionAdapter() {
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		//				
-		//			
-		//				
-		// }
-		// };
-		// checkBoxUsersAll.addSelectionListener(browseListener);
+//		checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
+//		checkBoxUsersAll.setLayoutData(data);
+//		checkBoxUsersAll.setEnabled(true);
+//
+//		SelectionListener checkBoxUsersAllListener = new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				if (((Button) (e.widget)).getSelection()) {
+//					activities = provider.listAllActivities();
+//				} else {
+//					activities = provider.listMyActivities();
+//				}
+//				comboViewer.refresh();
+//			}
+//		};
+//		checkBoxUsersAll.addSelectionListener(checkBoxUsersAllListener);
 	}
 
 	@Override
