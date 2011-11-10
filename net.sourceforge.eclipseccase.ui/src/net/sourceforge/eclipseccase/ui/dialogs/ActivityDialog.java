@@ -11,6 +11,10 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import org.eclipse.ui.PartInitException;
+
+import org.eclipse.ui.IWorkbenchWindow;
+
 import net.sourceforge.eclipseccase.views.BranchSearchView;
 
 import java.util.ArrayList;
@@ -165,17 +169,25 @@ public class ActivityDialog extends Dialog {
 		layout.marginWidth = 0;
 		layout.numColumns = 2;
 		buttons.setLayout(layout);
-
-		// checkBoxUsersAll = new Button(buttons, SWT.CHECK);
-		// checkBoxUsersAll.setText(Messages.getString("All users' activities"));
-		// checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent theEvent) {
-		// boolean documented = ((Button) (theEvent.widget)).getSelection();
-		// activities.clear();
-		// activities = provider.listAllActivities(viewName);
-		//
-		// }
-		// });
+		
+		 checkBoxUsersAll = new Button(buttons, SWT.CHECK);
+		 checkBoxUsersAll.setText(Messages.getString("All users' activities"));
+		 checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
+		 public void widgetSelected(SelectionEvent theEvent) {
+		 boolean isSelected = ((Button) (theEvent.widget)).getSelection();
+		 Display.getDefault().asyncExec(new Runnable() {
+			    public void run() {
+			    	try {
+						BranchSearchView view = (BranchSearchView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.BranchSearchView");
+					} catch (PartInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			    }
+			});
+		
+		 }
+		 });
 		newButton = new Button(buttons, SWT.PUSH);
 		newButton.setText(Messages.getString("ActivityDialog.newActivity")); //$NON-NLS-1$
 		GridData data = new GridData();
@@ -191,10 +203,11 @@ public class ActivityDialog extends Dialog {
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.OK) {
-					// refresh
-					String viewName = ClearCaseProvider.getViewName(resource);
+					//Get all activities including new added.
 					activities = provider.listMyActivities();
+					comboViewer.getCombo().removeAll();
 					// Select last added in arraylist
+					comboViewer.add(activities.toArray(new String[activities.size()]));
 					comboViewer.setSelection(new StructuredSelection(activities.size() - 1), true);
 					comboViewer.refresh();
 				} else
