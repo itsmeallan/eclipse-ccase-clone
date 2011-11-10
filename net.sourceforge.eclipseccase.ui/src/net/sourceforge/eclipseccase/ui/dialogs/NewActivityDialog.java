@@ -191,7 +191,7 @@ public class NewActivityDialog extends Dialog {
 
 			// Create activitySelector [activity]:name@vob-selector
 			if (null != pVob) {
-				activitySelector = "[activity]:" + activityId + "@" + pVob;
+				activitySelector = activityId + "@" + pVob;
 			} else {
 				activitySelector = activityId;
 			}
