@@ -659,20 +659,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return pVobTag $pvob
 	 */
 	public String getPvobTag(String activitySelector) {
-
 		int index = activitySelector.indexOf(SNAIL) + 1;
 		String path = activitySelector.substring(index).trim();
-		if (path.startsWith("\\")) {
-			// Windows
-			return path.substring(1);
-		} else if (path.startsWith("/vobs")) {
-
-			return path.substring(6);
-		}
-		// vob
-		System.out.println("Pvobtag is "+path.substring(5));
-		return path.substring(5);
-
+		return path.substring(0);
 	}
 
 	/**
