@@ -205,11 +205,9 @@ public class ActivityDialog extends Dialog {
 				if (dlg.open() == Window.OK) {
 					//Get all activities including new added.
 					activities = provider.listMyActivities();
-					comboViewer.getCombo().removeAll();
-					// Select last added in arraylist
-					comboViewer.add(activities.toArray(new String[activities.size()]));
-					comboViewer.setSelection(new StructuredSelection(activities.size() - 1), true);
-					comboViewer.refresh();
+					comboViewer.setInput(activities);
+					//Select last element i list 
+					//comboViewer.setSelection(new StructuredSelection(activities.get(activities.size() - 1)),true);
 				} else
 					return;
 
