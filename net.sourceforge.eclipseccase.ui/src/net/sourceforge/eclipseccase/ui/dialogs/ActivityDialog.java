@@ -203,11 +203,14 @@ public class ActivityDialog extends Dialog {
 				Shell activeShell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.OK) {
+					String activityId = dlg.getActivityId();
 					//Get all activities including new added.
 					activities = provider.listMyActivities();
 					comboViewer.setInput(activities);
-					//Select last element i list 
-					//comboViewer.setSelection(new StructuredSelection(activities.get(activities.size() - 1)),true);
+					//Select last element i list
+					System.out.println("ActivityId is "+activityId);
+					int indexLastCreated = activities.indexOf(activityId);
+					comboViewer.setSelection(new StructuredSelection(activities.get(indexLastCreated)),true);
 				} else
 					return;
 

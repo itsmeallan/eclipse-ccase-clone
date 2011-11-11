@@ -199,6 +199,7 @@ public class NewActivityDialog extends Dialog {
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
 			if (state.state == ClearCase.ACTIVITY_CREATED) {
 				System.out.println("Actvity created " + noSpaceHeadline);
+				
 
 			}
 		} catch (ClearCaseException cce) {
@@ -217,12 +218,8 @@ public class NewActivityDialog extends Dialog {
 
 	}
 
-	public String getActivity() {
+	public String getActivityId() {
 		return activityId;
-	}
-
-	public void setActivity(String activitySelector) {
-		this.activityId = activitySelector;
 	}
 
 	private static synchronized String getUniqueId() {
