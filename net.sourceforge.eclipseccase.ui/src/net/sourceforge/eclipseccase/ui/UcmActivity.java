@@ -41,7 +41,6 @@ public class UcmActivity {
 			if (dlg.open() == Window.OK) {
 				String activity = dlg.getSelectedActivity();
 				if (activity != null) {
-					System.out.println("Selected activity is :" + activity);
 					provider.setActivity(activity, view);
 					return true;
 				}

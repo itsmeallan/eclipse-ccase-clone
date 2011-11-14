@@ -570,7 +570,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public ArrayList<String> listMyActivities() {
-		System.out.println("Enter: listMyActivities()");
 		String[] output = ClearCasePlugin.getEngine().getActivity(
 				ClearCase.CVIEW| ClearCase.ME |ClearCase.SHORT, null);		
 		return new ArrayList<String>(Arrays.asList(output)); 
@@ -578,8 +577,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 	
 	public ArrayList<String> listAllActivities() {
-		System.out.println("Enter: listAllActivities()");
-		
+				
 		String[] output = ClearCasePlugin.getEngine().getActivity(
 				ClearCase.CVIEW | ClearCase.SHORT, null);		
 		return new ArrayList<String>(Arrays.asList(output)); 
@@ -678,7 +676,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 		args.put(Integer.valueOf(ClearCase.VIEW), view);
 		String output = ClearCasePlugin.getEngine().getStream(
 				ClearCase.FORMAT | ClearCase.VIEW, args);
-		System.out.println("output is "+output);
 		if (output != null && output.length() > 0) {
 			result = output.split(", ");
 		}

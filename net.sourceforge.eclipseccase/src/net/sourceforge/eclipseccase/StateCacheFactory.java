@@ -794,7 +794,6 @@ public class StateCacheFactory implements ISaveParticipant,
 			// nice, but acceptable
 			return true;
 
-		// System.out.println("ignored: " + delta);
 		return false;
 	}
 

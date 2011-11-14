@@ -177,7 +177,6 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
-		System.out.println("In validate edit");
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 		final ClearCaseProvider provider = getProvider(files);
