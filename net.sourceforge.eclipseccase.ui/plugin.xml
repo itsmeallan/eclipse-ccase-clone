@@ -594,6 +594,11 @@
 			id="net.sourceforge.eclipseccase.views.BranchSearchView" name="ClearCase Search"
 			restorable="true">
 		</view>
+		<view category="org.eclipse.team.ui"
+			class="net.sourceforge.eclipseccase.views.ActivitiesView" icon="icons/full/clearcase.png"
+			id="net.sourceforge.eclipseccase.views.ActivitiesView" name="Activities"
+			restorable="true">
+		</view>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page objectClass="org.eclipse.core.resources.IResource"
