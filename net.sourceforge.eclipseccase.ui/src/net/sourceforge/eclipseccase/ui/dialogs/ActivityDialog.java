@@ -11,12 +11,6 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
-import org.eclipse.ui.PartInitException;
-
-import org.eclipse.ui.IWorkbenchWindow;
-
-import net.sourceforge.eclipseccase.views.BranchSearchView;
-
 import java.util.ArrayList;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -46,8 +40,6 @@ public class ActivityDialog extends Dialog {
 
 	private Button newButton;
 
-	private Button checkBoxUsersAll;
-
 	private CommentDialogArea commentDialogArea;
 
 	private ClearCaseProvider provider;
@@ -73,7 +65,6 @@ public class ActivityDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		System.out.println("Enter: createDialogArea()");
 		getShell().setText(Messages.getString("ActivityDialog.title"));
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -90,9 +81,6 @@ public class ActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 		// refresh
 		String viewName = ClearCaseProvider.getViewName(resource);
-		System.out.println("view " + viewName);
-		// /Activity[] activities = Activity.refreshActivities(viewName,
-		// provider);
 		if (viewName == "" && provider == null) {
 			activities = new ArrayList<String>();
 			activities.add("test");
@@ -110,7 +98,6 @@ public class ActivityDialog extends Dialog {
 		if (provider != null && provider.activityAssociated(viewName)) {
 			// TODO: could this be cached for project.
 			String headline = provider.getCurrentActivity();
-			System.out.println("Current activity " + headline);
 			for (String activity : activities) {
 				// if current activity is in list set it.
 				if (activity.equalsIgnoreCase(headline)) {
@@ -169,25 +156,7 @@ public class ActivityDialog extends Dialog {
 		layout.marginWidth = 0;
 		layout.numColumns = 2;
 		buttons.setLayout(layout);
-		
-		 checkBoxUsersAll = new Button(buttons, SWT.CHECK);
-		 checkBoxUsersAll.setText(Messages.getString("All users' activities"));
-		 checkBoxUsersAll.addSelectionListener(new SelectionAdapter() {
-		 public void widgetSelected(SelectionEvent theEvent) {
-		 boolean isSelected = ((Button) (theEvent.widget)).getSelection();
-		 Display.getDefault().asyncExec(new Runnable() {
-			    public void run() {
-			    	try {
-						BranchSearchView view = (BranchSearchView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.BranchSearchView");
-					} catch (PartInitException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			    }
-			});
-		
-		 }
-		 });
+
 		newButton = new Button(buttons, SWT.PUSH);
 		newButton.setText(Messages.getString("ActivityDialog.newActivity")); //$NON-NLS-1$
 		GridData data = new GridData();
@@ -204,36 +173,18 @@ public class ActivityDialog extends Dialog {
 				NewActivityDialog dlg = new NewActivityDialog(activeShell, provider, ActivityDialog.this, resource);
 				if (dlg.open() == Window.OK) {
 					String activityId = dlg.getActivityId();
-					//Get all activities including new added.
+					// Get all activities including new added.
 					activities = provider.listMyActivities();
 					comboViewer.setInput(activities);
-					//Select last element i list
-					System.out.println("ActivityId is "+activityId);
+					// Select last element i list
 					int indexLastCreated = activities.indexOf(activityId);
-					comboViewer.setSelection(new StructuredSelection(activities.get(indexLastCreated)),true);
+					comboViewer.setSelection(new StructuredSelection(activities.get(indexLastCreated)), true);
 				} else
 					return;
 
 			}
 		};
 		newButton.addSelectionListener(newListener);
-
-//		checkBoxUsersAll.setText(Messages.getString("ActivityDialog.button.browse")); //$NON-NLS-1$
-//		checkBoxUsersAll.setLayoutData(data);
-//		checkBoxUsersAll.setEnabled(true);
-//
-//		SelectionListener checkBoxUsersAllListener = new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				if (((Button) (e.widget)).getSelection()) {
-//					activities = provider.listAllActivities();
-//				} else {
-//					activities = provider.listMyActivities();
-//				}
-//				comboViewer.refresh();
-//			}
-//		};
-//		checkBoxUsersAll.addSelectionListener(checkBoxUsersAllListener);
 	}
 
 	@Override
