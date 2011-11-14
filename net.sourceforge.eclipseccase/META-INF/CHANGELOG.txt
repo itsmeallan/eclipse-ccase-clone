@@ -1,14 +1,22 @@
 ===============================================================================
 =                                 Change Log                                 =
 ===============================================================================
+2.2.11 ( to be released).
+
 
 2.2.10
 ======
 
-Fixed Bugs:
+Features:
+3419036 Checkout prevent
+3404270 Sorting history view by columns
+
+Bugs:
 3323197 Option "... (cleardlg executable)" not always respected. 
 <No number> Removed deault enabled debug for commands sent to clearcase.
-3324575 Check-out doesn't ask for activity
+3400183 	Adding new file don't ask for activity 
+3324575 	Check-out doesn't ask for activity.
+3324567 	Automatic check-out doesn't work
 
 
 2.2.9
