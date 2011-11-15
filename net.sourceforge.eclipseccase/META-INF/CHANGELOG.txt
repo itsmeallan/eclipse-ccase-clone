@@ -2,6 +2,10 @@
 =                                 Change Log                                 =
 ===============================================================================
 2.2.11 ( to be released).
+======
+
+Bugs:
+3431821 Compare files in snapshot view = "Can't open compare stream
 
 
 2.2.10
