@@ -1,5 +1,5 @@
 # debug option
-net.sourceforge.eclipseccase/debug = true
+net.sourceforge.eclipseccase/debug = false
 net.sourceforge.eclipseccase/debug/plugin = false
 net.sourceforge.eclipseccase/debug/provider = false
 net.sourceforge.eclipseccase/debug/provider/ignoredResources = false
