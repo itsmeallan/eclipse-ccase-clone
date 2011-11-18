@@ -81,6 +81,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public static final IStatus CANCEL_STATUS = Status.CANCEL_STATUS;
 
 	public static final String SNAIL = "@";
+	
+	private static final String NO_ACTIVITY = "No activity in view";
 
 	boolean refreshResources = true;
 
@@ -571,8 +573,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public ArrayList<String> listMyActivities() {
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW| ClearCase.ME |ClearCase.SHORT, null);		
-		return new ArrayList<String>(Arrays.asList(output)); 
+				ClearCase.CVIEW| ClearCase.ME |ClearCase.SHORT, null);
+		if(output.length > 0){
+		return new ArrayList<String>(Arrays.asList(output));
+		}
+		
+		return new ArrayList<String>(Arrays.asList(new String[]{NO_ACTIVITY}));
 		
 	}
 	
