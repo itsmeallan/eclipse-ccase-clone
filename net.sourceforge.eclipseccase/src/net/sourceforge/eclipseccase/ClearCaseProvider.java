@@ -82,7 +82,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public static final String SNAIL = "@";
 	
-	private static final String NO_ACTIVITY = "No activity in view";
+	public static final String NO_ACTIVITY = "No activity in view";
 
 	boolean refreshResources = true;
 

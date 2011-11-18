@@ -95,22 +95,40 @@ public class ActivityDialog extends Dialog {
 
 		// if we have activity set as selected otherwise let sorter in list
 		// decide which to set.
-		if (provider != null && provider.activityAssociated(viewName)) {
-			// TODO: could this be cached for project.
-			String headline = provider.getCurrentActivity();
-			for (String activity : activities) {
-				// if current activity is in list set it.
-				if (activity.equalsIgnoreCase(headline)) {
+		if (provider != null) {
+			if(activities.contains(ClearCaseProvider.NO_ACTIVITY)){
+				comboViewer.setSelection(new StructuredSelection(activities.get(0)), true);
+			}else{
+				String activity = provider.getCurrentActivity();
+				if(activities.contains(activity)){
 					comboViewer.setSelection(new StructuredSelection(activity), true);
-					comboViewer.refresh();
+				}else{
+					//select first,
+					comboViewer.setSelection(new StructuredSelection(activities.get(activities.size()-1)), true);
 				}
-
 			}
 		} else {
-			// Don't set any activity.
+			// Don't set any activity.This is for testing.
 			comboViewer.setSelection(new StructuredSelection(), true);
 			comboViewer.refresh();
 		}
+			
+//			
+//			// TODO: could this be cached for project.
+//			String headline = provider.getCurrentActivity();
+//			for (String activity : activities) {
+//				// if current activity is in list set it.
+//				if (activity.equalsIgnoreCase(headline)) {
+//					comboViewer.setSelection(new StructuredSelection(activity), true);
+//					comboViewer.refresh();
+//				}
+//
+//			}
+//		} else {
+//			// Don't set any activity.
+//			comboViewer.setSelection(new StructuredSelection(activities.), true);
+//			comboViewer.refresh();
+//		}
 
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
