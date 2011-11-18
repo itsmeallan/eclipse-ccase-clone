@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 
 /**
@@ -17,11 +15,13 @@ import net.sourceforge.eclipseccase.ClearCaseProvider;
  * 
  */
 public class RuntimeSubstitution {
-	
+
 	private static Map<String, String> replacements = new HashMap<String, String>();
 
-	static{	
-		replacements.put("{stream}","net.sourceforge.eclipseccase.ClearCaseProvider:getCurrentStream");
+	static {
+		replacements
+				.put("{stream}",
+						"net.sourceforge.eclipseccase.ClearCaseProvider:getCurrentStream");
 	}
 
 	public static String replace(final String msg) {
@@ -42,14 +42,12 @@ public class RuntimeSubstitution {
 			String toBeSubstituted = replacements.get(matcher.group());
 			String replacement = getValue(toBeSubstituted);
 			matcher.appendReplacement(out, replacement);
-			//matcher.appendReplacement(out, replacements.get(matcher.group()));
+			// matcher.appendReplacement(out,
+			// replacements.get(matcher.group()));
 		}
 		matcher.appendTail(out);
-		System.out.println("OUT "+out);
 		return out.toString();
 	}
-
-	
 
 	public static String getValue(String expression) {
 
@@ -61,45 +59,39 @@ public class RuntimeSubstitution {
 			// Obtain the Class
 			// Obtain the Class instance
 			Class cls = Class.forName(parts[0]);
-			
+
 			Method[] methods = cls.getDeclaredMethods();
-	        
-	        //Loop through the methods and print out their names
-	        for (Method method : methods) {
-	            System.out.println(method.getName());
-	        }
-			
+
 			// Get the method
 			Method method = cls.getMethod(parts[1]);
 
 			// Create the object that we want to invoke the methods on
-			ClearCaseProvider provider = (ClearCaseProvider) cls
-					.newInstance();
+			ClearCaseProvider provider = (ClearCaseProvider) cls.newInstance();
 			// Call the method. Since none of them takes arguments we just
 			// pass an empty array as second parameter.
-			result = (String)method.invoke(provider, new Object[0]);
-		
+			result = (String) method.invoke(provider, new Object[0]);
+
 		} catch (IllegalArgumentException ex) {
 			ex.printStackTrace();
-			
+
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();
-			
+
 		} catch (IllegalAccessException ex) {
 			ex.printStackTrace();
-			
+
 		} catch (ClassNotFoundException ex) {
 			ex.printStackTrace();
-			
+
 		} catch (SecurityException ex) {
 			ex.printStackTrace();
-			
+
 		} catch (NoSuchMethodException ex) {
 			ex.printStackTrace();
 		} catch (InstantiationException ex) {
 			ex.printStackTrace();
 		}
-		System.out.println("Result " + ": " + result);
+
 		return result;
 	}
 
