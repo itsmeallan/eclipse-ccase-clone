@@ -80,7 +80,9 @@ public class NewActivityDialog extends Dialog {
 		label.setLayoutData(new GridData());
 		activityText = new Text(composite, SWT.BORDER);
 		 String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
-         activityText.setText(runtimeText);
+         int index = runtimeText.length();
+		 activityText.setText(runtimeText);
+		 activityText.setSelection(index+1);
 		GridData data = new GridData();
 		data.widthHint = 150;
 		activityText.setLayoutData(data);
