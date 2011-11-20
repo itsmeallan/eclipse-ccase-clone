@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.compare;
 
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+
 import java.io.IOException;
 
 import java.io.ByteArrayInputStream;
@@ -49,11 +51,11 @@ public class VersionCompareInput extends CompareEditorInput {
 	 *            <code>null</code> for version specified by the view.
 	 */
 
-	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String leftVersion, String rigthVersion) {
+	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String leftVersion, String rigthVersion,ClearCaseProvider provider) {
 		super(configuration);
 
-		leftElement = leftVersion != null ? new ClearCaseResourceNode(resource, leftVersion) : new ResourceNode(resource);
-		rightElement = rigthVersion != null ? new ClearCaseResourceNode(resource, rigthVersion) : new ResourceNode(resource);
+		leftElement = leftVersion != null ? new ClearCaseResourceNode(resource, leftVersion,provider) : new ResourceNode(resource);
+		rightElement = rigthVersion != null ? new ClearCaseResourceNode(resource, rigthVersion,provider) : new ResourceNode(resource);
 
 		configuration.setLeftImage(CompareUI.getImage(resource));
 		if (leftVersion != null) {

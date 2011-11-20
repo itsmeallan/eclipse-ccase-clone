@@ -25,6 +25,7 @@ public class PredecessorCompareInput extends CompareEditorInput {
 
 	private final IFile resource;
 	private final String previousVersion;
+	private final ClearCaseProvider provider;
 
 	/**
 	 * Create a new PredecessorCompareInput input instance.
@@ -37,7 +38,7 @@ public class PredecessorCompareInput extends CompareEditorInput {
 	public PredecessorCompareInput(CompareConfiguration configuration, IFile resource, ClearCaseProvider provider) {
 		super(configuration);
 		this.resource = resource;
-		
+		this.provider = provider;
 		previousVersion = provider.getPredecessorVersion(resource);
 		
 		configuration.setLeftImage(CompareUI.getImage(resource));
@@ -54,7 +55,7 @@ public class PredecessorCompareInput extends CompareEditorInput {
 			throws InvocationTargetException, InterruptedException {
 
 		return new DiffNode(null, Differencer.CHANGE, null,
-				new ClearCaseResourceNode(resource, previousVersion),
+				new ClearCaseResourceNode(resource, previousVersion,provider),
 				new ResourceNode(resource));
 	}
 }

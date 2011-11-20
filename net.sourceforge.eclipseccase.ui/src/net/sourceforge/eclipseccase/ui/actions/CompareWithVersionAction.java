@@ -94,9 +94,10 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 			config.setLeftEditable(false);
 			config.setRightEditable(false); // Could be made editable if version
 			// is null in the future.
+			ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
 
 			if (element instanceof IFile) {
-				VersionCompareInput input = new VersionCompareInput(config, (IFile) element, versionA, versionB);
+				VersionCompareInput input = new VersionCompareInput(config, (IFile) element, versionA, versionB,p);
 				CompareUI.openCompareEditor(input);
 			}
 		}
