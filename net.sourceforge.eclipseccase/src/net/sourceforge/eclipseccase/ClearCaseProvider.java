@@ -2272,5 +2272,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		}
 	}
+	
+	public void copyVersionIntoSnapShot(String destinationPath,String versionToCopy){
+		HashMap<Integer, String> args = new HashMap<Integer, String>();
+		args.put(Integer.valueOf(ClearCase.TO), destinationPath);
+		ClearCasePlugin.getEngine().get(
+				ClearCase.TO, args,versionToCopy);
+	}
 
 }
