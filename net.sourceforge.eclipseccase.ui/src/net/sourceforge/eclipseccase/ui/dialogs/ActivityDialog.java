@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     mikael petterson - inital API and implementation
+ *     magnus mörtberg - implementation and bugfixing
  *     IBM Corporation - concepts and ideas from Eclipse
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
@@ -104,31 +105,31 @@ public class ActivityDialog extends Dialog {
 					comboViewer.setSelection(new StructuredSelection(activity), true);
 				}else{
 					//select first,
-					comboViewer.setSelection(new StructuredSelection(activities.get(activities.size()-1)), true);
+					comboViewer.setSelection(new StructuredSelection(activities.get(activities.size() - 1)), true);
 				}
 			}
 		} else {
 			// Don't set any activity.This is for testing.
 			comboViewer.setSelection(new StructuredSelection(), true);
-			comboViewer.refresh();
 		}
-			
-//			
-//			// TODO: could this be cached for project.
-//			String headline = provider.getCurrentActivity();
-//			for (String activity : activities) {
-//				// if current activity is in list set it.
-//				if (activity.equalsIgnoreCase(headline)) {
-//					comboViewer.setSelection(new StructuredSelection(activity), true);
-//					comboViewer.refresh();
-//				}
-//
-//			}
-//		} else {
-//			// Don't set any activity.
-//			comboViewer.setSelection(new StructuredSelection(activities.), true);
-//			comboViewer.refresh();
-//		}
+		comboViewer.refresh();
+
+		//
+		// // TODO: could this be cached for project.
+		// String headline = provider.getCurrentActivity();
+		// for (String activity : activities) {
+		// // if current activity is in list set it.
+		// if (activity.equalsIgnoreCase(headline)) {
+		// comboViewer.setSelection(new StructuredSelection(activity), true);
+		// comboViewer.refresh();
+		// }
+		//
+		// }
+		// } else {
+		// // Don't set any activity.
+		// comboViewer.setSelection(new StructuredSelection(activities.), true);
+		// comboViewer.refresh();
+		// }
 
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
