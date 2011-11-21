@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
  * Id can be generated or manually entered.
  * 
  * @author mikael
- * 
+ *
  */
 public class NewActivityDialog extends Dialog {
 
@@ -129,7 +129,7 @@ public class NewActivityDialog extends Dialog {
 
 		// replace all spaces to underscore since it is not allowed.
 		String noSpaceHeadline = activityText.getText().trim().replaceAll(" ", "_");
-
+		
 		if (!match(noSpaceHeadline)) {
 			MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), Messages.getString(("NewActivityDialog.onlyAlphaNumericCharacters")));
 			activityText.selectAll();
@@ -137,9 +137,6 @@ public class NewActivityDialog extends Dialog {
 			return;
 		}
 		
-				
-		
-
 		if (provider.isSnapShot(resource) && snapshotPath == null) {
 			DirectoryDialog dialog = new DirectoryDialog(getShell());
 			String platform = SWT.getPlatform();
@@ -147,7 +144,6 @@ public class NewActivityDialog extends Dialog {
 			dialog.setMessage(Messages.getString("NewActivityDialog.selectSnapshotDir"));
 			dialog.setFilterPath(platform.equals("win32") || platform.equals("wpf") ? "c:\\" : "/");
 			snapshotPath = dialog.open();
-
 		}
 
 		if (provider.isSnapShot(resource) && snapshotPath == null) {
@@ -168,9 +164,9 @@ public class NewActivityDialog extends Dialog {
 			String id = idText.getText().trim();
 			activityId = noSpaceHeadline.concat(id);
 		}
-		
-		
+			
 		String format = ClearCasePreferences.activityPattern();
+		
 		if(format != null && format.length() > 0){
 			if(!activityConformsToSiteSpecificFormat(activityId,format)){
 				MessageDialog.openError(getShell(), Messages.getString("NewActivityDialog.title"), ClearCasePreferences.getNewActivityFormatMsg());
@@ -186,9 +182,10 @@ public class NewActivityDialog extends Dialog {
 			String activitySelector = null;
 			if (actvitySelectors != null && actvitySelectors.length > 0) {
 				String myActivitySelector = actvitySelectors[0];
-				System.out.print("My activityselector is "+myActivitySelector);
+				if (ClearCaseCLIImpl.getDebugLevel() == 1) {
+					System.out.println("My activityselector is "+myActivitySelector);
+				}
 				pVob = provider.getPvobTag(myActivitySelector);
-				
 			}
 
 			// Create activitySelector [activity]:name@vob-selector
@@ -199,10 +196,8 @@ public class NewActivityDialog extends Dialog {
 			}
 			// create
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
-			if (state.state == ClearCase.ACTIVITY_CREATED) {
-				System.out.println("Actvity created " + noSpaceHeadline);
-				
-
+			if (state.state == ClearCase.ACTIVITY_CREATED && ClearCaseCLIImpl.getDebugLevel() == 1) {
+				System.out.println("Actvity created " + noSpaceHeadline);		
 			}
 		} catch (ClearCaseException cce) {
 			switch (cce.getErrorCode()) {
