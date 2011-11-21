@@ -47,7 +47,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private static Map<String, Boolean> snapshotViewLookupTable = new Hashtable<String, Boolean>(
 			30);
-	
 
 	UncheckOutOperation UNCHECK_OUT = new UncheckOutOperation();
 
@@ -81,7 +80,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public static final IStatus CANCEL_STATUS = Status.CANCEL_STATUS;
 
 	public static final String SNAIL = "@";
-	
+
 	public static final String NO_ACTIVITY = "No activity in view";
 
 	boolean refreshResources = true;
@@ -573,21 +572,22 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public ArrayList<String> listMyActivities() {
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW| ClearCase.ME |ClearCase.SHORT, null);
-		if(output.length > 0){
-		return new ArrayList<String>(Arrays.asList(output));
+				ClearCase.CVIEW | ClearCase.ME | ClearCase.SHORT, null);
+		if (output.length > 0) {
+			return new ArrayList<String>(Arrays.asList(output));
 		}
-		
-		return new ArrayList<String>(Arrays.asList(new String[]{NO_ACTIVITY}));
-		
+
+		return new ArrayList<String>(
+				Arrays.asList(new String[] { NO_ACTIVITY }));
+
 	}
-	
+
 	public ArrayList<String> listAllActivities() {
-				
+
 		String[] output = ClearCasePlugin.getEngine().getActivity(
-				ClearCase.CVIEW | ClearCase.SHORT, null);		
-		return new ArrayList<String>(Arrays.asList(output)); 
-		
+				ClearCase.CVIEW | ClearCase.SHORT, null);
+		return new ArrayList<String>(Arrays.asList(output));
+
 	}
 
 	/**
@@ -646,10 +646,10 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	}
 
-//	public String getStream(String viewName) {
-//		return ClearCasePlugin.getEngine().getStream(
-//				ClearCase.SHORT | ClearCase.VIEW, viewName);
-//	}
+	// public String getStream(String viewName) {
+	// return ClearCasePlugin.getEngine().getStream(
+	// ClearCase.SHORT | ClearCase.VIEW, viewName);
+	// }
 
 	public String getCurrentStream() {
 		return ClearCasePlugin.getEngine().getStream(ClearCase.SHORT, null);
@@ -2272,12 +2272,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		}
 	}
-	
-	public void copyVersionIntoSnapShot(String destinationPath,String versionToCopy){
+
+	public void copyVersionIntoSnapShot(String destinationPath,
+			String versionToCopy) {
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.TO), destinationPath);
-		ClearCasePlugin.getEngine().get(
-				ClearCase.TO, args,versionToCopy);
+		ClearCasePlugin.getEngine().get(ClearCase.TO, args, versionToCopy);
 	}
 
 }
