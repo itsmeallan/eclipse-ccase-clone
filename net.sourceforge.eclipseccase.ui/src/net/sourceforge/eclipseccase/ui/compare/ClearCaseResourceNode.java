@@ -71,7 +71,7 @@ public class ClearCaseResourceNode extends BufferedContent implements ITypedElem
 				contents = new FileInputStream(vextPath);
 			}
 		}catch (FileNotFoundException e){
-			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, could not find file to comare with "+vextPath, e));
+			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, could not find file to compare with "+vextPath, e));
 		}
 		catch (IOException e){	
 			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, Could not create temp file for predecessor: "+vextPath, e));
