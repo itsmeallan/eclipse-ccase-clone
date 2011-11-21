@@ -1,12 +1,18 @@
 ===============================================================================
 =                                 Change Log                                 =
 ===============================================================================
-2.2.11 ( to be released).
+
+2.2.12 ( to be released).
 ======
 
 Bugs:
 3431821 Compare files in snapshot view = "Can't open compare stream
 
+2.2.11
+======
+
+Removed logs that were confusing.
+Fixed some minor bugs in UCM that were discovered internally.
 
 2.2.10
 ======
