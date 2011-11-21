@@ -79,12 +79,12 @@ public class NewActivityDialog extends Dialog {
 		label.setText(Messages.getString("NewActivityDialog.label.addNew")); //$NON-NLS-1$
 		label.setLayoutData(new GridData());
 		activityText = new Text(composite, SWT.BORDER);
-		 String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
+		String runtimeText = RuntimeSubstitution.replace(ClearCasePreferences.getActivityIdFormatHelpString());
          int index = runtimeText.length();
 		 activityText.setText(runtimeText);
 		 activityText.setSelection(index+1);
 		GridData data = new GridData();
-		data.widthHint = 150;
+		data.widthHint = 200;
 		activityText.setLayoutData(data);
 
 		// Add radio button for generating Activity Id.
