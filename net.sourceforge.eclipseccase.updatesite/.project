@@ -16,7 +16,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/ant.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/net.sourceforge.eclipseccase.updatesite site-deploy.xml [Builder] (1).launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

@@ -84,7 +84,10 @@
    <feature url="features/net.sourceforge.eclipseccase_2.2.9.201106222030.jar" id="net.sourceforge.eclipseccase" version="2.2.9.201106222030">
       <category name="eclipse-ccase-35"/>
    </feature>
-   <feature url="features/net.sourceforge.eclipseccase_2.2.10.201108111513.jar" id="net.sourceforge.eclipseccase" version="2.2.10.201108111513">
+   <feature url="features/net.sourceforge.eclipseccase_2.2.10.201111141502.jar" id="net.sourceforge.eclipseccase" version="2.2.10.201111141502">
+      <category name="eclipse-ccase-35"/>
+   </feature>
+   <feature url="features/net.sourceforge.eclipseccase_2.2.11.201111211451.jar" id="net.sourceforge.eclipseccase" version="2.2.11.201111211451">
       <category name="eclipse-ccase-35"/>
    </feature>
    <category-def name="eclipse-ccase-3" label="Eclipse ClearCase Integration for Eclipse 3.0">
