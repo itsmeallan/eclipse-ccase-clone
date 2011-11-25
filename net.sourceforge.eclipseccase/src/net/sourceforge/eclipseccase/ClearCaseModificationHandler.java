@@ -140,12 +140,18 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
-				
+		
+		ClearCaseProvider provider = getProvider(files);
+			
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, ClearCasePreferences.isSilentPrevent())) {
+			return CANCEL;
+		}
+		
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
 		
 		//For UCM we already have a checkout dialog. So dialog only for non-ucm.
-		if (!ClearCasePreferences.isCheckoutAutoAlways() && !ClearCasePreferences.isUCM()) {
+		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
@@ -160,7 +166,6 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 						"Checkout operation failed, operation was cancelled by user.");
 		}
 
-		ClearCaseProvider provider = getProvider(files);
 
 		// check for provider
 		if (null == provider)

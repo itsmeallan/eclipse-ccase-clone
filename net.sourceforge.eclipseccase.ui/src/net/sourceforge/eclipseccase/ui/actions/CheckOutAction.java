@@ -22,7 +22,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		final IResource[] resources = getSelectedResources();
 		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 		
-		if (PreventCheckoutHelper.isPreventedFromCheckOut(getShell(), provider, resources, ClearCasePreferences.isSilentPrevent())){
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())){
 			return;
 		}
 		

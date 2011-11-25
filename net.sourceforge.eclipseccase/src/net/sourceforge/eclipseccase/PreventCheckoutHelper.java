@@ -6,7 +6,6 @@ package net.sourceforge.eclipseccase;
 
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -15,7 +14,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class PreventCheckoutHelper {
 	
-	public static boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources,boolean silent) {
+	public static boolean isPreventedFromCheckOut(ClearCaseProvider provider, IResource[] resources, boolean silent) {
 		for (final IResource resource : resources) {
 
 			if (provider.isPreventCheckout(resource) && !silent) {

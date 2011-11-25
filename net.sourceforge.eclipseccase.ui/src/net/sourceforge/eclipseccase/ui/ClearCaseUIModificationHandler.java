@@ -62,7 +62,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
-		if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, true))
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
 			return CANCEL;
 		// check for provider
 		if (null == provider) {
@@ -184,14 +184,10 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
 
-			if (PreventCheckoutHelper.isPreventedFromCheckOut(shell, provider, files, ClearCasePreferences.isSilentPrevent())) {
-				return CANCEL;
-			}
-			// UCM checkout.
+			
+			// UCM checkout we need to use a ActivityDialog.
 			if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-				if (!UcmActivity.checkoutWithActivity(provider, files, shell))
-					// no checkout
-					return CANCEL;
+				return checkout(files,shell);
 			}
 			
 			return super.validateEdit(files, context);
