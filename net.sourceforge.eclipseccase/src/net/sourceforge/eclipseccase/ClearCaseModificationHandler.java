@@ -140,17 +140,10 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
-		
-		ClearCaseProvider provider = getProvider(files);
-			
-		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, ClearCasePreferences.isSilentPrevent())) {
-			return CANCEL;
-		}
-		
+
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
-		
-		//For UCM we already have a checkout dialog. So dialog only for non-ucm.
+
 		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
 			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
 			getDisplay().syncExec(checkoutQuestion);
@@ -165,7 +158,7 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 				return new Status(IStatus.CANCEL, ClearCasePlugin.PLUGIN_ID,
 						"Checkout operation failed, operation was cancelled by user.");
 		}
-
+		ClearCaseProvider provider = getProvider(files);
 
 		// check for provider
 		if (null == provider)
@@ -267,52 +260,59 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 			return OK;
 		return checkout(new IFile[] { file });
 	}
-	
-//	protected boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider provider, IResource[] resources,boolean silent) {
-//		for (final IResource resource : resources) {
-//
-//			if (provider.isPreventCheckout(resource) && !silent) {
-//				PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
-//				PlatformUI.getWorkbench().getDisplay().syncExec(question);
-//				if (question.isRemember()) {
-//						ClearCasePreferences.setSilentPrevent();
-//				}
-//				return true;
-//			}else if(provider.isPreventCheckout(resource) && silent){
-//				//show no message.
-//				return true;
-//			}
-//		}
-//				
-//		return false;
-//	}
-//	
-//	public class PreventCheckoutQuestion implements Runnable {
-//		private IResource resource;
-//
-//		private int result;
-//
-//		private boolean remember;
-//
-//		public PreventCheckoutQuestion(IResource resource) {
-//			this.resource = resource;
-//		}
-//
-//		public void run() {
-//			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(PlatformUI.getWorkbench().getDisplay().getActiveShell(), Messages.getString("ClearCaseModificationHandler.infoDialog.title"), null, Messages.getString("ClearCaseModificationHandler.infoDialog.message.part1")+resource.getName()+" "+Messages.getString("ClearCaseModificationHandler.infoDialog.message.part2"), MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0, "Skip this dialog in the future!", false);
-//			checkoutQuestion.open();
-//			result = checkoutQuestion.getReturnCode();
-//			remember = checkoutQuestion.getToggleState();
-//		}
-//
-//		public int getResult() {
-//			return result;
-//		}
-//
-//		public boolean isRemember() {
-//			return remember;
-//		}
-//
-//	}
+
+	// protected boolean isPreventedFromCheckOut(Shell shell, ClearCaseProvider
+	// provider, IResource[] resources,boolean silent) {
+	// for (final IResource resource : resources) {
+	//
+	// if (provider.isPreventCheckout(resource) && !silent) {
+	// PreventCheckoutQuestion question = new PreventCheckoutQuestion(resource);
+	// PlatformUI.getWorkbench().getDisplay().syncExec(question);
+	// if (question.isRemember()) {
+	// ClearCasePreferences.setSilentPrevent();
+	// }
+	// return true;
+	// }else if(provider.isPreventCheckout(resource) && silent){
+	// //show no message.
+	// return true;
+	// }
+	// }
+	//				
+	// return false;
+	// }
+	//	
+	// public class PreventCheckoutQuestion implements Runnable {
+	// private IResource resource;
+	//
+	// private int result;
+	//
+	// private boolean remember;
+	//
+	// public PreventCheckoutQuestion(IResource resource) {
+	// this.resource = resource;
+	// }
+	//
+	// public void run() {
+	// MessageDialogWithToggle checkoutQuestion = new
+	// MessageDialogWithToggle(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+	// Messages.getString("ClearCaseModificationHandler.infoDialog.title"),
+	// null,
+	// Messages.getString("ClearCaseModificationHandler.infoDialog.message.part1")+resource.getName()+" "+Messages.getString("ClearCaseModificationHandler.infoDialog.message.part2"),
+	// MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0,
+	// "Skip this dialog in the future!", false);
+	// checkoutQuestion.open();
+	// result = checkoutQuestion.getReturnCode();
+	// remember = checkoutQuestion.getToggleState();
+	// }
+	//
+	// public int getResult() {
+	// return result;
+	// }
+	//
+	// public boolean isRemember() {
+	// return remember;
+	// }
+	//
+	// }
 
 }

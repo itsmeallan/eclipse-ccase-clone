@@ -12,6 +12,9 @@
 
 package net.sourceforge.eclipseccase.ui;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+import net.sourceforge.eclipseccase.PreventCheckoutHelper;
+
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.*;
 import net.sourceforge.eclipseccase.ui.preferences.ClearCasePreferenceStore;
@@ -184,12 +187,19 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
 
-			
 			// UCM checkout we need to use a ActivityDialog.
 			if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-				return checkout(files,shell);
+				if (null == shell) {
+					return checkout(files,PlatformUI.getWorkbench().getDisplay().getActiveShell());
+				} else {
+					return checkout(files, shell);
+				}
 			}
-			
+
+			if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, ClearCasePreferences.isSilentPrevent())) {
+				return CANCEL;
+			}
+
 			return super.validateEdit(files, context);
 		}
 		try {
