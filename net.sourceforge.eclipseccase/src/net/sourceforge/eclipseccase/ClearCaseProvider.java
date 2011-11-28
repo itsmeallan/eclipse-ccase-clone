@@ -652,7 +652,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 	// }
 
 	public String getCurrentStream() {
-		return ClearCasePlugin.getEngine().getStream(ClearCase.SHORT, null);
+		String result = "";
+		String [] output = ClearCasePlugin.getEngine().getStream(ClearCase.SHORT, null);
+		if (output != null && output.length > 0) {
+				result = output[0];
+			
+		}
+		return result;
 	}
 
 	/**
@@ -676,14 +682,17 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return list of activitySelectors
 	 */
 	public String[] getActivitySelectors(String view) {
-		String[] result = new String[] { "" };
+		String[] result = new String[]{};
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.FORMAT), "%[activities]CXp");
 		args.put(Integer.valueOf(ClearCase.VIEW), view);
-		String output = ClearCasePlugin.getEngine().getStream(
+		String [] output = ClearCasePlugin.getEngine().getStream(
 				ClearCase.FORMAT | ClearCase.VIEW, args);
-		if (output != null && output.length() > 0) {
-			result = output.split(", ");
+		if (output != null && output.length > 0) {
+			for (String line : output) {
+				result = line.split(", ");
+			}
+			
 		}
 
 		return result;
