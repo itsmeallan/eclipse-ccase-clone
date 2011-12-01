@@ -120,4 +120,38 @@ public class ClearCaseProviderTest {
 		// Verify behavior for all mock objects.
 		PowerMock.verifyAll();
 	}
+	
+	/**
+	 * Test method for
+	 * {@link net.sourceforge.eclipseccase.ClearCaseProvider#getPvobTag(java.lang.String)}
+	 * Checks that when there is no activities it returns an empty array.
+	 */
+	@Test
+	public void testgetActivitySelectorsNoActivities() {
+		final String VIEW_NAME = "myview";
+		HashMap<Integer, String> args = new HashMap<Integer, String>();
+		args.put(Integer.valueOf(ClearCase.FORMAT), "%[activities]CXp");
+		args.put(Integer.valueOf(ClearCase.VIEW), VIEW_NAME);
+		// Set expectations on mocks.
+
+		EasyMock.expect(ClearCasePlugin.getEngine()).andReturn(cciMock);
+		EasyMock
+				.expect(
+						cciMock.getStream(ClearCase.FORMAT | ClearCase.VIEW,
+								args))
+				.andStubReturn(
+						new String[] {});
+
+		// Only add those not created by PowerMock.
+		PowerMock.replayAll(cciMock);
+
+		String[] activitySelectors = provider.getActivitySelectors(VIEW_NAME);
+		assertArrayEquals(
+				"Array is not empty",
+				new String[] {},
+				activitySelectors);
+	
+		// Verify behavior for all mock objects.
+		PowerMock.verifyAll();
+	}
 }
