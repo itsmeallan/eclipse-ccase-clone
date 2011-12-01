@@ -180,20 +180,19 @@ public class NewActivityDialog extends Dialog {
 			String[] actvitySelectors = provider.getActivitySelectors(ClearCaseProvider.getViewName(resource));
 			String pVob = null;
 			String activitySelector = null;
-			if (actvitySelectors != null && actvitySelectors.length > 0) {
+			if (actvitySelectors.length > 0) {
+				//Get first since we only need pvob-tag.
 				String myActivitySelector = actvitySelectors[0];
 				if (ClearCaseCLIImpl.getDebugLevel() == 1) {
 					System.out.println("My activityselector is "+myActivitySelector);
 				}
 				pVob = provider.getPvobTag(myActivitySelector);
-			}
-
-			// Create activitySelector [activity]:name@vob-selector
-			if (null != pVob) {
+				// Create activitySelector [activity]:name@vob-selector
 				activitySelector = activityId + "@" + pVob;
-			} else {
+			}else{
 				activitySelector = activityId;
 			}
+			
 			// create
 			ClearCaseElementState state = provider.createActivity(noSpaceHeadline, activitySelector, snapshotPath);
 			if (state.state == ClearCase.ACTIVITY_CREATED && ClearCaseCLIImpl.getDebugLevel() == 1) {

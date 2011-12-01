@@ -16,6 +16,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
 import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseCLIImpl;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
@@ -86,6 +87,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	boolean refreshResources = true;
 
 	private OperationListener opListener = null;
+	
+	private boolean isTest = false;
 
 	public ClearCaseProvider() {
 		super();
@@ -675,26 +678,25 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	/**
-	 * Retrives a list of activitySelectors for a specific view Command returns
-	 * a string of: activity:<activityId>@/vobs/$pvob,
-	 * activity:<activityId>@/vobs/$pvob, activity: ...
-	 * 
-	 * @return list of activitySelectors
+	 * getStream() returns an array but contains one or no element.If we have
+	 * actvities in stream we have one element.
+	 * activity:<activityId>@/vobs/$pvob,activity:<activityId>@/vobs/$pvob, activity: ...
+	 * All activities are on one line.
+	 * @return array of activities or an empty array.
 	 */
 	public String[] getActivitySelectors(String view) {
 		String[] result = new String[]{};
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.FORMAT), "%[activities]CXp");
 		args.put(Integer.valueOf(ClearCase.VIEW), view);
+		
 		String [] output = ClearCasePlugin.getEngine().getStream(
 				ClearCase.FORMAT | ClearCase.VIEW, args);
-		if (output != null && output.length > 0) {
-			for (String line : output) {
-				result = line.split(", ");
-			}
-			
+		
+		if (output != null && output.length == 1) {
+			result = output[0].split(", ");
 		}
-
+		
 		return result;
 
 	}

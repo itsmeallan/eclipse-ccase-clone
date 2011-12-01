@@ -65,8 +65,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
-		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
-			return CANCEL;
+		
 		// check for provider
 		if (null == provider) {
 			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
@@ -78,14 +77,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 		final boolean useClearDlg = ClearCasePreferences.isUseClearDlg();
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
-
-		// UCM checkout.
-		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-			if (!UcmActivity.checkoutWithActivity(provider, files, shell))
-				// no checkout
-				return CANCEL;
-		}
-
+		
 		try {
 			// use workbench window as preferred runnable context
 			IRunnableContext context;
@@ -100,9 +92,22 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					try {
+						
+						if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
+							//return CANCEL;
+							throw new InterruptedException("Operation canceled by user.");
+						
+						// UCM checkout.
+						if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+							if (!UcmActivity.checkoutWithActivity(provider, files, shell))
+								// no checkout
+								//return CANCEL;
+								throw new InterruptedException("Operation canceled by user.");	
+						}
+						
 						String comment = null;
 
-						if (!useClearDlg && askForComment) {
+						if (!useClearDlg && askForComment && !ClearCasePreferences.isUCM()) {
 							CommentDialog dlg = new CommentDialog(shell, "Checkout comment");
 							dlg.setRecursive(false);
 							dlg.setRecursiveEnabled(false);
