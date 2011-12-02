@@ -637,7 +637,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public ClearCaseElementState createActivity(String headline,
 			String activitySelector, String path) throws ClearCaseException {
 		ClearCaseElementState[] cces = ClearCasePlugin.getEngine()
-				.createActivity(
+				.mkActivity(
 						ClearCase.HEADLINE | ClearCase.FORCE | ClearCase.NSET,
 						headline, activitySelector, path);
 		if (cces != null) {
