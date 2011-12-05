@@ -66,7 +66,7 @@ public class ActivityDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		getShell().setText(Messages.getString("ActivityDialog.title"));
+		getShell().setText(Messages.getString("ActivityDialog.title"+" "+resource.getName()));
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		GridLayout layout = new GridLayout();
