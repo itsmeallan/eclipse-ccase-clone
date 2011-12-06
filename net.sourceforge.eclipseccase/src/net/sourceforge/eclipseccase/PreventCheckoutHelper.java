@@ -5,6 +5,9 @@ package net.sourceforge.eclipseccase;
 
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ui.PlatformUI;
 
@@ -33,6 +36,15 @@ public class PreventCheckoutHelper {
 		return false;
 	}
 	
-	
+	public static IResource[] isCheckedOut(ClearCaseProvider provider, IResource[] resources){
+		ArrayList<IResource> toBeCheckedout = new ArrayList<IResource>(Arrays.asList(resources)); 
+		for (final IResource resource : resources) {
+			if(provider.isCheckedOut(resource)){
+				toBeCheckedout.remove(resource);
+			}
+			
+		}
+		return (IResource[])toBeCheckedout.toArray( new IResource[toBeCheckedout.size() ]);
+	}
 
 }

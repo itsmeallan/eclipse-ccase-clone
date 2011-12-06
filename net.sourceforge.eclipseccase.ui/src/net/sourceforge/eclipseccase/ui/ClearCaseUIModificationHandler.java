@@ -65,7 +65,13 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
 		final ClearCaseProvider provider = getProvider(files);
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
+			return CANCEL;
 		
+		final IResource[] resources = PreventCheckoutHelper.isCheckedOut(provider, files);
+		if(resources.length == 0 || resources == null){
+			return CANCEL;
+		}
 		// check for provider
 		if (null == provider) {
 			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.noProvider"), //$NON-NLS-1$
@@ -77,7 +83,14 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 		final boolean useClearDlg = ClearCasePreferences.isUseClearDlg();
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
-		
+
+		// UCM checkout.
+		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+			if (!UcmActivity.checkoutWithActivity(provider, resources, shell))
+				// no checkout
+				return CANCEL;
+		}
+
 		try {
 			// use workbench window as preferred runnable context
 			IRunnableContext context;
@@ -92,19 +105,6 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 
 				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					try {
-						
-						if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
-							//return CANCEL;
-							throw new InterruptedException("Operation canceled by user.");
-						
-						// UCM checkout.
-						if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-							if (!UcmActivity.checkoutWithActivity(provider, files, shell))
-								// no checkout
-								//return CANCEL;
-								throw new InterruptedException("Operation canceled by user.");	
-						}
-						
 						String comment = null;
 
 						if (!useClearDlg && askForComment && !ClearCasePreferences.isUCM()) {
@@ -121,19 +121,19 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 						synchronized (provider) {
 							boolean refreshing = setResourceRefreshing(provider, false);
 							try {
-								monitor.beginTask(Messages.getString("ClearCaseUIModificationHandler.task.checkout"), files.length); //$NON-NLS-1$
+								monitor.beginTask(Messages.getString("ClearCaseUIModificationHandler.task.checkout"), resources.length); //$NON-NLS-1$
 								if (ClearCasePreferences.isUseClearDlg()) {
 									monitor.subTask("Executing ClearCase user interface...");
-									ClearDlgHelper.checkout(files);
+									ClearDlgHelper.checkout(resources);
 								} else {
 									if (null != comment) {
 										provider.setComment(comment);
 									}
 
-									for (int i = 0; i < files.length; i++) {
-										IFile file = files[i];
+									for (int i = 0; i < resources.length; i++) {
+										IResource file = resources[i];
 										monitor.subTask(file.getName());
-										provider.checkout(new IFile[] { file }, IResource.DEPTH_ZERO, null);
+										provider.checkout(new IResource[] { file }, IResource.DEPTH_ZERO, null);
 										file.refreshLocal(IResource.DEPTH_ZERO, null);
 										monitor.worked(i);
 									}
@@ -147,7 +147,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 						throw new InvocationTargetException(ex);
 					}
 				}
-			}, new MultiRule(files));
+			}, new MultiRule(resources));
 		} catch (InvocationTargetException e) {
 			ClearCasePlugin.log(Messages.getString("ClearCaseUIModificationHandler.error.checkout") //$NON-NLS-1$
 					+ (null != e.getCause() ? e.getCause().getMessage() : e.getMessage()), null != e.getCause() ? e.getCause() : e);
@@ -187,7 +187,6 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
-		final ClearCaseProvider provider = getProvider(files);
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
@@ -201,9 +200,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 				}
 			}
 
-			if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, ClearCasePreferences.isSilentPrevent())) {
-				return CANCEL;
-			}
+			
 
 			return super.validateEdit(files, context);
 		}
