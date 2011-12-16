@@ -64,12 +64,13 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
+		System.out.println(getClass().getName()+"checkout()");
 		final ClearCaseProvider provider = getProvider(files);
 		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
 			return CANCEL;
-		
+
 		final IResource[] resources = PreventCheckoutHelper.isCheckedOut(provider, files);
-		if(resources.length == 0 || resources == null){
+		if (resources.length == 0 || resources == null) {
 			return CANCEL;
 		}
 		// check for provider
@@ -84,8 +85,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		final boolean useClearDlg = ClearCasePreferences.isUseClearDlg();
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 
-		// UCM checkout.
-		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+		// UCM Show ActivityDialog with comment
+		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg() && askForComment) {
 			if (!UcmActivity.checkoutWithActivity(provider, resources, shell))
 				// no checkout
 				return CANCEL;
@@ -176,7 +177,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * This is used by "refactoring" and "auto checkout". (non-Javadoc)
 	 * 
 	 * @see
 	 * net.sourceforge.eclipseccase.ClearCaseModificationHandler#validateEdit
@@ -186,24 +187,17 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	@Override
 	public IStatus validateEdit(final IFile[] files, final FileModificationValidationContext context) {
 		if (ClearCasePreferences.isCheckoutAutoNever())
+			// FIXME: We need to inform user that Auto checkout is never
+			// allowed.
 			return CANCEL;
+		// We are allowed to checkout file.
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
-
-			// UCM checkout we need to use a ActivityDialog.
-			if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-				if (null == shell) {
-					return checkout(files,PlatformUI.getWorkbench().getDisplay().getActiveShell());
-				} else {
-					return checkout(files, shell);
-				}
-			}
-
-			
-
+			System.out.println("Shell is set to "+shell+" and askForComment is "+askForComment);
 			return super.validateEdit(files, context);
 		}
+
 		try {
 			this.validateEditLock.acquire();
 			final IFile[] readOnlyFiles = getFilesToCheckout(files);

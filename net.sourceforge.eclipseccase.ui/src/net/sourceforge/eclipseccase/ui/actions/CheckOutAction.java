@@ -18,14 +18,20 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 	@Override
 	public void execute(IAction action) {
-		
+
 		final IResource[] resources = getSelectedResources();
 		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
-		
-		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())){
-			return;
-		}
-		
+		IWorkspaceRunnable myRunnable = new IWorkspaceRunnable() {
+
+			public void run(IProgressMonitor monitor) throws CoreException {
+				if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())) {
+					return;
+				}
+
+			}
+		};
+
+		executeInBackground(myRunnable, "Checking files prevented from checkout ...");
 
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
@@ -40,13 +46,22 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		final String comment = maybeComment;
 		final int depth = maybeDepth;
+		
+		
+		IWorkspaceRunnable my2Runnable = new IWorkspaceRunnable() {
 
-		// UCM checkout.
-		if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
-			if (!UcmActivity.checkoutWithActivity(provider, resources, getShell()))
-				// no checkout
-				return;
-		}
+			public void run(IProgressMonitor monitor) throws CoreException {
+				// UCM checkout.
+				if (ClearCasePreferences.isUCM() && !ClearCasePreferences.isUseClearDlg()) {
+					if (!UcmActivity.checkoutWithActivity(provider, resources, getShell()))
+						// no checkout
+						return;
+				}
+
+			}
+		};
+
+		executeInBackground(my2Runnable, "UCM checkout ...");
 
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
