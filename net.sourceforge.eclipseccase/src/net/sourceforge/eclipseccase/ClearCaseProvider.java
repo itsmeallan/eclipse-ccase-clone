@@ -733,12 +733,6 @@ public class ClearCaseProvider extends RepositoryProvider {
 												.toString() }), null);
 
 			IStatus result = OK_STATUS;
-
-			// boolean sourceParentCoBeforeOp =
-			// isCheckedOut(source.getParent());
-			// boolean targetParentCoBoforeOp = isCheckedOut(destination
-			// .getParent());
-
 			ClearCaseElementState[] state = null;
 
 			if (ClearCasePreferences.isAutoCheckinParentAfterMoveAllowed()) {
@@ -772,6 +766,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 			return result;
 		} finally {
 			setComment("");
+			monitor.done();
 		}
 	}
 
