@@ -64,7 +64,7 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files, final Shell shell) {
-		System.out.println(getClass().getName()+"checkout()");
+		
 		final ClearCaseProvider provider = getProvider(files);
 		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, true))
 			return CANCEL;
@@ -172,7 +172,8 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 		if (context instanceof Shell)
 			return (Shell) context;
 		if (context instanceof FileModificationValidationContext)
-			return (Shell) (((FileModificationValidationContext) context).getShell());
+		return (Shell) (((FileModificationValidationContext)context).getShell());
+
 		return null;
 	}
 
@@ -191,10 +192,12 @@ class ClearCaseUIModificationHandler extends ClearCaseModificationHandler {
 			// allowed.
 			return CANCEL;
 		// We are allowed to checkout file.
+		
 		final Shell shell = getShell(context);
 		final boolean askForComment = ClearCasePreferences.isCommentCheckout() && !ClearCasePreferences.isCommentCheckoutNeverOnAuto();
 		if (null == shell || !askForComment) {
-			System.out.println("Shell is set to "+shell+" and askForComment is "+askForComment);
+			
+
 			return super.validateEdit(files, context);
 		}
 

@@ -1,6 +1,9 @@
 package net.sourceforge.eclipseccase;
 
+import java.text.MessageFormat;
 import java.util.LinkedList;
+
+import net.sourceforge.clearcase.ClearCaseError;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -17,6 +20,8 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.team.core.TeamException;
 
 public class MoveHandler implements IMoveDeleteHook {
+	
+	public static final String ID = "net.sourceforge.eclipseccase.MoveHandler"; //$NON-NLS-1$
 
 	ClearCaseProvider provider;
 
@@ -265,12 +270,20 @@ public class MoveHandler implements IMoveDeleteHook {
 					tree.failed(status);
 				}
 
-				return true;
-
+				//return true;
+			}catch(ClearCaseError e){
+				tree.failed(new Status(
+						IStatus.ERROR,
+						ID,
+						TeamException.UNABLE
+						,"An Error occurred! "+e.getMessage(), e));
+				
 			} finally {
 				provider.refreshResources = true;
 				monitor.done();
 			}
+			
+			return true;
 		}
 	}
 
