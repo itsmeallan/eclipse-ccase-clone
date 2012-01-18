@@ -6,6 +6,7 @@
 
 Bugs:
 3451495 Renaming Class caused ArrayIndexOutOfBoundsException - 0
+3473425 error checkout directory that is soft link
 
 Feature:
 3414983 	Automatic diff when checking in files
