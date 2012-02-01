@@ -420,6 +420,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public boolean isCheckedOutInAnyView(String element) {
+		//UCM we do not need to know of another stream co.
+		if(ClearCasePreferences.isUCM()){
+			return false;
+		}
+		
 		boolean isCheckedoutInOtherView = false;
 		checkedOutInOtherView.clear();
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
@@ -431,7 +436,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 		// Check if line ends with these keywords.
 		Pattern pattern = Pattern.compile(".*View:\\s(.*)\\sStatus:.*");
 
-		if (output.length > 0) {
+		if (output.length > 0 ) {
 			// we have file checked-out in other view.
 			isCheckedoutInOtherView = true;
 			for (int i = 0; i < output.length; i++) {
@@ -788,7 +793,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 			IStatus result = OK_STATUS;
 			ClearCaseElementState[] state = null;
-
+			
 			if (isCheckedOutInAnyView(source.getLocation().toOSString())) {
 
 				StringBuffer sb = new StringBuffer();
@@ -802,20 +807,11 @@ public class ClearCaseProvider extends RepositoryProvider {
 								+ sb.toString()+"\n"
 								+ " Do you still want to move, "
 								+ source.getName() + "?");
-
+				if(returnCode != 0){
+					return cancelCheckout(source,monitor, opListener);
+				}
 			}
-			// If not 1 ( ok) then we cancel operation.
-			if (returnCode != 0) {
-				return new Status(
-						IStatus.ERROR,
-						ID,
-						TeamException.CONFLICT,
-						MessageFormat
-								.format(
-										"Cancelled move operation for \"{0}\"!",
-										new Object[] { source.getFullPath()
-												.toString() }), null);
-			}
+			
 
 			if (ClearCasePreferences.isAutoCheckinParentAfterMoveAllowed()) {
 				state = ClearCasePlugin.getEngine()
@@ -2387,6 +2383,31 @@ public class ClearCaseProvider extends RepositoryProvider {
 		HashMap<Integer, String> args = new HashMap<Integer, String>();
 		args.put(Integer.valueOf(ClearCase.TO), destinationPath);
 		ClearCasePlugin.getEngine().get(ClearCase.TO, args, versionToCopy);
+	}
+	
+	/**
+	 * Method is used for a rename refactoring when the file to be renamed have been checkedout.
+	 * When the file is checked out in another view and the user don't want to proceed we cancel checkout
+	 * and return fail status. This is due to undo operation is not working.
+	 * @param resource
+	 * @param monitor
+	 * @param opListener
+	 * @return
+	 */
+	private IStatus cancelCheckout(IResource resource,IProgressMonitor monitor,OperationListener opListener){
+		//uncheckout since we do not want to checkout.
+		ClearCasePlugin.getEngine().uncheckout(new String[] { resource.getLocation().toOSString() }, ClearCase.NONE, opListener);
+		updateState(resource, IResource.DEPTH_ZERO,
+				new SubProgressMonitor(monitor, 10));
+		return new Status(
+				IStatus.ERROR,
+				ID,
+				TeamException.CONFLICT,
+				MessageFormat
+						.format(
+								"Cancelled move operation for \"{0}\"!",
+								new Object[] { resource.getFullPath()
+										.toString() }), null);
 	}
 
 }
