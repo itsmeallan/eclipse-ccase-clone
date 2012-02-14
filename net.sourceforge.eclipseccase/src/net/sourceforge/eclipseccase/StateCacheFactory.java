@@ -680,7 +680,13 @@ public class StateCacheFactory implements ISaveParticipant,
 
 				for (int i = 0; i < projectDeltas.length; i++) {
 					IResourceDelta projectDelta = projectDeltas[i];
-
+					
+					//Fix for bug 3487493.
+					//check if the resource is attached to clearcase if not continue with next resource
+					//this is to avoid projects shared with other repository.
+					if(ClearCaseProvider.getClearCaseProvider(projectDelta.getResource()) == null)
+					continue;
+					
 					// filter only shared projects
 					if (RepositoryProvider.isShared((IProject) projectDelta
 							.getResource())) {
