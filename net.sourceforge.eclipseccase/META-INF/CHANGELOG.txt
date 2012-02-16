@@ -1,12 +1,13 @@
 ===============================================================================
 =                                 Change Log                                 =
 ===============================================================================
-2.2.13 (( to be released).
+2.2.13 (to be released).
 ======
 
 Bugs:
 3451495 Renaming Class caused ArrayIndexOutOfBoundsException - 0
 3473425 error checkout directory that is soft link
+3487493 Exceptions in clear case plugins.
 
 Feature:
 3414983 	Automatic diff when checking in files
