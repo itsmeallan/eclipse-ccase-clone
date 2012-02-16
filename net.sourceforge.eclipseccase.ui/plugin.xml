@@ -767,5 +767,5 @@
 		<teamDecorator decoratorId="net.sourceforge.eclipseccase.ui.decorator"
 			repositoryId="net.sourceforge.eclipseccase.ClearcaseProvider" />
 	</extension>
-
+	 
 </plugin>
