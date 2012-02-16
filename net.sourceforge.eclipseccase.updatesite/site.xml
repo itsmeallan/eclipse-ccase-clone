@@ -107,5 +107,5 @@
    <category-def name="eclipse-ccase-31" label="Eclipse ClearCase Integration for Eclipse 3.1"/>
    <category-def name="eclipse-ccase-33" label="Eclipse ClearCase Integration for Eclipse 3.3"/>
    <category-def name="eclipse-ccase-34" label="Eclipse ClearCase Integration for Eclipse 3.4"/>
-   <category-def name="eclipse-ccase-35" label="Eclipse ClearCase Integration for Eclipse 3.5"/>
+   <category-def name="eclipse-ccase-35" label="Eclipse ClearCase Integration for Eclipse 3.5 and higher"/>
 </site>
