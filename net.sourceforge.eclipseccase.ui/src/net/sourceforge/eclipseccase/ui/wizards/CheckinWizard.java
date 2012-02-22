@@ -75,7 +75,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	 * will create an operation and run it using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String comment = page.getCommentText();
+		final String comment = page.getComment();
 		final IResource[] resources = page.getResourceList();
 		final boolean recursive = page.isRecursive();
 		/*

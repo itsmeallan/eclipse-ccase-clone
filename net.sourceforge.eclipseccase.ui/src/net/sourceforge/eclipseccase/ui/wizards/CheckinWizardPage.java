@@ -1,5 +1,8 @@
 package net.sourceforge.eclipseccase.ui.wizards;
 
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -110,7 +113,9 @@ public class CheckinWizardPage extends WizardPage {
 
 	private Text commentText;
 
-	String[] comments = new String[0];
+	private String[] comments = new String[0];
+	
+	private String comment = "";
 
 	private Combo previousCommentsCombo;
 
@@ -133,7 +138,7 @@ public class CheckinWizardPage extends WizardPage {
 			IResource resource = resources[i];
 			resourceList.add(resource);
 		}
-		// Load previous comments.
+		// Load previous comments for combo.
 		if (null != ClearCasePlugin.getDefault()) {
 			comments = ClearCasePlugin.getDefault().getPreviousComments();
 		}
@@ -210,8 +215,9 @@ public class CheckinWizardPage extends WizardPage {
 		commentText.setLayoutData(data);
 
 		String extCoComment = getLastExtCoComment(resources);
-		if (!(extCoComment != null && extCoComment.length() == 0)) {
-			commentText.setText(extCoComment);
+		if(!extCoComment.equalsIgnoreCase("")){
+			this.setComment(extCoComment);
+			
 		}
 		commentText.selectAll();
 		// FIXME: Tabbing needed?
@@ -222,6 +228,14 @@ public class CheckinWizardPage extends WizardPage {
 					e.doit = false;
 					// CommentDialogArea.this.signalCtrlEnter();
 				}
+			}
+		});
+		
+		commentText.setText(comment);
+		commentText.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent e) {
+				comment = commentText.getText();
 			}
 		});
 
@@ -346,7 +360,7 @@ public class CheckinWizardPage extends WizardPage {
 		@Override
 		public String getText(Object element) {
 			IResource resource = (IResource) element;
-			return resource.getFullPath().makeRelative().toString();
+			return resource.getFullPath().toString();
 		}
 	}
 
@@ -390,9 +404,7 @@ public class CheckinWizardPage extends WizardPage {
 
 	}
 
-	public String getCommentText() {
-		return commentText.getText();
-	}
+	
 
 	/**
 	 * Returns the recursiveEnabled.
@@ -452,6 +464,34 @@ public class CheckinWizardPage extends WizardPage {
 	private void refresh() {
 		listViewer.refresh();
 
+	}
+	
+	/**
+	 * Returns the comment.
+	 * 
+	 * @return String
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	
+	/**
+	 * Returns the comment.
+	 * 
+	 * @return String
+	 */
+	public String getComment() {
+		if (comment != null && comment.length() > 0) {
+			finished();
+		}
+		return comment;
+	}
+	
+	private void finished() {
+		// if there is a comment, remember it
+		if (comment.length() > 0) {
+			ClearCasePlugin.getDefault().addComment(comment);
+		}
 	}
 
 }
