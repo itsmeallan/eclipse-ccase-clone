@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.wizards;
 
+import org.eclipse.swt.layout.FillLayout;
+
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 
@@ -145,10 +147,15 @@ public class CheckinWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
+		GridLayout layout = new GridLayout();
 		Composite mainComposite = new Composite(parent, SWT.NONE);
-		setControl(mainComposite);
-
-		TabFolder tabFolder = new TabFolder(mainComposite, SWT.NONE);
+		mainComposite.setLayout(layout);
+	    mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+	    setControl(mainComposite);
+		
+	    TabFolder tabFolder = new TabFolder(mainComposite, SWT.NONE);
+		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
 		tabFolder.setBounds(0, 20, 564, 262);
 
 		createTabItemForComments(tabFolder);
@@ -162,9 +169,9 @@ public class CheckinWizardPage extends WizardPage {
 		tab2.setText("Changes");
 
 		final Composite composite = new Composite(tabFolder, SWT.NONE);
-		composite.setLayout(new GridLayout());
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		listViewer = new ListViewer(composite, SWT.NONE);
+		composite.setLayout(new FillLayout());
+		
+		listViewer = new ListViewer(composite);
 		listViewer.setContentProvider(new ArrayContentProvider());
 		listViewer.setLabelProvider(new ResourceLabelProvider());
 		// sort on name
@@ -360,7 +367,9 @@ public class CheckinWizardPage extends WizardPage {
 		@Override
 		public String getText(Object element) {
 			IResource resource = (IResource) element;
-			return resource.getFullPath().toString();
+			//return resource.getFullPath().toString();
+			return resource.getLocation()
+					.toOSString();
 		}
 	}
 

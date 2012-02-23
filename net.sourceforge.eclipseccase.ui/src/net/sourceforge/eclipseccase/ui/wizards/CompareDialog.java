@@ -1,8 +1,14 @@
 package net.sourceforge.eclipseccase.ui.wizards;
 
+import org.eclipse.jface.dialogs.Dialog;
+
+import org.eclipse.jface.dialogs.IDialogSettings;
+
+
+
 import java.util.ResourceBundle;
 import org.eclipse.compare.*;
-import org.eclipse.compare.internal.ResizableDialog;
+
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -10,18 +16,31 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
-public class CompareDialog extends ResizableDialog {
+/**
+ * A resizable CompareDialog
+ * 
+ * @author mike
+ *
+ */
+public class CompareDialog extends Dialog {
 
 	private static final CompareConfiguration cc = new CompareConfiguration();
 
 	private CompareViewerSwitchingPane compareViewerPane;
 
 	private ICompareInput myInput;
+	
+	//Initial size.
+	private static final int WIDTH_HINT = 800;
 
-	@SuppressWarnings("restriction")
+	private static final int HEIGHT_HINT = 600;
+
+	
 	protected CompareDialog(Shell shell, ResourceBundle bundle) {
-		super(shell, bundle);
-		this.setShellStyle(SWT.CLOSE);
+		super(shell);
+		//make sure dialog is resizable.
+		setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.BORDER
+                | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
 		cc.setLeftEditable(false);
 		cc.setRightEditable(false);
 	}
@@ -51,7 +70,16 @@ public class CompareDialog extends ResizableDialog {
 
 		getShell().setText("Compare"); //$NON-NLS-1$
 		compareViewerPane = new ViewerSwitchingPane(composite, SWT.BORDER | SWT.FLAT);
-		compareViewerPane.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL));
+		//Set 
+		GridData gridData = new GridData();
+		gridData.heightHint = HEIGHT_HINT;
+		gridData.widthHint = WIDTH_HINT;
+		gridData.horizontalAlignment = GridData.FILL;
+        gridData.verticalAlignment = GridData.FILL;
+        gridData.grabExcessHorizontalSpace = true;
+        gridData.grabExcessVerticalSpace = true;
+		compareViewerPane.setLayoutData(gridData);
+		
 
 		if (myInput != null) {
 			compareViewerPane.setInput(myInput);
@@ -79,5 +107,9 @@ public class CompareDialog extends ResizableDialog {
 			// don't show icon
 		}
 	}
+
+	
+	
+	
 
 }
