@@ -1,7 +1,15 @@
 ===============================================================================
 =                                 Change Log                                 =
 ===============================================================================
-2.2.13 (to be released).
+
+2.2.14
+======
+
+Bugs:
+3490766 	New checkin don't remember previous ci comment
+3489552 	Unable to see full path of resource in check-in changes tab	
+	  
+2.2.13 
 ======
 
 Bugs:
