@@ -48,7 +48,7 @@ Prerequesites
     
    - New category if the plugin only supports a new version of Eclipse.
    - Add feature in category.
-   - Build
+  
   
    
 //FIXME: This has to be updated:

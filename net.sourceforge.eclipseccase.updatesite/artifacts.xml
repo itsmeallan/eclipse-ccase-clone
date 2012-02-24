@@ -3,14 +3,14 @@
 <repository name='Update Site' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1329388496041'/>
+    <property name='p2.timestamp' value='1330089662608'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='149'>
+  <artifacts size='157'>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.11.201111211451'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
@@ -239,6 +239,12 @@
         <property name='download.size' value='82073'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase.ui' version='2.2.14.201202241418'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='359423'/>
+      </properties>
+    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='2.2.3.v201005270713'>
       <properties size='2'>
         <property name='download.contentType' value='application/zip'/>
@@ -269,6 +275,12 @@
         <property name='download.size' value='138472'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase.ui' version='2.2.14.201202241420'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='359423'/>
+      </properties>
+    </artifact>
     <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='1.0.0.201005261900'>
       <properties size='2'>
         <property name='download.contentType' value='application/zip'/>
@@ -293,16 +305,16 @@
         <property name='download.size' value='113746'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.7.201102281603'>
-      <properties size='2'>
-        <property name='artifact.size' value='4096'/>
-        <property name='download.size' value='128093'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.10.201108111458'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
         <property name='download.size' value='133486'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.7.201102281603'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='128093'/>
       </properties>
     </artifact>
     <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='2.2.11.201111211437'>
@@ -394,6 +406,12 @@
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
         <property name='download.size' value='85913'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.14.201202241420'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='140441'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.3.v201005270713'>
@@ -517,6 +535,12 @@
         <property name='download.size' value='297541'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.14.201202241418'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='140442'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.9.201106170731'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
@@ -527,6 +551,12 @@
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
         <property name='download.size' value='73164'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='2.2.14.201202241420'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='14938'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.3.v201005271225'>
@@ -583,16 +613,16 @@
         <property name='download.size' value='256294'/>
       </properties>
     </artifact>
-    <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.10.201108111512'>
-      <properties size='2'>
-        <property name='artifact.size' value='4096'/>
-        <property name='download.size' value='82072'/>
-      </properties>
-    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase.ui' version='2.2.1.v201003041230'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
         <property name='download.size' value='246951'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.10.201108111512'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='82072'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.0.v201002231900'>
@@ -791,6 +821,12 @@
         <property name='download.size' value='14938'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.14.201202241418'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='87099'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.3.v201005271216'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
@@ -815,6 +851,12 @@
         <property name='download.size' value='133485'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.clearcase' version='2.2.14.201202241420'>
+      <properties size='2'>
+        <property name='artifact.size' value='4096'/>
+        <property name='download.size' value='87097'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase.ui' version='2.2.10.201108111458'>
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
@@ -831,6 +873,12 @@
       <properties size='2'>
         <property name='artifact.size' value='4096'/>
         <property name='download.size' value='113746'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.eclipseccase' version='2.2.14.201202241418'>
+      <properties size='2'>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.size' value='14938'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.eclipseccase' version='2.2.3.v201005270708'>
