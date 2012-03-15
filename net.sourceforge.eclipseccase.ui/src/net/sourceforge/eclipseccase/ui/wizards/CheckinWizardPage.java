@@ -213,6 +213,7 @@ public class CheckinWizardPage extends WizardPage {
 		commentText = new Text(group, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		if (ClearCasePreferences.isCommentCheckin()) {
 			commentText.setEnabled(true);
+			commentText.setFocus();
 		} else {
 			commentText.setEnabled(false);
 		}

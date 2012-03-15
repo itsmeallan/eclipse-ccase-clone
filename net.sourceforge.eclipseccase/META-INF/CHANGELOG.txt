@@ -2,6 +2,14 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.15
+======
+(upcoming release).
+
+Feature:
+3502501 Set initial focus to text box in commit dialog
+
+
 2.2.14
 ======
 
