@@ -21,18 +21,11 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 
 		final IResource[] resources = getSelectedResources();
 		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
-		IWorkspaceRunnable myRunnable = new IWorkspaceRunnable() {
-
-			public void run(IProgressMonitor monitor) throws CoreException {
-				if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())) {
-					return;
-				}
-
-			}
-		};
-
-		executeInBackground(myRunnable, "Checking files prevented from checkout ...");
-
+				
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())){
+			return;
+		}
+		
 		String maybeComment = "";
 		int maybeDepth = IResource.DEPTH_ZERO;
 

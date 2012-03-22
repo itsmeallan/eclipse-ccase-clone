@@ -4,7 +4,9 @@
 
 2.2.15
 ======
-(upcoming release).
+
+Bugs: 
+3509971 prevent files from co broken
 
 Feature:
 3502501 Set initial focus to text box in commit dialog

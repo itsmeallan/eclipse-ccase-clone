@@ -140,6 +140,15 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 	 * @return a status describing the result
 	 */
 	private IStatus checkout(final IFile[] files) {
+		
+		
+		ClearCaseProvider provider = getProvider(files);
+			
+		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, files, ClearCasePreferences.isSilentPrevent())) {
+			return CANCEL;
+		}
+		
+
 
 		if (ClearCasePreferences.isCheckoutAutoNever())
 			return CANCEL;
@@ -158,7 +167,6 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 				return new Status(IStatus.CANCEL, ClearCasePlugin.PLUGIN_ID,
 						"Checkout operation failed, operation was cancelled by user.");
 		}
-		ClearCaseProvider provider = getProvider(files);
 
 		// check for provider
 		if (null == provider)
