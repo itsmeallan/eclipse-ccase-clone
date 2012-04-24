@@ -15,7 +15,7 @@ package net.sourceforge.eclipseccase;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.eclipseccase.Messages;
+
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -28,11 +28,11 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+
 import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.PlatformUI;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 
 /**
  * A simple file modification handler for the ClearCase integration.
