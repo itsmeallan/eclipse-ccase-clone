@@ -4,8 +4,6 @@ import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.eclipseccase.ui.compare.VersionCompareInput;
 
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
@@ -92,12 +90,10 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 			// 20101124 mike use new internal compare.
 			CompareConfiguration config = new CompareConfiguration();
 			config.setLeftEditable(false);
-			config.setRightEditable(false); // Could be made editable if version
-			// is null in the future.
 			ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
 
 			if (element instanceof IFile) {
-				VersionCompareInput input = new VersionCompareInput(config, (IFile) element, versionA, versionB,p);
+				VersionCompareInput input = new VersionCompareInput(config, element, versionA, versionB,p);
 				CompareUI.openCompareEditor(input);
 			}
 		}

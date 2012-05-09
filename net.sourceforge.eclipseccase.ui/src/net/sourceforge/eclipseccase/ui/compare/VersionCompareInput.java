@@ -51,7 +51,8 @@ public class VersionCompareInput extends CompareEditorInput {
 	 *            <code>null</code> for version specified by the view.
 	 */
 
-	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String leftVersion, String rigthVersion,ClearCaseProvider provider) {
+	public VersionCompareInput(CompareConfiguration configuration, IResource resource, 
+			String leftVersion, String rigthVersion, ClearCaseProvider provider) {
 		super(configuration);
 
 		leftElement = leftVersion != null ? new ClearCaseResourceNode(resource, leftVersion,provider) : new ResourceNode(resource);
@@ -63,7 +64,23 @@ public class VersionCompareInput extends CompareEditorInput {
 		}
 
 		configuration.setRightImage(CompareUI.getImage(resource));
-		if (rigthVersion != null) {
+		if(rigthVersion ==  null)
+		{
+			// Comparing with current element.
+			if(provider.isCheckedOut(resource))
+			{
+				configuration.setRightEditable(true); 
+				configuration.setRightLabel(resource.getName());
+			}
+			else
+			{
+				configuration.setRightEditable(false); 
+				configuration.setRightLabel(provider.getVersion(resource));
+			}
+		}
+		else
+		{
+			configuration.setRightEditable(false);
 			configuration.setRightLabel(rigthVersion);
 		}
 
