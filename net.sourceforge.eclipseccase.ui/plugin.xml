@@ -580,7 +580,8 @@
          </description>
 		</decorator>
 	</extension>
-	<extension point="org.eclipse.ui.views">
+	<extension
+       point="org.eclipse.ui.views">
 		<view name="ViewPrivate" icon="icons/full/clearcase.png"
 			category="org.eclipse.team.ui" class="net.sourceforge.eclipseccase.views.CheckoutsView"
 			id="net.sourceforge.eclipseccase.views.CheckoutsView">
@@ -603,6 +604,12 @@
 			id="net.sourceforge.eclipseccase.views.ActivitiesView" name="Activities"
 			restorable="true">
 		</view>
+  <view
+        category="org.eclipse.team.ui"
+        class="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
+        id="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
+        name="JF History">
+  </view>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page objectClass="org.eclipse.core.resources.IResource"
@@ -767,5 +774,5 @@
 		<teamDecorator decoratorId="net.sourceforge.eclipseccase.ui.decorator"
 			repositoryId="net.sourceforge.eclipseccase.ClearcaseProvider" />
 	</extension>
-	 
+
 </plugin>
