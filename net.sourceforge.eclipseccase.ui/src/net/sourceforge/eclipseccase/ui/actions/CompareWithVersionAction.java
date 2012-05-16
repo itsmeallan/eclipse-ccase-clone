@@ -93,7 +93,7 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 			ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(element);
 
 			if (element instanceof IFile) {
-				VersionCompareInput input = new VersionCompareInput(config, element, versionA, versionB,p);
+				VersionCompareInput input = new VersionCompareInput(config, element, versionA, versionB, p);
 				CompareUI.openCompareEditor(input);
 			}
 		}
