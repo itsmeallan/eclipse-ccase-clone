@@ -562,10 +562,10 @@
 			class="net.sourceforge.eclipseccase.ui.preferences.UcmPreferencePage"
 			id="net.sourceforge.eclipseccase.preferences.ucm">
 		</page>
-		<!--<page name="%clearcaseExtDiffViewerPreferences.name" category="net.sourceforge.eclipseccase.preferences"
+		<page name="%clearcaseExtDiffViewerPreferences.name" category="net.sourceforge.eclipseccase.preferences"
 			class="net.sourceforge.eclipseccase.ui.preferences.ExtDiffViewerPreferencePage"
 			id="net.sourceforge.eclipseccase.preferences.extdiff">
-		</page>-->
+		</page>
 	</extension>
 	<extension point="org.eclipse.ui.decorators">
 		<decorator lightweight="true" adaptable="true"

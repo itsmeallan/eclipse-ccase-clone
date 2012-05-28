@@ -7,6 +7,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.preference.IPreferenceStore;
+
+
 
 import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 
@@ -17,6 +20,8 @@ import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
  * 
  */
 public class ClearCasePreferences extends AbstractPreferenceInitializer {
+	
+	public static final String DIFF_VIEWER_BASE = "preference.diffViewer.";
 
 	/**
 	 * Returns the preference value for <code>ADD_AUTO</code>.
@@ -373,6 +378,32 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
 				IClearCasePreferenceConstants.ACTIVITY_FORMAT_HELP_STRING);
 	}
+	
+	public static String fullDiffViewerName(String shortName) {
+		return ClearCasePreferences.DIFF_VIEWER_BASE + shortName;
+	}
+	
+	public static String getDiffViewer(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(IClearCasePreferenceConstants.DIFF_VIEWER_RESOURCES_SPECIFIC_PARAMETERS);
+	}
+		
+	public static void setDiffViewer(String shortName, String value, boolean isDefault) {
+		if (isDefault) {
+			ClearCasePlugin.getDefault().getPluginPreferences().setDefault(ClearCasePreferences.fullDiffViewerName(IClearCasePreferenceConstants.DIFF_VIEWER_RESOURCES_SPECIFIC_PARAMETERS),value);
+			
+		} else {
+			ClearCasePlugin.getDefault().getPluginPreferences().setValue(ClearCasePreferences.fullDiffViewerName(IClearCasePreferenceConstants.DIFF_VIEWER_RESOURCES_SPECIFIC_PARAMETERS),value);
+			
+		}		
+	}
+		
+	
+	public static String getDiffViewerString(IPreferenceStore store, String shortName) {
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(ClearCasePreferences.fullDiffViewerName(IClearCasePreferenceConstants.DIFF_VIEWER_RESOURCES_SPECIFIC_PARAMETERS));
+	}	
+	
+	
+	
 	
 	/**
 	 * Clients should not call this method. It will be called automatically by

@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import java.net.URLConnection;
+
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.eclipseccase.ui.compare.PredecessorCompareInput;
@@ -45,7 +47,11 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
-
+		
+		//TODO: test for new compare.
+		IResource [] res = getSelectedResources();
+		//get settings from 
+		System.out.println("Get mimetype "+URLConnection.guessContentTypeFromName(res[0].getFullPath().toString()));
 		if (ClearCasePreferences.isCompareExternal()) {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
