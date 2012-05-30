@@ -162,5 +162,9 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String ACTIVITY_FORMAT_HELP_STRING = ClearCasePlugin.PLUGIN_ID
 			+ ".activityFormatHelpString";//$NON-NLS-1$
+	/** ClearCase preference */
+	String EXTERNAL_DIFF_TOOL = ClearCasePlugin.PLUGIN_ID + ".ext.diff.tool"; //$NON-NLS-1$
+	
+	String EXTERNAL_DIFF_TOOL_EXEC_PATH = ClearCasePlugin.PLUGIN_ID + ".ext.diff.tool.exec.path"; //$NON-NLS-1$
 
 }
