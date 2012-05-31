@@ -12,7 +12,7 @@
 
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
+
 
 import java.util.*;
 import net.sourceforge.eclipseccase.IClearCasePreferenceConstants;

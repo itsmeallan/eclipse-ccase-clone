@@ -12,6 +12,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.dialogs;
 
+import net.sourceforge.eclipseccase.ui.provider.ActivityListLabelProvider;
+
 import java.util.ArrayList;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ClearCaseProvider;

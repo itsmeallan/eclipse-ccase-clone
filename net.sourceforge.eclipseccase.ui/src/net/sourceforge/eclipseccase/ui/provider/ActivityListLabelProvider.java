@@ -9,7 +9,7 @@
  *     mikael - inital API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
  *******************************************************************************/
-package net.sourceforge.eclipseccase.ui.dialogs;
+package net.sourceforge.eclipseccase.ui.provider;
 
 import org.eclipse.jface.viewers.LabelProvider;
 

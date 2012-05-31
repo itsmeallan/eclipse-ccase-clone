@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.wizards;
 
+import net.sourceforge.eclipseccase.ui.provider.ActivityListLabelProvider;
+
 import org.eclipse.swt.layout.FillLayout;
 
 import org.eclipse.swt.events.ModifyEvent;
@@ -76,7 +78,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 
 import org.eclipse.swt.graphics.Image;
 
-import net.sourceforge.eclipseccase.ui.dialogs.ActivityListLabelProvider;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.layout.GridData;
