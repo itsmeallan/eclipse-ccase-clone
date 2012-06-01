@@ -11,6 +11,22 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import net.sourceforge.eclipseccase.ClearCasePreferences;
+
+import java.util.Collections;
+
+import java.text.Collator;
+
+import java.util.ArrayList;
+
+import org.eclipse.jface.preference.IPreferenceStore;
+
+import org.eclipse.jface.viewers.ISelection;
+
+import org.eclipse.jface.viewers.Viewer;
+
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+
 import org.eclipse.swt.widgets.Label;
 
 import org.eclipse.swt.widgets.Text;
@@ -86,7 +102,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 
 	private static final String PATH_DELIMITER = ":";
 
-	private String selectedValue;
+	private String selectedTool = "";// Initial value.
 
 	private BooleanFieldEditor useExternal;
 
@@ -99,6 +115,8 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	private static final int SPAN = 1;
 
 	private static final String EMPTY_STR = "";
+
+	private static final String[] tools = new String[] { "kdiff3", "ibm" };
 
 	/**
 	 * Creates a new instance.
@@ -121,36 +139,71 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// TODO Auto-generated method stub
 		Group groupDiff = new Group(composite, SWT.NULL);
 		GridLayout layoutDiff = new GridLayout();
-		layoutDiff.numColumns = 3;
+		layoutDiff.numColumns = 1;
 		groupDiff.setLayout(layoutDiff);
 		GridData dataDiff = new GridData();
 		dataDiff.horizontalAlignment = GridData.FILL;
 		groupDiff.setLayoutData(dataDiff);
 		groupDiff.setText("External Diff tool settings:");
 
-		String[] tools = new String[] { "kdiff3", "ibm" };
-		comboViewer = createComboViewer(groupDiff, tools);
-		// select first,
-		comboViewer.setSelection(new StructuredSelection(tools[0]), true);
+		comboViewer = new ComboViewer(groupDiff);
+		Combo combo = comboViewer.getCombo();
+        combo.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+		comboViewer.setContentProvider(new IStructuredContentProvider() {
+			String[] vals;
+
+			public void dispose() {
+			}
+
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				vals = (String[]) newInput;
+			}
+
+			public Object[] getElements(Object inputElement) {
+				return vals;
+			}
+
+		});
 
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				System.out.println("combo changed!" + selection.getFirstElement());
-				// setSelectedTool((String) (selection.getFirstElement()));
+			public void selectionChanged(SelectionChangedEvent evt) {
+				ISelection selection = evt.getSelection();
+				if (selection instanceof StructuredSelection) {
+					StructuredSelection sel = (StructuredSelection) selection;
+					if (!selection.isEmpty())
+						selectedTool = sel.getFirstElement().toString();
+				}
 			}
 		});
-		// kidff3 is default
-		String path = getPath(tools[0]);
 
-		diffExecPath = new StringFieldEditor(EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool.ExecPath"), composite); //$NON-NLS-1$
-		if (!path.equals(EMPTY_STR)) {
-			diffExecPath.setStringValue(path);
-		}
-		addFieldEditor(diffExecPath);
-		//		createLabel(groupDiff, PreferenceMessages.getString("DiffMergePreferencePage.diff.exec.path"), SPAN); //$NON-NLS-1$
-		// pathText = new Text(groupDiff, SWT.BORDER);
-		// pathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		initializeValues();
+
+		// comboViewer = createComboViewer(groupDiff);
+		// // select first,
+		// comboViewer.setSelection(new StructuredSelection(), true);
+		//
+		// comboViewer.addSelectionChangedListener(new
+		// ISelectionChangedListener() {
+		// public void selectionChanged(SelectionChangedEvent event) {
+		// IStructuredSelection selection = (IStructuredSelection)
+		// event.getSelection();
+		// System.out.println("combo changed!" + selection.getFirstElement());
+		// setSelectedTool((String) (selection.getFirstElement()));
+		// //set the matching path
+		// String path = getPath(getSelectedTool());
+		// diffExecPath.setStringValue(path);
+		// }
+		// });
+
+		// kidff3 is default
+		//		diffExecPath = new StringFieldEditor(EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool.ExecPath"), groupDiff); //$NON-NLS-1$
+		// String path = getPath(tools[0]);
+		//
+		// //If no path stored for kdiff3
+		// if (!path.equals(EMPTY_STR)) {
+		// diffExecPath.setStringValue(path);
+		// }
+		// addFieldEditor(diffExecPath);
 
 		Group groupMerge = new Group(composite, SWT.NULL);
 		GridLayout layoutMerge = new GridLayout();
@@ -161,7 +214,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		groupMerge.setLayoutData(dataMerge);
 		groupMerge.setText("External Merge tool settings:");
 
-		return null;
+		return parent;
 	}
 
 	/*
@@ -174,23 +227,31 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// ignore
 	}
 
-	protected ComboViewer createComboViewer(Composite composite, String[] elements) {
-		ComboViewer comboViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		comboViewer.setLabelProvider(new ToolListLabelProvider());
-		comboViewer.setContentProvider(new ArrayContentProvider());
-		comboViewer.setInput(elements);
-		// comboViewer.setSorter(new ViewerSorter() {
-		// @Override
-		// public int compare(Viewer viewer, Object p1, Object p2) {
-		// return ((Activity) p1).getHeadline().compareToIgnoreCase(((Activity)
-		// p2).getHeadline());
-		// }
-		//
-		// });
+	/**
+	 * Initializes values for non-FieldEditors.
+	 */
+	private void initializeValues() {
+		final IPreferenceStore store = getPreferenceStore();
+		
+		selectedTool = store.getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL);
+		ArrayList<String> tools = new ArrayList<String>();
+		tools.add("IBM");
+		tools.add("Kdiff3");
+		Collator collator = Collator.getInstance();
+		collator.setStrength(Collator.PRIMARY);
+		Collections.sort(tools, collator);
+		comboViewer.setInput((String[]) tools.toArray(new String[tools.size()]));
+		comboViewer.reveal(selectedTool);
 
-		return comboViewer;
+		// TODO: not sure if needed.
+		
+		//comboViewer.getCombo().setEnabled(false);
+				
+		comboViewer.setSelection(new StructuredSelection(selectedTool), true);
+
 	}
 
+	
 	// Needs to be done for each fieldeditor.
 	private void addFieldEditor(FieldEditor fieldEditor) {
 
@@ -199,129 +260,9 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		fieldEditor.load();
 	}
 
-	/**
-	 * creates a label
-	 */
-	private Label createLabel(Composite parent, String text, int span) {
-		Label label = new Label(parent, SWT.LEFT);
-		label.setText(text);
-		GridData data = new GridData();
-		data.horizontalSpan = span;
-		data.horizontalAlignment = GridData.FILL;
-		label.setLayoutData(data);
-		return label;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors
-	 * ()
-	 */
-	// @Override
-	// protected void createFieldEditors() {
-	//
-	// // TODO: Create a diff table here.!!
-	//
-	// String[][] nameValues = new String[][] { { "Kdiff3", "kdiff3" }, { "IBM",
-	// "clearcase" } };
-	//
-	// diff = new ComboFieldEditor(EXTERNAL_DIFF_TOOL,
-	// PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool"),
-	// nameValues, getFieldEditorParent(DIFF));
-	//
-	// addField(diff);
-	//
-	//		diffExecPath = new StringFieldEditor(EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool.ExecPath"), //$NON-NLS-1$
-	// getFieldEditorParent(DIFF));
-	//
-	// // general settings
-	// addField(diffExecPath);
-	// }
-
-	// @Override
-	// public void propertyChange(PropertyChangeEvent event) {
-	// super.propertyChange(event);
-	// if (event.getSource() == diff) {
-	// // clearcase or kdiff3
-	// System.out.println("New value " + event.getNewValue());
-	// selectedValue = (String) event.getNewValue();
-	// String path = getPath(selectedValue);
-	//
-	// System.out.println("Path " + path);
-	// if (!path.equals("")) {
-	// diffExecPath.setStringValue(path);
-	// } else {
-	// diffExecPath.setFocus();
-	// }
-	// }
-	//
-	// }
-
-	/**
-	 * Convert the stored preference string value to a HashMap.
-	 * 
-	 * @param preferenceValue
-	 * @return
-	 */
-	public Map<String, String> stringToMap(String preferenceValue) {
-		StringTokenizer tokenizer = new StringTokenizer(preferenceValue, TOOL_DELIMITER);
-		int tokenCount = tokenizer.countTokens();
-		Map<String, String> keyValue = new HashMap<String, String>(tokenCount);
-		// create array of kdiff3:path/to/kdiff3
-		String[] elements = new String[tokenCount];
-		for (int i = 0; i < tokenCount; i++) {
-			elements[i] = tokenizer.nextToken();
-			String[] nameValue = elements[i].split(PATH_DELIMITER);
-			keyValue.put(nameValue[0], nameValue[1]);
-		}
-
-		return keyValue;
-
-	}
-
-	private String getPath(String toolValue) {
-		String result = "";
-		Map<String, String> nameValue = (HashMap<String, String>) stringToMap(diffExecPath.getStringValue());
-		if (nameValue.containsKey(toolValue)) {
-			result = nameValue.get(toolValue);
-		}
-
-		return result;
-	}
-
-	public void storePath(String tool, String path) {
-		// set tool and path
-		Map<String, String> nameValue = (HashMap<String, String>) stringToMap(diffExecPath.getStringValue());
-		// update
-		nameValue.put(tool, path);
-		String pref = mapToString(nameValue);
-
-		// store
-		diffExecPath.getPreferenceStore().setValue(EXTERNAL_DIFF_TOOL_EXEC_PATH, pref);
-	}
-
-	private String mapToString(Map<String, String> myMap) {
-		// more elegant way
-		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<String, String> entry : myMap.entrySet()) {
-			sb.append(entry.getKey());
-			sb.append(PATH_DELIMITER);
-			sb.append(entry.getValue());
-			sb.append(TOOL_DELIMITER);
-
-		}
-		String str;
-		// remove TOOL_DELIMITER if last char.
-		if ((sb.length() - 1) == sb.lastIndexOf(TOOL_DELIMITER)) {
-			str = sb.substring(0, sb.lastIndexOf(TOOL_DELIMITER) - 1);
-		} else {
-			str = sb.toString();
-		}
-
-		return str;
-
+	//This should be called when we have chnaged selectedTool.
+	private void updateTextValue(){
+		
 	}
 
 	/*
@@ -331,7 +272,8 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	 */
 	@Override
 	public boolean performOk() {
-		storePath(selectedValue, diffExecPath.getStringValue());
+		if (selectedTool != null)
+			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedTool);
 		if (super.performOk()) {
 			ClearCasePlugin.getDefault().resetClearCase();
 			return true;
@@ -339,34 +281,6 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * net.sourceforge.eclipseccase.ui.preferences.TabFieldEditorPreferencePage
-	 * #getCategories()
-	 */
-	// @Override
-	// protected String[] getCategories() {
-	// return CATEGORIES;
-	// }
-	//
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * @seenet.sourceforge.eclipseccase.ui.preferences.
-	// *
-	// FieldEditorPreferencePageWithCategories#getDescription(java.lang.String)
-	// */
-	// @Override
-	// protected String getDescription(String category) {
-	// // if (GENERAL.equals(category))
-	//		//			return PreferenceMessages.getString("Preferences.Description.Category.General"); //$NON-NLS-1$
-	// // if (SOURCE_MANAGEMENT.equals(category))
-	//		//			return PreferenceMessages.getString("Preferences.Description.Category.Source"); //$NON-NLS-1$
-	// // if (COMMENTS.equals(category))
-	//		//			return PreferenceMessages.getString("Preferences.Description.Category.Comments"); //$NON-NLS-1$
-	// return null;
-	// }
+
 
 }
