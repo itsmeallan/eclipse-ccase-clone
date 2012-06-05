@@ -1,7 +1,9 @@
 package net.sourceforge.eclipseccase.ui.test;
 
-import static org.junit.Assert.*;
 
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -21,15 +23,22 @@ public class DiffMergePreferencesTest {
 	
 	
 	@Test
-	public void testFromStringToArray() {
-		String preferenceValue = "kdiff3:/my/path/to/kdiff3;clearcase:/usr/atria/bin/cleartool";
-		DiffMergePreferencePage diffPref = new DiffMergePreferencePage();
-		//Map<String,String> map = diffPref.fromStringToMap(preferenceValue);
-		//Assert.assertFalse("Map shouldn't have been empty",
-	    //                       map.isEmpty());
-		
-		
-		
+	public void testStrToMap() {
+		String preferenceValue = KDIFF3+":"+KDIFF3_PATH+";"+CLEARCASE+":"+CLEARCASE_PATH+";";
+		Map<String,String> map = DiffMergePreferencePage.strToMap(preferenceValue);
+		Assert.assertFalse("Map shouldn't have been empty",
+	                       map.isEmpty());
+		Assert.assertEquals(KDIFF3_PATH, map.get(KDIFF3));
+	}
+	
+	@Test
+	public void testMapToStr(){
+		String expected = KDIFF3+":"+KDIFF3_PATH+";"+CLEARCASE+":"+CLEARCASE_PATH+";";
+		Map<String,String> map = new LinkedHashMap<String,String>();
+		map.put(KDIFF3,KDIFF3_PATH);
+		map.put(CLEARCASE,CLEARCASE_PATH);
+		String actual = DiffMergePreferencePage.mapToStr(map);
+		Assert.assertEquals(expected, actual);
 		
 	}
 
