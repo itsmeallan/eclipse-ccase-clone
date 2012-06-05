@@ -11,42 +11,16 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-import java.util.LinkedHashMap;
-
-import net.sourceforge.eclipseccase.ClearCasePreferences;
-import java.util.Collections;
 import java.text.Collator;
-import java.util.ArrayList;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import net.sourceforge.eclipseccase.ui.provider.ToolListLabelProvider;
-import net.sourceforge.eclipseccase.ui.provider.ActivityListLabelProvider;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import java.util.Map;
-import java.util.HashMap;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import java.util.StringTokenizer;
+import java.util.*;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.IClearCasePreferenceConstants;
 import org.eclipse.jface.preference.*;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -58,43 +32,30 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The main preference page for the Eclipse ClearCase integration.
  */
 public class DiffMergePreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IClearCasePreferenceConstants {
-	// private static final String GENERAL = PreferenceMessages.getString("DiffMergePreferencePage.Category.General"); //$NON-NLS-1$
-	//
-	// private static final String DIFF = PreferenceMessages.getString("DiffMergePreferencePage.Category.Diff"); //$NON-NLS-1$
-	//
-	// private static final String MERGE = PreferenceMessages.getString("DiffMergePreferencePage.Category.Merge"); //$NON-NLS-1$
-	//
-	// private static final String[] CATEGORIES = new String[] { GENERAL, DIFF,
-	// MERGE };
-	private StringFieldEditor diffExecPath;
-
-	private ComboFieldEditor diff;
-
+	
 	private static final String TOOL_DELIMITER = ";";
 
 	private static final String PATH_DELIMITER = ":";
 
 	private String selectedTool = "";// Initial value.
 
-	private Map<String, String> toolPathMap = new LinkedHashMap<String, String>();
+	private static Map<String, String> toolPathMap = new LinkedHashMap<String, String>();
 
 	private BooleanFieldEditor useExternal;
 
 	private ComboViewer comboViewer;
 
 	private Text execPath;
-
-	private String selectedExecPath;
-
-	private TextAreaFieldEditor pathTextArea;
-
-	private Text pathText;
-
+	
 	private static final int SPAN = 1;
 
 	private static final String EMPTY_STR = "";
+	
+	public static final String TOOL_IBM = "ibm";
+	
+	public static final String TOOL_KDIFF = "kdiff3";
 
-	private static final String[] tools = new String[] { "kdiff3", "ibm" };
+	
 
 	/**
 	 * Creates a new instance.
@@ -138,15 +99,16 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 				return vals;
 			}
 		});
-		//This is called when I select the page.
+		// This is called when I select the page.
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent evt) {
 				System.out.println("Selection changed!");
 				ISelection selection = evt.getSelection();
 				if (selection instanceof StructuredSelection) {
 					StructuredSelection sel = (StructuredSelection) selection;
-					if (!selection.isEmpty())
+					if (!selection.isEmpty()) {
 						selectedTool = sel.getFirstElement().toString();
+					}
 					// set matching execPath
 					if (selectedTool != null & execPath != null) {
 						toolPathMap = strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
@@ -188,17 +150,17 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		final IPreferenceStore store = getPreferenceStore();
 		selectedTool = store.getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL);
 		ArrayList<String> tools = new ArrayList<String>();
-		tools.add("ibm");
-		tools.add("kdiff3");
+		tools.add(TOOL_IBM);
+		tools.add(TOOL_KDIFF);
 		Collator collator = Collator.getInstance();
 		collator.setStrength(Collator.PRIMARY);
 		Collections.sort(tools, collator);
-		comboViewer.setInput((String[]) tools.toArray(new String[tools.size()]));
+		comboViewer.setInput(tools.toArray(new String[tools.size()]));
 		comboViewer.reveal(selectedTool);
 		comboViewer.setSelection(new StructuredSelection(selectedTool), true);
 	}
 
-	public String getExecPath(String selectedTool) {
+	public static String getExecPath(String selectedTool) {
 		String result = EMPTY_STR;
 
 		if (toolPathMap.containsKey(selectedTool)) {
@@ -212,9 +174,8 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 
 		Map<String, String> map = new HashMap<String, String>();
 
-		if (value.isEmpty()) {
+		if (value.isEmpty())
 			return map;
-		}
 		// decode str to map. tool1:path1;tool2:path2; and tool1:;tool2:path2
 		// split to too1:path1
 		StringTokenizer tokenizer = new StringTokenizer(value, TOOL_DELIMITER);
@@ -240,10 +201,11 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	}
 
 	public static String mapToStr(Map<String, String> map) {
-		
+
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, String> entry : map.entrySet()) {
-			//System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+			// System.out.println("Key = " + entry.getKey() + ", Value = " +
+			// entry.getValue());
 			sb.append(entry.getKey());
 			sb.append(PATH_DELIMITER);
 			sb.append(entry.getValue());
@@ -285,8 +247,9 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	 */
 	@Override
 	public boolean performOk() {
-		if (!selectedTool.equals(EMPTY_STR))
+		if (!selectedTool.equals(EMPTY_STR)) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedTool);
+		}
 		// put in map
 		toolPathMap.put(selectedTool, execPath.getText());
 		// now store it.
