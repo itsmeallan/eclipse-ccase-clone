@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import net.sourceforge.eclipseccase.diff.PreferenceHelper;
+
 import java.text.Collator;
 import java.util.*;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -32,10 +34,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The main preference page for the Eclipse ClearCase integration.
  */
 public class DiffMergePreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IClearCasePreferenceConstants {
-	
-	private static final String TOOL_DELIMITER = ";";
-
-	private static final String PATH_DELIMITER = ":";
 
 	private String selectedTool = "";// Initial value.
 
@@ -48,8 +46,6 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	private Text execPath;
 	
 	private static final int SPAN = 1;
-
-	private static final String EMPTY_STR = "";
 	
 	public static final String TOOL_IBM = "ibm";
 	
@@ -111,8 +107,8 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 					}
 					// set matching execPath
 					if (selectedTool != null & execPath != null) {
-						toolPathMap = strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
-						execPath.setText(getExecPath(selectedTool));
+						toolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
+						execPath.setText(PreferenceHelper.getExecPath(selectedTool,toolPathMap));
 					}
 
 				}
@@ -160,61 +156,6 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		comboViewer.setSelection(new StructuredSelection(selectedTool), true);
 	}
 
-	public static String getExecPath(String selectedTool) {
-		String result = EMPTY_STR;
-
-		if (toolPathMap.containsKey(selectedTool)) {
-			result = toolPathMap.get(selectedTool);
-		}
-
-		return result;
-	}
-
-	public static Map<String, String> strToMap(String value) {
-
-		Map<String, String> map = new HashMap<String, String>();
-
-		if (value.isEmpty())
-			return map;
-		// decode str to map. tool1:path1;tool2:path2; and tool1:;tool2:path2
-		// split to too1:path1
-		StringTokenizer tokenizer = new StringTokenizer(value, TOOL_DELIMITER);
-		String[] nameValuePair = new String[tokenizer.countTokens()];
-		for (int i = 0; i < nameValuePair.length; i++) {
-			nameValuePair[i] = tokenizer.nextToken();
-		}
-
-		// now split name value into map for each element in string.
-		for (int i = 0; i < nameValuePair.length; i++) {
-			String[] nameValue = nameValuePair[i].split(PATH_DELIMITER);
-			// handle if we have no value for tool to avoid nullpointer.
-			if (nameValue.length == 2) {
-				map.put(nameValue[0], nameValue[1]);
-			} else if (nameValue.length == 1) {
-				map.put(nameValue[0], EMPTY_STR);
-			}
-		}
-
-		// map with toolname and matching execPath.
-
-		return map;
-	}
-
-	public static String mapToStr(Map<String, String> map) {
-
-		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			// System.out.println("Key = " + entry.getKey() + ", Value = " +
-			// entry.getValue());
-			sb.append(entry.getKey());
-			sb.append(PATH_DELIMITER);
-			sb.append(entry.getValue());
-			sb.append(TOOL_DELIMITER);
-		}
-		// sb containing tool1:path1;tool2:path2;
-
-		return sb.toString();
-	}
 
 	// Needs to be done for each fieldeditor.
 	private void addFieldEditor(FieldEditor fieldEditor) {
@@ -247,13 +188,14 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	 */
 	@Override
 	public boolean performOk() {
-		if (!selectedTool.equals(EMPTY_STR)) {
+		useExternal.store();
+		if (!selectedTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedTool);
 		}
 		// put in map
 		toolPathMap.put(selectedTool, execPath.getText());
 		// now store it.
-		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, mapToStr(toolPathMap));
+		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(toolPathMap));
 		if (super.performOk()) {
 			ClearCasePlugin.getDefault().resetClearCase();
 			return true;

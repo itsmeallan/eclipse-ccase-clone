@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.ui.operation.CompareResourcesOperation;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import org.eclipse.jface.dialogs.InputDialog;
@@ -52,99 +54,114 @@ public class CompareWithPredecessorAction extends ClearCaseWorkspaceAction {
 	 */
 	@Override
 	public void execute(IAction action) {
+		IResource resource = this.getSelectedResources()[0];
+		String mine = resource.getLocation().toOSString();
+		ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+		if( p != null){
+		String prev =mine+"@@"+ p.getPredecessorVersion(resource);
+		CompareResourcesOperation mainOp = new CompareResourcesOperation(mine, prev);
 		
-		if(ClearCasePreferences.isCompareExternal()){
-			String tool = ClearCasePreferences.getExtDiffTool();
-			String path = ClearCasePreferences.getExtDiffExecPath();
-			String [] prefs = new String [] {tool,path};
-			if(!validatePreferences(prefs)) return;
-			
-			
-			if(tool.equals(DiffMergePreferencePage.TOOL_KDIFF)){
-				
-			}else if(tool.equals(DiffMergePreferencePage.TOOL_IBM)){
-				
-			}
-			
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					try {
-						IResource[] resources = getSelectedResources();
-						for (int i = 0; i < resources.length; i++) {
-							IResource resource = resources[i];
-							String cur = resource.getLocation().toOSString();
-							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-							if (p != null) {
-								String prev = p.getPredecessorVersion(resource);
-								//FIXME: handle operation.
-//								DiffOperation oper = new DiffOperation();
-//								oper.diff(cur,prev);
-								
-							}
-							
-							
-						}
-					} finally {
-						monitor.done();
-					}
-				}
-			};
-			executeInBackground(runnable, "External Compare With Predecessor");
 		}
-
-		if (ClearCasePreferences.isCompareExternal()) {
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					try {
-						IResource[] resources = getSelectedResources();
-						for (int i = 0; i < resources.length; i++) {
-							IResource resource = resources[i];
-							String path = resource.getLocation().toOSString();
-							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-							if (p != null) {
-								p.compareWithPredecessor(path);
-							}
-						}
-					} finally {
-						monitor.done();
-					}
-
-				}
-			};
-			executeInBackground(runnable, "Compare With Predecessor");
-
-		} else {
-			// 20101124 mike use new internal compare.
-			IResource[] resources = getSelectedResources();
-
-			CompareConfiguration config = new CompareConfiguration();
-			config.setLeftEditable(false);
-			config.setRightEditable(false); // Could be made editable in the
-			// future.
-
-			for (int i = 0; i < resources.length; i++) {
-				IResource resource = resources[i];
-				ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
-
-				if (p != null && resource instanceof IFile) {
-					PredecessorCompareInput input = new PredecessorCompareInput(config, (IFile) resource, p);
-					CompareUI.openCompareEditor(input);
-				}
-			}
-		}
+		
+		
+		
+		
+		
 	}
-	
-	private boolean validatePreferences(String [] prefs){
+		
+//		if(ClearCasePreferences.isCompareExternal()){
+//			String tool = ClearCasePreferences.getExtDiffTool();
+//			String path = ClearCasePreferences.getExtDiffExecPath();
+//			String [] prefs = new String [] {tool,path};
+//			if(!validatePreferences(prefs)) return;
+//			//There are values.
+//			
+//			
+//			
+//			
+//			
+//			
+//			
+//			if(tool.equals(DiffMergePreferencePage.TOOL_KDIFF)){
+//				
+//			}
+//			
+//			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+//				public void run(IProgressMonitor monitor) throws CoreException {
+//					try {
+//						IResource[] resources = getSelectedResources();
+//						for (int i = 0; i < resources.length; i++) {
+//							IResource resource = resources[i];
+//							String cur = resource.getLocation().toOSString();
+//							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+//							if (p != null) {
+//								String prev = p.getPredecessorVersion(resource);
+//								//FIXME: handle operation.
+////								DiffOperation oper = new DiffOperation();
+////								oper.diff(cur,prev);
+//								
+//							}
+//							
+//							
+//						}
+//					} finally {
+//						monitor.done();
+//					}
+//				}
+//			};
+//			//executeInBackground(runnable, "External Compare With Predecessor");
+//		
+//
+//			else if (tool.equals(DiffMergePreferencePage.TOOL_IBM)) {
+//			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+//				public void run(IProgressMonitor monitor) throws CoreException {
+//					try {
+//						IResource[] resources = getSelectedResources();
+//						for (int i = 0; i < resources.length; i++) {
+//							IResource resource = resources[i];
+//							String path = resource.getLocation().toOSString();
+//							ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+//							if (p != null) {
+//								p.compareWithPredecessor(path);
+//							}
+//						}
+//					} finally {
+//						monitor.done();
+//					}
+//
+//				}
+//			};
+//			executeInBackground(runnable, "Compare With Predecessor");
+//		}else {
+//			// 20101124 mike use new internal compare.
+//			IResource[] resources = getSelectedResources();
+//
+//			CompareConfiguration config = new CompareConfiguration();
+//			config.setLeftEditable(false);
+//			config.setRightEditable(false); // Could be made editable in the
+//			// future.
+//
+//			for (int i = 0; i < resources.length; i++) {
+//				IResource resource = resources[i];
+//				ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(resource);
+//
+//				if (p != null && resource instanceof IFile) {
+//					PredecessorCompareInput input = new PredecessorCompareInput(config, (IFile) resource, p);
+//					CompareUI.openCompareEditor(input);
+//				}
+//			}
+//		}
+//	}
+
+	private boolean validatePreferences(String[] prefs) {
 		boolean result = true;
-			for (int i = 0; i < prefs.length; i++) {
+		for (int i = 0; i < prefs.length; i++) {
 			String pref = prefs[i];
-			if(pref.isEmpty()) result = false;MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Preference: "+pref+" is not set!");
+			if (pref.isEmpty())
+				result = false;
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Preference: " + pref + " is not set!");
 		}
-			return result;
+		return result;
 	}
-	
-	class Tool {
-		
-	}
-	
+
 }

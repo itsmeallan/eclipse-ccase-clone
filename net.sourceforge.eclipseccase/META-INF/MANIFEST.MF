@@ -7,6 +7,7 @@ Bundle-Activator: net.sourceforge.eclipseccase.ClearCasePlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: net.sourceforge.eclipseccase,
+ net.sourceforge.eclipseccase.diff,
  net.sourceforge.eclipseccase.tools,
  net.sourceforge.eclipseccase.ucm,
  org.apache.commons.collections,
