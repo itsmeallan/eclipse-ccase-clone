@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+
 import net.sourceforge.eclipseccase.diff.PreferenceHelper;
 
 import java.text.Collator;
@@ -203,11 +205,19 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		useExternal.store();
 		if (!selectedTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedTool);
+		//check if
+		if(execPath.getText().equals("")){
+			MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
+			execPath.setFocus();
+			return false;
+		}
+		
 		}
 		// put in map
 		toolPathMap.put(selectedTool, execPath.getText());
 		// now store it.
 		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(toolPathMap));
+		
 		if (super.performOk()) {
 			ClearCasePlugin.getDefault().resetClearCase();
 			return true;
