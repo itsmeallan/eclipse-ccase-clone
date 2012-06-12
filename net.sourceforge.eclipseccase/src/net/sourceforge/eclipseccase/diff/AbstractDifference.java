@@ -1,4 +1,6 @@
 package net.sourceforge.eclipseccase.diff;
+
+
 /**
  * Defines diff/compare operation all supported tools must handle.
  * 

@@ -44,14 +44,12 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	private ComboViewer comboViewer;
 
 	private Text execPath;
-	
-	private static final int SPAN = 1;
-	
-	public static final String TOOL_IBM = "ibm";
-	
-	public static final String TOOL_KDIFF = "kdiff3";
 
-	
+	private static final int SPAN = 1;
+
+	public static final String TOOL_IBM = "ibm";
+
+	public static final String TOOL_KDIFF = "kdiff3";
 
 	/**
 	 * Creates a new instance.
@@ -98,17 +96,31 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// This is called when I select the page.
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent evt) {
-				System.out.println("Selection changed!");
+
 				ISelection selection = evt.getSelection();
 				if (selection instanceof StructuredSelection) {
 					StructuredSelection sel = (StructuredSelection) selection;
 					if (!selection.isEmpty()) {
+
 						selectedTool = sel.getFirstElement().toString();
+						if (selectedTool.equals(TOOL_IBM)) {
+							// Sine we already have cleartool path no need to
+							// input.
+							execPath.setEnabled(false);
+						} else {
+							execPath.setEnabled(true);
+						}
 					}
+
+					if (selectedTool.equals(TOOL_IBM)) {
+						// Sine we already have cleartool path no need to input.
+						execPath.setEnabled(false);
+					}
+
 					// set matching execPath
 					if (selectedTool != null & execPath != null) {
 						toolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
-						execPath.setText(PreferenceHelper.getExecPath(selectedTool,toolPathMap));
+						execPath.setText(PreferenceHelper.getExecPath(selectedTool, toolPathMap));
 					}
 
 				}
@@ -155,7 +167,6 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		comboViewer.reveal(selectedTool);
 		comboViewer.setSelection(new StructuredSelection(selectedTool), true);
 	}
-
 
 	// Needs to be done for each fieldeditor.
 	private void addFieldEditor(FieldEditor fieldEditor) {

@@ -341,7 +341,7 @@ public class BranchSearchView extends ViewPart {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName.getText());
 
 		CompareWithVersionAction action = new CompareWithVersionAction();
-		action.setElement(project);
+		action.setResource(project);
 		action.setVersionA(version1);
 		action.setVersionB(version2);
 

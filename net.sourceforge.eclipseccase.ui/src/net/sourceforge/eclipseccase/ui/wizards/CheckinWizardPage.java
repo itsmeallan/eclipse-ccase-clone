@@ -1,102 +1,25 @@
 package net.sourceforge.eclipseccase.ui.wizards;
 
-import net.sourceforge.eclipseccase.ui.provider.ActivityListLabelProvider;
-
-import org.eclipse.swt.layout.FillLayout;
-
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
-
-import net.sourceforge.eclipseccase.ClearCasePreferences;
-
 import java.io.File;
+import java.util.*;
 import net.sourceforge.clearcase.ClearCase;
-import net.sourceforge.eclipseccase.ClearCasePlugin;
-import org.eclipse.core.runtime.IStatus;
-
-import org.eclipse.swt.widgets.Combo;
-
-import org.eclipse.swt.widgets.Text;
-
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
-
-import org.eclipse.compare.structuremergeviewer.DiffNode;
-
+import net.sourceforge.eclipseccase.*;
+import net.sourceforge.eclipseccase.ui.ResourceComparator;
 import net.sourceforge.eclipseccase.ui.compare.ClearCaseResourceNode;
 import org.eclipse.compare.ResourceNode;
+import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.Differencer;
-
-import org.eclipse.compare.CompareViewerSwitchingPane;
-
-import java.util.Iterator;
-
-import org.eclipse.jface.action.Action;
-
-import org.eclipse.jface.action.Separator;
-
-import org.eclipse.jface.action.IMenuManager;
-
-import org.eclipse.jface.action.IMenuListener;
-
-import org.eclipse.swt.widgets.Menu;
-
-import org.eclipse.jface.action.MenuManager;
-
-import net.sourceforge.eclipseccase.ui.compare.PredecessorCompareInput;
-import org.eclipse.compare.CompareUI;
-import org.eclipse.core.resources.IFile;
-
-import org.eclipse.compare.CompareConfiguration;
-
-import org.eclipse.jface.viewers.DoubleClickEvent;
-
-import org.eclipse.jface.viewers.IDoubleClickListener;
-
-import org.eclipse.jface.viewers.IStructuredSelection;
-
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-
-import org.eclipse.jface.viewers.Viewer;
-
-import org.eclipse.jface.viewers.ViewerSorter;
-
-import org.eclipse.jface.viewers.CheckboxTableViewer;
-
-import org.eclipse.ui.PlatformUI;
-
-import org.eclipse.ui.ISharedImages;
-
-import org.eclipse.jface.viewers.LabelProvider;
-
-import org.eclipse.swt.graphics.Image;
-
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.TabItem;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.TabFolder;
-
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import net.sourceforge.eclipseccase.ui.ResourceComparator;
 import org.eclipse.core.resources.IResource;
-
-import org.eclipse.swt.widgets.Composite;
-
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class CheckinWizardPage extends WizardPage {
 
@@ -117,7 +40,7 @@ public class CheckinWizardPage extends WizardPage {
 	private Text commentText;
 
 	private String[] comments = new String[0];
-	
+
 	private String comment = "";
 
 	private Combo previousCommentsCombo;
@@ -151,12 +74,12 @@ public class CheckinWizardPage extends WizardPage {
 		GridLayout layout = new GridLayout();
 		Composite mainComposite = new Composite(parent, SWT.NONE);
 		mainComposite.setLayout(layout);
-	    mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-	    setControl(mainComposite);
-		
-	    TabFolder tabFolder = new TabFolder(mainComposite, SWT.NONE);
+		mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		setControl(mainComposite);
+
+		TabFolder tabFolder = new TabFolder(mainComposite, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		tabFolder.setBounds(0, 20, 564, 262);
 
 		createTabItemForComments(tabFolder);
@@ -171,19 +94,20 @@ public class CheckinWizardPage extends WizardPage {
 
 		final Composite composite = new Composite(tabFolder, SWT.NONE);
 		composite.setLayout(new FillLayout());
-		
+
 		listViewer = new ListViewer(composite);
 		listViewer.setContentProvider(new ArrayContentProvider());
 		listViewer.setLabelProvider(new ResourceLabelProvider());
 		// sort on name
 		listViewer.setSorter(new ViewerSorter() {
+			@Override
 			public int compare(Viewer viewer, Object element1, Object element2) {
 				return ((IResource) element1).getName().compareToIgnoreCase(((IResource) element2).getName());
 			}
 		});
 		listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				event.getSelection();
 
 			}
 		});
@@ -224,9 +148,9 @@ public class CheckinWizardPage extends WizardPage {
 		commentText.setLayoutData(data);
 
 		String extCoComment = getLastExtCoComment(resources);
-		if(!extCoComment.equalsIgnoreCase("")){
+		if (!extCoComment.equalsIgnoreCase("")) {
 			this.setComment(extCoComment);
-			
+
 		}
 		commentText.selectAll();
 		// FIXME: Tabbing needed?
@@ -239,7 +163,7 @@ public class CheckinWizardPage extends WizardPage {
 				}
 			}
 		});
-		
+
 		commentText.setText(comment);
 		commentText.addModifyListener(new ModifyListener() {
 
@@ -360,6 +284,7 @@ public class CheckinWizardPage extends WizardPage {
 
 	// FIXME: Seems like we cannot use this to find elements.
 	private class ResourceLabelProvider extends LabelProvider {
+		@Override
 		public Image getImage(Object element) {
 			// Image file =
 			// PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
@@ -369,9 +294,8 @@ public class CheckinWizardPage extends WizardPage {
 		@Override
 		public String getText(Object element) {
 			IResource resource = (IResource) element;
-			//return resource.getFullPath().toString();
-			return resource.getLocation()
-					.toOSString();
+			// return resource.getFullPath().toString();
+			return resource.getLocation().toOSString();
 		}
 	}
 
@@ -391,6 +315,7 @@ public class CheckinWizardPage extends WizardPage {
 
 		if (!listViewer.getSelection().isEmpty()) {
 			Action removeAction = new Action("remove") { //$NON-NLS-1$
+				@Override
 				public void run() {
 					removeFromView();
 				}
@@ -398,6 +323,7 @@ public class CheckinWizardPage extends WizardPage {
 			menuMgr.add(removeAction);
 
 			Action compareAction = new Action("compare") {
+				@Override
 				public void run() {
 					IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
 					IResource resource = (IResource) selection.getFirstElement();
@@ -414,8 +340,6 @@ public class CheckinWizardPage extends WizardPage {
 		return resourceList.toArray(new IResource[resourceList.size()]);
 
 	}
-
-	
 
 	/**
 	 * Returns the recursiveEnabled.
@@ -439,7 +363,7 @@ public class CheckinWizardPage extends WizardPage {
 		IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
 		Iterator<IResource> iterator = selection.iterator();
 		while (iterator.hasNext()) {
-			IResource resource = (IResource) iterator.next();
+			IResource resource = iterator.next();
 			remove(resource);
 		}
 
@@ -455,13 +379,15 @@ public class CheckinWizardPage extends WizardPage {
 		ArrayList<IResource> removedResources = new ArrayList<IResource>();
 		Iterator<IResource> iter = resourceList.iterator();
 		while (iter.hasNext()) {
-			IResource checkResource = (IResource) iter.next();
-			if (checkResource.getFullPath().toString().equals(resource.getFullPath().toString()))
+			IResource checkResource = iter.next();
+			if (checkResource.getFullPath().toString().equals(resource.getFullPath().toString())) {
 				removedResources.add(checkResource);
+			}
 		}
 		iter = removedResources.iterator();
-		while (iter.hasNext())
+		while (iter.hasNext()) {
 			resourceList.remove(iter.next());
+		}
 	}
 
 	private void compareWithPredecessor(IResource resource) {
@@ -476,7 +402,7 @@ public class CheckinWizardPage extends WizardPage {
 		listViewer.refresh();
 
 	}
-	
+
 	/**
 	 * Returns the comment.
 	 * 
@@ -485,7 +411,7 @@ public class CheckinWizardPage extends WizardPage {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
+
 	/**
 	 * Returns the comment.
 	 * 
@@ -497,7 +423,7 @@ public class CheckinWizardPage extends WizardPage {
 		}
 		return comment;
 	}
-	
+
 	private void finished() {
 		// if there is a comment, remember it
 		if (comment.length() > 0) {

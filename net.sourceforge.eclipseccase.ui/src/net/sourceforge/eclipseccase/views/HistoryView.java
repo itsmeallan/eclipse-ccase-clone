@@ -223,7 +223,7 @@ public class HistoryView extends ViewPart {
 	private void compare() {
 		if (historyTable.getSelectionCount() == 1 || historyTable.getSelectionCount() == 2) {
 			CompareWithVersionAction action = new CompareWithVersionAction();
-			action.setElement(element);
+			action.setResource(element);
 			if (historyTable.getSelectionCount() == 1) {
 				action.setVersionA(historyTable.getSelection()[0].getText(2));
 			} else if (historyTable.getSelectionCount() == 2) {
