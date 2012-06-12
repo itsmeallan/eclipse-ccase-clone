@@ -206,7 +206,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		if (!selectedTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedTool);
 		//check if
-		if(execPath.getText().equals("")){
+		if(execPath.getText().equals("") && !selectedTool.equals(TOOL_IBM)){
 			MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
 			execPath.setFocus();
 			return false;
