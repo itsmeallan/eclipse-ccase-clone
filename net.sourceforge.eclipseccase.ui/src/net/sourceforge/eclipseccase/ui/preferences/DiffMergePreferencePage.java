@@ -130,14 +130,15 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		execPath = new Text(groupDiff, SWT.BORDER);
 		execPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		initializeValues();
-		Group groupMerge = new Group(composite, SWT.NULL);
-		GridLayout layoutMerge = new GridLayout();
-		layoutMerge.numColumns = 3;
-		groupMerge.setLayout(layoutMerge);
-		GridData dataMerge = new GridData();
-		dataMerge.horizontalAlignment = GridData.FILL;
-		groupMerge.setLayoutData(dataMerge);
-		groupMerge.setText("External Merge tool settings:");
+		//TODO: Not ready since no merge support.
+//		Group groupMerge = new Group(composite, SWT.NULL);
+//		GridLayout layoutMerge = new GridLayout();
+//		layoutMerge.numColumns = 3;
+//		groupMerge.setLayout(layoutMerge);
+//		GridData dataMerge = new GridData();
+//		dataMerge.horizontalAlignment = GridData.FILL;
+//		groupMerge.setLayoutData(dataMerge);
+//		groupMerge.setText("External Merge tool settings:");
 		return parent;
 	}
 
