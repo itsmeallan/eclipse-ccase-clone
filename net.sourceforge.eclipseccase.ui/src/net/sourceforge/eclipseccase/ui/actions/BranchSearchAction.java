@@ -1,5 +1,17 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import java.io.IOException;
+
+import java.util.HashSet;
+
+import java.util.Set;
+
+import org.eclipse.core.resources.IFolder;
+
+import java.util.ArrayList;
+
+import java.util.List;
+
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 
 import java.io.File;
@@ -48,19 +60,62 @@ public class BranchSearchAction extends ClearCaseWorkspaceAction {
 					if (project != null) {
 						String []result;
 						
-						File workingDir = new File(project.getLocation().toOSString());
-						
 						ClearCaseProvider p = ClearCaseProvider.getClearCaseProvider(project);
-						if (p != null && (p.isClearCaseElement(project)))
+						if (p != null)
 						{
-							result = p.searchFilesInBranch(branchName, workingDir, new ConsoleOperationListener(monitor));
+							Set<File> folders = getProjectsAllFolders(p);
+							List<String> theResult = new ArrayList<String>();
+							for(File vob: folders)
+							{
+								result = p.searchFilesInBranch(branchName, 
+										vob, 
+										new ConsoleOperationListener(monitor));
+								for(String r : result)
+								{
+									theResult.add(r);
+								}
+							}
 
-							view.setSearchResult(result);
+							view.setSearchResult(
+									theResult.toArray(new String[0]));
 						}
 					}
 				} finally {
 					monitor.done();
 				}
+			}
+
+			private Set<File> getProjectsAllFolders(ClearCaseProvider p) throws CoreException {
+				// Find all folders
+				Set<File> folders = new HashSet<File>();
+				IResource [] projMembers = project.members();
+				if (p.isClearCaseElement(project))
+				{
+					folders.add(project.getLocation().toFile());
+				}
+				for(IResource projMem : projMembers)
+				{
+					if((projMem.getType() == IResource.FOLDER) &&
+							p.isClearCaseElement(projMem))
+					{
+						if(projMem.isLinked())
+						{
+							folders.add(projMem.getLocation().toFile());
+						}
+						else
+						{
+							String symbolicLink = p.getSymbolicLinkTarget(projMem);
+							String location = projMem.getLocation().toOSString();
+							if(symbolicLink.length() > 0)
+							{
+								location = projMem.getParent().getLocation().toOSString();
+								File path = new File(location,symbolicLink);
+								folders.add(path);
+							}
+						}
+					}
+				}
+				return folders;
 			}
 		};
 
