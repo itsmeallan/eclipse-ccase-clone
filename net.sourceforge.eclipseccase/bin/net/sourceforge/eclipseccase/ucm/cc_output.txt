@@ -1,0 +1,160 @@
+activity "act-mpg_llv_infrastructure_toside"
+ 2011-06-28T11:18:33+02:00 by Marcus Granath (eingran.users@eselnts1028.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: eingran
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  current view: mpg_llv_infrastructure_toside
+  title: act-mpg_llv_infrastructure_toside
+  change set versions:
+activity "act-mpg_llv_infrastructure_toside_install_toside_emagnmo"
+ 2011-09-16T19:08:41+02:00 by Magnus Mortberg (emagnmo.users@eselnts1030.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: emagnmo
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  current view: emagnmo_mpg_llv_infrastructure_toside
+  title: act-mpg_llv_infrastructure_toside_install_toside_emagnmo
+  change set versions:
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/CHECKEDOUT.1065783
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/19
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/18
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/17
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/16
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/8
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/15
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/7
+    /vobs/ggsn/code/src/ggsnu/.cproject@@/main/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/14
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/13
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/6
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/5
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/12
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/11
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/10
+    /vobs/mobilegw_tools/Scripts@@/main/mpg_mainline_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/.project@@/main/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/9
+    /vobs/mobilegw_tools/Scripts/.project@@/main/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/10
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/8
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/9
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/7
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/14
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/13
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/1/setup_64bit.sh/main/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/12
+    /vobs/mobilegw_tools/Scripts/misc/eclipse@@/main/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/elc/scripts/uml@@/main/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/elc/scripts/uml/S99start@@/main/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/8
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/6
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/7
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/5
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/6
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/Bin@@/main/mpg_mainline_int/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/11
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/11
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/5
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/App/toside_ws/.project@@/main/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/10
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/10
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/9
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/9
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/8
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/7
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/8
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/1/setup_64bit.sh/main/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/6
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/7
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/5
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/6
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/5
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/4
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/Bin@@/main/mpg_mainline_int/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/App/toside_ws/workspace.tar.gz@@/main/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/eclipse_ws@@/main/mpg_lsv_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/App/toside_ws@@/main/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/setup@@/main/mpg_mainline_int/mpg_llv_infrastructure_toside/1/setup_64bit.sh/main/mpg_llv_infrastructure_toside/1
+    /vobs/mobilegw_tools/Scripts/misc@@/main/mpg_mainline_int/mpg_lsv_int/mpg_llv_infrastructure_toside/1/toside/main/mpg_llv_infrastructure_toside/1
+activity "act-mpg_llv_infrastructure_toside_update_toside_emagnmo"
+ 2011-09-21T19:37:32+02:00 by Magnus Mortberg (emagnmo.users@eselnts1030.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: emagnmo
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  current view: emagnmo_test_mpg_llv_infrastructure_toside
+  title: act-mpg_llv_infrastructure_toside_update_toside_emagnmo
+  change set versions:
+    /vobs/ggsn_test/ttcn3@@/main/mpg_mainline_int/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/1
+    /vobs/ggsn_test/ttcn3/.project@@/main/mpg_llv_infrastructure_toside/1
+    /vobs/ggsn_test/ttcn3/.TITAN_properties@@/main/mpg_llv_infrastructure_toside/1
+activity "act-mpg_llv_infrastructure_toside_rhp_qarmjav"
+ 2011-09-30T17:37:36+02:00 by Armin Javanshir (qarmjav.users@selnx094)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: qarmjav
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  current view: qarmjav_mpg_llv_infrastructure_toside
+  title: act-mpg_llv_infrastructure_toside_rhp_qarmjav
+  change set versions:
+    /vobs/mobilegw_framework/ResourceManagement/GlobalResourceManager_rpy/InternalResourceMgmtServiceTest_SUITE.cmp@@/main/mpg_mainline_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/CHECKEDOUT.199638
+    /vobs/mobilegw_tools/App/rhapsody@@/main/mpg_lsv_int/mpg_llv_infrastructure_toside/CHECKEDOUT.1061884
+activity "act-mpg_llv_infrastructure_eingran_test"
+ 2011-10-02T22:38:01+02:00 by Marcus Granath (eingran.users@eselnts1029.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: eingran
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  title: act-mpg_llv_infrastructure_eingran_test
+  change set versions:
+activity "act-mpg_llv_infrastructure_eingran_toside_test"
+ 2011-10-03T07:08:48+02:00 by Marcus Granath (eingran.users@eselnts1029.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: eingran
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  current view: eingran_mpg_llv_infrastructure_toside__6
+  title: act-mpg_llv_infrastructure_eingran_toside_test
+  change set versions:
+activity "act-mpg_llv_infrastructure_eingran_toside_test_2"
+ 2011-10-03T11:19:20+02:00 by Marcus Granath (eingran.users@eselnts1029.mo.sw.ericsson.se)
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: eingran
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  title: act-mpg_llv_infrastructure_eingran_toside_test_2
+  change set versions:
+activity "rebase.mpg_llv_infrastructure_toside.20111003.131356"
+ 2011-10-03T13:13:58+02:00 by Magnus Mortberg (emagnmo.users@eselnts1027.mo.sw.ericsson.se)
+  "Integration activity created by rebase on 10/03/11 13:13:56.
+   "
+  master replica: ln_ggsn_pvob@/vobs/ggsn_pvob
+  owner: emagnmo
+  group: users
+  stream: mpg_llv_infrastructure_toside@/vobs/ggsn_pvob
+  title: rebase mpg_llv_infrastructure_toside on 10/03/11 13:13:56.
+  change set versions:
+    /vobs/mobilegw_tools/Bin@@/main/mpg_mainline_int/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/3
+    /vobs/mobilegw_tools/App/elc/scripts/uml@@/main/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/2
+    /vobs/mobilegw_tools/App/elc/scripts/uml/S99start@@/main/mpg_lsv_int/mpg_prelsv3_int/mpg_llv_infrastructure_toside/2
