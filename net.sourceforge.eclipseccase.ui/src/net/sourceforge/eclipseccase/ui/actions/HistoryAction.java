@@ -1,11 +1,12 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer;
+
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 import java.util.Vector;
 import net.sourceforge.clearcase.*;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
-import net.sourceforge.eclipseccase.views.HistoryView;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -30,7 +31,7 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 		this.fileVersion = fileVersion;
 	}
 
-	private HistoryView view = null;
+	private JFHistoryViewer view = null;
 
 	/**
 	 * {@inheritDoc
@@ -73,7 +74,8 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 			}
 		}
 		try {
-			view = (HistoryView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.eclipseccase.views.HistoryView");
+			view = (JFHistoryViewer) PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().showView("net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -98,10 +100,16 @@ public class HistoryAction extends ClearCaseWorkspaceAction {
 						// ClearCase.createInterface(ClearCase.INTERFACE_CLI);
 						ClearCaseInterface cci = ClearCasePlugin.getEngine();
 						Vector<ElementHistory> result = cci.getElementHistory(path);
-						view.setHistoryInformation(resources[0], result);
+						view.setHistoryInformation(resource, result);
+//						ModelProvider.INSTANCE.setElements(result);
+//						Display.getDefault().asyncExec(new Runnable() {
+//				               public void run() {
+//									view.getViewer().refresh(true);
+//				               }
+//				            });
 					}
 				} catch (Exception e) {
-
+					System.out.println(e);
 				} finally {
 					monitor.done();
 				}

@@ -52,6 +52,7 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 		if (provider != null) {
 			CompareResourcesOperation mainOp = new CompareResourcesOperation(resource, versionA, versionB, provider);
 			mainOp.compare();
+
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.operation.CompareResourcesOperation;
 import org.eclipse.core.resources.IResource;
