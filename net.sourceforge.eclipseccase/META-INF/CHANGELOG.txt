@@ -2,6 +2,16 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.16
+======
+
+Feature:
+
+3404270 	Sorting history view by columns
+3512482 	Improved Compare interface
+3513979 	Search in linked folders when searching for files in branch
+3432763 	External diff/merge tool support ( first version).
+
 2.2.15
 ======
 
