@@ -548,7 +548,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public String getViewRoot(IResource resource) throws TeamException {
 		return ClearCasePlugin.getEngine().getViewLocation(
-				getViewName(resource));
+				);
 	}
 
 	/**
@@ -1628,7 +1628,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 										getCheckoutType()
 												| ClearCase.PTIME
 												| (targetElement.isHijacked() ? ClearCase.HIJACKED
-														: ClearCase.NONE),
+														: ClearCase.NONE)|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER
+																: ClearCase.NONE),
 										opListener);
 					} catch (ClearCaseException cce) {
 						switch (cce.getErrorCode()) {
@@ -1645,7 +1646,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 														.getPath() },
 												getComment(),
 												ClearCase.UNRESERVED
-														| ClearCase.PTIME,
+														| ClearCase.PTIME|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER: ClearCase.NONE),
 												opListener);
 								monitor.worked(40);
 								updateState(resource, IResource.DEPTH_ZERO,
