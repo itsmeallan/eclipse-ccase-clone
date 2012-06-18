@@ -1628,7 +1628,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 										getCheckoutType()
 												| ClearCase.PTIME
 												| (targetElement.isHijacked() ? ClearCase.HIJACKED
-														: ClearCase.NONE)|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER
+														: ClearCase.NONE)|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.NMASTER
 																: ClearCase.NONE),
 										opListener);
 					} catch (ClearCaseException cce) {
@@ -1646,7 +1646,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 														.getPath() },
 												getComment(),
 												ClearCase.UNRESERVED
-														| ClearCase.PTIME|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.MASTER: ClearCase.NONE),
+														| ClearCase.PTIME|(ClearCasePreferences.isUseMasterForAdd() ? ClearCase.NMASTER: ClearCase.NONE),
 												opListener);
 								monitor.worked(40);
 								updateState(resource, IResource.DEPTH_ZERO,
