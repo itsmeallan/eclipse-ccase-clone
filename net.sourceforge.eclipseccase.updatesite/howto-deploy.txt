@@ -109,5 +109,12 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
     CLEARCASE-JAVA_2_1_4_RELEASE (net.sourceforge.clearcase)
     ECLIPSE-CCASE_2_1_4_RELEASE(net.sourceforge.eclipseccase,net.sourceforge.eclipseccase.ui,
     net.sourceforge.eclipseccase.updatesite,net.sourceforge.eclipseccase.feature).
+    
+    
+    Good to do "once in a while"
+    ============================
+    
+    rsync -av eclipse-ccase.git.sourceforge.net::gitroot/eclipse-ccase/* $HOME/backup/eclipse-ccase
+    rsync -av clearcase-java.git.sourceforge.net::gitroot/clearcase-java/* $HOME/backup/clearcase-java
 
    
