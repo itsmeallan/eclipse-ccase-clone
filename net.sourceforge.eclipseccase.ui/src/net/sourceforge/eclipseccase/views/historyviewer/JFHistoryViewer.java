@@ -69,7 +69,6 @@ public class JFHistoryViewer extends ViewPart {
 		Label elementLabel = new Label(parent, SWT.NONE);
 		elementLabel.setText("Element:");
 		element2 = new Label(parent, SWT.NONE);
-		//element2.setText("the/path");
 		element2.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		createViewer(parent);
