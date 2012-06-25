@@ -106,7 +106,7 @@ public class JFHistoryViewer extends ViewPart {
 				versionTree();
 			}
 		});
-		versionTreeItem.setEnabled(false);
+		versionTreeItem.setEnabled(true);
 
 		viewer.getTable().setMenu(historyMenu);
 
