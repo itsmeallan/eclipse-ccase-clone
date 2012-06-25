@@ -590,10 +590,11 @@
 			class="net.sourceforge.eclipseccase.views.ConfigSpecView" icon="icons/full/clearcase.png"
 			id="net.sourceforge.eclipseccase.views.ConfigSpecView" name="ConfigSpec">
 		</view>
+		<!-- Removing this since we now have a new ClearCase history 
 		<view category="org.eclipse.team.ui" class="net.sourceforge.eclipseccase.views.HistoryView"
 			icon="icons/full/history.png" id="net.sourceforge.eclipseccase.views.HistoryView"
 			name="CC History">
-		</view>
+		</view> -->
 		<view category="org.eclipse.team.ui"
 			class="net.sourceforge.eclipseccase.views.BranchSearchView" icon="icons/full/clearcase.png"
 			id="net.sourceforge.eclipseccase.views.BranchSearchView" name="ClearCase Search"
