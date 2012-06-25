@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.views.HistoryViewer;
+package net.sourceforge.eclipseccase.views.historyviewer;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

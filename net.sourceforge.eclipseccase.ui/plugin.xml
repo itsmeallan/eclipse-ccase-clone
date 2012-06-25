@@ -606,7 +606,8 @@
 		</view>
   <view
         category="org.eclipse.team.ui"
-        class="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
+        class="net.sourceforge.eclipseccase.views.historyviewer.JFHistoryViewer"
+        icon="icons/full/history.png"
         id="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
         name="ClearCase History">
   </view>

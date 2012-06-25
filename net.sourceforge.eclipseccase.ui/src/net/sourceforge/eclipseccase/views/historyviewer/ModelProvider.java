@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.views.HistoryViewer;
+package net.sourceforge.eclipseccase.views.historyviewer;
 
 import java.util.Vector;
 

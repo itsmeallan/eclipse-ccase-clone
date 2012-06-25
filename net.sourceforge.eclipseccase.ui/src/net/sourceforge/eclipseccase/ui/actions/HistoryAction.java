@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
-import net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer;
+import net.sourceforge.eclipseccase.views.historyviewer.JFHistoryViewer;
 
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 

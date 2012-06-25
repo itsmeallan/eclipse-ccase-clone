@@ -1,4 +1,4 @@
-package net.sourceforge.eclipseccase.views.HistoryViewer;
+package net.sourceforge.eclipseccase.views.historyviewer;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
