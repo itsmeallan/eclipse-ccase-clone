@@ -608,7 +608,7 @@
         category="org.eclipse.team.ui"
         class="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
         id="net.sourceforge.eclipseccase.views.HistoryViewer.JFHistoryViewer"
-        name="JF History">
+        name="ClearCase History">
   </view>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
