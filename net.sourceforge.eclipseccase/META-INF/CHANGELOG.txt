@@ -12,6 +12,11 @@ Feature:
 3513979 	Search in linked folders when searching for files in branch
 3432763 	External diff/merge tool support ( first version).
 
+Bugs:
+
+3528604 	Error when exporting Team Project Set
+3535298 	Using check box -master: -nmaster flag is needed.
+
 2.2.15
 ======
 
