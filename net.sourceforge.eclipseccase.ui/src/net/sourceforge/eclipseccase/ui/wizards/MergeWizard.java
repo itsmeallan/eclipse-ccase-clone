@@ -1,45 +1,40 @@
+/*******************************************************************************
+ * Copyright (c) 2012 eclipse-ccase.sourceforge.net.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     eraonel - inital API and implementation
+ *     IBM Corporation - concepts and ideas from Eclipse
+ *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.wizards;
 
-import org.eclipse.core.runtime.SubProgressMonitor;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import net.sourceforge.eclipseccase.ClearCasePreferences;
-import net.sourceforge.eclipseccase.ClearDlgHelper;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.ui.ClearCaseUI;
 import net.sourceforge.eclipseccase.ui.DirectoryLastComparator;
 import net.sourceforge.eclipseccase.ui.console.ConsoleOperationListener;
 import org.eclipse.core.resources.IResource;
-
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-
-import net.sourceforge.eclipseccase.ui.ClearCaseUI;
+import org.eclipse.core.runtime.*;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.ui.IWorkbenchWizard;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.operation.*;
-import java.lang.reflect.InvocationTargetException;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.CoreException;
-import java.io.*;
-import org.eclipse.ui.*;
-import org.eclipse.ui.ide.IDE;
+
+import org.eclipse.ui.INewWizard;
 
 /**
- * This is a sample new wizard. Its role is to create a new file resource in the
- * provided container. If the container resource (a folder or a project) is
- * selected in the workspace when the wizard is opened, it will accept it as the
- * target container. The wizard creates one file with the extension "mpe". If a
- * sample multi-page editor (also available as a template) is registered for the
- * same extension, it will be able to open it.
+ * @author mikael petterson
+ *
  */
-
-public class CheckinWizard extends ResizableWizard implements INewWizard {
-
-	private CheckinWizardPage page;
+public class MergeWizard extends ResizableWizard implements INewWizard {
+	
+	private MergeWizardPage page;
 
 	private IResource[] resources;
 
@@ -47,15 +42,15 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 
 	private ClearCaseProvider provider;
 
-	public static final String CHECKIN_WIZARD_DIALOG_SETTINGS = "MergeWizard"; //$NON-NLS-1$
+	public static final String WIZARD_DIALOG_SETTINGS = "MergeWizard"; //$NON-NLS-1$
 
 	public static final int SCALE = 100;
 
 	/**
 	 * Constructor for CheckinWizard.
 	 */
-	public CheckinWizard(IResource[] resources, ClearCaseProvider provider) {
-		super(CHECKIN_WIZARD_DIALOG_SETTINGS, ClearCaseUI.getInstance().getDialogSettings());
+	public MergeWizard(IResource[] resources, ClearCaseProvider provider) {
+		super(WIZARD_DIALOG_SETTINGS, ClearCaseUI.getInstance().getDialogSettings());
 		setNeedsProgressMonitor(true);
 		this.resources = resources;
 		this.provider = provider;
@@ -66,7 +61,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new CheckinWizardPage("Select Source", resources, provider);
+		page = new MergeWizardPage("Merge", resources, provider);
 		addPage(page);
 	}
 
@@ -75,8 +70,8 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	 * will create an operation and run it using wizard as execution context.
 	 */
 	public boolean performFinish() {
-//		final String comment = page.getComment();
-//		final IResource[] resources = page.getResourceList();
+		final String comment = page.getComment();
+		final IResource[] resources = page.getResourceList();
 		final boolean recursive = page.isRecursive();
 		/*
 		 * Build a process that will run using the IRunnableWithProgress
@@ -89,7 +84,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 					 * The method (see below) which contains the "real"
 					 * implementation code.
 					 */
-					doFinish(provider, resources, recursive, monitor);
+					doFinish(provider, comment, resources, recursive, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -112,10 +107,10 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	}
 
 	/**
-	 * The worker method. It will gather resources that needs merge.
+	 * The worker method. It will make the actual checkin of the resource.
 	 */
 
-	private void doFinish(ClearCaseProvider provider, IResource[] resources, boolean isRecursive, IProgressMonitor monitor) throws CoreException {
+	private void doFinish(ClearCaseProvider provider, String comment, IResource[] resources, boolean isRecursive, IProgressMonitor monitor) throws CoreException {
 		int depth = isRecursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 		monitor.beginTask("Checking in...", resources.length);
 		ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
@@ -123,7 +118,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			if (provider != null) {
-				
+				provider.setComment(comment);
 				provider.setOperationListener(opListener);
 				provider.checkin(new IResource[] { resource }, depth, new SubProgressMonitor(monitor, 1 * SCALE));
 			}
@@ -131,13 +126,14 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 
 	}
 
-	/**
-	 * We will accept the selection in the workbench to see if we can initialize
-	 * from it.
-	 * 
-	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
+	
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
+
 	}
+
 }
