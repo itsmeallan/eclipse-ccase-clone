@@ -295,7 +295,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 			//Avoid same value. This happens each time a value is set, Bug in eclipse?
 			return;
 		}
-		if (newValue.equals(IClearCasePreferenceConstants.ALWAYS)) {
+		if (newValue.equals(IClearCasePreferenceConstants.ALWAYS) | newValue.equals(IClearCasePreferenceConstants.IF_POSSIBLE)) {
 
 			nMaster.setEnabled(false, getFieldEditorParent(SOURCE_MANAGEMENT));
 			if (getPreferenceStore().getBoolean(IClearCasePreferenceConstants.ADD_WITH_MASTER) == true) {
@@ -305,7 +305,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 				//move back to old value.
 				reservedCo.load();
 				reservedCo.store();
-				MessageDialog.openError(getShell(), "Error", "Since master option is set. \"Reserved Checkouts\" option cannot be set to ALWAYS since reserved checkouts are not allowed.");
+				MessageDialog.openError(getShell(), "Error", "Since master option is set. \"Reserved Checkouts\" option cannot be set to ALWAYS/IF POSSIBLE since reserved checkouts are not allowed.");
 				nMaster.setEnabled(true, getFieldEditorParent(SOURCE_MANAGEMENT));
 			}
 		} else {
