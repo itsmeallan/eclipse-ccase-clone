@@ -39,7 +39,8 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 
 	static final String[][] ALWAYS_IF_POSSIBLE_NEVER = new String[][] { { PreferenceMessages.getString("Always"), ALWAYS }, //$NON-NLS-1$
 			{ PreferenceMessages.getString("IfPossible"), IF_POSSIBLE }, //$NON-NLS-1$
-			{ PreferenceMessages.getString("Never"), NEVER } }; //$NON-NLS-1$
+			{ PreferenceMessages.getString("Never"), NEVER } ,
+			{ PreferenceMessages.getString("Prompt"), PROMPT }}; //$NON-NLS-1$
 
 	static final String[][] PRIORITIES = new String[][] { { PreferenceMessages.getString("HighPriority"), Integer.toString(Job.LONG) }, //$NON-NLS-1$ 
 			{ PreferenceMessages.getString("DefaultPriority"), Integer.toString(Job.DECORATE) } }; //$NON-NLS-1$
@@ -156,7 +157,7 @@ public class ClearCasePreferencePage extends FieldEditorPreferencePageWithCatego
 		addField(new BooleanFieldEditor(CHECKOUT_LATEST, PreferenceMessages.getString("Preferences.Source.CheckoutLatest"), //$NON-NLS-1$
 				getFieldEditorParent(SOURCE_MANAGEMENT)));
 
-		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 3, //$NON-NLS-1$ 
+		addField(new RadioGroupFieldEditor(IClearCasePreferenceConstants.CHECKOUT_RESERVED, PreferenceMessages.getString("Preferences.Source.CheckoutReserved"), 4, //$NON-NLS-1$ 
 				ALWAYS_IF_POSSIBLE_NEVER, getFieldEditorParent(SOURCE_MANAGEMENT), true));
 		
 		addField(new BooleanFieldEditor(ADD_WITH_MASTER, PreferenceMessages.getString("Preferences.Source.AddWithMaster"), //$NON-NLS-1$

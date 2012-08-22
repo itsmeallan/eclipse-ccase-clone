@@ -210,6 +210,18 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				.getDefault().getPluginPreferences().getString(
 						IClearCasePreferenceConstants.CHECKOUT_RESERVED));
 	}
+	
+	/**
+	 * Returns the preference value for <code>CHECKOUT_RESERVED</code>.
+	 * 
+	 * @return the preference value
+	 */
+	public static boolean isAskCoType() {
+		return IClearCasePreferenceConstants.PROMPT.equals(ClearCasePlugin
+				.getDefault().getPluginPreferences().getString(
+						IClearCasePreferenceConstants.CHECKOUT_RESERVED));
+	}
+	
 
 	/**
 	 * Returns the preference value for <code>USE_SINGLE_PROCESS</code>.

@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.PreventCheckoutHelper;
 
@@ -15,6 +17,9 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.window.Window;
 
 public class CheckOutAction extends ClearCaseWorkspaceAction {
+	
+	
+
 
 	@Override
 	public void execute(IAction action) {
@@ -23,6 +28,10 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		final ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resources[0]);
 				
 		if (PreventCheckoutHelper.isPreventedFromCheckOut(provider, resources, ClearCasePreferences.isSilentPrevent())){
+			return;
+		}
+		
+		if(!PreventCheckoutHelper.isPromtedCoTypeOk()){
 			return;
 		}
 		
@@ -112,5 +121,7 @@ public class CheckOutAction extends ClearCaseWorkspaceAction {
 		}
 		return true;
 	}
+
+	
 
 }
