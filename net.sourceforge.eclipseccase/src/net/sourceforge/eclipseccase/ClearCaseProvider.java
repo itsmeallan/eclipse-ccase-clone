@@ -23,6 +23,7 @@ import net.sourceforge.clearcase.ClearCaseCLIImpl;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.clearcase.MergeData;
 import net.sourceforge.clearcase.events.OperationListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
@@ -410,6 +411,16 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public void compareWithVersion(String element1, String element2) {
 		ClearCasePlugin.getEngine().compareWithVersion(element1, element2);
+	}
+	
+	public Vector<MergeData> findMerge(String pname,String branch){
+		Vector<MergeData>  mergeData = ClearCasePlugin.getEngine().findMerge(pname,branch);
+	   return mergeData;
+	}
+	
+	public void merge(String to, String from, String base){
+		String [] fromVersions = new String [] {from};
+		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(to, fromVersions,base, ClearCase.NONE);
 	}
 
 	/**
@@ -1506,7 +1517,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 							ClearCaseElementState myState = ClearCasePlugin
 									.getEngine().merge(targetElement.getPath(),
 											new String[] { latestVersion },
-											ClearCase.GRAPHICAL);
+											null,ClearCase.GRAPHICAL);
 
 							if (myState.isMerged()) {
 

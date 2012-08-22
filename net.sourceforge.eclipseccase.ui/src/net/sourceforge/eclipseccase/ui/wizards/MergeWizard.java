@@ -11,6 +11,25 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.wizards;
 
+import net.sourceforge.eclipseccase.ui.actions.MergeViewAction;
+
+import net.sourceforge.eclipseccase.ui.actions.LoadBrancheListAction;
+import org.eclipse.jface.action.IAction;
+
+import org.eclipse.ui.PlatformUI;
+
+import net.sourceforge.eclipseccase.views.MergeView;
+
+import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.clearcase.ElementHistory;
+import net.sourceforge.eclipseccase.ClearCasePlugin;
+
+import java.util.Collections;
+
+import java.util.Vector;
+
+import net.sourceforge.clearcase.MergeData;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -30,10 +49,10 @@ import org.eclipse.ui.INewWizard;
 
 /**
  * @author mikael petterson
- *
+ * 
  */
 public class MergeWizard extends ResizableWizard implements INewWizard {
-	
+
 	private MergeWizardPage page;
 
 	private IResource[] resources;
@@ -45,6 +64,10 @@ public class MergeWizard extends ResizableWizard implements INewWizard {
 	public static final String WIZARD_DIALOG_SETTINGS = "MergeWizard"; //$NON-NLS-1$
 
 	public static final int SCALE = 100;
+
+	private MergeView view = null;
+	
+	private Vector<MergeData> data;
 
 	/**
 	 * Constructor for CheckinWizard.
@@ -70,9 +93,9 @@ public class MergeWizard extends ResizableWizard implements INewWizard {
 	 * will create an operation and run it using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String comment = page.getComment();
-		final IResource[] resources = page.getResourceList();
-		final boolean recursive = page.isRecursive();
+
+		
+		final String branch = page.getSelectedBranch();
 		/*
 		 * Build a process that will run using the IRunnableWithProgress
 		 * interface so the UI can handle showing progress bars, etc.
@@ -84,7 +107,7 @@ public class MergeWizard extends ResizableWizard implements INewWizard {
 					 * The method (see below) which contains the "real"
 					 * implementation code.
 					 */
-					doFinish(provider, comment, resources, recursive, monitor);
+					doFinish(provider, resources, branch, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -102,6 +125,19 @@ public class MergeWizard extends ResizableWizard implements INewWizard {
 			MessageDialog.openError(getShell(), "Error", realException.getMessage());
 			return false;
 		}
+		
+		
+			//Now we need to create a new 
+			MergeViewAction view = new MergeViewAction(data,provider,resources[0].getProject());
+
+			try {
+				view.execute((IAction) null);
+			} catch (Exception e) {
+
+			}
+
+		
+		
 		return true;
 
 	}
@@ -110,26 +146,28 @@ public class MergeWizard extends ResizableWizard implements INewWizard {
 	 * The worker method. It will make the actual checkin of the resource.
 	 */
 
-	private void doFinish(ClearCaseProvider provider, String comment, IResource[] resources, boolean isRecursive, IProgressMonitor monitor) throws CoreException {
-		int depth = isRecursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
-		monitor.beginTask("Checking in...", resources.length);
-		ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
-		Arrays.sort(resources, new DirectoryLastComparator());
+	private void doFinish(ClearCaseProvider provider, IResource[] resources, String branch, IProgressMonitor monitor) throws CoreException {
+		// TODO:Which resource. When I selected more than one resource
+		data = new Vector<MergeData>();
+		monitor.beginTask("Listing resources that needs merge ...", resources.length);
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
-			if (provider != null) {
-				provider.setComment(comment);
-				provider.setOperationListener(opListener);
-				provider.checkin(new IResource[] { resource }, depth, new SubProgressMonitor(monitor, 1 * SCALE));
-			}
-		}
+			String pname = resource.getLocation().toOSString();// directory or
+																// file.
+			Vector<MergeData> d = provider.findMerge(pname, branch);
+			data.addAll(d);
 
+		}
+		monitor.done();
+		
+		
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
+	 * org.eclipse.jface.viewers.IStructuredSelection)
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
