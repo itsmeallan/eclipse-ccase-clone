@@ -384,6 +384,16 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL);
 	}
 	
+	public static String getExtMergeExecPath(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH);
+	}
+	
+	public static String getExtMergeTool(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL);
+	}
+	
 	public static boolean isMergeAutomatic(){
 		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
 				IClearCasePreferenceConstants.AUTOMATIC_MERGE);

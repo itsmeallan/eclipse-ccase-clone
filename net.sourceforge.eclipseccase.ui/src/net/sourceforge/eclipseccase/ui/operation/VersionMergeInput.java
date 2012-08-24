@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.ui.operation;
 
+import org.eclipse.compare.structuremergeviewer.ICompareInputChangeListener;
+
 import java.io.OutputStream;
 
 import java.io.InputStream;
@@ -95,6 +97,9 @@ public class VersionMergeInput extends CompareEditorInput {
 		}
 
 	}
+	
+	
+	
 
 	/*
 	 * (non-Javadoc) Method declared on CompareEditorInput
@@ -207,6 +212,11 @@ public class VersionMergeInput extends CompareEditorInput {
 
 		public void fireChange() {
 			super.fireChange();
+		}
+		
+		public void register(ICompareInputChangeListener listener){
+			super.addCompareInputChangeListener(listener);
+			
 		}
 	}
 	

@@ -44,12 +44,12 @@ public class MergeResourcesOperation {
 		
 		//if(ClearCasePreferences.isCompareExternal()){
 			
-//			ExternalMergeOperation extMergeOp = new ExternalMergeOperation(resource,comparableVersion);
-//			extMergeOp.execute();
+			ExternalMergeOperation extMergeOp = new ExternalMergeOperation(resource,comparableVersion,base);
+			extMergeOp.execute();
 //		}else{
 				
-			InternalMergeOperation intMergeOp = new InternalMergeOperation(resource,selectedVersion,comparableVersion,base,provider);
-			intMergeOp.execute();
+//			InternalMergeOperation intMergeOp = new InternalMergeOperation(resource,selectedVersion,comparableVersion,base,provider);
+//			intMergeOp.execute();
 //		}
 	}
 
