@@ -152,6 +152,9 @@ public interface IClearCasePreferenceConstants {
 
 	/** ClearCase preference */
 	String COMPARE_EXTERNAL = ClearCasePlugin.PLUGIN_ID + ".compare.external"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String MERGE_EXTERNAL = ClearCasePlugin.PLUGIN_ID + ".merge.external"; //$NON-NLS-1$
 
 	/** ClearCase preference */
 	String ACTIVITY_PATTERN = ClearCasePlugin.PLUGIN_ID + ".activityPattern";//$NON-NLS-1$
@@ -165,6 +168,15 @@ public interface IClearCasePreferenceConstants {
 	/** ClearCase preference */
 	String EXTERNAL_DIFF_TOOL = ClearCasePlugin.PLUGIN_ID + ".ext.diff.tool"; //$NON-NLS-1$
 	
+	/** ClearCase preference */
 	String EXTERNAL_DIFF_TOOL_EXEC_PATH = ClearCasePlugin.PLUGIN_ID + ".ext.diff.tool.exec.path"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String EXTERNAL_MERGE_TOOL = ClearCasePlugin.PLUGIN_ID + ".ext.merge.tool"; //$NON-NLS-1$
+	
+	/** ClearCase preference */
+	String EXTERNAL_MERGE_TOOL_EXEC_PATH = ClearCasePlugin.PLUGIN_ID + ".ext.merge.tool.exec.path"; //$NON-NLS-1$
+	
+	String AUTOMATIC_MERGE = ClearCasePlugin.PLUGIN_ID + ".auto.merge";
 
 }
