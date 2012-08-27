@@ -1505,7 +1505,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 							ClearCaseElementState myState = ClearCasePlugin
 									.getEngine().merge(targetElement.getPath(),
-											new String[] { latestVersion },
+											new String[] { latestVersion },null,
 											ClearCase.GRAPHICAL);
 
 							if (myState.isMerged()) {
