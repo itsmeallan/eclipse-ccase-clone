@@ -17,33 +17,18 @@ import net.sourceforge.eclipseccase.ui.compare.ClearCaseResourceNode;
 import org.eclipse.compare.*;
 import org.eclipse.core.resources.IFile;
 
-public class VersionCompareInput extends CompareEditorInput {
-
+public class VersionCompareInput extends CompareEditorInput{
+	
 	private final ITypedElement leftElement;
 
 	private final ITypedElement rightElement;
-
-	private IFile resource;
-
-	private String rightVersion = "";
 	
-	private String leftVersion = "";
-
-	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String selected, String comparableVersion, ClearCaseProvider provider) {
+	
+	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String leftVersion, String rigthVersion,ClearCaseProvider provider) {
 		super(configuration);
-		
-		this.resource = resource;
-		this.rightVersion = selected;
-		this.leftVersion = comparableVersion;
-		
-		 leftElement = selected != null ? new
-		 ClearCaseResourceNode(resource, selected,provider) : new
-		 ResourceNode(resource);
-		 rightElement = comparableVersion != null ? new
-		 ClearCaseResourceNode(resource, comparableVersion,provider) : new
-		 ResourceNode(resource);
 
-		
+		leftElement = leftVersion != null ? new ClearCaseResourceNode(resource, leftVersion,provider) : new ResourceNode(resource);
+		rightElement = rigthVersion != null ? new ClearCaseResourceNode(resource, rigthVersion,provider) : new ResourceNode(resource);
 
 		configuration.setLeftImage(CompareUI.getImage(resource));
 		if (leftVersion != null) {
@@ -51,13 +36,13 @@ public class VersionCompareInput extends CompareEditorInput {
 		}
 
 		configuration.setRightImage(CompareUI.getImage(resource));
-		if (rightVersion != null) {
-			configuration.setRightLabel(rightVersion);
+		if (rigthVersion != null) {
+			configuration.setRightLabel(rigthVersion);
 		}
 
 		setTitle(resource.getName());
 	}
-
+	
 	/**
 	 * Method is used to saving compare results.
 	 */
@@ -94,7 +79,7 @@ public class VersionCompareInput extends CompareEditorInput {
 
 	@Override
 	protected Object prepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		return new DiffNode(null, Differencer.CHANGE, null, new ClearCaseResourceNode(resource, leftVersion, null), new ResourceNode(resource));
+		return new DiffNode(null, Differencer.CHANGE, null, leftElement, rightElement);
 	}
 
 }

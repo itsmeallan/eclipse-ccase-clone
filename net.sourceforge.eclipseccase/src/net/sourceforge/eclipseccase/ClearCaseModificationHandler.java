@@ -148,9 +148,6 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 			return CANCEL;
 		}
 		
-		if(!PreventCheckoutHelper.isPromtedCoTypeOk()){
-			return CANCEL;
-		}
 
 
 		if (ClearCasePreferences.isCheckoutAutoNever())

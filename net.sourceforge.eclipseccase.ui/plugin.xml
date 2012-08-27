@@ -160,13 +160,6 @@
 				icon="icons/full/reserve.png"
 				menubarPath="team.main/group2">
 			</action>
-			<!--Not to be included in rel. 2.2.17 <action
-				class="net.sourceforge.eclipseccase.ui.actions.MergeAction"
-				id="net.sourceforge.eclipseccase.ui.popups.merge"
-				label="Merge Branch"
-				icon="icons/full/arrow_merge.png"
-				menubarPath="team.main/group2">
-			</action>-->
 			<action class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
 				icon="icons/full/history.png" id="net.sourceforge.eclipseccase.popups.history"
 				label="&amp;ClearCase History" menubarPath="compareWithMenu/compareWithGroup">
@@ -600,11 +593,6 @@
 		<view category="org.eclipse.team.ui"
 			class="net.sourceforge.eclipseccase.views.BranchSearchView" icon="icons/full/clearcase.png"
 			id="net.sourceforge.eclipseccase.views.BranchSearchView" name="ClearCase Search"
-			restorable="true">
-		</view>
-		<view category="org.eclipse.team.ui"
-			class="net.sourceforge.eclipseccase.views.MergeView" icon="icons/full/clearcase.png"
-			id="net.sourceforge.eclipseccase.views.MergeView" name="Merge Results"
 			restorable="true">
 		</view>
 		<view category="org.eclipse.team.ui"

@@ -31,16 +31,4 @@ public class KdiffCommands extends AbstractDifference {
 
 	}
 
-	@Override
-	public void twoWayMerge(String file1, String file2) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void threeWayMerge(String file1, String file2, String base) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

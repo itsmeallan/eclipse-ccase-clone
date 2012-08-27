@@ -2,18 +2,6 @@
 =                                 Change Log                                 =
 ===============================================================================
 
-2.2.17
-======
-
-Feature: 
-
-3554900 Possibility to choose reserved or unreserved checkouts
-
-Bugs:
-
-3546325 Compare with predecessor does not work.
-3543544 Use -master flag when adding resource applies to checkouts
-
 2.2.16
 ======
 

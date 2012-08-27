@@ -47,7 +47,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 
 	private ClearCaseProvider provider;
 
-	public static final String CHECKIN_WIZARD_DIALOG_SETTINGS = "MergeWizard"; //$NON-NLS-1$
+	public static final String CHECKIN_WIZARD_DIALOG_SETTINGS = "CheckinWizard"; //$NON-NLS-1$
 
 	public static final int SCALE = 100;
 
@@ -66,7 +66,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new CheckinWizardPage("Select Source", resources, provider);
+		page = new CheckinWizardPage("Checkin", resources, provider);
 		addPage(page);
 	}
 
@@ -75,8 +75,8 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	 * will create an operation and run it using wizard as execution context.
 	 */
 	public boolean performFinish() {
-//		final String comment = page.getComment();
-//		final IResource[] resources = page.getResourceList();
+		final String comment = page.getComment();
+		final IResource[] resources = page.getResourceList();
 		final boolean recursive = page.isRecursive();
 		/*
 		 * Build a process that will run using the IRunnableWithProgress
@@ -89,7 +89,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 					 * The method (see below) which contains the "real"
 					 * implementation code.
 					 */
-					doFinish(provider, resources, recursive, monitor);
+					doFinish(provider, comment, resources, recursive, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -112,10 +112,10 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 	}
 
 	/**
-	 * The worker method. It will gather resources that needs merge.
+	 * The worker method. It will make the actual checkin of the resource.
 	 */
 
-	private void doFinish(ClearCaseProvider provider, IResource[] resources, boolean isRecursive, IProgressMonitor monitor) throws CoreException {
+	private void doFinish(ClearCaseProvider provider, String comment, IResource[] resources, boolean isRecursive, IProgressMonitor monitor) throws CoreException {
 		int depth = isRecursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ZERO;
 		monitor.beginTask("Checking in...", resources.length);
 		ConsoleOperationListener opListener = new ConsoleOperationListener(monitor);
@@ -123,7 +123,7 @@ public class CheckinWizard extends ResizableWizard implements INewWizard {
 		for (int i = 0; i < resources.length; i++) {
 			IResource resource = resources[i];
 			if (provider != null) {
-				
+				provider.setComment(comment);
 				provider.setOperationListener(opListener);
 				provider.checkin(new IResource[] { resource }, depth, new SubProgressMonitor(monitor, 1 * SCALE));
 			}
