@@ -396,6 +396,29 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL);
 	}
 	
+	public static String getExtMergeExecPath(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH);
+	}
+	
+	public static String getExtMergeTool(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
+				IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL);
+	}
+	
+	public static boolean isMergeAutomatic(){
+		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.AUTOMATIC_MERGE);
+	}
+	
+	public static void setMergeAutomatic(boolean value){
+		ClearCasePlugin.getDefault().getPluginPreferences().setValue(
+				IClearCasePreferenceConstants.AUTOMATIC_MERGE,
+				value);
+	}
+	
+	
+	
 	/**
 	 * Clients should not call this method. It will be called automatically by
 	 * the preference initializer when the appropriate default preference node
@@ -479,6 +502,7 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.FORBID_CONFIG_SPEC_MODIFICATION,
 				false);
 		defaults.putBoolean(IClearCasePreferenceConstants.SILENT_PREVENT,false);//$NON-NLS-1$
+		defaults.putBoolean(IClearCasePreferenceConstants.AUTOMATIC_MERGE, false);
 
 		setGraphicalToolTimeout();
 

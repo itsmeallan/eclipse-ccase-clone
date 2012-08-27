@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase.ui.compare;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import java.io.FileOutputStream;
+
 import java.io.IOException;
 
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -98,5 +102,17 @@ public class ClearCaseResourceNode extends BufferedContent implements ITypedElem
 			}
 		}
 		return ITypedElement.UNKNOWN_TYPE;
+	}
+	//FIXME: added to be able to write at save().
+	public void commit(IProgressMonitor pm) throws CoreException {
+		byte[] bytes= getContent();
+		FileOutputStream os;
+		try {
+			os = new FileOutputStream(new File(resource.getLocation().toOSString()));
+			os.write(bytes);
+			os.close();			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
