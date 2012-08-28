@@ -21,13 +21,12 @@ import net.sourceforge.eclipseccase.diff.AbstractDifference;
 public class ExternalCompareOperation {
 
 
-	private String selectedVersion;
+	
 	private String comparableVersion;
 	private IResource resource;
 
-	public ExternalCompareOperation(IResource resource,String selectedVersion,String comparableVersion) {
+	public ExternalCompareOperation(IResource resource,String comparableVersion) {
 		this.resource = resource;
-		this.selectedVersion = selectedVersion;
 		this.comparableVersion = comparableVersion;
 
 	}
@@ -40,8 +39,8 @@ public class ExternalCompareOperation {
 				// Run long running task here
 				// Add a factory here that can decide which launcher to use.
 				AbstractDifference diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
-				String vExtPath1 = resource.getLocation().toOSString()+"@@"+selectedVersion;
-				String vExtPath2 = resource.getLocation().toOSString()+"@@"+comparableVersion;
+				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
+				String vExtPath2 = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
 				diff.twoWayDiff(vExtPath1,vExtPath2);
 				monitor.done();
 				return Status.OK_STATUS;
