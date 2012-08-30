@@ -23,23 +23,42 @@ public class KdiffCommands extends AbstractDifference {
 	}
 
 	public String getExec() {
-		ClearCasePreferences.getExtDiffExecPath();
 		String selectedTool = ClearCasePreferences.getExtDiffTool();
 		Map<String, String> toolPathMap = PreferenceHelper
 				.strToMap(ClearCasePreferences.getExtDiffExecPath());
 		return PreferenceHelper.getExecPath(selectedTool, toolPathMap);
 
 	}
-
-	@Override
-	public void twoWayMerge(String file1, String file2) {
-		// TODO Auto-generated method stub
-		
+	
+	public String getMergeExec(){
+		String selectedTool = ClearCasePreferences.getExtMergeTool();
+		Map<String, String> toolPathMap = PreferenceHelper
+				.strToMap(ClearCasePreferences.getExtMergeExecPath());
+		return PreferenceHelper.getExecPath(selectedTool, toolPathMap);
 	}
 
 	@Override
-	public void threeWayMerge(String file1, String file2, String base) {
-		// TODO Auto-generated method stub
+	public boolean twoWayMerge(String file1, String file2) {
+		String [] command = new String [] { getMergeExec(),file1,file2,"-m"};
+		CommandLauncher launcher = new CommandLauncher();
+		launcher.execute(command, null, null, null);
+		if(launcher.getErrorOutput() != null){
+			//Show error msg.
+			System.out.println("Error: "+launcher.getErrorOutput());
+		}
+		return true;
+	}
+
+	@Override
+	public boolean threeWayMerge(String file1, String file2, String base) {
+		String [] command = new String [] { getMergeExec(),file1,file2,base,"-m"};
+		CommandLauncher launcher = new CommandLauncher();
+		launcher.execute(command, null, null, null);
+		if(launcher.getErrorOutput() != null){
+			//Show error msg.
+			System.out.println("Error: "+launcher.getErrorOutput());
+		}
+		return true;
 		
 	}
 

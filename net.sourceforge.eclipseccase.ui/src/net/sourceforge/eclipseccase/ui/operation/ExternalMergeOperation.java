@@ -33,6 +33,7 @@ public class ExternalMergeOperation {
 	
 	
 	public ExternalMergeOperation(IResource resource,String comparableVersion,String base) {
+		this.base = base;
 		this.resource = resource;
 		this.comparableVersion = comparableVersion;
 
@@ -51,7 +52,12 @@ public class ExternalMergeOperation {
 				AbstractDifference merge = MergeFactory.getMergeTool(ClearCasePreferences.getExtMergeTool());
 				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
 				String path = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
+				if(base == null){
 				merge.twoWayDiff(vExtPath1,path);
+				}else{
+				String vExtPathBase = resource.getLocation().toOSString()+"@@"+base;	
+					merge.threeWayMerge(vExtPath1, path, vExtPathBase);
+				}
 				monitor.done();
 				return Status.OK_STATUS;
 			}

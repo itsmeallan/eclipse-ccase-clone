@@ -422,9 +422,14 @@ public class ClearCaseProvider extends RepositoryProvider {
 	   return mergeData;
 	}
 	
-	public void merge(String to, String from, String base){
+	public boolean merge(String to, String from, String base){
 		String [] fromVersions = new String [] {from};
+		//make sure 
 		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(to, fromVersions,base, ClearCase.NONE);
+		if(state.isMerged()){
+			return true;
+		}
+		return false;
 	}
 
 	/**

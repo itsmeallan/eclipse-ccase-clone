@@ -48,11 +48,11 @@ public class InternalMergeOperation {
 
 	public void execute() {
 		// execute
-		//if(resource instanceof IFile){	
+		if(resource instanceof IFile){	
 		VersionMergeInput input = new VersionMergeInput(cmpConfig,(IFile)resource,selected,comparableVersion,base,provider);
 		CompareUI.openCompareEditor(input);
 		
-		//}
+		}
 	
 	}
 

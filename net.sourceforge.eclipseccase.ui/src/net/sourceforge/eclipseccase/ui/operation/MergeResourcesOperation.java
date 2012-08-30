@@ -42,15 +42,14 @@ public class MergeResourcesOperation {
 	
 	public void merge(){
 		
-		//if(ClearCasePreferences.isCompareExternal()){
+		if(ClearCasePreferences.isMergeExternal()){
 			
 			ExternalMergeOperation extMergeOp = new ExternalMergeOperation(resource,comparableVersion,base);
 			extMergeOp.execute();
-//		}else{
-				
-//			InternalMergeOperation intMergeOp = new InternalMergeOperation(resource,selectedVersion,comparableVersion,base,provider);
-//			intMergeOp.execute();
-//		}
+		}else{		
+			InternalMergeOperation intMergeOp = new InternalMergeOperation(resource,selectedVersion,comparableVersion,base,provider);
+			intMergeOp.execute();
+		}
 	}
 
 }

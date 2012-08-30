@@ -354,6 +354,12 @@ public class ClearCasePreferences extends AbstractPreferenceInitializer {
 				IClearCasePreferenceConstants.COMPARE_EXTERNAL);
 	}
 	
+
+	public static boolean isMergeExternal() {
+		return ClearCasePlugin.getDefault().getPluginPreferences().getBoolean(
+				IClearCasePreferenceConstants.MERGE_EXTERNAL);
+	}
+	
 	public static String isPreventCheckOut() {
 		return ClearCasePlugin.getDefault().getPluginPreferences().getString(
 				IClearCasePreferenceConstants.PREVENT_CHECKOUT);
