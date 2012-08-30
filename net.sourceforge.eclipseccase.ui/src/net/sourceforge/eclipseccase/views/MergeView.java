@@ -1,13 +1,15 @@
 package net.sourceforge.eclipseccase.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 import net.sourceforge.clearcase.MergeData;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.ClearCaseImages;
 import net.sourceforge.eclipseccase.ui.operation.MergeResourcesOperation;
+import net.sourceforge.eclipseccase.ui.operation.VersionMergeInput;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -24,7 +26,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public class MergeView extends ViewPart {
+public class MergeView extends ViewPart implements PropertyChangeListener {
 
 	private Menu mergeMenu;
 
@@ -48,11 +50,16 @@ public class MergeView extends ViewPart {
 
 	private static final Image UNCHECKED = ClearCaseImages.getImageDescriptor(ClearCaseImages.IMG_UNCHECKED).createImage();
 
+	private IResource workedOnResource = null;
+
+	private Map<IResource, MergeData> resourceMergeDataMap = new HashMap<IResource, MergeData>();
+
 	@Override
 	public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
 		createViewer(parent);
+		VersionMergeInput.addChangeListener(this);
 	}
 
 	private void createViewer(Composite parent) {
@@ -297,33 +304,38 @@ public class MergeView extends ViewPart {
 
 			for (Iterator<MergeData> iterator = sel.iterator(); iterator.hasNext();) {
 				MergeData data = iterator.next();
+
+				// Make IResource of file path.
+
+				IResource resource = null;
+				IPath path = new Path(data.getFileName());
+				File f = new File(data.getFileName());
+				if (f.isFile()) {
+					resource = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+
+				} else {
+					resource = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(path);
+
+				}
+
 				if (data.isAutomatic() && ClearCasePreferences.isMergeAutomatic()) {
 					// Merge automatic using clearcase support! And update flag
 					// in list with merged.
 					// FIXME: checkout target file.
-
 					// Merge it.
-					provider.merge(data.getFileName(), data.getFrom(), data.getBase());
-					// FIXME:CHECK that it was ok.
-					// contrib-&-result-pname.contrib
-					// update merge flag.
+					boolean merged = provider.merge(data.getFileName(), data.getFrom(), data.getBase());
+					if (merged) {
+						data.setMerged(true);
+					}
 				} else {
 					// Manual merge. Open up the merge window ( internal
 					// or external).
-					IResource resource = null;
-					IPath path = new Path(data.getFileName());
-					File f = new File(data.getFileName());
-					if (f.isFile()) {
-						resource = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
-					} else {
-						resource = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(path);
-
-					}
-
+					// Couple resource with it's data.
+					resourceMergeDataMap.put(resource, data);
+					setWorkedOnResource(resource);
 					MergeResourcesOperation mainOp = new MergeResourcesOperation(resource, data.getTo(), data.getFrom(), data.getBase(), provider);
 					mainOp.merge();
-
 				}
 
 			}
@@ -352,6 +364,37 @@ public class MergeView extends ViewPart {
 			return remember;
 		}
 
+	}
+
+	/**
+	 * Will receive notifications when file has been saved in the
+	 * CompareInputEditor extended class.
+	 */
+	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println("Merge took place....");
+		if (evt.getPropertyName().equals(VersionMergeInput.SAVED)) {
+			// We use old value to hold the resource that was saved.
+			if (getWorkedOnResource().equals(evt.getOldValue())) {
+				MergeData data = resourceMergeDataMap.get(getWorkedOnResource());
+				data.setMerged(true);
+				// FIXME:Need to draw merge arrow?
+				viewer.refresh();
+
+				// release connection between resource and data,Not sure if
+				// needed!
+				resourceMergeDataMap.clear();
+			}
+
+		}
+
+	}
+
+	public IResource getWorkedOnResource() {
+		return workedOnResource;
+	}
+
+	public void setWorkedOnResource(IResource workedOnResource) {
+		this.workedOnResource = workedOnResource;
 	}
 
 }

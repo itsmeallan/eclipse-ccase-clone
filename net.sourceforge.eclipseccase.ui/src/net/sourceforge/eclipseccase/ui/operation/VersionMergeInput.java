@@ -1,5 +1,25 @@
 package net.sourceforge.eclipseccase.ui.operation;
 
+import java.beans.PropertyChangeEvent;
+
+import java.util.Iterator;
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+import java.beans.PropertyChangeListener;
+
+import java.util.Observable;
+
+import org.eclipse.compare.BufferedContent;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
+
+import org.eclipse.compare.IContentChangeNotifier;
+
+import org.eclipse.compare.IContentChangeListener;
+
 import org.eclipse.compare.structuremergeviewer.ICompareInputChangeListener;
 
 import java.io.OutputStream;
@@ -52,14 +72,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.eclipse.compare.CompareEditorInput;
 
-public class VersionMergeInput extends CompareEditorInput {
+public class VersionMergeInput extends CompareEditorInput{
 
 	private ITypedElement left;
 
 	private ITypedElement right;
 
 	private ITypedElement ancestor;
-
+		
 	private boolean neverSaved = true;
 
 	private boolean isSaving = false;
@@ -67,10 +87,15 @@ public class VersionMergeInput extends CompareEditorInput {
 	private IFile resource;
 
 	private Object result;
+	
+	private static List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
+	
+	public  static final String SAVED = "SAVED";
+	
 
 	public VersionMergeInput(CompareConfiguration configuration, IFile resource, String selected, String comparableVersion, String base, ClearCaseProvider provider) {
 		super(configuration);
-
+			
 		this.resource = resource;
 
 		right = comparableVersion != null ? new ClearCaseResourceNode(resource, comparableVersion, provider) : new ResourceNode(resource);
@@ -78,6 +103,7 @@ public class VersionMergeInput extends CompareEditorInput {
 		// TODO: Invokers of this method should ensure that trees and contents
 		// are prefetched
 		left = new ResourceNode(resource);
+		
 
 		ancestor = base != null ? new ClearCaseResourceNode(resource, base, provider) : new ResourceNode(resource);
 
@@ -118,6 +144,24 @@ public class VersionMergeInput extends CompareEditorInput {
 			IProgressMonitor sub = new SubProgressMonitor(monitor, 30);
 			sub.beginTask("Merging...", 100); //$NON-NLS-1$
 			try {
+				// add after setting contents, otherwise we end up in a loop
+			    // makes sure that the diff gets re-run if we right-click and select Save on the left pane.
+			    // Requires that we have a isSaving flag to avoid recursion
+				BufferedContent l = null;	
+			if(left instanceof BufferedContent){
+				l = (BufferedContent)left;
+			}	
+			l.addContentChangeListener( new IContentChangeListener() {            
+			        public void contentChanged(IContentChangeNotifier source) {
+			            if (!isSaving) {
+			                try {                    
+			                    saveChanges(new NullProgressMonitor());
+			                } catch (CoreException e) {
+			                    e.printStackTrace();
+			                }
+			            }
+			        }            
+			    });
 				// instead of just DiffNode
 				Differencer d = new Differencer() {
 					protected Object visit(Object data, int result, Object ancestor, Object left, Object right) {
@@ -183,9 +227,8 @@ public class VersionMergeInput extends CompareEditorInput {
 					out.write(buf, 0, len);
 				out.close();
 				neverSaved = false;
-				//FIXME: Mark as merged in table.
 				flushLeftViewers(pm);
-				((MyDiffNode) result).fireChange();
+				notifyListeners();//Notifiy MergeView of save has taken place.
 				
 			} catch (Exception e) {
 
@@ -203,22 +246,27 @@ public class VersionMergeInput extends CompareEditorInput {
 		}
 	}
 	
-	//FIXME: Mark as merged?!
+	
 	
 	public static class MyDiffNode extends DiffNode {
 		public MyDiffNode(IDiffContainer parent, int kind, ITypedElement ancestor, ITypedElement left, ITypedElement right) {
 			super(parent, kind, ancestor, left, right);
 		}
-
-		public void fireChange() {
-			super.fireChange();
-		}
 		
-		public void register(ICompareInputChangeListener listener){
-			super.addCompareInputChangeListener(listener);
-			
-		}
 	}
 	
+	//To mark as merged in MergeView.
+	private void notifyListeners() {
+	    for (Iterator iterator = listener.iterator(); iterator.hasNext();) {
+	      PropertyChangeListener name = (PropertyChangeListener) iterator
+	          .next();
+	      name.propertyChange(new PropertyChangeEvent(this, SAVED , resource, null));
+
+	    }
+	  }
+
+	  public static void addChangeListener(PropertyChangeListener newListener) {
+	    listener.add(newListener);
+	  }
 
 }

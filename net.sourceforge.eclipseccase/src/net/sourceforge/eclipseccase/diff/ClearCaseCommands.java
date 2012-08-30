@@ -1,5 +1,6 @@
 package net.sourceforge.eclipseccase.diff;
 
+import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
 public class ClearCaseCommands extends AbstractDifference{
@@ -17,15 +18,20 @@ public class ClearCaseCommands extends AbstractDifference{
 	}
 
 	@Override
-	public void twoWayMerge(String file1, String file2) {
-		// TODO Auto-generated method stub
+	public boolean twoWayMerge(String file1, String file2) {
+		System.out.println("Here should commands for 2 way merge exist!");
 		
+		return false;
 	}
 
 	@Override
-	public void threeWayMerge(String file1, String file2, String base) {
-		ClearCasePlugin.getEngine().merge(file1, new String []{file2}, base, 0);
+	public boolean threeWayMerge(String file1, String file2, String base) {
+		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(file1, new String []{file2}, base, 0);
+		if(state.isMerged()){
+			return true;
+		}
 		
+		return false;
 	}
 	
 	
