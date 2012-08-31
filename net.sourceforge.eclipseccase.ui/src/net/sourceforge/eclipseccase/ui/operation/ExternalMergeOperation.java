@@ -46,6 +46,8 @@ public class ExternalMergeOperation {
 		// execute
 		Job job = new Job("Merge") {
 			protected IStatus run(IProgressMonitor monitor) {
+				
+				IStatus status = Status.OK_STATUS;
 				monitor.beginTask("Merge started...", 10);
 				// Run long running task here
 				// Add a factory here that can decide which launcher to use.
