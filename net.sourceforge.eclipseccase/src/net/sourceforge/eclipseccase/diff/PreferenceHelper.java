@@ -14,7 +14,9 @@ public class PreferenceHelper {
 	
 	public static final String TOOL_DELIMITER = ";";
 
-	public static final String PATH_DELIMITER = ":";
+	public static final String PATH_DELIMITER_SPLIT = "\\|";//Only used with split command. Need to escape or it will be interpreted as a regexp.
+	
+	public static final String PATH_DELIMITER = "|";
 	
 	public static final String EMPTY_STR = "";
 	
@@ -34,7 +36,7 @@ public class PreferenceHelper {
 
 		// now split name value into map for each element in string.
 		for (int i = 0; i < nameValuePair.length; i++) {
-			String[] nameValue = nameValuePair[i].split(PATH_DELIMITER);
+			String[] nameValue = nameValuePair[i].split(PATH_DELIMITER_SPLIT);
 			// handle if we have no value for tool to avoid nullpointer.
 			if (nameValue.length == 2) {
 				map.put(nameValue[0], nameValue[1]);
