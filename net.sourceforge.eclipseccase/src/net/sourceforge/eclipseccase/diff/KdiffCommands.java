@@ -57,6 +57,7 @@ public class KdiffCommands extends AbstractDifference {
 		if(launcher.getErrorOutput() != null){
 			//Show error msg.
 			System.out.println("Error: "+launcher.getErrorOutput());
+			return false;
 		}
 		return true;
 		
