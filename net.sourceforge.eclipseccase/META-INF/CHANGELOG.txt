@@ -2,6 +2,16 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.18
+======
+
+Bugs:
+
+3563676 Faults in the Merge Diff Preference page
+3563362 Compare with Predecessor -> Failed to create the part's
+
+
+
 2.2.17
 ======
 
