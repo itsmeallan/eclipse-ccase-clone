@@ -11,13 +11,11 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.preferences;
 
-
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
-
 import org.eclipse.jface.dialogs.MessageDialog;
-
 import net.sourceforge.eclipseccase.diff.PreferenceHelper;
-
 import java.text.Collator;
 import java.util.*;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
@@ -39,7 +37,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The main preference page for the Eclipse ClearCase integration.
  */
 public class DiffMergePreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IClearCasePreferenceConstants {
-
 	private String selectedDiffTool = "";// Initial value.
 
 	private String selectedMergeTool = "";
@@ -79,10 +76,20 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
 		// Diff Group
 		useExternal = new BooleanFieldEditor(COMPARE_EXTERNAL, PreferenceMessages.getString("Preferences.General.CompareWithExternalTool"), //$NON-NLS-1$
 				composite);
+
+		useExternal.setPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if ((Boolean) event.getNewValue() == true) {
+					execPath.setEnabled(true);
+				} else {
+					execPath.setEnabled(false);
+				}
+			}
+		});
+		
 		addFieldEditor(useExternal);
 		// TODO Auto-generated method stub
 		Group groupDiff = new Group(composite, SWT.NULL);
@@ -113,12 +120,12 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// This is called when I select the page.
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent evt) {
-
 				ISelection selection = evt.getSelection();
 				if (selection instanceof StructuredSelection) {
 					StructuredSelection sel = (StructuredSelection) selection;
+					if (useExternal.getBooleanValue() == false)
+						return;// this overrides
 					if (!selection.isEmpty()) {
-
 						selectedDiffTool = sel.getFirstElement().toString();
 						if (selectedDiffTool.equals(TOOL_IBM)) {
 							// Sine we already have cleartool path no need to
@@ -128,32 +135,26 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 							execPath.setEnabled(true);
 						}
 					}
-
 					if (selectedDiffTool.equals(TOOL_IBM)) {
 						// Sine we already have cleartool path no need to input.
 						execPath.setEnabled(false);
 					}
-
 					// set matching execPath
 					if (selectedDiffTool != null & execPath != null) {
 						toolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
 						execPath.setText(PreferenceHelper.getExecPath(selectedDiffTool, toolPathMap));
 					}
-
 				}
 			}
 		});
 		createLabel(groupDiff, PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool.ExecPath"), SPAN); //$NON-NLS-1$
 		execPath = new Text(groupDiff, SWT.BORDER);
 		execPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
 		// FIXME: Removed in release 2.2.17
 		//useExternalMerge = new BooleanFieldEditor(MERGE_EXTERNAL, PreferenceMessages.getString("Preferences.General.MergeWithExternalTool"), //$NON-NLS-1$
 		// composite);
 		// addFieldEditor(useExternalMerge);
-
 		// Merge Group
-
 		// Group mergeGroup = new Group(composite, SWT.NULL);
 		// GridLayout diffLayout = new GridLayout();
 		// diffLayout.numColumns = 1;
@@ -219,12 +220,10 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// }
 		// });
 		//
-		//		//createLabel(mergeGroup, PreferenceMessages.getString("DiffMergePreferencePage.External.Merge.Tool.ExecPath"), SPAN); //$NON-NLS-1$
+		//  //createLabel(mergeGroup, PreferenceMessages.getString("DiffMergePreferencePage.External.Merge.Tool.ExecPath"), SPAN); //$NON-NLS-1$
 		// mergeExecPath = new Text(mergeGroup, SWT.BORDER);
 		// mergeExecPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
 		initializeValues();
-
 		return parent;
 	}
 
@@ -257,14 +256,16 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		comboViewer.setInput(tools.toArray(new String[tools.size()]));
 		comboViewer.reveal(selectedDiffTool);
 		comboViewer.setSelection(new StructuredSelection(selectedDiffTool), true);
-
 		// FIXME: Removed in release 2.2.17
-
 		// //Merge
 		// mergeComboViewer.setInput(tools.toArray(new String[tools.size()]));
 		// mergeComboViewer.reveal(selectedMergeTool);
 		// mergeComboViewer.setSelection(new
 		// StructuredSelection(selectedMergeTool), true);
+		
+		if(useExternal.getBooleanValue() == false){
+			execPath.setEnabled(false);
+		}
 	}
 
 	// Needs to be done for each fieldeditor.
@@ -298,9 +299,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	 */
 	@Override
 	public boolean performOk() {
-
 		/** Diff */
-
 		useExternal.store();
 		if (!selectedDiffTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedDiffTool);
@@ -310,7 +309,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 				execPath.setFocus();
 				return false;
 			}
-			
+
 			// check if same values are already in map.
 			if (toolPathMap.containsKey(selectedDiffTool)) {
 				String storedPath = toolPathMap.get(selectedDiffTool);
@@ -319,20 +318,16 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 					// value is not the same. Update it.
 					toolPathMap.put(selectedDiffTool, execPath.getText());
 				}
-
 			} else {
 				// No key value at all. Add it!
 				toolPathMap.put(selectedDiffTool, execPath.getText());
 			}
-
 			// now store it.
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(toolPathMap));
-			
+
 		}
-		
 
 		/** Merge */
-
 		// FIXME: Removed in release 2.2.17
 		// useExternalMerge.store();
 		//
@@ -342,7 +337,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// //check if
 		// if(mergeExecPath.getText().equals("") &&
 		// !selectedMergeTool.equals(TOOL_IBM)){
-		//			MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
+		//   MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
 		// mergeExecPath.setFocus();
 		// return false;
 		// }
@@ -354,13 +349,11 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		// getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH,
 		// PreferenceHelper.mapToStr(mergeToolPathMap));
 		//
-
 		if (super.performOk()) {
 			ClearCasePlugin.getDefault().resetClearCase();
 			return true;
 		}
 		return false;
 	}
-	
-	
+
 }
