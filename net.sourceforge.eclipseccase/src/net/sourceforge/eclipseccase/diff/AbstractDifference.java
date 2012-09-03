@@ -1,5 +1,7 @@
 package net.sourceforge.eclipseccase.diff;
 
+import org.eclipse.core.runtime.Status;
+
 
 /**
  * Defines diff/merge operation all supported tools must handle.
@@ -13,8 +15,8 @@ public abstract class AbstractDifference {
 	
 	public abstract void threeWayDiff(String file1,String file2,String base);
 	
-	public abstract boolean twoWayMerge(String file1,String file2);
+	public abstract Status twoWayMerge(String file1,String file2);
 	
-	public abstract boolean threeWayMerge(String file1,String file2, String base);
+	public abstract Status threeWayMerge(String file1,String file2, String base);
 
 }

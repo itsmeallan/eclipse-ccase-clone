@@ -2,6 +2,10 @@ package net.sourceforge.eclipseccase.diff;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.commandline.CommandLauncher;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
@@ -38,29 +42,60 @@ public class KdiffCommands extends AbstractDifference {
 	}
 
 	@Override
-	public boolean twoWayMerge(String file1, String file2) {
-		String [] command = new String [] { getMergeExec(),file1,file2,"-m"};
+	public Status twoWayMerge(String file1, String file2) {
+		String [] errMsg = null;
+		String[] command = new String[] { getExec(), file1, file2, "-m" };
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.execute(command, null, null, null);
-		if(launcher.getErrorOutput() != null){
-			//Show error msg.
-			System.out.println("Error: "+launcher.getErrorOutput());
+		//Check if command was ok.
+		if(launcher.getExitValue() != 0){
+			errMsg = launcher.getErrorOutput();
+			if(errMsg == null){
+				return new Status(IStatus.ERROR, "Plugin id here", "An unknown error occurred!");
+			}else{
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errMsg.length; i++) {
+					sb.append(errMsg[i]);
+					sb.append('\n');
+				}
+				return new Status(IStatus.ERROR, "Plugin id here",sb.toString());
+			}
 		}
-		return true;
+		
+		//everything was ok!
+		return new Status(IStatus.OK, "Plugin id here", "Merge was ok");
+		
 	}
 
 	@Override
-	public boolean threeWayMerge(String file1, String file2, String base) {
-		String [] command = new String [] { getMergeExec(),file1,file2,base,"-m"};
+	public Status threeWayMerge(String file1, String file2, String base) {
+		String [] errMsg = null;
+		String[] command = new String[] { getExec(), file1, file2,base,"-m" };
 		CommandLauncher launcher = new CommandLauncher();
+		try{
 		launcher.execute(command, null, null, null);
-		if(launcher.getErrorOutput() != null){
-			//Show error msg.
-			System.out.println("Error: "+launcher.getErrorOutput());
-			return false;
+		}catch (ClearCaseException cce) {
+			return new Status(IStatus.ERROR,"Plugin id here,",cce.getMessage(),cce);
 		}
-		return true;
+		//Check if command was ok.
+		if(launcher.getExitValue() != 0){
+			errMsg = launcher.getErrorOutput();
+			if(errMsg == null){
+				return new Status(IStatus.ERROR, "Plugin id here", "An unknown error occurred!");
+			}else{
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < errMsg.length; i++) {
+					sb.append(errMsg[i]);
+					sb.append('\n');
+				}
+				return new Status(IStatus.ERROR, "Plugin id here",sb.toString());
+			}
+		}
+		
+		//everything was ok!
+		return new Status(IStatus.OK, "Plugin id here", "Merge was ok");
 		
 	}
+	
 
 }

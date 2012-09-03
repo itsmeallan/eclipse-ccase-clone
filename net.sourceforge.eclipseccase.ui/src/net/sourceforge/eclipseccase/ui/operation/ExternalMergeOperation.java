@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.operation;
 
+import org.eclipse.ui.statushandlers.StatusManager;
+
 import net.sourceforge.eclipseccase.diff.MergeFactory;
 
 import net.sourceforge.eclipseccase.ClearCasePreferences;
@@ -40,32 +42,39 @@ public class ExternalMergeOperation {
 	}
 	
 	
-	
-
-	public void execute() {
+	public void execute(){
 		// execute
 		Job job = new Job("Merge") {
 			protected IStatus run(IProgressMonitor monitor) {
-				
-				IStatus status = Status.OK_STATUS;
+				IStatus status = null;
 				monitor.beginTask("Merge started...", 10);
-				// Run long running task here
-				// Add a factory here that can decide which launcher to use.
-				AbstractDifference merge = MergeFactory.getMergeTool(ClearCasePreferences.getExtMergeTool());
-				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
-				String path = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
-				if(base == null){
-				merge.twoWayDiff(vExtPath1,path);
-				}else{
-				String vExtPathBase = resource.getLocation().toOSString()+"@@"+base;	
-					merge.threeWayMerge(vExtPath1, path, vExtPathBase);
+				try {
+					// Run long running task here
+					// Add a factory here that can decide which launcher to use.
+					AbstractDifference merge = MergeFactory.getMergeTool(ClearCasePreferences.getExtMergeTool());
+					String vExtPath1 = resource.getLocation().toOSString() + "@@" + comparableVersion;
+					// Dont use version extended path.Since view selects current version.
+					String path = resource.getLocation().toOSString();
+					if (base == null) {
+						status = merge.twoWayMerge(vExtPath1, path);
+					} else {
+						String baseVExtPath = resource.getLocation().toOSString() + "@@" +base;
+						status = merge.threeWayMerge(vExtPath1, path, baseVExtPath);
+					}
+					if (!status.isOK()) {
+						StatusManager.getManager().handle(status, StatusManager.SHOW);
+					}
+
+				} finally {
+					monitor.done();
 				}
-				monitor.done();
 				return Status.OK_STATUS;
 			}
 		};
 		job.setUser(true);
 		job.schedule();
 	}
+
+	
 
 }
