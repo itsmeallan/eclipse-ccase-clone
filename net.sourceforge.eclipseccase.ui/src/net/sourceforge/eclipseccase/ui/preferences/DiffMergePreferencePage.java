@@ -76,22 +76,25 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		// Diff Group
+		
 		useExternal = new BooleanFieldEditor(COMPARE_EXTERNAL, PreferenceMessages.getString("Preferences.General.CompareWithExternalTool"), //$NON-NLS-1$
 				composite);
 
+		// Handle change diff ext&int
 		useExternal.setPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
-				if ((Boolean) event.getNewValue() == true) {
-					execPath.setEnabled(true);
-				} else {
+				if ((Boolean) event.getNewValue() == true && selectedDiffTool.equals(TOOL_IBM)) {
 					execPath.setEnabled(false);
+				} else if ((Boolean) event.getNewValue() == false) {
+					execPath.setEnabled(false);
+				} else {
+					execPath.setEnabled(true);
 				}
 			}
 		});
-		
 		addFieldEditor(useExternal);
-		// TODO Auto-generated method stub
+		
+		// Diff Group
 		Group groupDiff = new Group(composite, SWT.NULL);
 		GridLayout layoutDiff = new GridLayout();
 		layoutDiff.numColumns = 1;
@@ -123,22 +126,21 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 				ISelection selection = evt.getSelection();
 				if (selection instanceof StructuredSelection) {
 					StructuredSelection sel = (StructuredSelection) selection;
-					if (useExternal.getBooleanValue() == false)
-						return;// this overrides
 					if (!selection.isEmpty()) {
 						selectedDiffTool = sel.getFirstElement().toString();
 						if (selectedDiffTool.equals(TOOL_IBM)) {
 							// Sine we already have cleartool path no need to
 							// input.
 							execPath.setEnabled(false);
+						} else if (useExternal.getBooleanValue() == false) {
+							// When we use no
+							execPath.setEnabled(false);
 						} else {
 							execPath.setEnabled(true);
 						}
+
 					}
-					if (selectedDiffTool.equals(TOOL_IBM)) {
-						// Sine we already have cleartool path no need to input.
-						execPath.setEnabled(false);
-					}
+
 					// set matching execPath
 					if (selectedDiffTool != null & execPath != null) {
 						toolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH));
@@ -150,13 +152,24 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		createLabel(groupDiff, PreferenceMessages.getString("DiffMergePreferencePage.External.Diff.Tool.ExecPath"), SPAN); //$NON-NLS-1$
 		execPath = new Text(groupDiff, SWT.BORDER);
 		execPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		useExternalMerge = new BooleanFieldEditor(MERGE_EXTERNAL, PreferenceMessages.getString("Preferences.General.MergeWithExternalTool"), //$NON-NLS-1$
 				composite);
+		// Handle change diff ext&int
+		useExternalMerge.setPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if ((Boolean) event.getNewValue() == true && selectedMergeTool.equals(TOOL_IBM)) {
+					mergeExecPath.setEnabled(false);
+				} else if ((Boolean) event.getNewValue() == false) {
+					mergeExecPath.setEnabled(false);
+				} else {
+					mergeExecPath.setEnabled(true);
+				}
+			}
+		});
 		addFieldEditor(useExternalMerge);
-		
-		//Merge Group
-		
+
+		// Merge Group
 		Group mergeGroup = new Group(composite, SWT.NULL);
 		GridLayout diffLayout = new GridLayout();
 		diffLayout.numColumns = 1;
@@ -182,44 +195,45 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 				return vals;
 			}
 		});
-		// FIXME:We repeat the code for the ISelectionChangedListener.
+
 		mergeComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-					public void selectionChanged(SelectionChangedEvent evt) {
+			public void selectionChanged(SelectionChangedEvent evt) {
 
-						ISelection selection = evt.getSelection();
-						if (selection instanceof StructuredSelection) {
-							StructuredSelection sel = (StructuredSelection) selection;
-							if (!selection.isEmpty()) {
+				ISelection selection = evt.getSelection();
+				if (selection instanceof StructuredSelection) {
+					StructuredSelection sel = (StructuredSelection) selection;
+					if (useExternalMerge.getBooleanValue() == false)
+						return;// this overrides
+					if (!selection.isEmpty()) {
 
-								selectedMergeTool = sel.getFirstElement().toString();
-								if (selectedMergeTool.equals(TOOL_IBM)) {
-									// Sine we already have cleartool path no need to
-									// input.
-									mergeExecPath.setEnabled(false);
-								} else {
-									mergeExecPath.setEnabled(true);
-								}
-							}
+						selectedMergeTool = sel.getFirstElement().toString();
 
-							if (selectedMergeTool.equals(TOOL_IBM)) {
-								// Sine we already have cleartool path no need to input.
-								mergeExecPath.setEnabled(false);
-							}
-
-							// set matching execPath
-							if (selectedMergeTool != null & mergeExecPath != null) {
-								mergeToolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH));
-								mergeExecPath.setText(PreferenceHelper.getExecPath(selectedMergeTool, mergeToolPathMap));
-							}
-
+						if (selectedMergeTool.equals(TOOL_IBM)) {
+							// Sine we already have cleartool path no need to
+							// input.
+							mergeExecPath.setEnabled(false);
+						} else if (useExternalMerge.getBooleanValue() == false) {
+							// When we use no
+							mergeExecPath.setEnabled(false);
+						} else {
+							mergeExecPath.setEnabled(true);
 						}
 					}
-				});
-		
+
+					// set matching execPath
+					if (selectedMergeTool != null & mergeExecPath != null) {
+						mergeToolPathMap = PreferenceHelper.strToMap(getPreferenceStore().getString(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH));
+						mergeExecPath.setText(PreferenceHelper.getExecPath(selectedMergeTool, mergeToolPathMap));
+					}
+
+				}
+			}
+		});
+
 		createLabel(mergeGroup, PreferenceMessages.getString("DiffMergePreferencePage.External.Merge.Tool.ExecPath"), SPAN); //$NON-NLS-1$
 		mergeExecPath = new Text(mergeGroup, SWT.BORDER);
 		mergeExecPath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		initializeValues();
 		return parent;
 	}
@@ -252,14 +266,18 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		comboViewer.reveal(selectedDiffTool);
 		comboViewer.setSelection(new StructuredSelection(selectedDiffTool), true);
 
-		if(useExternal.getBooleanValue() == false){
+		if (useExternal.getBooleanValue() == false) {
 			execPath.setEnabled(false);
 		}
-		
-		//Merge
+
+		// Merge
 		mergeComboViewer.setInput(tools.toArray(new String[tools.size()]));
 		mergeComboViewer.reveal(selectedMergeTool);
 		mergeComboViewer.setSelection(new StructuredSelection(selectedMergeTool), true);
+
+		if (useExternalMerge.getBooleanValue() == false) {
+			mergeExecPath.setEnabled(false);
+		}
 
 	}
 
@@ -283,10 +301,6 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		return label;
 	}
 
-	// This should be called when we have chnaged selectedDiffTool.
-	private void updateTextValue() {
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -299,53 +313,79 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		if (!selectedDiffTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL, selectedDiffTool);
 			// check if
-			if (execPath.getText().equals("") && !selectedDiffTool.equals(TOOL_IBM) && ClearCasePreferences.isCompareExternal()) {
-				MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
-				execPath.setFocus();
+			if (isExecPathEmpty(execPath, selectedDiffTool)) {
 				return false;
 			}
-
-			// check if same values are already in map.
-			if (toolPathMap.containsKey(selectedDiffTool)) {
-				String storedPath = toolPathMap.get(selectedDiffTool);
-				// we have the key check value.
-				if (!storedPath.equals(execPath.getText())) {
-					// value is not the same. Update it.
-					toolPathMap.put(selectedDiffTool, execPath.getText());
-				}
-			} else {
-				// No key value at all. Add it!
-				toolPathMap.put(selectedDiffTool, execPath.getText());
-			}
+			cache(execPath, selectedDiffTool, toolPathMap);
 			// now store it.
-			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(toolPathMap));
+			storePref(IClearCasePreferenceConstants.EXTERNAL_DIFF_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(toolPathMap));
 
 		}
 
 		/** Merge */
 		useExternalMerge.store();
-		
+
 		if (!selectedMergeTool.equals("")) {
 			getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL, selectedMergeTool);
-		//check if
-		if(mergeExecPath.getText().equals("") && !selectedMergeTool.equals(TOOL_IBM)){
-			MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
-			mergeExecPath.setFocus();
-			return false;
+			// check if
+			if (isExecPathEmpty(mergeExecPath, selectedMergeTool)) {
+				return false;
+			}
 		}
-		
-		}
-		// put in map
-		mergeToolPathMap.put(selectedMergeTool, mergeExecPath.getText());
+
+		cache(mergeExecPath, selectedMergeTool, mergeToolPathMap);
 		// now store it.
-		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(mergeToolPathMap));
-		
+		storePref(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(mergeToolPathMap));
 
 		if (super.performOk()) {
 			ClearCasePlugin.getDefault().resetClearCase();
 			return true;
 		}
 		return false;
+	}
+
+	private void storePref(String name, String value) {
+		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(mergeToolPathMap));
+	}
+
+	/**
+	 * Check if exec path is empty when a external tool is selected.
+	 * 
+	 * @param path
+	 * @param selected
+	 * @return true if empty
+	 */
+	private boolean isExecPathEmpty(Text path, String selected) {
+		if (path.getText().equals("") && !selected.equals(TOOL_IBM) && ClearCasePreferences.isCompareExternal()) {
+			MessageDialog.openError(getShell(), PreferenceMessages.getString("DiffMergePreferencePage.error.title"), PreferenceMessages.getString(("DiffMergePreferencePage.error.noPath"))); //$NON-NLS-1$ //$NON-NLS-2$
+			path.setFocus();
+			return true;
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * check if same values are already in cache map.
+	 * 
+	 * @param path
+	 * @param selected
+	 * @param map
+	 */
+	private void cache(Text path, String selected, Map<String, String> map) {
+		// check if same values are already in map.
+		if (map.containsKey(selected)) {
+			String storedPath = map.get(selected);
+			// we have the key check value.
+			if (!storedPath.equals(path.getText())) {
+				// value is not the same. Update it.
+				map.put(selected, path.getText());
+			}
+		} else {
+			// No key value at all. Add it!
+			map.put(selected, path.getText());
+		}
 	}
 
 }

@@ -431,6 +431,12 @@ public class ClearCaseProvider extends RepositoryProvider {
 		}
 		return false;
 	}
+	
+	public boolean createMergeArrow(String linkDestination, String linkSourceVersion){
+		ClearCaseElementState state = ClearCasePlugin.getEngine().makeMergeArrow(linkDestination, linkSourceVersion);
+		
+		return true;
+	}
 
 	/**
 	 * Parsers single/multiple line/-s of output. Type.java Predecessor:

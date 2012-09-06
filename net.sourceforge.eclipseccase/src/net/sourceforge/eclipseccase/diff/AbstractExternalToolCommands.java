@@ -4,12 +4,13 @@ import org.eclipse.core.runtime.Status;
 
 
 /**
- * Defines diff/merge operation all supported tools must handle.
+ * Defines common operations for external tools ( not executed in 
+ * Eclipse).
  * 
  * @author mikael petterson
  *
  */
-public abstract class AbstractDifference {
+public abstract class AbstractExternalToolCommands {
 	
 	public abstract void twoWayDiff(String file1,String file2);
 	

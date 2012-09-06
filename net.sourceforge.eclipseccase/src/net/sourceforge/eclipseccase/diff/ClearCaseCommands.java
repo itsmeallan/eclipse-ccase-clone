@@ -1,22 +1,32 @@
 package net.sourceforge.eclipseccase.diff;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-
+import net.sourceforge.clearcase.ClearCase;
+import net.sourceforge.clearcase.ClearCaseElementState;
+import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
 
-public class ClearCaseCommands extends AbstractDifference{
+/**
+ * Class implements the commands for ClearCase to perform compare and merge
+ * operations.
+ * 
+ * @author mikael petterson
+ * 
+ */
+public class ClearCaseCommands extends AbstractExternalToolCommands {
 
 	@Override
 	public void twoWayDiff(String file1, String file2) {
 		ClearCasePlugin.getEngine().compareWithVersion(file1, file2);
-		
+
 	}
 
 	@Override
 	public void threeWayDiff(String file1, String file2, String base) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -27,27 +37,16 @@ public class ClearCaseCommands extends AbstractDifference{
 
 	@Override
 	public Status threeWayMerge(String file1, String file2, String base) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(file2,
+					new String[] { file1 }, base, ClearCase.GRAPHICAL);
 
-//	@Override
-//	public boolean twoWayMerge(String file1, String file2) {
-//		System.out.println("Here should commands for 2 way merge exist!");
-//		
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean threeWayMerge(String file1, String file2, String base) {
-//		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(file1, new String []{file2}, base, 0);
-//		if(state.isMerged()){
-//			return true;
-//		}
-//		
-//		return false;
-//	}
-	
-	
+		if (state.isMerged()) {
+			return new Status(IStatus.OK, ClearCasePlugin.PLUGIN_ID,
+					Messages.getString("ClearCaseCommands.threeWayMerge.ok"));
+		}
+		
+		return new Status(IStatus.ERROR,ClearCasePlugin.PLUGIN_ID,Messages.getString("ClearCaseCommands.threeWayMerge.fail.unknown"));
+
+	}
 
 }

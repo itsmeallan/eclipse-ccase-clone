@@ -11,6 +11,8 @@
  *******************************************************************************/
 package net.sourceforge.eclipseccase.ui.operation;
 
+import org.eclipse.team.core.TeamException;
+
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 
 import org.eclipse.core.resources.IResource;
@@ -43,6 +45,16 @@ public class MergeResourcesOperation {
 	public void merge(){
 		
 		if(ClearCasePreferences.isMergeExternal()){
+			//FIXME: Make sure my file is chekced out.
+			if(!provider.isCheckedOut(resource)){
+				try {
+					provider.checkout(new IResource []{resource}, IResource.DEPTH_ZERO,null );
+				} catch (TeamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//FIXME: Inform user that you could not checkout file.
+				}
+			}
 			
 			ExternalMergeOperation extMergeOp = new ExternalMergeOperation(resource,comparableVersion,base);
 			extMergeOp.execute();

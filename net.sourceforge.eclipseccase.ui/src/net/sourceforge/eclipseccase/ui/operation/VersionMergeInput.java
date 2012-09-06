@@ -80,7 +80,7 @@ public class VersionMergeInput extends CompareEditorInput{
 
 	private ITypedElement ancestor;
 		
-	private boolean neverSaved = true;
+	private boolean neverINTERNAL_MERGE = true;
 
 	private boolean isSaving = false;
 
@@ -90,7 +90,7 @@ public class VersionMergeInput extends CompareEditorInput{
 	
 	private static List<PropertyChangeListener> listener = new ArrayList<PropertyChangeListener>();
 	
-	public  static final String SAVED = "SAVED";
+	public  static final String INTERNAL_MERGE = "intMerge";
 	
 
 	public VersionMergeInput(CompareConfiguration configuration, IFile resource, String selected, String comparableVersion, String base, ClearCaseProvider provider) {
@@ -226,7 +226,7 @@ public class VersionMergeInput extends CompareEditorInput{
 				while ((len = contents.read(buf)) > 0)
 					out.write(buf, 0, len);
 				out.close();
-				neverSaved = false;
+				neverINTERNAL_MERGE = false;
 				flushLeftViewers(pm);
 				notifyListeners();//Notifiy MergeView of save has taken place.
 				
@@ -239,7 +239,7 @@ public class VersionMergeInput extends CompareEditorInput{
 	}
 
 	public boolean isSaveNeeded() {
-		if (neverSaved) {
+		if (neverINTERNAL_MERGE) {
 			return true;
 		} else {
 			return super.isSaveNeeded();
@@ -260,7 +260,7 @@ public class VersionMergeInput extends CompareEditorInput{
 	    for (Iterator iterator = listener.iterator(); iterator.hasNext();) {
 	      PropertyChangeListener name = (PropertyChangeListener) iterator
 	          .next();
-	      name.propertyChange(new PropertyChangeEvent(this, SAVED , resource, null));
+	      name.propertyChange(new PropertyChangeEvent(this, INTERNAL_MERGE , resource, null));
 
 	    }
 	  }

@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase.views;
 
+import net.sourceforge.clearcase.ClearCaseElementState;
+
+import net.sourceforge.eclipseccase.ui.operation.ExternalMergeOperation;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -59,7 +63,9 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
 		createViewer(parent);
+		// Added as listeners for interal/external merge operations.
 		VersionMergeInput.addChangeListener(this);
+		ExternalMergeOperation.addChangeListener(this);
 	}
 
 	private void createViewer(Composite parent) {
@@ -88,11 +94,10 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 
 		mergeMenu = new Menu(parent.getShell(), SWT.POP_UP);
 		mergeMenuItem = new MenuItem(mergeMenu, SWT.PUSH);
-		mergeMenuItem.setText("Merge...");
+		mergeMenuItem.setText(Messages.getString("MergeView.mergeMenuItem.text"));
 		mergeMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-
 				merge();
 			}
 		});
@@ -104,26 +109,41 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 
 			public void selectionChanged(final SelectionChangedEvent event) {
 				selection = (IStructuredSelection) event.getSelection();
-			}
-		});
-
-		viewer.getTable().addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				if (viewer.getTable().getSelectionCount() > 0) {
-					mergeMenuItem.setText("Merge");
-					mergeMenuItem.setEnabled(true);
-					mergeAction.setEnabled(true);
+				
+				
+				for (Iterator<MergeData> iterator = selection.iterator(); iterator.hasNext();) {
+					MergeData data = iterator.next();
+					if(data.isMerged()){
+						mergeMenuItem.setEnabled(false);
+						mergeAction.setEnabled(false);
+					}else{
+						mergeMenuItem.setEnabled(true);
+						mergeAction.setEnabled(true);
+					}
 				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// System.out.println("select default");
+				
+				
+				
 			}
 		});
+
+//		viewer.getTable().addSelectionListener(new SelectionAdapter() {
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				
+//				if (viewer.getTable().getSelectionCount() > 0) {
+//					mergeMenuItem.setText("Merge from Branch");
+//					mergeMenuItem.setEnabled(true);
+//					mergeAction.setEnabled(true);
+//				}
+//			}
+//
+//			@Override
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				// System.out.println("select default");
+//			}
+//		});
 
 		mergeAction = new Action() {
 			@Override
@@ -133,7 +153,7 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 		};
 
 		mergeAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/arrow_merge.png"));
-		mergeAction.setToolTipText("Merge");
+		mergeAction.setToolTipText(Messages.getString("MergeView.mergeAction.toolTipText"));
 		mergeAction.setEnabled(false);
 
 		getViewSite().getActionBars().getToolBarManager().add(mergeAction);
@@ -277,7 +297,7 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 		this.selection = selection;
 	}
 
-	// Used to update the viewer from outsite
+	// Used to update the viewer from outside.
 	public void refresh() {
 		viewer.refresh();
 	}
@@ -294,19 +314,16 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 				ClearCasePreferences.setMergeAutomatic(false);
 			}
 		}
-		// if (returncode != IDialogConstants.YES_ID)
-		// return new Status(IStatus.CANCEL, ClearCasePlugin.PLUGIN_ID,
-		// "Chec, operation was cancelled by user.");
 
 		if (selection != null && selection instanceof IStructuredSelection) {
-			// Vector<MergeData> persons = getData();
+
 			IStructuredSelection sel = selection;
+			
+			
 
 			for (Iterator<MergeData> iterator = sel.iterator(); iterator.hasNext();) {
 				MergeData data = iterator.next();
-
 				// Make IResource of file path.
-
 				IResource resource = null;
 				IPath path = new Path(data.getFileName());
 				File f = new File(data.getFileName());
@@ -330,7 +347,6 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 				} else {
 					// Manual merge. Open up the merge window ( internal
 					// or external).
-
 					// Couple resource with it's data.
 					resourceMergeDataMap.put(resource, data);
 					setWorkedOnResource(resource);
@@ -367,20 +383,28 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 	}
 
 	/**
-	 * Will receive notifications when file has been saved in the
-	 * CompareInputEditor extended class.
+	 * When using grpahical merge this method will receive notifications when
+	 * merge was successfully performed.
+	 * 
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("Merge took place....");
-		if (evt.getPropertyName().equals(VersionMergeInput.SAVED)) {
+
+		if (evt.getPropertyName().equals(VersionMergeInput.INTERNAL_MERGE) | evt.getPropertyName().equals(ExternalMergeOperation.EXTERNAL_MERGE)) {
 			// We use old value to hold the resource that was saved.
 			if (getWorkedOnResource().equals(evt.getOldValue())) {
 				MergeData data = resourceMergeDataMap.get(getWorkedOnResource());
 				data.setMerged(true);
-				// FIXME:Need to draw merge arrow?
-				viewer.refresh();
+				// Show it in the UI display thread.
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						viewer.refresh();
+					}
+				});
+				// FIXME: Draw merge arrow.Possible preference setting?!
+				// provider.createMergeArrow(data.getTo(), data.getFrom());
 
-				// release connection between resource and data,Not sure if
+				// FIXME: release connection between resource and data,Not sure
+				// if
 				// needed!
 				resourceMergeDataMap.clear();
 			}

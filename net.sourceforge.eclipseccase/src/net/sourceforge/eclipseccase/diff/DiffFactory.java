@@ -9,7 +9,7 @@ package net.sourceforge.eclipseccase.diff;
  */
 public class DiffFactory {
 			
-		public static AbstractDifference getDiffTool(String type) {
+		public static AbstractExternalToolCommands getDiffTool(String type) {
 			if (Constants.TOOL_KDIFF.equals(type)) {
 				return new KdiffCommands();
 			} else if (Constants.TOOL_IBM.equals(type)){

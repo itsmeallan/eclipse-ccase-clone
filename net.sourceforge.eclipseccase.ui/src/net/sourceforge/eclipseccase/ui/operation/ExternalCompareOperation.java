@@ -16,7 +16,7 @@ import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.eclipseccase.diff.DiffFactory;
 
-import net.sourceforge.eclipseccase.diff.AbstractDifference;
+import net.sourceforge.eclipseccase.diff.AbstractExternalToolCommands;
 
 public class ExternalCompareOperation {
 
@@ -38,7 +38,7 @@ public class ExternalCompareOperation {
 				monitor.beginTask("Compare started...", 10);
 				// Run long running task here
 				// Add a factory here that can decide which launcher to use.
-				AbstractDifference diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
+				AbstractExternalToolCommands diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
 				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
 				String vExtPath2 = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
 				diff.twoWayDiff(vExtPath1,vExtPath2);

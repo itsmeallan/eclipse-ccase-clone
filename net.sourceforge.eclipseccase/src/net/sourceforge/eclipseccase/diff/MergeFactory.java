@@ -9,7 +9,7 @@ package net.sourceforge.eclipseccase.diff;
  */
 public class MergeFactory {
 	
-	public static AbstractDifference getMergeTool(String type) {
+	public static AbstractExternalToolCommands getMergeTool(String type) {
 		if (Constants.TOOL_KDIFF.equals(type)) {
 			return new KdiffCommands();
 		} else if (Constants.TOOL_IBM.equals(type)){
