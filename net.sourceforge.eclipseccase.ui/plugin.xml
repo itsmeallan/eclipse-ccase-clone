@@ -49,10 +49,10 @@
 	<extension point="org.eclipse.ui.popupMenus">
 		<objectContribution objectClass="org.eclipse.core.resources.IResource"
 			adaptable="true" id="net.sourceforge.eclipseccase.popups.BuiltIn">
-			<visibility>
+			<!--<visibility>
 				<pluginState value="activated" id="net.sourceforge.eclipseccase">
 				</pluginState>
-			</visibility>
+			</visibility>-->
 			<filter name="projectPersistentProperty"
 				value="org.eclipse.team.core.repository=net.sourceforge.eclipseccase.ClearCaseProvider">
 			</filter>

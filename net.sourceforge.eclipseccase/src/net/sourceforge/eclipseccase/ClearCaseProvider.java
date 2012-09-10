@@ -73,7 +73,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	private String comment = ""; //$NON-NLS-1$
 
-	public static final String ID = "net.sourceforge.eclipseccase.ClearcaseProvider"; //$NON-NLS-1$
+	public static final String ID = "net.sourceforge.eclipseccase.ClearCaseProvider"; //$NON-NLS-1$
 
 	private static final String TRACE_ID = "ClearCaseProvider"; //$NON-NLS-1$
 

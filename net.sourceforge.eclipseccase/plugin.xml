@@ -6,7 +6,7 @@
          point="org.eclipse.team.core.repository">
       <repository
             class="net.sourceforge.eclipseccase.ClearCaseProvider"
-            id="net.sourceforge.eclipseccase.ClearcaseProvider">
+            id="net.sourceforge.eclipseccase.ClearCaseProvider">
       </repository>
    </extension>
    <extension point="org.eclipse.core.runtime.preferences">
