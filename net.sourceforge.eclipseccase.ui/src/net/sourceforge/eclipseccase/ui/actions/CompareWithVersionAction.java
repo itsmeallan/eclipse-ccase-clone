@@ -50,6 +50,10 @@ public class CompareWithVersionAction extends ClearCaseWorkspaceAction {
 	public void execute(IAction action) {
 		ClearCaseProvider provider = ClearCaseProvider.getClearCaseProvider(resource);
 		if (provider != null) {
+			//This is to handle when only one is selected from history. Implicitly the versionA is the cone selected by view.
+			if(versionA == null){
+				versionA = provider.getVersion(resource);
+			}
 			CompareResourcesOperation mainOp = new CompareResourcesOperation(resource, versionA, versionB, provider);
 			mainOp.compare();
 

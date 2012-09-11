@@ -308,7 +308,7 @@ public class JFHistoryViewer extends ViewPart {
 			CompareWithVersionAction action = new CompareWithVersionAction();
 			action.setResource(element);
 			if (viewer.getTable().getSelectionCount() == 1) {
-				action.setVersionA(viewer.getTable().getSelection()[0].getText(2));
+				action.setVersionB(viewer.getTable().getSelection()[0].getText(2));
 				// Set version b to current version of element?
 			} else if (viewer.getTable().getSelectionCount() == 2) {
 				action.setVersionA(viewer.getTable().getSelection()[0].getText(2));

@@ -33,9 +33,11 @@ public class VersionCompareInput extends CompareEditorInput {
 		super(configuration);
 		
 		this.resource = resource;
+		
 		this.rightVersion = selected;
 		this.leftVersion = comparableVersion;
 		
+			
 		 leftElement = selected != null ? new
 		 ClearCaseResourceNode(resource, selected,provider) : new
 		 ResourceNode(resource);
