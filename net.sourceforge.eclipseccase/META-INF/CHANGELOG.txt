@@ -2,6 +2,17 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.19
+======
+
+Feature:
+
+3459314 Show CC menu items in the Team menu only if it's needed
+
+Bugs:
+
+3566292 Compare from History broken
+
 2.2.18
 ======
 
