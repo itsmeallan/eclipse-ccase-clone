@@ -13,6 +13,8 @@ package net.sourceforge.eclipseccase.ui.wizards;
 
 
 
+import net.sourceforge.eclipseccase.autocomplete.ccviewer.AutocompleteComboViewerInput;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
@@ -82,26 +84,14 @@ public class MergeWizardPage extends WizardPage {
 		comboViewer.setInput(branches);
 		if (comboViewer.getSelection().isEmpty()) {
 			comboViewer.getCombo().select(0);
+			setSelectedBranch(comboViewer.getCombo().getText());
 		}
 
 		// TODO:http://www.eclipsezone.com/eclipse/forums/t95207.html
-		AdvancedComboSelectionAdapter comboSelectionAdapter = new
-		AdvancedComboSelectionAdapter(comboViewer);
-		
-		
-		
-		/* Listen to Selection Changes in the Field-Viewer */
-		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				if (!selection.isEmpty()) {
-					setSelectedBranch((String) (selection.getFirstElement()));
-				}else{
-					
-				}
-			}
-		});
-		
+		//AdvancedComboSelectionAdapter comboSelectionAdapter = new
+		//AdvancedComboSelectionAdapter(comboViewer);
+		AutocompleteComboViewerInput ac = new AutocompleteComboViewerInput(comboViewer);
+				
 		composite.setToolTipText("To select branch, type the name and search will narrow.");
 
 	}
