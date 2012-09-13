@@ -629,7 +629,7 @@
 	<extension point="org.eclipse.team.core.projectSets">
 		<projectSets
 			class="net.sourceforge.eclipseccase.ClearCaseProjectSetSerializer"
-			id="net.sourceforge.eclipseccase.ClearcaseProvider">
+			id="net.sourceforge.eclipseccase.ClearCaseProvider">
 		</projectSets>
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
@@ -781,7 +781,7 @@
 	</extension>
 	<extension point="org.eclipse.team.ui.teamDecorators">
 		<teamDecorator decoratorId="net.sourceforge.eclipseccase.ui.decorator"
-			repositoryId="net.sourceforge.eclipseccase.ClearcaseProvider" />
+			repositoryId="net.sourceforge.eclipseccase.ClearCaseProvider" />
 	</extension>
 
 </plugin>
