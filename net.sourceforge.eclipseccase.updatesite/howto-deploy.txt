@@ -53,10 +53,8 @@ Prerequesites
 //FIXME: This has to be updated:
 http://www.vogella.de/articles/EclipseP2Update/article.html#introduction   
    
-2. build update site
-   (right click site.xml->PDE Tools->Build Site)
    
-3. check directories for content:
+2. check directories for content:
    "net.sourceforge.eclipseccase.updatesite/full/" 
      -> one zip with features and plugins for each feature
    "net.sourceforge.eclipseccase.updatesite/features/" 
@@ -64,7 +62,7 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
    "net.sourceforge.eclipseccase.updatesite/plugins/" 
      -> one plugin jar for each plugin
      
-4. Testing and install plugin from local site. 
+3. Testing and install plugin from local site. 
    machine if it works, only upload/deploy a release that works.
    Help --> Install New Software --> Add --> 
    Point to the following directory (git):
@@ -113,7 +111,8 @@ http://www.vogella.de/articles/EclipseP2Update/article.html#introduction
  3. Post to eclipse-ccase-release@lists.sourceforge.net
  	Use content of this release from CHANGELOG.txt ( not the whole since there
  	is a limit on mailing list mail size).
-    
+ 
+ 4. Post the same release info to News.   
     
     Good to do "once in a while"
     ============================

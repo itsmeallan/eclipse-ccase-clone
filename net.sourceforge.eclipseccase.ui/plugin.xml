@@ -108,6 +108,13 @@
 				icon="icons/full/get.png" id="net.sourceforge.eclipseccase.popups.getConfigSpec"
 				label="Get/Edit &amp;Config Spec" menubarPath="team.main/group2">
 			</action>
+			<action
+				class="net.sourceforge.eclipseccase.ui.actions.MergeAction"
+				id="net.sourceforge.eclipseccase.ui.popups.merge"
+				label="Merge Branch"
+				icon="icons/full/arrow_merge.png"
+				menubarPath="team.main/group2">
+			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.MkBrTypeAction"
 				icon="icons/full/branch.png" id="net.sourceforge.eclipseccase.popups.mkbrtype"
 				label="Make &amp;Branch Type" menubarPath="team.main/group2">
@@ -158,13 +165,6 @@
 				id="net.sourceforge.eclipseccase.ui.popups.checkouttoreserved"
 				label=" Unreserved--&gt;Reserved"
 				icon="icons/full/reserve.png"
-				menubarPath="team.main/group2">
-			</action>
-			<action
-				class="net.sourceforge.eclipseccase.ui.actions.MergeAction"
-				id="net.sourceforge.eclipseccase.ui.popups.merge"
-				label="Merge Branch"
-				icon="icons/full/arrow_merge.png"
 				menubarPath="team.main/group2">
 			</action>
 			<action class="net.sourceforge.eclipseccase.ui.actions.HistoryAction"
@@ -318,6 +318,15 @@
 				definitionId="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
 				icon="icons/full/branch.png" id="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
 				label="Make &amp;Branch Type" menubarPath="eclipseccase_menu/group2">
+				<enablement>
+					<pluginState id="net.sourceforge.eclipseccase" value="activated">
+					</pluginState>
+				</enablement>
+			</action>
+			<action class="net.sourceforge.eclipseccase.ui.actions.MergeAction"
+				definitionId="net.sourceforge.eclipseccase.ui.actionset.mergebranch"
+				icon="icons/full/arrow_merge.png" id="net.sourceforge.eclipseccase.ui.actionset.mergebranch"
+				label="Merge Branch" menubarPath="eclipseccase_menu/group2" toolbarPath="Normal/additions">
 				<enablement>
 					<pluginState id="net.sourceforge.eclipseccase" value="activated">
 					</pluginState>
@@ -542,6 +551,10 @@
 		<command categoryId="net.sourceforge.eclipseccase.category"
 			description="Make Branch Type" id="net.sourceforge.eclipseccase.ui.actionset.mkbrtype"
 			name="Make Branch Type">
+		</command>
+		<command categoryId="net.sourceforge.eclipseccase.category"
+			description="Merge Branch" id="net.sourceforge.eclipseccase.ui.actionset.mergebranch"
+			name="Merge Branch">
 		</command>
 		<command categoryId="net.sourceforge.eclipseccase.category"
 			description="Find Merge (Rebase external tool)" id="net.sourceforge.eclipseccase.ui.actionset.findmerge"
