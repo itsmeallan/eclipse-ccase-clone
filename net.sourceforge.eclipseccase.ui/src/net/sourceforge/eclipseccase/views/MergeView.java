@@ -1,9 +1,5 @@
 package net.sourceforge.eclipseccase.views;
 
-import net.sourceforge.clearcase.ClearCaseElementState;
-
-import net.sourceforge.eclipseccase.ui.operation.ExternalMergeOperation;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,8 +8,7 @@ import net.sourceforge.clearcase.MergeData;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
 import net.sourceforge.eclipseccase.ui.ClearCaseImages;
-import net.sourceforge.eclipseccase.ui.operation.MergeResourcesOperation;
-import net.sourceforge.eclipseccase.ui.operation.VersionMergeInput;
+import net.sourceforge.eclipseccase.ui.operation.*;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -109,41 +104,38 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 
 			public void selectionChanged(final SelectionChangedEvent event) {
 				selection = (IStructuredSelection) event.getSelection();
-				
-				
+
 				for (Iterator<MergeData> iterator = selection.iterator(); iterator.hasNext();) {
 					MergeData data = iterator.next();
-					if(data.isMerged()){
+					if (data.isMerged()) {
 						mergeMenuItem.setEnabled(false);
 						mergeAction.setEnabled(false);
-					}else{
+					} else {
 						mergeMenuItem.setEnabled(true);
 						mergeAction.setEnabled(true);
 					}
 				}
-				
-				
-				
+
 			}
 		});
 
-//		viewer.getTable().addSelectionListener(new SelectionAdapter() {
-//
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				
-//				if (viewer.getTable().getSelectionCount() > 0) {
-//					mergeMenuItem.setText("Merge from Branch");
-//					mergeMenuItem.setEnabled(true);
-//					mergeAction.setEnabled(true);
-//				}
-//			}
-//
-//			@Override
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				// System.out.println("select default");
-//			}
-//		});
+		// viewer.getTable().addSelectionListener(new SelectionAdapter() {
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		//
+		// if (viewer.getTable().getSelectionCount() > 0) {
+		// mergeMenuItem.setText("Merge from Branch");
+		// mergeMenuItem.setEnabled(true);
+		// mergeAction.setEnabled(true);
+		// }
+		// }
+		//
+		// @Override
+		// public void widgetDefaultSelected(SelectionEvent e) {
+		// // System.out.println("select default");
+		// }
+		// });
 
 		mergeAction = new Action() {
 			@Override
@@ -318,8 +310,6 @@ public class MergeView extends ViewPart implements PropertyChangeListener {
 		if (selection != null && selection instanceof IStructuredSelection) {
 
 			IStructuredSelection sel = selection;
-			
-			
 
 			for (Iterator<MergeData> iterator = sel.iterator(); iterator.hasNext();) {
 				MergeData data = iterator.next();

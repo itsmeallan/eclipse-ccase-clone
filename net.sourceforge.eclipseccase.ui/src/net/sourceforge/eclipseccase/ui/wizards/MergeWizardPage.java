@@ -13,6 +13,8 @@ package net.sourceforge.eclipseccase.ui.wizards;
 
 
 
+import net.sourceforge.eclipseccase.ui.Messages;
+
 import net.sourceforge.eclipseccase.autocomplete.ccviewer.AutocompleteComboViewerInput;
 
 import java.io.File;
@@ -49,12 +51,13 @@ public class MergeWizardPage extends WizardPage {
 		
 	boolean automerge = true;
 	
-	private String selectedBranch;
+	private static String selectedBranch;
 
 	@SuppressWarnings("unchecked")
 	protected MergeWizardPage(String pageName, IResource[] resources, ClearCaseProvider provider) {
 		super(pageName);
-		setTitle("Merge");
+		setTitle(Messages.getString("MergeWizardPage.title"));
+		setDescription(Messages.getString("MergeWizardPage.description"));
 		this.resources = resources;
 		this.provider = provider;
 	}
@@ -87,11 +90,20 @@ public class MergeWizardPage extends WizardPage {
 			setSelectedBranch(comboViewer.getCombo().getText());
 		}
 
-		// TODO:http://www.eclipsezone.com/eclipse/forums/t95207.html
-		//AdvancedComboSelectionAdapter comboSelectionAdapter = new
-		//AdvancedComboSelectionAdapter(comboViewer);
 		AutocompleteComboViewerInput ac = new AutocompleteComboViewerInput(comboViewer);
-				
+		
+		//Handles selections in the dd-list when not utilizing autocomplete.
+		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				if (!selection.isEmpty()) {
+					setSelectedBranch((String)(selection.getFirstElement()));
+				} else {
+
+				}
+			}
+		});
+		
 		composite.setToolTipText("To select branch, type the name and search will narrow.");
 
 	}
@@ -127,14 +139,13 @@ public class MergeWizardPage extends WizardPage {
 	}
 
 
-	public String getSelectedBranch() {
+	public static String getSelectedBranch() {
 		return selectedBranch;
 	}
 
-	public void setSelectedBranch(String selectedBranch) {
-		this.selectedBranch = selectedBranch;
+	public static void setSelectedBranch(String selected) {
+		selectedBranch = selected;
 	}
-
 
 
 }

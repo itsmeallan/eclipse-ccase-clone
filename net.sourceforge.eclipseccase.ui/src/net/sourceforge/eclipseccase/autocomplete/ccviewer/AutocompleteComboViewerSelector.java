@@ -6,6 +6,7 @@
  * http://www.eclipse.org/legal/cpl-v10.html
  * 
  * Contributors:
+ *     mikael petterson - modified to handle comboviewer.
  *     derekhunter4 - inital API and implementation
  *     IBM Corporation - concepts and ideas from Eclipse
  *******************************************************************************/
