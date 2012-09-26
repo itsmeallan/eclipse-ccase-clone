@@ -335,7 +335,10 @@ public class CheckinWizardPage extends WizardPage {
 		}
 
 	}
-
+	/**
+	 * Resources selected from list to be checked in.
+	 * @return
+	 */
 	public IResource[] getResourceList() {
 		return resourceList.toArray(new IResource[resourceList.size()]);
 
