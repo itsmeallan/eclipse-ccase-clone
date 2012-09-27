@@ -26,26 +26,22 @@ public class VersionCompareInput extends CompareEditorInput {
 	private IFile resource;
 
 	private String rightVersion = "";
-	
+
 	private String leftVersion = "";
+
+	private ClearCaseProvider provider;
 
 	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String selected, String comparableVersion, ClearCaseProvider provider) {
 		super(configuration);
-		
+
 		this.resource = resource;
-		
+
 		this.rightVersion = selected;
 		this.leftVersion = comparableVersion;
-		
-			
-		 leftElement = selected != null ? new
-		 ClearCaseResourceNode(resource, selected,provider) : new
-		 ResourceNode(resource);
-		 rightElement = comparableVersion != null ? new
-		 ClearCaseResourceNode(resource, comparableVersion,provider) : new
-		 ResourceNode(resource);
+		this.provider = provider;
 
-		
+		leftElement = selected != null ? new ClearCaseResourceNode(resource, selected, provider) : new ResourceNode(resource);
+		rightElement = comparableVersion != null ? new ClearCaseResourceNode(resource, comparableVersion, provider) : new ResourceNode(resource);
 
 		configuration.setLeftImage(CompareUI.getImage(resource));
 		if (leftVersion != null) {
@@ -96,7 +92,7 @@ public class VersionCompareInput extends CompareEditorInput {
 
 	@Override
 	protected Object prepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		return new DiffNode(null, Differencer.CHANGE, null, new ClearCaseResourceNode(resource, leftVersion, null), new ResourceNode(resource));
+		return new DiffNode(null, Differencer.CHANGE, null, new ClearCaseResourceNode(resource, leftVersion, provider), new ResourceNode(resource));
 	}
 
 }
