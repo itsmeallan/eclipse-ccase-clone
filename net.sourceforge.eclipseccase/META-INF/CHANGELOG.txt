@@ -8,6 +8,7 @@
 Bugs:
 
 3571438 Checkin comment lost
+3563362 Compare with Predecessor -> Failed to create the part's...(snapshot).
 
 2.2.22
 ======
