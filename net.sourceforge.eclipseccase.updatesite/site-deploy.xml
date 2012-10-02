@@ -1,10 +1,9 @@
 <project name="eclipse-ccase-site" default="all">
 
 
-	<!-- ================================================================== 
-		  target: init-properties              
-		      
-		 ================================================================== -->
+	<!-- ==================================================================== -->
+	<!--  Initializes properties used later on ....                           -->
+	<!-- ==================================================================== -->
 	<target name="init-properties" depends="init-custom-tasks">
 		<tstamp>
 			<format property="release.date" pattern="MM/dd/yyyy" />
@@ -48,14 +47,14 @@
 		<copy file="${most.recent.zip.release}" tofile="${staging.dir}/full/${plugin.id}_${version}.zip" />
 		<!--<delete file="${most.recent.zip.release}">
 		</delete>-->
-		<property name="feature.eclipseccase.package" value="${staging.dir}/full/${plugin.id}_${version}.zip" />
-		<echo message="Renamed zip release: ${feature.eclipseccase.package}" />
+		<property name="eclipseccase.feature.zip" value="${staging.dir}/full/${plugin.id}_${version}.zip" />
+		<echo message="Renamed zip release: ${eclipseccase.feature.zip}" />
 
 
 		<!-- File management params -->
-		<property name="filemanegement.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
-		<property name="filemanagement.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
-		<property name="filemanagement.deploy.host" value="frs.sourceforge.net" />
+		<property name="frs.release.category.dir" value="ecllipse-ccase_Eclipse_3.5" />
+		<property name="frs.root.dir" value="/home/frs/project/e/ec/eclipse-ccase" />
+		<property name="frs.deploy.host" value="frs.sourceforge.net" />
 		<property name="changelog" value="${basedir}/../net.sourceforge.eclipseccase/META-INF/CHANGELOG.txt" />
 
 
@@ -75,13 +74,20 @@
 			<include name="site.xml" />
 			<include name="features/*${version}.jar" />
 			<include name="plugins/*${version}.jar" />
+			<include name="artifacts.jar" />
+			<include name="content.jar" />
 		</fileset>
+
+		<!-- New update site in  rfs -->
+		<property name="frs.host" value="frs.sourceforge.net" />
+		<property name="update.site.root.dir" value="/home/frs/project/eclipse-ccase/updatesite" />
+
+
 	</target>
 
-	<!-- ================================================================== 
-			  target: init-custom-tasks              
-			      
-	     ================================================================== -->
+	<!-- ==================================================================== -->
+	<!--  Initializes the external libraries used for scp.                    -->
+	<!-- ==================================================================== -->
 	<target name="init-custom-tasks" depends="">
 
 		<!-- FIXME: mike 20100226
@@ -109,34 +115,27 @@
 
 	</target>
 
-	<!-- ================================================================== 
-		 target: init              
-		      
-		 ================================================================== -->
+	<!-- ==================================================================== -->
+	<!--  Initializes the external libraries as well as properties.           -->
+	<!-- ==================================================================== -->
 	<target name="init" depends="init-custom-tasks,init-properties">
 	</target>
 
-	<!-- ================================================================== 
-	     target: clean  (mike 20100302 not used at the moment.
-			      
-		 ================================================================== -->
-	<target name="clean" depends="init">
-		<ant antfile="${basedir}/build.xml" target="clean" />
-		<delete dir="${staging.dir}" failonerror="false" quiet="true" />
+	<target name="all" depends="init,deploy-local-site,deploy-release-to-frs-update-site,back-up-update-site,deploy-sf-frs-release">
 	</target>
 
-	<target name="all" depends="init,deploy-local-site,deploy-sf-update-site,deploy-sf-file-release">
-	</target>
-
-	<!-- ================================================================== 
-	      target: deploy-sf-update-site              
-	      copies local update site to sf-update wwww.
-	     ================================================================== -->
-	<target name="deploy-sf-update-site" depends="init" unless="site.local">
+	<!-- ==================================================================== -->
+	<!--  Copies latest release  to sourceforge's (sf) to project web         -->
+	<!--  site (/home/groups/e/ec/eclipse-ccase/htdocs/update) for backup.    -->
+	<!--  This website cannot be used as update site since website has a      -->
+	<!--  limit on badwidth. So we place a redirect file (.htaccess) that     -->
+	<!--  points to a new update site in frs.                                 -->
+	<!-- ==================================================================== -->
+	<target name="back-up-update-site" depends="init" unless="site.local">
+		<echo message="backing up site release to ${frs.root.dir} ..." />
 		<scp verbose="true" trust="true" todir="${webuser}:${password}@${site.deploy.host}:${site.deploy.root}">
 			<fileset refid="site.deploy.files" />
 		</scp>
-
 	</target>
 
 	<target name="deploy-local-site" depends="init" if="site.local">
@@ -146,24 +145,35 @@
 		</copy>
 	</target>
 
-	<!-- ================================================================== 
-		 target: deploy-sf-file-release              
-		 Transfers the zip files in net.sourceforge.eclipseccase.updatesite/full to sf-site.
-	 	 scp cannot create directory structure.
-	 	 Not possible to do ssh.
-	 	 Last resort is to use rsync ( only on unix).
-	 	 Example: rsync -avP -e ssh FILE jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/
-		      
-		 ================================================================== -->
-	<target name="deploy-sf-file-release" depends="init" unless="site.local">
+
+	<!-- ==================================================================== -->
+	<!--  Deploys latest release to sourceforge's (sf) to file release        -->
+	<!--  system (frs). ( Easier to use scp since we don't have to deal with  -->
+	<!--  paths as with rsync.)                                               -->
+	<!-- ==================================================================== -->
+	<target name="deploy-release-to-frs-update-site" depends="init" unless="site.local">
+		<scp verbose="true" trust="true" todir="${webuser}:${password}@${frs.host}:${update.site.root.dir}">
+			<fileset refid="site.deploy.files" />
+		</scp>
+
+	</target>
+
+
+	<!-- ==================================================================== -->
+	<!--  Deploys latest release as zip to sourceforge's (sf) to file release -->
+	<!--  system (frs).                                                       -->
+	<!-- ==================================================================== -->
+	<target name="deploy-sf-frs-release" depends="init" unless="site.local">
 		<exec executable="/usr/bin/expect" os="Unix,Linux">
-			<arg line="${basedir}/rsync.exp  ${feature.eclipseccase.package} ${webuser} ${filemanagement.root.dir} ${filemanegement.release.category.dir} ${version} ${password} ${filemanagement.deploy.host} ${changelog}" />
+			<arg line="${basedir}/rsync.exp  ${eclipseccase.feature.zip} ${webuser} ${frs.root.dir} ${frs.release.category.dir} ${version} ${password} ${frs.deploy.host} ${changelog}" />
 		</exec>
 		<exec dir="." executable="cmd" os="Windows NT">
-		  <arg line="/c rsync.bat"/>
+			<arg line="/c rsync.bat" />
 		</exec>
 	</target>
 
+	<!-- Copy old files from project to frs:
+		https://sourceforge.net/apps/trac/sourceforge/wiki/Shell%20service -->
 
 
 </project>
