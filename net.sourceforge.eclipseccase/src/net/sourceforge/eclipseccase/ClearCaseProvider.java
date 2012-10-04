@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.clearcase.ClearCase;
-import net.sourceforge.clearcase.ClearCaseCLIImpl;
 import net.sourceforge.clearcase.ClearCaseElementState;
 import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
@@ -99,12 +98,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	boolean refreshResources = true;
 
 	private OperationListener opListener = null;
-
-	private boolean isTest = false;
-
+	
 	private static final int YES = 0;
-
-	private static final int NO = 1;
 
 	public ClearCaseProvider() {
 		super();
@@ -433,8 +428,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 	
 	public boolean createMergeArrow(String linkDestination, String linkSourceVersion){
-		ClearCaseElementState state = ClearCasePlugin.getEngine().makeMergeArrow(linkDestination, linkSourceVersion);
-		
+		ClearCasePlugin.getEngine().makeMergeArrow(linkDestination, linkSourceVersion);
 		return true;
 	}
 
@@ -572,7 +566,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public String getViewRoot(IResource resource) throws TeamException {
-		return ClearCasePlugin.getEngine().getViewLocation();
+		return ClearCasePlugin.getEngine().getViewRoot(resource.getLocation().toOSString());
 	}
 
 	/**
@@ -610,6 +604,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public String getVobRelativPath(IResource resource) throws TeamException {
 		String viewRoot = getViewRoot(resource);
+		//FIXME:This is a workaround for 3573460.
+		//String viewRoot = "";
 		IPath viewLocation = new Path(viewRoot).setDevice(null); // ignore
 		// device
 		IPath resourceLocation = resource.getLocation().setDevice(null); // ignore
