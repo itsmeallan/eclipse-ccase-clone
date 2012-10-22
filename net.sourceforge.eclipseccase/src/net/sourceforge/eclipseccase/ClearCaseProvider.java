@@ -85,6 +85,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 	public static final String SNAIL = "@";
 
+	public static final String DOUBLE_SNAIL = "@@";
+
 	public static final String NO_ACTIVITY = "No activity in view";
 
 	public static final String UNRESERVED = "unreserved";
@@ -98,7 +100,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 	boolean refreshResources = true;
 
 	private OperationListener opListener = null;
-	
+
 	private static final int YES = 0;
 
 	public ClearCaseProvider() {
@@ -365,6 +367,37 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return StateCacheFactory.getInstance().get(resource).getVersion();
 	}
 
+	public String getVersionForLatest(String element) {
+		String result = "";
+		// version
+		// "/vobs/rnc/rrt/roam2/roamSs/RoamTb_swb/cc_test/edu.washington.cs.money/edu/washington/cs/money/Bank.java@@/main/dev/10"
+		// created 2012-09-26T08:22:51+02:00 by Petterson Mikael
+		// (eraonel.rnckidc@esekilxxen1251)
+		// Element Protection:
+		// User : eraonel : r-x
+		// Group: rnckidc : r-x
+		// Other: : ---
+		// element type: java_source
+		// predecessor version: /main/dev/9
+		// Labels:
+		// ROAMTB_MAIN_4.1_001
+
+		String[] output = ClearCasePlugin.getEngine().describe(element,
+				ClearCase.NONE, null);
+		Pattern p = Pattern.compile("^version \\\"(.*)\\\""); //$NON-NLS-1$
+		Matcher m = p.matcher(output[0]);
+		if (m.find()) {
+			// version extended path
+			String vextPath = m.group(1);
+			String[] parts = vextPath.split(DOUBLE_SNAIL);
+			// return version part.
+			return parts[1];
+		}
+
+		return result;
+
+	}
+
 	public String getPredecessorVersion(IResource resource) {
 		return StateCacheFactory.getInstance().get(resource)
 				.getPredecessorVersion();
@@ -411,24 +444,28 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public void compareWithVersion(String element1, String element2) {
 		ClearCasePlugin.getEngine().compareWithVersion(element1, element2);
 	}
-	
-	public Vector<MergeData> findMerge(String pname,String branch){
-		Vector<MergeData>  mergeData = ClearCasePlugin.getEngine().findMerge(pname,branch);
-	   return mergeData;
+
+	public Vector<MergeData> findMerge(String pname, String branch) {
+		Vector<MergeData> mergeData = ClearCasePlugin.getEngine().findMerge(
+				pname, branch);
+		return mergeData;
 	}
-	
-	public boolean merge(String to, String from, String base){
-		String [] fromVersions = new String [] {from};
-		//make sure 
-		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(to, fromVersions,base, ClearCase.NONE);
-		if(state.isMerged()){
+
+	public boolean merge(String to, String from, String base) {
+		String[] fromVersions = new String[] { from };
+		// make sure
+		ClearCaseElementState state = ClearCasePlugin.getEngine().merge(to,
+				fromVersions, base, ClearCase.NONE);
+		if (state.isMerged()) {
 			return true;
 		}
 		return false;
 	}
-	
-	public boolean createMergeArrow(String linkDestination, String linkSourceVersion){
-		ClearCasePlugin.getEngine().makeMergeArrow(linkDestination, linkSourceVersion);
+
+	public boolean createMergeArrow(String linkDestination,
+			String linkSourceVersion) {
+		ClearCasePlugin.getEngine().makeMergeArrow(linkDestination,
+				linkSourceVersion);
 		return true;
 	}
 
@@ -566,7 +603,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 * @return
 	 */
 	public String getViewRoot(IResource resource) throws TeamException {
-		return ClearCasePlugin.getEngine().getViewRoot(resource.getLocation().toOSString());
+		return ClearCasePlugin.getEngine().getViewRoot(
+				resource.getLocation().toOSString());
 	}
 
 	/**
@@ -604,8 +642,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	 */
 	public String getVobRelativPath(IResource resource) throws TeamException {
 		String viewRoot = getViewRoot(resource);
-		//FIXME:This is a workaround for 3573460.
-		//String viewRoot = "";
+		// FIXME:This is a workaround for 3573460.
+		// String viewRoot = "";
 		IPath viewLocation = new Path(viewRoot).setDevice(null); // ignore
 		// device
 		IPath resourceLocation = resource.getLocation().setDevice(null); // ignore
@@ -1437,7 +1475,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 
 		public IStatus visit(IResource resource, IProgressMonitor monitor) {
 			try {
-				int returnCode = 1;// Used in messge dialog.
+				// int returnCode = 1;// Used in messge dialog.
 				monitor.beginTask("Checkin in " + resource.getFullPath(), 100);
 				StateCache cache = getCache(resource);
 				final StateCache targetElement = getFinalTargetElement(cache);
@@ -1501,49 +1539,7 @@ public class ClearCaseProvider extends RepositoryProvider {
 									null);
 							break;
 						case ClearCase.ERROR_MOST_RECENT_NOT_PREDECESSOR_OF_THIS_VERSION:
-							// Only support for: To merge the latest version
-							// with your checkout
-							// getVersion --> \branch\CHECKEDOUT.
-							String branchName = getBranchName(getVersion(resource));
-							String latestVersion = resource.getLocation()
-									.toOSString()
-									+ "@@"
-									+ branchName
-									+ "LATEST";
-
-							ClearCaseElementState myState = ClearCasePlugin
-									.getEngine().merge(targetElement.getPath(),
-
-											new String[] { latestVersion },null,
-											ClearCase.GRAPHICAL);
-							if (myState.isMerged()) {
-
-								returnCode = showMessageDialog("Checkin",
-										"Do you want to checkin the merged result?");
-
-								if (returnCode == 0) {
-									// Yes continue checkin
-									ClearCasePlugin
-											.getEngine()
-											.checkin(
-													new String[] { targetElement
-															.getPath() },
-													getComment(),
-													ClearCase.PTIME, opListener);
-								}
-
-							} else {
-
-								result = new Status(
-										IStatus.ERROR,
-										ID,
-										TeamException.CONFLICT,
-										MessageFormat.format(
-												Messages.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
-												new Object[] { cce
-														.getElements() }), null);
-							}
-
+							result = handleNeedForMerge(resource, targetElement);
 							break;
 
 						default:
@@ -1932,12 +1928,28 @@ public class ClearCaseProvider extends RepositoryProvider {
 			// the statuses,
 			// but if there were no problems exit silently.
 			if (!multiStatus.isOK()) {
-				String message = multiStatus.matches(IStatus.ERROR) ? "There were errors that prevent the requested operation from finishing successfully."
-						: "The requested operation finished with warnings.";
+				// Since not ok we have children. Use the message of the
+				// children.
+				StringBuffer errorMsg = new StringBuffer();
+				IStatus[] status = multiStatus.getChildren();
+
+				if (status.length != 0 && status != null) {
+					for (IStatus iStatus : status) {
+						String error = iStatus.getMessage() + "\n";
+						errorMsg.append(error);
+					}
+
+				} else {
+					String message = multiStatus.matches(IStatus.ERROR) ? "There were errors that prevent the requested operation from finishing successfully."
+							: "The requested operation finished with warnings.";
+					errorMsg.append(message);
+				}
+				// Since we might
 				throw new TeamException(new MultiStatus(
 						multiStatus.getPlugin(), multiStatus.getCode(),
-						multiStatus.getChildren(), message,
+						multiStatus.getChildren(), errorMsg.toString(),
 						multiStatus.getException()));
+
 			}
 			// Cause all the resource changes to be broadcast to listeners.
 			// TeamPlugin.getManager().broadcastResourceStateChanges(resources);
@@ -2257,13 +2269,13 @@ public class ClearCaseProvider extends RepositoryProvider {
 	}
 
 	private int getCheckoutType() {
-		if(ClearCasePreferences.isAskCoType()){
-			if(PreventCheckoutHelper.getcoUnresAnswer() == YES){
+		if (ClearCasePreferences.isAskCoType()) {
+			if (PreventCheckoutHelper.getcoUnresAnswer() == YES) {
 				return ClearCase.UNRESERVED;
-			}else{
+			} else {
 				return ClearCase.RESERVED;
 			}
-		}else if (ClearCasePreferences.isReservedCheckoutsAlways())
+		} else if (ClearCasePreferences.isReservedCheckoutsAlways())
 			return ClearCase.RESERVED;
 		else if (ClearCasePreferences.isReservedCheckoutsIfPossible())
 			return ClearCase.RESERVED_IF_POSSIBLE;
@@ -2417,6 +2429,66 @@ public class ClearCaseProvider extends RepositoryProvider {
 				MessageFormat.format("Cancelled move operation for \"{0}\"!",
 						new Object[] { resource.getFullPath().toString() }),
 				null);
+	}
+
+	// This happens when working on the same branch.
+	private IStatus handleNeedForMerge(IResource resource,
+			StateCache targetElement) {
+		IStatus result = OK_STATUS;
+		int returnMergeCode = 0;
+
+		String branchName = getBranchName(getVersion(resource));
+		String latest = resource.getLocation().toOSString() + DOUBLE_SNAIL
+				+ branchName + "LATEST";
+		String version = getVersionForLatest(latest);
+
+		if (version.length() == 0) {
+			return new Status(
+					IStatus.ERROR,
+					ID,
+					TeamException.IO_FAILED,
+					MessageFormat.format(
+							Messages.getString("ClearCasePlugin.error.checkin.no.latest.version"),
+							new Object[] { branchName, version }), null);
+		}
+
+		returnMergeCode = showMessageDialog(
+				"Checkin",
+				Messages.getString("ClearCasePlugin.error.checkin.auto.merge.question"));
+
+		if (returnMergeCode == 0) {
+			// yes try automatic merge but abort if not fully automatic.
+			ClearCaseElementState myState = ClearCasePlugin.getEngine().merge(
+					targetElement.getPath(), new String[] { version }, null,
+					ClearCase.ABORT);
+			if (myState == null) {
+				// No defined state so no merge was performed.
+				return new Status(
+						IStatus.ERROR,
+						ID,
+						TeamException.CONFLICT,
+						MessageFormat.format(
+								Messages.getString("ClearCasePlugin.error.checkin.mergeLatestProblem"),
+								new Object[] { branchName, version }), null);
+			}
+
+			if (myState.isMerged()) {
+				// successful automatic merge.
+				// ci ?
+				return result;
+			}
+		} else {
+			// Since we don't want to merge we cannot checkin!
+			result = new Status(
+					IStatus.ERROR,
+					ID,
+					TeamException.NOT_CHECKED_IN,
+					MessageFormat.format(
+							Messages.getString("ClearCasePlugin.error.checkin.automatic.merge.refused"),
+							new Object[] { branchName, version }), null);
+		}
+
+		return result;
 	}
 
 }
