@@ -2,6 +2,14 @@
 =                                 Change Log                                 =
 ===============================================================================
 
+2.2.25
+=====
+
+Bugs:
+
+3578088 	Check in blocking eclipse
+3575729 	Saving from compare view doesn't write to disk
+
 2.2.24
 =====
 
