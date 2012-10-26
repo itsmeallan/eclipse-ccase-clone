@@ -61,12 +61,20 @@ public class VersionCompareInput extends CompareEditorInput {
 	 */
 	public void saveChanges(IProgressMonitor pm) throws CoreException {
 		super.saveChanges(pm);
-		if (!(leftElement instanceof ResourceNode && leftElement instanceof BufferedContent)) {
+		
+		IResource resource = null;
+		if (rightElement instanceof ClearCaseResourceNode) {
+			ClearCaseResourceNode crn = (ClearCaseResourceNode) rightElement;
+			resource = crn.getResource();
+		} else if (rightElement instanceof ResourceNode) {
+			ResourceNode rn = (ResourceNode) rightElement;
+			resource = rn.getResource();
+		} else {
 			return;
 		}
-		ResourceNode rn = (ResourceNode) leftElement;
-		BufferedContent bc = (BufferedContent) leftElement;
-		IResource resource = rn.getResource();
+
+		BufferedContent bc = (BufferedContent) rightElement;
+
 		if (resource instanceof IFile) {
 			byte[] bytes = bc.getContent();
 			ByteArrayInputStream is = new ByteArrayInputStream(bytes);

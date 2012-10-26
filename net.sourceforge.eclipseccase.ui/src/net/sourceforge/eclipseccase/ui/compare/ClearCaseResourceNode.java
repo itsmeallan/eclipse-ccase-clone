@@ -53,34 +53,38 @@ public class ClearCaseResourceNode extends BufferedContent implements ITypedElem
 		this.provider = provider;
 	}
 
-	
-	
+	/**
+	 * Returns the corresponding resource for this object.
+	 * 
+	 * @return the corresponding resource
+	 */
+	public IResource getResource() {
+		return resource;
+	}
+
 	@Override
-	public InputStream createStream() throws CoreException{
+	public InputStream createStream() throws CoreException {
 		InputStream contents = null;
-		try
-		{
+		try {
 			StateCache cache = StateCacheFactory.getInstance().get(resource);
-			if (cache.isSnapShot())
-			{
+			if (cache.isSnapShot()) {
 				final File tempFile = File.createTempFile("eclipseccase", null);
 				tempFile.delete();
 				tempFile.deleteOnExit();
-				provider.copyVersionIntoSnapShot(tempFile.getPath(),vextPath);
-				//now we should have the snapshot version.
+				provider.copyVersionIntoSnapShot(tempFile.getPath(), vextPath);
+				// now we should have the snapshot version.
 				contents = new BufferedInputStream(new FileInputStream(tempFile.getPath()));
-				
-			}else{	
-				//dynamic
+
+			} else {
+				// dynamic
 				contents = new FileInputStream(vextPath);
 			}
-		}catch (FileNotFoundException e){
-			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, could not find file to compare with "+vextPath, e));
+		} catch (FileNotFoundException e) {
+			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, could not find file to compare with " + vextPath, e));
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, Could not create temp file for predecessor: " + vextPath, e));
 		}
-		catch (IOException e){	
-			throw new CoreException(new Status(IStatus.WARNING, "net.sourceforge.eclipseccase.ui.compare", "Internal, Could not create temp file for predecessor: "+vextPath, e));
-		}
-		
+
 		return contents;
 	}
 
@@ -103,14 +107,15 @@ public class ClearCaseResourceNode extends BufferedContent implements ITypedElem
 		}
 		return ITypedElement.UNKNOWN_TYPE;
 	}
-	//FIXME: added to be able to write at save().
+
+	// FIXME: added to be able to write at save().
 	public void commit(IProgressMonitor pm) throws CoreException {
-		byte[] bytes= getContent();
+		byte[] bytes = getContent();
 		FileOutputStream os;
 		try {
 			os = new FileOutputStream(new File(resource.getLocation().toOSString()));
 			os.write(bytes);
-			os.close();			
+			os.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
