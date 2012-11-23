@@ -17,7 +17,8 @@ import org.eclipse.ui.PlatformUI;
 public class PreventCheckoutHelper {
 
 	private static int coUnresAnswer = 100;// Default value for
-									// "No qestion for checkout has been asked".
+
+	// "No qestion for checkout has been asked".
 
 	public static boolean isPreventedFromCheckOut(ClearCaseProvider provider,
 			IResource[] resources, boolean silent) {
@@ -50,37 +51,35 @@ public class PreventCheckoutHelper {
 			}
 
 		}
-		return (IResource[]) toBeCheckedout
+		return toBeCheckedout
 				.toArray(new IResource[toBeCheckedout.size()]);
 	}
 
 	public static boolean isPromtedCoTypeOk() {
-		MessageDialog dialog = null;
+		UserDialog dialog = null;
 		if (ClearCasePreferences.isAskCoType()) {
-			dialog = new MessageDialog(null,
-					"Checkout Unreserved", null, "Checkout unreserved?",
-					MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0); // yes
-																				// is
-																				// the
-																				// default
-			coUnresAnswer = dialog.open();
+			dialog = new UserDialog(null, "Checkout Unreserved", null,
+					"Checkout unreserved?", MessageDialog.QUESTION,
+					new String[] { "Yes", "No" }, 0);
+			PlatformUI.getWorkbench().getDisplay().syncExec(dialog);
+
+			coUnresAnswer = dialog.getResult();
 			if (ClearCasePreferences.isUseMasterForAdd() && coUnresAnswer == 1) {
-				// We cannot use -nmaster together with reserved. Inform user!
-				dialog = new MessageDialog(null,
-						"Checkout Warning", null, "Reserved checkout cannot be used with -nmaster option.\n Change in Preferences.",
-						MessageDialog.WARNING, new String[] { "Ok" }, 0); // yes
-																			// is
-																			// the
-																			// default
-				dialog.open();
-				//coUnresAnswer = dialog.open();
+				dialog = new UserDialog(
+						null,
+						"Checkout Warning",
+						null,
+						"Reserved checkout cannot be used with -nmaster option.\n Change in Preferences.",
+						MessageDialog.WARNING, new String[] { "Ok" }, 0);
+				PlatformUI.getWorkbench().getDisplay().syncExec(dialog);
+
 				return false;
 			}
-			
+
 			return true;
 		}
-		
-		//since we don't have prompt option it is ok to co.
+
+		// since we don't have prompt option it is ok to co.
 		return true;
 	}
 
