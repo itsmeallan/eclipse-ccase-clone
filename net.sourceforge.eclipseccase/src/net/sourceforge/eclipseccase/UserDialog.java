@@ -41,7 +41,7 @@ public class UserDialog implements Runnable {
 		
 	}
 
-	@Override
+	
 	public void run() {
 		MessageDialog dialog = new MessageDialog(shell ,title,
 	            image, message, imageType,
