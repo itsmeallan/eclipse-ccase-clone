@@ -24,8 +24,10 @@ import net.sourceforge.clearcase.ClearCaseException;
 import net.sourceforge.clearcase.ClearCaseInterface;
 import net.sourceforge.clearcase.MergeData;
 import net.sourceforge.clearcase.events.OperationListener;
+import net.sourceforge.clearcase.utils.Os;
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
+import org.eclipse.core.internal.resources.OS;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.resources.team.FileModificationValidator;
 import org.eclipse.core.resources.team.IMoveDeleteHook;
@@ -43,8 +45,9 @@ public class ClearCaseProvider extends RepositoryProvider {
 	/** trace id */
 	private static final String TRACE_ID_IS_IGNORED = "ClearCaseProvider#isIgnored"; //$NON-NLS-1$
 
-	private static Map<String, String> viewLookupTable = new Hashtable<String, String>(
-			200);
+	// private static Map<String, String> viewLookupTable = new
+	// Hashtable<String, String>(
+	// 200);
 
 	private static Map<String, IContainer> viewAccessLookupTable = new Hashtable<String, IContainer>(
 			30);
@@ -92,6 +95,8 @@ public class ClearCaseProvider extends RepositoryProvider {
 	public static final String UNRESERVED = "unreserved";
 
 	public static final String RESERVED = "reserved";
+
+	private static final String WINDOWS = "windows";
 
 	// is used to keep track of which views that has a file checked out when
 	// doing a move.
@@ -489,19 +494,33 @@ public class ClearCaseProvider extends RepositoryProvider {
 				"%En\tPredecessor: %[version_predecessor]p\tView: %Tf\tStatus: %Rf\n");
 		String[] output = ClearCasePlugin.getEngine().findCheckouts(
 				ClearCase.FORMAT, args, new String[] { element });
-		// Check if line ends with these keywords.
-		Pattern pattern = Pattern.compile(".*View:\\s(.*)\\sStatus:.*");
+		//if no checkouts findCheckouts returns null.
 
-		if (output.length > 0) {
+		if (output != null && output.length > 0 ) {
+			// Check if line ends with these keywords.
+			Pattern pattern = Pattern.compile(".*View:\\s(.*)\\sStatus:.*");
+			String[] safeOutput = new String[output.length];
+			if (Os.isFamily(WINDOWS)) {
+
+				for (int i = 0; i < output.length; i++) {
+					safeOutput[i] = output[i].replace("\\", "\\\\");
+				}
+			} else {
+				// No need to change unix output since no "\". So copy content
+				// of outputto safeOutput.
+				System.arraycopy(output, 0, safeOutput, 0, output.length);
+			}
+
 			// we have file checked-out in other view.
-			isCheckedoutInOtherView = true;
-			for (int i = 0; i < output.length; i++) {
-				String line = output[i];
+
+			for (int i = 0; i < safeOutput.length; i++) {
+				String line = safeOutput[i];
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
 					// Adding information to user.Filter out current view.
 					String view = matcher.group(1);
-					if (!view.equals(getViewName(element))) {
+					if (!view.equals(Views.getViewName(element))) {
+						isCheckedoutInOtherView = true;
 						checkedOutInOtherView.add(view);
 					}
 				}
@@ -523,15 +542,15 @@ public class ClearCaseProvider extends RepositoryProvider {
 		} catch (NullPointerException e) {
 			return "";
 		}
-		String res = viewLookupTable.get(path);
+		String res = Views.getViewLookupTable().get(path);
 		if (res == null || res.length() == 0) {
 			// use the originally given resource for the cleartool query
 			if (!(resource instanceof IContainer)) {
 				resource = resource.getParent();
 			}
-			res = getViewName(resource.getLocation().toOSString());
+			res = Views.getViewName(resource.getLocation().toOSString());
 			if (res.length() > 0) {
-				viewLookupTable.put(path, res);
+				Views.getViewLookupTable().put(path, res);
 				viewAccessLookupTable.put(res, (IContainer) resource);
 			}
 		}
@@ -548,22 +567,22 @@ public class ClearCaseProvider extends RepositoryProvider {
 		return res;
 	}
 
-	public static String getViewName(final String path) {
-		String res = viewLookupTable.get(path);
-		if (res == null) {
-			res = ClearCasePlugin.getEngine().getViewName(path);
-			viewLookupTable.put(path, res);
-		}
-		return res;
-	}
-
-	public static String[] getUsedViewNames() {
-		Set<String> views = new HashSet<String>();
-		for (String v : viewLookupTable.values()) {
-			views.add(v);
-		}
-		return views.toArray(new String[views.size()]);
-	}
+	// public static String getViewName(final String path) {
+	// String res = viewLookupTable.get(path);
+	// if (res == null) {
+	// res = ClearCasePlugin.getEngine().getViewName(path);
+	// viewLookupTable.put(path, res);
+	// }
+	// return res;
+	// }
+	//
+	// public static String[] getUsedViewNames() {
+	// Set<String> views = new HashSet<String>();
+	// for (String v : viewLookupTable.values()) {
+	// views.add(v);
+	// }
+	// return views.toArray(new String[views.size()]);
+	// }
 
 	/**
 	 * Returns the view type of the view containing the resource.
