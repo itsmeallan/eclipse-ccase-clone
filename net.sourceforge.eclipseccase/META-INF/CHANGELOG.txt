@@ -1,6 +1,19 @@
 ===============================================================================
-=                                 Change Log                                 =
+=                                                          Change Log                                                                                              =
 ===============================================================================
+
+
+2.2.26
+=====
+
+Bugs: 
+
+3578088 	Check in blocking eclipse
+3586681 	Missing view name in "File Checkedout in Other View" dialog
+3588725 	Another fault in the Merge Diff Preference settings
+3589090 	Renaming a file does not work
+
+
 
 2.2.25
 =====

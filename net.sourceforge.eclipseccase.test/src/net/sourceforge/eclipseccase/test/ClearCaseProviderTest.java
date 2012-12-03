@@ -7,13 +7,18 @@ package net.sourceforge.eclipseccase.test;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
+import net.sourceforge.clearcase.utils.Os;
 import net.sourceforge.eclipseccase.ClearCasePlugin;
+import net.sourceforge.eclipseccase.ClearCasePreferences;
 import net.sourceforge.eclipseccase.ClearCaseProvider;
+import net.sourceforge.eclipseccase.Views;
 
 import org.easymock.EasyMock;
+import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * 
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( { ClearCaseInterface.class, ClearCasePlugin.class })
+@PrepareForTest( { ClearCaseInterface.class, ClearCasePlugin.class ,ClearCasePreferences.class,Os.class,Views.class})
 public class ClearCaseProviderTest {
 
 	private static ClearCaseProvider provider;
@@ -38,11 +43,15 @@ public class ClearCaseProviderTest {
 
 	// mock instance
 	private ClearCaseInterface cciMock;
+	
 
 	@Before
 	public void setUp() {
 		cciMock = PowerMock.createMock(ClearCaseInterface.class);
+		PowerMock.mockStatic(ClearCasePreferences.class);
 		PowerMock.mockStatic(ClearCasePlugin.class);
+		PowerMock.mockStatic(Os.class);
+		PowerMock.mockStatic(Views.class);
 		provider = new ClearCaseProvider();
 
 	}
@@ -154,4 +163,50 @@ public class ClearCaseProviderTest {
 		// Verify behavior for all mock objects.
 		PowerMock.verifyAll();
 	}
+	/**
+	 * On windows when output from findCheckouts() gives the following:
+	 * Bank.java       Predecessor: \main\dev\11       View: mike_head      Status: unreserved
+	 * Since \ has a special meaning in strings we need to escape the \ so the string is \\. 
+	 * Test case tests that output line that contains backslash is escaped so that pattern
+	 * matcher takes out the view name correct on windows.
+	 * @throws Exception
+	 */
+	@Test
+	public void testIsCheckedOutInAnyViewWindows()  throws Exception{
+		
+		final String [] elements = new String [] { "Bank.java"};
+		final String element = "Bank.java";
+		final String [] output = new String [] {"Bank.java Predecessor: \\main\\dev\\11	View: mike_head	Status: unreserved"};
+		final String WINDOWS = "windows";
+			
+		// Set expectations on mocks.
+		EasyMock.expect(ClearCasePreferences.isUCM()).andReturn(false);
+		EasyMock.expect(ClearCasePlugin.getEngine()).andReturn(cciMock).anyTimes(); //Used in more than one place.
+
+       //For map used http://www.shanhe.me/2011/09/11/explicit-type-parameters-for-generic-methods		
+		EasyMock
+		.expect(cciMock.findCheckouts(EasyMock.anyInt(),EasyMock.<HashMap<Integer, String>> anyObject(), EasyMock.aryEq(elements))).andReturn(output);
+		
+		EasyMock.expect(Os.isFamily(WINDOWS)).andReturn(true);
+		
+		EasyMock.expect (Views.getViewName(EasyMock.anyObject(String.class))).andReturn(null);
+	
+		 // Note how we replay the class, not the instance! ( static).
+        PowerMock.replay(ClearCasePreferences.class);
+        PowerMock.replay(ClearCasePlugin.class);
+        PowerMock.replay(Os.class);
+        PowerMock.replay(ClearCaseProvider.class);
+        PowerMock.replay(Views.class);
+        
+        PowerMock.replay(cciMock);
+        
+     
+       // PowerMock.verify();
+
+		
+		//Actual test
+		assertTrue(provider.isCheckedOutInAnyView(element));
+		
+	}
+
 }

@@ -345,7 +345,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	}
 
 	private void storePref(String name, String value) {
-		getPreferenceStore().setValue(IClearCasePreferenceConstants.EXTERNAL_MERGE_TOOL_EXEC_PATH, PreferenceHelper.mapToStr(mergeToolPathMap));
+		getPreferenceStore().setValue(name, value);
 	}
 
 	/**

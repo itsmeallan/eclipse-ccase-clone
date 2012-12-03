@@ -228,7 +228,7 @@ public class CheckoutsView extends ResourceNavigator implements IResourceStateLi
 			}
 			inClearCaseRefresh = true;
 		}
-		String[] views = ClearCaseProvider.getUsedViewNames();
+		String[] views = Views.getUsedViewNames();
 		List<IResource> dirlist = new ArrayList<IResource>();
 		for (String v : views) {
 			IContainer dir = ClearCaseProvider.getViewFolder(v);
