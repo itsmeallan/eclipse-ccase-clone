@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase.views;
 
+import org.eclipse.ui.commands.ActionHandler;
+
+import org.eclipse.ui.handlers.IHandlerService;
+
 import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.clearcase.ClearCase;
@@ -45,6 +49,9 @@ public class ConfigSpecView extends ViewPart {
 	private Group configSpecGroup;
 
 	private Label configSpecLabel;
+	
+	//Use same id for action as for command definition in plugin.xml
+	private static final String REFRESH_ACTION_ID ="net.sourceforge.eclipseccase.views.configspecview.refreshAction";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -94,6 +101,7 @@ public class ConfigSpecView extends ViewPart {
 		};
 
 		saveAction = new Action() {
+		
 			@Override
 			public void run() {
 				save();
@@ -108,6 +116,13 @@ public class ConfigSpecView extends ViewPart {
 
 		refreshAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/refresh.gif"));
 		refreshAction.setToolTipText("Refresh");
+		//TODO: 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor 
+		refreshAction.setActionDefinitionId(REFRESH_ACTION_ID);
+		//Deprecated
+		//getViewSite().getKeyBindingService().registerAction(action);
+		//Register action with keys.
+		IHandlerService service = (IHandlerService)getViewSite().getService(IHandlerService.class);
+		service.activateHandler(refreshAction.getActionDefinitionId(),new ActionHandler(refreshAction));
 
 		saveAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/save.gif"));
 		saveAction.setToolTipText("Save");

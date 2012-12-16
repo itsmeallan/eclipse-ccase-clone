@@ -714,6 +714,11 @@
 			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
 			sequence="Alt+C Alt+J">
 		</key>
+		<!-- 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor -->
+		<key commandId="net.sourceforge.eclipseccase.views.configspecview.refreshAction"
+			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C Alt+K">
+		</key>
 	</extension>
 	<extension point="org.eclipse.ui.bindings">
 		<key platform="gtk"
@@ -796,6 +801,13 @@
 		<teamDecorator decoratorId="net.sourceforge.eclipseccase.ui.decorator"
 			repositoryId="net.sourceforge.eclipseccase.ClearCaseProvider" />
 	</extension>
+	
+<!-- 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor -->
+ 	<extension
+       id="net.sourceforge.eclipseccase.views.configspecview.refreshAction"
+       name="RefreshCsAction"
+       point="org.eclipse.ui.commands">
+ 	</extension>
  
  <!-- Test new command 
  	<extension point="org.eclipse.ui.commands">
