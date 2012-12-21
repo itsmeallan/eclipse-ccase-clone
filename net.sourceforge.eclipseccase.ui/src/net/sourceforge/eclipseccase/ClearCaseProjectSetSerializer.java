@@ -1,5 +1,9 @@
 package net.sourceforge.eclipseccase;
 
+import net.sourceforge.clearcase.utils.Os;
+
+import org.eclipse.swt.internal.gtk.OS;
+
 import org.eclipse.core.resources.IProject;
 
 import java.io.File;
@@ -24,6 +28,9 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 @SuppressWarnings("deprecation")
 public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 	private static final String VERSION = "1.0"; //$NON-NLS-1$
+	
+	private static final String UNIX_DYNAMIC_VOB_ROOT = "/vobs";
+
 
 	/*
 	 * (non-Javadoc)
@@ -121,9 +128,20 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 					}
 				}
 			}
-
-			// ask for the vob root
-			final String vobRoot = openDirectoryDialog(shell, "ClearCase View Directory", "Please select the folder containing the vobs with the projects to import (your View directory/drive on Windows and the 'vobs' directory on UNIX.");
+			
+			final String vobRoot;
+			//Since all projects must have same view...get one of the projects.
+			String viewName = ClearCaseProvider.getViewName(projects[0]);
+			//Automatic solution is only for projects using the same root. It could be done more 
+			//advanced and use the projects[i].getLocation().toOsString(); for each and chache.
+			if(Os.isFamily(Os.UNIX) &&  !ClearCaseProvider.isSnapshotView(viewName)){
+				//If we use dynamic view and unix we can figure out path from psf.
+				vobRoot = UNIX_DYNAMIC_VOB_ROOT;
+			}else{
+				//Open dialog and ask for the vob root
+				vobRoot = openDirectoryDialog(shell, "ClearCase View Directory", "Please select the folder containing the vobs with the projects to import (your View directory/drive on Windows and the 'vobs' directory on UNIX.");
+			}
+			
 			if (null != vobRoot) {
 				WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 					@Override
@@ -181,7 +199,10 @@ public class ClearCaseProjectSetSerializer implements IProjectSetSerializer {
 
 			// determine the project path
 			IPath newProjectLocation = new Path(vobRoot).append(vob).append(vobRelativePath);
-
+			
+			//TODO: Remove it.
+			//System.out.println("This is project location toOSString()  : "+ newProjectLocation.toOSString());
+			//System.out.println("This is project location  toString() : "+ newProjectLocation.toString());
 			// Prepare the target projects to receive resources
 			scrubProject(project, new SubProgressMonitor(monitor, 100));
 
