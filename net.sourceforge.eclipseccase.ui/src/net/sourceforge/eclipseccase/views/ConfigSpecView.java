@@ -1,6 +1,6 @@
 package net.sourceforge.eclipseccase.views;
 
-import org.eclipse.ui.commands.ActionHandler;
+import org.eclipse.jface.commands.ActionHandler;
 
 import org.eclipse.ui.handlers.IHandlerService;
 
@@ -8,7 +8,6 @@ import net.sourceforge.eclipseccase.ClearCasePreferences;
 
 import net.sourceforge.clearcase.ClearCase;
 import net.sourceforge.clearcase.ClearCaseInterface;
-import net.sourceforge.eclipseccase.ClearCasePlugin;
 import net.sourceforge.eclipseccase.ui.actions.SetConfigSpecAction;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.Action;
@@ -49,9 +48,13 @@ public class ConfigSpecView extends ViewPart {
 	private Group configSpecGroup;
 
 	private Label configSpecLabel;
-	
-	//Use same id for action as for command definition in plugin.xml
-	private static final String REFRESH_ACTION_ID ="net.sourceforge.eclipseccase.views.configspecview.refreshAction";
+
+	// Use same id for action as for command definition in plugin.xml
+	private static final String REFRESH_ACTION_ID = "net.sourceforge.eclipseccase.views.configspecview.refreshAction";
+
+	private static final String SAVE_ACTION_ID = "net.sourceforge.eclipseccase.views.configspecview.saveAction";
+
+	private static final String CLEAR_ACTION_ID = "net.sourceforge.eclipseccase.views.configspecview.clearAction";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -101,7 +104,7 @@ public class ConfigSpecView extends ViewPart {
 		};
 
 		saveAction = new Action() {
-		
+
 			@Override
 			public void run() {
 				save();
@@ -114,21 +117,23 @@ public class ConfigSpecView extends ViewPart {
 			}
 		};
 
+		// Register action with keys.
+		IHandlerService service = (IHandlerService) getViewSite().getService(IHandlerService.class);
+
 		refreshAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/refresh.gif"));
 		refreshAction.setToolTipText("Refresh");
-		//TODO: 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor 
 		refreshAction.setActionDefinitionId(REFRESH_ACTION_ID);
-		//Deprecated
-		//getViewSite().getKeyBindingService().registerAction(action);
-		//Register action with keys.
-		IHandlerService service = (IHandlerService)getViewSite().getService(IHandlerService.class);
-		service.activateHandler(refreshAction.getActionDefinitionId(),new ActionHandler(refreshAction));
+		service.activateHandler(refreshAction.getActionDefinitionId(), new ActionHandler(refreshAction));
 
 		saveAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/save.gif"));
 		saveAction.setToolTipText("Save");
+		saveAction.setActionDefinitionId(SAVE_ACTION_ID);
+		service.activateHandler(saveAction.getActionDefinitionId(), new ActionHandler(saveAction));
 
 		clearAction.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("net.sourceforge.eclipseccase.ui", "icons/full/clear.gif"));
 		clearAction.setToolTipText("Clear");
+		clearAction.setActionDefinitionId(CLEAR_ACTION_ID);
+		service.activateHandler(clearAction.getActionDefinitionId(), new ActionHandler(clearAction));
 
 		IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 		ITheme currentTheme = themeManager.getCurrentTheme();

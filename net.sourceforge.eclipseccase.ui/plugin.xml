@@ -2,6 +2,30 @@
 <?eclipse version="3.0"?>
 <plugin>
 
+    <!-- 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor -->
+   
+ 	<extension
+         point="org.eclipse.ui.commands" >
+         <category id="net.sourceforge.eclipseccase.views.configspecview" name="configspecview"/>
+      <command
+            categoryId="net.sourceforge.eclipseccase.views.configspecview"
+            id="net.sourceforge.eclipseccase.views.configspecview.refreshAction"
+            description="Refresh Action for Cs"
+            name="Refresh Cs">
+      </command>
+      <command
+            categoryId="net.sourceforge.eclipseccase.views.configspecview"
+            id="net.sourceforge.eclipseccase.views.configspecview.clearAction"
+            description="Clear Action for Cs"
+            name="Clear Cs">
+      </command>
+       <command
+            categoryId="net.sourceforge.eclipseccase.views.configspecview"
+            id="net.sourceforge.eclipseccase.views.configspecview.saveAction"
+            description="Save Action for Cs"
+            name="Save Cs">
+      </command>
+ 	</extension>
 	<extension point="org.eclipse.ui.popupMenus">
 		<objectContribution objectClass="org.eclipse.core.resources.IProject"
 			adaptable="true" id="net.sourceforge.eclipseccase.popups.Associate">
@@ -719,6 +743,14 @@
 			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
 			sequence="Alt+C Alt+K">
 		</key>
+		<key commandId="net.sourceforge.eclipseccase.views.configspecview.saveAction"
+			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C Alt+L">
+		</key>
+			<key commandId="net.sourceforge.eclipseccase.views.configspecview.clearAction"
+			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C Alt+N">
+		</key>
 	</extension>
 	<extension point="org.eclipse.ui.bindings">
 		<key platform="gtk"
@@ -779,6 +811,19 @@
 		<key platform="gtk" commandId="net.sourceforge.eclipseccase.ui.actionset.unhijack"
 			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration" sequence="Alt+C J">
 		</key>
+		<!-- 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor -->
+		<key platform="gtk" commandId="net.sourceforge.eclipseccase.views.configspecview.refreshAction"
+			 schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C K">
+		</key>
+		<key platform="gtk" commandId="net.sourceforge.eclipseccase.views.configspecview.saveAction"
+			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C L">
+		</key>
+			<key platform="gtk" commandId="net.sourceforge.eclipseccase.views.configspecview.clearAction"
+			contextId="org.eclipse.ui.contexts.window" schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="Alt+C N">
+		</key>
 	</extension>
 	<extension point="org.eclipse.ui.console.consoleFactories">
 		<consoleFactory
@@ -801,70 +846,4 @@
 		<teamDecorator decoratorId="net.sourceforge.eclipseccase.ui.decorator"
 			repositoryId="net.sourceforge.eclipseccase.ClearCaseProvider" />
 	</extension>
-	
-<!-- 3571949 Shortcut for Save/Clear/Refresh actions in configspec editor -->
- 	<extension
-       id="net.sourceforge.eclipseccase.views.configspecview.refreshAction"
-       name="RefreshCsAction"
-       point="org.eclipse.ui.commands">
- 	</extension>
- 
- <!-- Test new command 
- 	<extension point="org.eclipse.ui.commands">
-		<category name="ClearCase" description="ClearCase actions"
-			id="net.sourceforge.eclipseccase.category">
-		</category>
-		<command
-        categoryId="net.sourceforge.eclipseccase.category"
-        defaultHandler="net.sourceforge.eclipseccase.ui.commands.SaveCsHandler"
-        description="Save the config spec"
-        id="net.sourceforge.eclipseccase.ui.commands.savecs"
-        name="Save CS">
-		</command>
- </extension>
- 
- <extension
-       point="org.eclipse.ui.handlers">
-    <handler
-          class="net.sourceforge.eclipseccase.ui.commands.SaveCsHandler"
-          commandId="net.sourceforge.eclipseccase.ui.commands.savecs">
-          <activeWhen>
-            <reference
-                  definitionId="net.sourceforge.eclispeccase.ui.contributions.csview">
-            </reference>
-         </activeWhen>
-    </handler>
- </extension>
-
- <extension
-       point="org.eclipse.ui.contexts">
-    <context
-          description="CS Save"
-          id="net.sourceforge.eclispeccase.ui.keybindings.contexts.savecs"
-          name="CS Save"
-          parentId="org.eclipse.ui.contexts.window">
-    </context>
-</extension>
-
-<extension
-         point="org.eclipse.core.expressions.definitions">
-      <definition
-            id="net.sourceforge.eclispeccase.ui.contributions.csview">
-         <with
-               variable="activePartId">
-            <equals
-                  value="net.sourceforge.eclipseccase.views.ConfigSpecView">
-            </equals>
-         </with>
-      </definition>
-   </extension>
-   
-   	<extension point="org.eclipse.ui.bindings">
-		<key commandId="net.sourceforge.eclipseccase.ui.commands.savecs"
-		     contextId="net.sourceforge.eclispeccase.ui.keybindings.contexts.savecs"
-			 schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-			sequence="Ctrl+Y">
-		</key>
-	</extension> -->
-   
 </plugin>
