@@ -2,6 +2,15 @@
 =                                                          Change Log                                                                                              =
 ===============================================================================
 
+2.2.27
+=====
+
+Feature:
+
+3573773 	Get rid of manual prompt for vob location
+3592132 	Prompt user about checkout of dir during refactoring
+3571949 	Shortcut for Save/Clear/Refresh actions in configspec editor
+
 
 2.2.26
 =====
