@@ -13,7 +13,8 @@
 package net.sourceforge.eclipseccase.ui.preferences;
 
 import net.sourceforge.eclipseccase.ui.ClearCaseUI;
-import org.eclipse.core.runtime.Preferences;
+
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.core.runtime.preferences.*;
 
 /**
@@ -209,8 +210,8 @@ public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 	 * 
 	 * @return the plugin preferences
 	 */
-	public static Preferences getPluginPreferences() {
-		return ClearCaseUI.getInstance().getPluginPreferences();
+	public static IPreferenceStore getPluginPreferences() {
+		return ClearCaseUI.getInstance().getPreferenceStore();
 	}
 
 	/*
@@ -221,37 +222,43 @@ public class ClearCaseUIPreferences extends AbstractPreferenceInitializer {
 	 */
 	@Override
 	public void initializeDefaultPreferences() {
-
-		IEclipsePreferences defaults = new DefaultScope().getNode(ClearCaseUI.PLUGIN_ID);
+		
+		//TODO:Remove this.
+		//IEclipsePreferences store = new DefaultScope().getNode(ClearCaseUI.PLUGIN_ID);
+		//IEclipsePreferences store = DefaultScope.INSTANCE.getNode(ClearCaseUI.PLUGIN_ID);
+		//Normally the following is used. Activator.getDefault().getPreferenceStore(). But since we don't have this we use:
+		IPreferenceStore store = ClearCaseUI.getInstance().getPreferenceStore();
+				
+			
 
 		// Decorator preferences
-		defaults.putBoolean(DECORATE_FOLDERS_DIRTY, false);
-		defaults.putBoolean(DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, false);
+		store.setDefault(DECORATE_FOLDERS_DIRTY, false);
+		store.setDefault(DECORATE_FOLDERS_CONTAINING_VIEW_PRIVATE_DIRTY, false);
 
 		// default text decorations
-		defaults.putBoolean(DECORATE_PROJECTS_WITH_VIEW_INFO, true);
-		defaults.putBoolean(DECORATE_ELEMENTS_WITH_VERSION_INFO, false);
-		defaults.putBoolean(DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX, false);
+		store.setDefault(DECORATE_PROJECTS_WITH_VIEW_INFO, true);
+		store.setDefault(DECORATE_ELEMENTS_WITH_VERSION_INFO, false);
+		store.setDefault(DECORATE_ELEMENT_STATES_WITH_TEXT_PREFIX, false);
 
 		// default prefixes
-		defaults.put(TEXT_PREFIX_CHECKED_IN_ELEMENTS, ">"); //$NON-NLS-1$
-		defaults.put(TEXT_PREFIX_DIRTY_ELEMENTS, "*"); //$NON-NLS-1$
-		defaults.put(TEXT_PREFIX_HIJACKED_ELEMENTS, "$"); //$NON-NLS-1$
-		defaults.put(TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS, "+"); //$NON-NLS-1$
-		defaults.put(TEXT_PREFIX_EDITED_ELEMENTS, "#"); //$NON-NLS-1$
-		defaults.put(TEXT_PREFIX_UNKNOWN_ELEMENTS, "?"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_CHECKED_IN_ELEMENTS, ">"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_DIRTY_ELEMENTS, "*"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_HIJACKED_ELEMENTS, "$"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_VIEW_PRIVATE_ELEMENTS, "+"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_EDITED_ELEMENTS, "#"); //$NON-NLS-1$
+		store.setDefault(TEXT_PREFIX_UNKNOWN_ELEMENTS, "?"); //$NON-NLS-1$
 
 		// default icon decorations
-		defaults.putBoolean(DECORATE_CHECKED_IN_ELEMENTS, true);
-		defaults.putBoolean(DECORATE_CLEARCASE_ELEMENTS, false);
-		defaults.putBoolean(DECORATE_VIEW_PRIVATE_ELEMENTS, false);
-		defaults.putBoolean(DECORATE_EDITED_ELEMENTS, true);
-		defaults.putBoolean(DECORATE_UNKNOWN_ELEMENTS, true);
-		defaults.putBoolean(DECORATE_HIJACKED_ELEMENTS, true);
-		defaults.putBoolean(DECORATE_DERIVED_OBJECTS, true);
+		store.setDefault(DECORATE_CHECKED_IN_ELEMENTS, true);
+		store.setDefault(DECORATE_CLEARCASE_ELEMENTS, false);
+		store.setDefault(DECORATE_VIEW_PRIVATE_ELEMENTS, false);
+		store.setDefault(DECORATE_EDITED_ELEMENTS, true);
+		store.setDefault(DECORATE_UNKNOWN_ELEMENTS, true);
+		store.setDefault(DECORATE_HIJACKED_ELEMENTS, true);
+		store.setDefault(DECORATE_DERIVED_OBJECTS, true);
 
 		// default image locations
-		defaults.putBoolean(IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, false);
+		store.setDefault(IMAGE_CLEARCASE_ELEMENTS_BACKGROUND_CUSTOM, false);
 	}
 
 }
