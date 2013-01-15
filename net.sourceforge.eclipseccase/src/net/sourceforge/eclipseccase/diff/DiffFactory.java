@@ -15,6 +15,8 @@ public class DiffFactory {
 			} else if (Constants.TOOL_IBM.equals(type)){
 				
 				return new ClearCaseCommands();
+			}else if(Constants.TOOL_BEYONDCOMPARE.equals(type)){
+				return new BeyondCompareCommands();
 			}
 			
 			return null;//should not happen.

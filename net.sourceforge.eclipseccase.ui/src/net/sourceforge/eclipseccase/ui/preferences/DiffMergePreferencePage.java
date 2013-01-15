@@ -62,6 +62,8 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 	public static final String TOOL_IBM = "ibm";
 
 	public static final String TOOL_KDIFF = "kdiff3";
+	
+	public static final String TOOL_BEYONDCOMPARE = "beyond compare";
 
 	/**
 	 * Creates a new instance.
@@ -258,6 +260,7 @@ public class DiffMergePreferencePage extends PreferencePage implements IWorkbenc
 		ArrayList<String> tools = new ArrayList<String>();
 		tools.add(TOOL_IBM);
 		tools.add(TOOL_KDIFF);
+		tools.add(TOOL_BEYONDCOMPARE);
 		Collator collator = Collator.getInstance();
 		collator.setStrength(Collator.PRIMARY);
 		Collections.sort(tools, collator);
