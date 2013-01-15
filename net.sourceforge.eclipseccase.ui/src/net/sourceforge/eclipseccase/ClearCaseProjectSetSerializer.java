@@ -2,8 +2,6 @@ package net.sourceforge.eclipseccase;
 
 import net.sourceforge.clearcase.utils.Os;
 
-import org.eclipse.swt.internal.gtk.OS;
-
 import org.eclipse.core.resources.IProject;
 
 import java.io.File;
