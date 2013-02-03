@@ -42,7 +42,7 @@ import org.eclipse.swt.graphics.Image;
 public class ClearCaseResourceNode extends BufferedContent implements ITypedElement {
 
 	private final IResource resource;
-
+	//Version extended path e.g /path/to/file/FileName.java@@/main/dev/2 
 	private final String vextPath;
 
 	private final ClearCaseProvider provider;
