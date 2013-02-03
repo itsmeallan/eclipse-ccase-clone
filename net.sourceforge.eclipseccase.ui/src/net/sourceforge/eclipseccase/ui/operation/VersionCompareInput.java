@@ -1,106 +1,74 @@
 package net.sourceforge.eclipseccase.ui.operation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import org.eclipse.compare.BufferedContent;
+import net.sourceforge.eclipseccase.ClearCaseProvider;
+
+import org.eclipse.compare.CompareUI;
+
+import net.sourceforge.eclipseccase.ui.compare.ClearCaseResourceNode;
 import org.eclipse.compare.ResourceNode;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.Differencer;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 
 import java.lang.reflect.InvocationTargetException;
-import org.eclipse.core.runtime.IProgressMonitor;
-
-import net.sourceforge.eclipseccase.ClearCaseProvider;
-import net.sourceforge.eclipseccase.ui.compare.ClearCaseResourceNode;
-import org.eclipse.compare.*;
+import org.eclipse.compare.CompareConfiguration;
+import org.eclipse.compare.ITypedElement;
+import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
 
-public class VersionCompareInput extends CompareEditorInput {
+/**
+ * 
+ * 
+ * @author mikael petterson
+ * 
+ */
+public class VersionCompareInput extends SaveableCompareEditorInput {
 
-	private final ITypedElement leftElement;
+	private ITypedElement left;
 
-	private final ITypedElement rightElement;
-
-	private IFile resource;
-
-	private String rightVersion = "";
-
-	private String leftVersion = "";
+	private ITypedElement right;
 
 	private ClearCaseProvider provider;
 
-	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String selected, String comparableVersion, ClearCaseProvider provider) {
-		super(configuration);
-
-		this.resource = resource;
-
-		this.rightVersion = selected;
-		this.leftVersion = comparableVersion;
+	/**
+	 * 
+	 * @param configuration
+	 * @param resource
+	 * @param leftVersion
+	 * @param rightVersion
+	 * @param wp
+	 * @param provider
+	 */
+	public VersionCompareInput(CompareConfiguration configuration, IFile resource, String leftVersion, String rightVersion, IWorkbenchPage wp, ClearCaseProvider provider) {
+		super(configuration, wp);
+		// creates a local file and make it included into the save process to
+		// handle an eventual change.
+		left = createFileElement(resource);
+		// right is always a clearcase element
+		right = new ClearCaseResourceNode(resource, rightVersion, provider);
 		this.provider = provider;
 
-		leftElement = selected != null ? new ClearCaseResourceNode(resource, selected, provider) : new ResourceNode(resource);
-		rightElement = comparableVersion != null ? new ClearCaseResourceNode(resource, comparableVersion, provider) : new ResourceNode(resource);
-
 		configuration.setLeftImage(CompareUI.getImage(resource));
-		if (leftVersion != null) {
+		if (left != null) {
 			configuration.setLeftLabel(leftVersion);
 		}
 
 		configuration.setRightImage(CompareUI.getImage(resource));
-		if (rightVersion != null) {
+		if (right != null) {
 			configuration.setRightLabel(rightVersion);
-		}
-
-		setTitle(resource.getName());
-	}
-
-	/**
-	 * Method is used to saving compare results.
-	 */
-	public void saveChanges(IProgressMonitor pm) throws CoreException {
-		super.saveChanges(pm);
-		
-		IResource resource = null;
-		if (rightElement instanceof ClearCaseResourceNode) {
-			ClearCaseResourceNode crn = (ClearCaseResourceNode) rightElement;
-			resource = crn.getResource();
-		} else if (rightElement instanceof ResourceNode) {
-			ResourceNode rn = (ResourceNode) rightElement;
-			resource = rn.getResource();
-		} else {
-			return;
-		}
-
-		BufferedContent bc = (BufferedContent) rightElement;
-
-		if (resource instanceof IFile) {
-			byte[] bytes = bc.getContent();
-			ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-			try {
-				IFile file = (IFile) resource;
-				if (file.exists()) {
-					file.setContents(is, false, true, pm);
-				} else {
-					file.create(is, false, pm);
-				}
-			} finally {
-				if (is != null)
-					try {
-						is.close();
-						setDirty(false);
-					} catch (IOException ex) {
-						// Ignored
-					}
-				resource.getParent().refreshLocal(IResource.DEPTH_INFINITE, pm);
-			}
 		}
 	}
 
 	@Override
-	protected Object prepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		return new DiffNode(null, Differencer.CHANGE, null, new ClearCaseResourceNode(resource, leftVersion, provider), new ResourceNode(resource));
+	protected ICompareInput prepareCompareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		return new DiffNode(null, Differencer.CHANGE, null, left, right);
 	}
 
+	@Override
+	protected void fireInputChange() {
+		// TODO Auto-generated method stub
+
+	}
 }
