@@ -157,7 +157,8 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 			return CANCEL;
 
 		if (!ClearCasePreferences.isCheckoutAutoAlways()) {
-			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
+			//CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable();
+			CheckoutQuestionRunnable checkoutQuestion = new CheckoutQuestionRunnable(files);
 			getDisplay().syncExec(checkoutQuestion);
 			int returncode = checkoutQuestion.getResult();
 			if (checkoutQuestion.isRemember()) {
@@ -215,13 +216,20 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 
 		private int dialogResult;
 		private boolean remember;
+		private IFile [] files;
+		private StringBuffer fileListFormatted = new StringBuffer();
+		
+		public CheckoutQuestionRunnable(IFile [] files){
+			this.files = files;
+			formatFileList();
+		}
 
 		public void run() {
 			MessageDialogWithToggle checkoutQuestion = new MessageDialogWithToggle(
 					getDisplay().getActiveShell(),
 					"ClearCase Checkout",
 					null,
-					"File must be checked out to edit.\n\nProceed with checkout?",
+					"File/-s:\n" +fileListFormatted+"must be checked out to edit.\n\nProceed with checkout?",
 					MessageDialog.QUESTION, new String[] {
 							IDialogConstants.YES_LABEL,
 							IDialogConstants.NO_LABEL }, 0,
@@ -238,7 +246,15 @@ public class ClearCaseModificationHandler extends FileModificationValidator {
 		public boolean isRemember() {
 			return remember;
 		}
-
+		
+		private void formatFileList(){
+			if(files.length > 0){
+				for (int i = 0; i < files.length; i++) {
+					fileListFormatted.append(files [i].getFullPath()+"\n");
+				}
+			}
+		}
+			
 	}
 
 	/*
