@@ -2,6 +2,19 @@
 =                                                          Change Log                                                                                              =
 ===============================================================================
 
+
+2.2.29
+=====
+
+Bugs:
+
+3036429 	Timeout problems with long running cleartool process
+
+Feature:
+
+3604261 	Add filepath to checkout dialog
+
+
 2.2.28
 =====
 
