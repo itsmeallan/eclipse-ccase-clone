@@ -18,10 +18,7 @@ import net.sourceforge.eclipseccase.diff.DiffFactory;
 
 import net.sourceforge.eclipseccase.diff.AbstractExternalToolCommands;
 
-public class ExternalCompareOperation {
-
-
-	
+public class ExternalCompareOperation extends Thread {
 	private String comparableVersion;
 	private IResource resource;
 
@@ -30,24 +27,43 @@ public class ExternalCompareOperation {
 		this.comparableVersion = comparableVersion;
 
 	}
-
-	public void execute() {
-		// execute
+	
+	public void run () {
 		Job job = new Job("Compare") {
-			protected IStatus run(IProgressMonitor monitor) {
-				monitor.beginTask("Compare started...", 10);
-				// Run long running task here
-				// Add a factory here that can decide which launcher to use.
-				AbstractExternalToolCommands diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
-				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
-				String vExtPath2 = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
-				diff.twoWayDiff(vExtPath1,vExtPath2);
-				monitor.done();
-				return Status.OK_STATUS;
-			}
-		};
-		job.setUser(true);
-		job.schedule();
+		protected IStatus run(IProgressMonitor monitor) {
+			monitor.beginTask("Compare started...", 10);
+			// Run long running task here
+			// Add a factory here that can decide which launcher to use.
+			AbstractExternalToolCommands diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
+			String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
+			String vExtPath2 = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
+			diff.twoWayDiff(vExtPath1,vExtPath2);
+			monitor.done();
+			return Status.OK_STATUS;
+		}
+	};
+	job.setUser(true);
+	job.schedule();
+		
 	}
+//TODO: Tes
+//	public void execute() {
+//		// execute
+//		Job job = new Job("Compare") {
+//			protected IStatus run(IProgressMonitor monitor) {
+//				monitor.beginTask("Compare started...", 10);
+//				// Run long running task here
+//				// Add a factory here that can decide which launcher to use.
+//				AbstractExternalToolCommands diff = DiffFactory.getDiffTool(ClearCasePreferences.getExtDiffTool());
+//				String vExtPath1 = resource.getLocation().toOSString()+"@@"+comparableVersion;
+//				String vExtPath2 = resource.getLocation().toOSString();//Dont use version extended path. Since view selects current version.
+//				diff.twoWayDiff(vExtPath1,vExtPath2);
+//				monitor.done();
+//				return Status.OK_STATUS;
+//			}
+//		};
+//		job.setUser(true);
+//		job.schedule();
+//	}
 
 }
