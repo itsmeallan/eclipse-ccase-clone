@@ -3,6 +3,20 @@
 ===============================================================================
 
 
+2.2.31
+====
+
+
+
+2.2.30
+=====
+
+Bugs:
+
+#349 Using BeyondCompare blocks Eclipse 
+#350 Compare with Predecessor not working with BeyondCompare 
+#352 Renaming a file/folder does not work on first attempt 
+
 2.2.29
 =====
 
