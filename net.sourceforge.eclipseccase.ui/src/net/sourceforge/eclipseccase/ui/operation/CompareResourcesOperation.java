@@ -31,7 +31,7 @@ public class CompareResourcesOperation {
 	
 		if(ClearCasePreferences.isCompareExternal()){
 			
-			ExternalCompareOperation extCmpOp = new ExternalCompareOperation(resource,comparableVersion);
+			ExternalCompareOperation extCmpOp = new ExternalCompareOperation(resource,comparableVersion,provider);
 			//extCmpOp.execute();
 			//TODO: Testing threading...
 			extCmpOp.run();
